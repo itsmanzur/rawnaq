@@ -1,0 +1,136 @@
+/* macOS Style Floating Dock Menu Styles */
+.rawnaq-dock-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 10px 16px;
+    border-radius: 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 99999;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease;
+}
+
+.rawnaq-dock-container.pos-left {
+    left: 20px;
+    bottom: 50%;
+    transform: translateY(50%);
+    flex-direction: column;
+    align-items: center;
+}
+
+.rawnaq-dock-container.pos-right {
+    left: auto;
+    right: 20px;
+    bottom: 50%;
+    transform: translateY(50%);
+    flex-direction: column;
+    align-items: center;
+}
+
+.rawnaq-dock-item {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef2f6;
+    transform-origin: bottom center;
+}
+
+.rawnaq-dock-container.pos-left .rawnaq-dock-item,
+.rawnaq-dock-container.pos-right .rawnaq-dock-item {
+    transform-origin: center right;
+}
+
+.rawnaq-dock-item span.dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: #444;
+    transition: font-size 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s;
+}
+
+.rawnaq-dock-tooltip {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.rawnaq-dock-container.pos-left .rawnaq-dock-tooltip {
+    bottom: auto;
+    left: 125%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-8px);
+}
+.rawnaq-dock-container.pos-right .rawnaq-dock-tooltip {
+    bottom: auto;
+    right: 125%;
+    left: auto;
+    top: 50%;
+    transform: translateY(-50%) translateX(8px);
+}
+
+.rawnaq-dock-item:hover .rawnaq-dock-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+.rawnaq-dock-container.pos-left .rawnaq-dock-item:hover .rawnaq-dock-tooltip {
+    transform: translateY(-50%) translateX(0);
+}
+.rawnaq-dock-container.pos-right .rawnaq-dock-item:hover .rawnaq-dock-tooltip {
+    transform: translateY(-50%) translateX(0);
+}
+
+@media (max-width: 767px) {
+    .rawnaq-dock-container {
+        bottom: 12px !important;
+        left: 12px !important;
+        right: 12px !important;
+        width: calc(100% - 24px) !important;
+        transform: none !important;
+        justify-content: space-around !important;
+        border-radius: 18px !important;
+        padding: 8px !important;
+        gap: 0 !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+    .rawnaq-dock-item {
+        width: 42px !important;
+        height: 42px !important;
+        transform: none !important;
+    }
+    .rawnaq-dock-item span.dashicons {
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+    .rawnaq-dock-tooltip {
+        display: none !important;
+    }
+}
