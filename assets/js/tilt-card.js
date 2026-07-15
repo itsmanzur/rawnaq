@@ -1,71 +1,111 @@
 /**
- * 3D Mouse-Tilt Physics Engine - ULTRA SPEED & SMOOTH EDITION
+ * 3D Tilt Card — Professional motion engine
+ * Glare + hover scale + reduced-motion / touch guards
  */
 (function() {
     'use strict';
 
-    function initTiltCards() {
-        var cards = document.querySelectorAll('.rawnaq-tilt-card');
-        
-        cards.forEach(function(card) {
-            var maxTilt = parseFloat(card.getAttribute('data-tilt-max')) || 15;
-            var glow = card.querySelector('.rawnaq-tilt-glow');
+    var bound = typeof WeakSet !== 'undefined' ? new WeakSet() : null;
 
-            card.addEventListener('mouseenter', function() {
-                // Remove transition during active track for lag-free physics
-                card.style.transition = 'box-shadow 0.25s ease';
-                if (glow) {
-                    glow.style.transition = 'opacity 0.25s ease';
-                }
-            });
+    function prefersReducedMotion() {
+        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
 
-            card.addEventListener('mousemove', function(e) {
-                var rect = card.getBoundingClientRect();
-                var x = e.clientX - rect.left;
-                var y = e.clientY - rect.top;
+    function isCoarsePointer() {
+        return window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    }
 
-                var tiltX = (rect.height / 2 - y) / (rect.height / 2);
-                var tiltY = (x - rect.width / 2) / (rect.width / 2);
+    function parseNum(value, fallback) {
+        var n = parseFloat(value);
+        return isNaN(n) ? fallback : n;
+    }
 
-                card.style.transform = 'rotateX(' + (tiltX * maxTilt) + 'deg) rotateY(' + (tiltY * maxTilt) + 'deg)';
-                card.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.18)';
+    function bindCard(card) {
+        if (!card || (bound && bound.has(card))) return;
+        if (bound) bound.add(card);
 
-                if (glow) {
-                    glow.style.left = x + 'px';
-                    glow.style.top = y + 'px';
-                    glow.style.opacity = '1';
-                }
-            });
+        if (prefersReducedMotion() || isCoarsePointer()) {
+            card.classList.add('no-tilt');
+            return;
+        }
 
-            card.addEventListener('mouseleave', function() {
-                // Apply smooth spring-back transition on mouse leave
-                card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease';
-                card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-                card.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.08)';
+        var maxTilt = parseNum(card.getAttribute('data-tilt-max'), 15);
+        var hoverScale = parseNum(card.getAttribute('data-hover-scale') || card.style.getPropertyValue('--hover-scale'), 1.03);
+        var glareEl = card.querySelector('.rawnaq-tilt-glare');
 
-                if (glow) {
-                    glow.style.transition = 'opacity 0.5s ease';
-                    glow.style.opacity = '0';
-                }
-            });
+        if (maxTilt <= 0 && hoverScale <= 1) {
+            return;
+        }
+
+        card.addEventListener('mouseenter', function() {
+            card.style.transition = 'box-shadow 0.25s ease';
+            card.classList.add('is-tilting');
+            if (glareEl) {
+                glareEl.style.transition = 'opacity 0.2s ease';
+            }
+        });
+
+        card.addEventListener('mousemove', function(e) {
+            var rect = card.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            var px = x / rect.width;
+            var py = y / rect.height;
+
+            var tiltX = (0.5 - py) * (maxTilt * 2);
+            var tiltY = (px - 0.5) * (maxTilt * 2);
+
+            card.style.transform =
+                'rotateX(' + tiltX.toFixed(2) + 'deg) rotateY(' + tiltY.toFixed(2) + 'deg) scale(' + hoverScale + ')';
+
+            if (glareEl) {
+                glareEl.style.left = x + 'px';
+                glareEl.style.top = y + 'px';
+                glareEl.style.opacity = '1';
+            }
+        });
+
+        card.addEventListener('mouseleave', function() {
+            card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease';
+            card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+            card.classList.remove('is-tilting');
+            if (glareEl) {
+                glareEl.style.transition = 'opacity 0.4s ease';
+                glareEl.style.opacity = '0';
+            }
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTiltCards);
-    } else {
-        initTiltCards();
+    function initTiltCards(root) {
+        var scope = root && root.querySelectorAll ? root : document;
+        scope.querySelectorAll('.rawnaq-tilt-card').forEach(bindCard);
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.elementorFrontend) {
-            elementorFrontend.hooks.addAction(
-                'frontend/element_ready/rawnaq_tilt_card.default',
-                function($scope) {
-                    initTiltCards();
-                }
-            );
-        }
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            initTiltCards(document);
+        });
+    } else {
+        initTiltCards(document);
+    }
 
+    function bindElementor() {
+        if (!window.elementorFrontend || !elementorFrontend.hooks) return false;
+        elementorFrontend.hooks.addAction(
+            'frontend/element_ready/rawnaq_tilt_card.default',
+            function($scope) {
+                initTiltCards($scope[0]);
+            }
+        );
+        return true;
+    }
+
+    if (!bindElementor()) {
+        window.addEventListener('elementor/frontend/init', bindElementor);
+        if (window.jQuery) {
+            jQuery(window).on('elementor/frontend/init', bindElementor);
+        }
+    }
+
+    window.RawnaqTiltCard = { init: initTiltCards };
 })();

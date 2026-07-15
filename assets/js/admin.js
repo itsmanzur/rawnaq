@@ -1,37 +1,53 @@
 (function($) {
     'use strict';
 
+    function updateModuleCardState($input) {
+        var $card = $input.closest('.module-card');
+        if (!$card.length) {
+            return;
+        }
+        $card.toggleClass('is-on', $input.is(':checked'));
+    }
+
+    function refreshActiveCount() {
+        var count = $('.module-toggle-input:checked').length;
+        $('#modules-active-count').text(String(count));
+    }
+
     $(document).ready(function() {
-        // Tab switching logic
+        $('.module-toggle-input').each(function() {
+            updateModuleCardState($(this));
+        });
+        refreshActiveCount();
+
+        $('.module-toggle-input').on('change', function() {
+            updateModuleCardState($(this));
+            refreshActiveCount();
+        });
+
         $('.rawnaq-nav .nav-item').on('click', function(e) {
             e.preventDefault();
             var target = $(this).data('tab');
 
-            // Switch Nav active states
             $('.rawnaq-nav .nav-item').removeClass('active');
             $(this).addClass('active');
 
-            // Switch Panel active states
             $('.tab-panel').removeClass('active');
             $('#tab-' + target).addClass('active');
 
-            // Update URL hash
             window.location.hash = target;
         });
 
-        // Trigger tab change from button
-        $('.trigger-tab-change').on('click', function(e) {
+        $('.trigger-tab-change').on('click', function() {
             var target = $(this).data('target');
             $('.rawnaq-nav .nav-item[data-tab="' + target + '"]').trigger('click');
         });
 
-        // Load active tab from URL hash if exists
         var hash = window.location.hash.substring(1);
         if (hash && $('.rawnaq-nav .nav-item[data-tab="' + hash + '"]').length) {
             $('.rawnaq-nav .nav-item[data-tab="' + hash + '"]').trigger('click');
         }
 
-        // Save modules settings via AJAX
         $('#rawnaq-modules-form').on('submit', function(e) {
             e.preventDefault();
 

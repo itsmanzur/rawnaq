@@ -1,66 +1,129 @@
-/* macOS Style Floating Dock Menu Styles */
+/* macOS-style Floating Dock — Professional Edition */
 .rawnaq-dock-container {
+    --dock-offset: 20px;
+    --dock-bg: rgba(255, 255, 255, 0.55);
+    --dock-border: rgba(255, 255, 255, 0.5);
+    --dock-blur: 16px;
+    --dock-radius: 24px;
+    --dock-gap: 12px;
+    --dock-pad: 10px;
+    --dock-item-bg: #ffffff;
+    --dock-icon: #444444;
+    --dock-item-size: 48px;
+    --dock-item-radius: 12px;
+    --dock-badge-bg: #ef4444;
+    --dock-badge-color: #ffffff;
+
     position: fixed;
-    bottom: 20px;
+    bottom: var(--dock-offset);
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 10px 16px;
-    border-radius: 24px;
+    background: var(--dock-bg);
+    backdrop-filter: blur(var(--dock-blur));
+    -webkit-backdrop-filter: blur(var(--dock-blur));
+    border: 1px solid var(--dock-border);
+    padding: var(--dock-pad) calc(var(--dock-pad) + 6px);
+    border-radius: var(--dock-radius);
     display: flex;
     align-items: flex-end;
-    gap: 12px;
+    gap: var(--dock-gap);
     z-index: 99999;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-    transition: transform 0.3s ease;
+    box-sizing: border-box;
 }
 
 .rawnaq-dock-container.pos-left {
-    left: 20px;
+    left: var(--dock-offset);
+    right: auto;
     bottom: 50%;
     transform: translateY(50%);
     flex-direction: column;
     align-items: center;
+    padding: calc(var(--dock-pad) + 6px) var(--dock-pad);
 }
 
 .rawnaq-dock-container.pos-right {
     left: auto;
-    right: 20px;
+    right: var(--dock-offset);
     bottom: 50%;
     transform: translateY(50%);
     flex-direction: column;
     align-items: center;
+    padding: calc(var(--dock-pad) + 6px) var(--dock-pad);
 }
 
 .rawnaq-dock-item {
     position: relative;
-    width: 48px;
-    height: 48px;
-    background: #ffffff;
-    border-radius: 12px;
+    width: var(--dock-item-size);
+    height: var(--dock-item-size);
+    background: var(--dock-item-bg);
+    border-radius: var(--dock-item-radius);
     display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
+    text-decoration: none !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     border: 1px solid #eef2f6;
     transform-origin: bottom center;
+    color: var(--dock-icon);
+    box-sizing: border-box;
+    outline: none;
+    flex-shrink: 0;
 }
 
 .rawnaq-dock-container.pos-left .rawnaq-dock-item,
 .rawnaq-dock-container.pos-right .rawnaq-dock-item {
-    transform-origin: center right;
+    transform-origin: center;
 }
 
-.rawnaq-dock-item span.dashicons {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-    color: #444;
-    transition: font-size 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s;
+.rawnaq-dock-item:focus-visible {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.45), 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.rawnaq-dock-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    color: inherit;
+    pointer-events: none;
+}
+
+.rawnaq-dock-icon i,
+.rawnaq-dock-icon svg,
+.rawnaq-dock-icon .dashicons {
+    font-size: calc(var(--dock-item-size) * 0.5);
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    color: inherit;
+    fill: currentColor;
+    display: block;
+    transition: color 0.2s ease, font-size 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rawnaq-dock-item:hover,
+.rawnaq-dock-item:focus-visible {
+    color: var(--hover-color, #6366f1);
+}
+
+.rawnaq-dock-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--dock-badge-bg);
+    color: var(--dock-badge-color);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 16px;
+    text-align: center;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
 }
 
 .rawnaq-dock-tooltip {
@@ -78,7 +141,8 @@
     pointer-events: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 3;
 }
 
 .rawnaq-dock-container.pos-left .rawnaq-dock-tooltip {
@@ -87,6 +151,7 @@
     top: 50%;
     transform: translateY(-50%) translateX(-8px);
 }
+
 .rawnaq-dock-container.pos-right .rawnaq-dock-tooltip {
     bottom: auto;
     right: 125%;
@@ -95,42 +160,98 @@
     transform: translateY(-50%) translateX(8px);
 }
 
-.rawnaq-dock-item:hover .rawnaq-dock-tooltip {
+.rawnaq-dock-item:hover .rawnaq-dock-tooltip,
+.rawnaq-dock-item:focus-visible .rawnaq-dock-tooltip {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
-.rawnaq-dock-container.pos-left .rawnaq-dock-item:hover .rawnaq-dock-tooltip {
-    transform: translateY(-50%) translateX(0);
-}
-.rawnaq-dock-container.pos-right .rawnaq-dock-item:hover .rawnaq-dock-tooltip {
+
+.rawnaq-dock-container.pos-left .rawnaq-dock-item:hover .rawnaq-dock-tooltip,
+.rawnaq-dock-container.pos-left .rawnaq-dock-item:focus-visible .rawnaq-dock-tooltip {
     transform: translateY(-50%) translateX(0);
 }
 
+.rawnaq-dock-container.pos-right .rawnaq-dock-item:hover .rawnaq-dock-tooltip,
+.rawnaq-dock-container.pos-right .rawnaq-dock-item:focus-visible .rawnaq-dock-tooltip {
+    transform: translateY(-50%) translateX(0);
+}
+
+.rawnaq-dock-mobile-label {
+    display: none;
+}
+
 @media (max-width: 767px) {
+    .rawnaq-dock-container.hide-mobile {
+        display: none !important;
+    }
+
     .rawnaq-dock-container {
-        bottom: 12px !important;
+        bottom: var(--dock-offset) !important;
         left: 12px !important;
         right: 12px !important;
-        width: calc(100% - 24px) !important;
+        width: auto !important;
         transform: none !important;
         justify-content: space-around !important;
         border-radius: 18px !important;
         padding: 8px !important;
-        gap: 0 !important;
+        gap: 4px !important;
         flex-direction: row !important;
         align-items: center !important;
     }
+
+    .rawnaq-dock-container.pos-left,
+    .rawnaq-dock-container.pos-right {
+        left: 12px !important;
+        right: 12px !important;
+        bottom: var(--dock-offset) !important;
+        top: auto !important;
+    }
+
     .rawnaq-dock-item {
         width: 42px !important;
         height: 42px !important;
         transform: none !important;
+        flex-direction: column;
     }
-    .rawnaq-dock-item span.dashicons {
+
+    .rawnaq-dock-icon i,
+    .rawnaq-dock-icon svg,
+    .rawnaq-dock-icon .dashicons {
         font-size: 20px !important;
-        width: 20px !important;
-        height: 20px !important;
     }
+
     .rawnaq-dock-tooltip {
         display: none !important;
+    }
+
+    .rawnaq-dock-container.mobile-labels .rawnaq-dock-item {
+        width: auto !important;
+        min-width: 42px;
+        height: auto !important;
+        padding: 6px 8px;
+        gap: 4px;
+    }
+
+    .rawnaq-dock-container.mobile-labels .rawnaq-dock-mobile-label {
+        display: block;
+        font-size: 9px;
+        font-weight: 700;
+        color: var(--dock-icon);
+        line-height: 1.1;
+        max-width: 56px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rawnaq-dock-item,
+    .rawnaq-dock-icon i,
+    .rawnaq-dock-icon svg,
+    .rawnaq-dock-icon .dashicons,
+    .rawnaq-dock-tooltip {
+        transition: none !important;
     }
 }

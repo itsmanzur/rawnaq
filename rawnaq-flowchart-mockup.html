@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rawnaq — Flow Chart Widget Mockup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
+
+  :root{
+    --ink:#1E1B2E;
+    --ink-soft:#6B6478;
+    --paper:#FAF9FC;
+    --panel:#FFFFFF;
+    --line:#E6E2F0;
+    --indigo:#4338CA;
+    --violet:#7C3AED;
+    --amber:#FBBF24;
+    --amber-soft:#FEF3C7;
+    --radius:20px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    font-family:'Poppins',sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Top chrome ---------- */
+  .chrome{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 28px;
+    border-bottom:1px solid var(--line);
+    background:var(--panel);
+    position:sticky;top:0;z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-badge{
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    position:relative;flex-shrink:0;
+  }
+  .brand-badge::before{
+    content:"";position:absolute;inset:0;margin:auto;
+    width:6px;height:6px;border-radius:50%;
+    background:#fff;
+    box-shadow:
+      0 -11px 0 0 rgba(255,255,255,.5),
+      9px -6px 0 0 rgba(255,255,255,.4),
+      9px 6px 0 0 rgba(255,255,255,.35),
+      0 11px 0 0 rgba(255,255,255,.3),
+      -9px 6px 0 0 rgba(255,255,255,.35),
+      -9px -6px 0 0 rgba(255,255,255,.4);
+  }
+  .brand-name{font-weight:600;font-size:15px;letter-spacing:.2px;}
+  .brand-sub{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;}
+
+  .mode-toggle{
+    display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);
+    border-radius:999px;padding:4px;
+  }
+  .mode-toggle button{
+    border:none;background:transparent;padding:8px 18px;border-radius:999px;
+    font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;color:var(--ink-soft);
+    cursor:pointer;transition:all .25s ease;
+  }
+  .mode-toggle button.active{
+    background:var(--ink);color:#fff;
+  }
+
+  .device-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);}
+  .device-toggle button{
+    border:1px solid var(--line);background:var(--panel);
+    width:34px;height:34px;border-radius:10px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .2s ease;
+  }
+  .device-toggle button.active{border-color:var(--indigo);background:#EEF0FF;}
+  .device-toggle svg{width:16px;height:16px;stroke:var(--ink-soft);}
+  .device-toggle button.active svg{stroke:var(--indigo);}
+
+  /* ---------- Stage ---------- */
+  .stage-wrap{
+    padding:40px 28px 80px;
+    display:flex;justify-content:center;
+  }
+  .stage{
+    width:100%;max-width:980px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:28px;
+    padding:56px 40px 48px;
+    position:relative;
+    overflow:hidden;
+    min-height:560px;
+    transition:max-width .35s ease;
+  }
+  .stage.mobile{max-width:380px;padding:32px 18px 28px;}
+
+  .stage-label{
+    position:absolute;top:22px;left:40px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .stage.mobile .stage-label{left:18px;}
+
+  svg.connectors{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  svg.connectors path{
+    fill:none;stroke:var(--line);stroke-width:2.5;
+    stroke-dasharray: var(--len);
+    stroke-dashoffset: var(--len);
+    transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+  }
+  svg.connectors path.lit{stroke-dashoffset:0;}
+  svg.connectors path.accent{stroke:var(--amber);stroke-width:3;}
+
+  .canvas{position:relative;z-index:2;}
+
+  /* ---------- Nodes ---------- */
+  .node{
+    position:absolute;
+    background:var(--panel);
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:12px 16px;
+    box-shadow:0 2px 6px rgba(30,27,46,.04);
+    cursor:pointer;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    opacity:0;
+    transform:translateY(10px) scale(.96);
+  }
+  .node.show{opacity:1;transform:translateY(0) scale(1);}
+  .node:hover{
+    border-color:var(--indigo);
+    box-shadow:0 10px 24px rgba(67,56,202,.14);
+    transform:translateY(-2px);
+  }
+  .node.root{
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    border:none;color:#fff;
+  }
+  .node.root .n-role{color:rgba(255,255,255,.75);}
+  .node .n-icon{
+    width:30px;height:30px;border-radius:9px;
+    background:var(--amber-soft);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:8px;font-size:14px;
+  }
+  .node.root .n-icon{background:rgba(255,255,255,.18);}
+  .node .n-title{font-size:13.5px;font-weight:600;line-height:1.3;white-space:nowrap;}
+  .node .n-role{font-size:11px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;}
+
+  .node.decision{
+    border-radius:10px;
+    border-color:var(--amber);
+    background:var(--amber-soft);
+  }
+  .node.decision .n-title{color:#92400E;}
+
+  /* detail popover */
+  .detail{
+    position:absolute;
+    background:var(--ink);
+    color:#fff;
+    padding:14px 16px;
+    border-radius:12px;
+    font-size:12.5px;
+    line-height:1.5;
+    width:220px;
+    z-index:30;
+    box-shadow:0 16px 40px rgba(30,27,46,.25);
+    opacity:0;pointer-events:none;
+    transform:translateY(6px);
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .detail.open{opacity:1;transform:translateY(0);pointer-events:auto;}
+  .detail::before{
+    content:"";position:absolute;top:-6px;left:22px;
+    width:12px;height:12px;background:var(--ink);
+    transform:rotate(45deg);
+  }
+  .detail b{color:var(--amber);}
+
+  /* mobile fallback list */
+  .mobile-list{display:none;flex-direction:column;gap:10px;}
+  .stage.mobile .mobile-list{display:flex;}
+  .stage.mobile .canvas{display:none;}
+  .mobile-item{
+    border:1.5px solid var(--line);border-radius:12px;
+    padding:12px 14px;display:flex;align-items:center;gap:10px;
+  }
+  .mobile-item.root{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;}
+  .mobile-item .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;}
+  .mobile-item .m-text b{display:block;font-size:13px;}
+  .mobile-item .m-text span{font-size:11px;color:var(--ink-soft);}
+  .mobile-item.root .m-text span{color:rgba(255,255,255,.7);}
+  .indent-1{margin-left:18px;}
+  .indent-2{margin-left:36px;}
+
+  .caption-row{
+    max-width:980px;margin:0 auto;padding:0 28px 60px;
+    display:flex;gap:28px;flex-wrap:wrap;
+  }
+  .caption{flex:1;min-width:240px;}
+  .caption h4{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft);margin:0 0 8px;font-family:'IBM Plex Mono',monospace;}
+  .caption p{font-size:13.5px;line-height:1.7;color:var(--ink);margin:0;}
+  .caption p b{color:var(--indigo);}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="brand">
+    <div class="brand-badge"></div>
+    <div>
+      <div class="brand-name">Rawnaq</div>
+      <div class="brand-sub">Flow Chart · Preview</div>
+    </div>
+  </div>
+
+  <div class="mode-toggle" id="modeToggle">
+    <button class="active" data-mode="org">Org Mode</button>
+    <button data-mode="process">Process Mode</button>
+  </div>
+
+  <div class="device-toggle" id="deviceToggle">
+    <button class="active" data-device="desktop" title="Desktop">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </button>
+    <button data-device="mobile" title="Mobile fallback">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="stage-label" id="stageLabel">ORG MODE</div>
+
+    <svg class="connectors" id="connectors"></svg>
+
+    <div class="canvas" id="canvas"></div>
+
+    <div class="mobile-list" id="mobileList"></div>
+
+    <div class="detail" id="detail"></div>
+  </div>
+</div>
+
+<div class="caption-row">
+  <div class="caption">
+    <h4>যা দেখছেন</h4>
+    <p>ওপরে দুটো মোড টগল করে দেখুন — <b>Org Mode</b> (হায়ারার্কি) আর <b>Process Mode</b> (ধাপে-ধাপে ফ্লো, ব্রাঞ্চ সহ)। নোডে ক্লিক করলে ডিটেইল পপ-আপ খুলবে। কানেক্টর লাইন ভিউপোর্টে এলে আঁকা হওয়ার মতো অ্যানিমেট হয়।</p>
+  </div>
+  <div class="caption">
+    <h4>মোবাইল ফলব্যাক</h4>
+    <p>ডান পাশের <b>মোবাইল আইকনে</b> ক্লিক করে দেখুন — বড় ডায়াগ্রাম ছোট স্ক্রিনে অটো-কোলাপ্স হয়ে একটা ইনডেন্টেড ভার্টিক্যাল লিস্টে রূপান্তরিত হয়, স্পেক-এ উল্লেখ করা রেসপন্সিভ বিহেভিয়ার অনুযায়ী।</p>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('connectors');
+const stage = document.getElementById('stage');
+const stageLabel = document.getElementById('stageLabel');
+const mobileList = document.getElementById('mobileList');
+const detail = document.getElementById('detail');
+
+// ---------- Data ----------
+const orgData = {
+  nodes: [
+    {id:'ceo', x:390, y:0,  title:'ফাউন্ডার / CEO', role:'Nuovotech Engineers', root:true, icon:'★', detail:'পুরো টিমের নেতৃত্ব ও ক্লায়েন্ট রিলেশন দেখেন।'},
+    {id:'eng', x:150, y:130, title:'ইঞ্জিনিয়ারিং হেড', role:'BIM & MEP', icon:'⚙', detail:'BIM মডেলিং, MEP/HVAC ডিজাইন টিম সুপারভাইজ করেন।'},
+    {id:'ops', x:390, y:130, title:'অপারেশনস হেড', role:'Project Delivery', icon:'◆', detail:'প্রজেক্ট টাইমলাইন ও ডেলিভারি কোঅর্ডিনেট করেন।'},
+    {id:'biz', x:630, y:130, title:'বিজনেস ডেভ', role:'Client Acquisition', icon:'▲', detail:'আন্তর্জাতিক AEC ক্লায়েন্ট আনার দায়িত্বে।'},
+    {id:'e1', x:60, y:260, title:'BIM মডেলার', role:'Team, 4', icon:'▪', detail:'৩D মডেলিং ও Point Cloud to CAD।'},
+    {id:'e2', x:230, y:260, title:'MEP ডিজাইনার', role:'Team, 3', icon:'▪', detail:'HVAC ও পাইপিং ডিজাইন।'},
+    {id:'o1', x:390, y:260, title:'প্রোজেক্ট ম্যানেজার', role:'Team, 2', icon:'▪', detail:'ক্লায়েন্ট মাইলস্টোন ট্র্যাকিং।'},
+  ],
+  edges:[['ceo','eng'],['ceo','ops'],['ceo','biz'],['eng','e1'],['eng','e2'],['ops','o1']]
+};
+
+const processData = {
+  nodes:[
+    {id:'start', x:20, y:120, title:'ইনকোয়ারি রিসিভ', role:'Step 1', icon:'✎', detail:'ক্লায়েন্ট থেকে RFQ/ব্রিফ আসে।'},
+    {id:'review', x:230, y:120, title:'স্কোপ রিভিউ', role:'Step 2', icon:'◎', detail:'টিম প্রজেক্ট স্কোপ ও ফিজিবিলিটি যাচাই করে।'},
+    {id:'decision', x:440, y:120, title:'বাজেট ফিট?', role:'Decision', icon:'?', detail:'বাজেট ও টাইমলাইন ম্যাচ করছে কিনা যাচাই।', decision:true},
+    {id:'yes', x:660, y:20, title:'প্রপোজাল পাঠানো', role:'Step 3A', icon:'✓', detail:'কাস্টম প্রপোজাল ও কোটেশন তৈরি।'},
+    {id:'no', x:660, y:220, title:'অল্টারনেটিভ স্কোপ', role:'Step 3B', icon:'↺', detail:'ছোট স্কোপ বা ফেজড ডেলিভারি সাজেস্ট করা।'},
+    {id:'final', x:870, y:120, title:'কিকঅফ', role:'Step 4', icon:'▶', detail:'সাইন-অফের পর প্রজেক্ট শুরু।'},
+  ],
+  edges:[['start','review'],['review','decision'],['decision','yes'],['decision','no'],['yes','final'],['no','final']]
+};
+
+let currentMode = 'org';
+let currentDevice = 'desktop';
+
+function nodeCenter(n, w=140,h=64){
+  return {cx:n.x+w/2, cy:n.y+h/2};
+}
+
+function render(mode){
+  currentMode = mode;
+  canvas.innerHTML = '';
+  svg.innerHTML = '';
+  detail.classList.remove('open');
+  const data = mode === 'org' ? orgData : processData;
+  stageLabel.textContent = mode === 'org' ? 'ORG MODE' : 'PROCESS MODE';
+
+  const w = 140;
+  data.nodes.forEach(n=>{
+    const el = document.createElement('div');
+    el.className = 'node' + (n.root ? ' root':'') + (n.decision ? ' decision':'');
+    el.style.left = n.x+'px';
+    el.style.top = n.y+'px';
+    el.style.width = w+'px';
+    el.innerHTML = `<div class="n-icon">${n.icon}</div><div class="n-title">${n.title}</div><div class="n-role">${n.role}</div>`;
+    el.addEventListener('click',(e)=> showDetail(e, n));
+    canvas.appendChild(el);
+  });
+
+  // edges as SVG paths
+  data.edges.forEach(([a,b])=>{
+    const na = data.nodes.find(x=>x.id===a);
+    const nb = data.nodes.find(x=>x.id===b);
+    const ca = nodeCenter(na); const cb = nodeCenter(nb);
+    const midX = (ca.cx+cb.cx)/2;
+    const d = mode==='org'
+      ? `M ${ca.cx} ${na.y+64} C ${ca.cx} ${na.y+64+30}, ${cb.cx} ${nb.y-30}, ${cb.cx} ${nb.y}`
+      : `M ${na.x+w} ${ca.cy} C ${midX} ${ca.cy}, ${midX} ${cb.cy}, ${nb.x} ${cb.cy}`;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    if(na.decision) path.classList.add('accent');
+    svg.appendChild(path);
+  });
+
+  // measure canvas bounds for svg viewbox
+  const maxX = Math.max(...data.nodes.map(n=>n.x)) + w + 20;
+  const maxY = Math.max(...data.nodes.map(n=>n.y)) + 100;
+  canvas.style.width = maxX+'px';
+  canvas.style.height = maxY+'px';
+  svg.setAttribute('viewBox', `0 0 ${maxX} ${maxY}`);
+  stage.style.minHeight = (maxY + 140) + 'px';
+
+  // animate in
+  requestAnimationFrame(()=>{
+    [...canvas.children].forEach((el,i)=>{
+      setTimeout(()=> el.classList.add('show'), 80*i);
+    });
+    setTimeout(()=>{
+      [...svg.querySelectorAll('path')].forEach((p,i)=>{
+        const len = p.getTotalLength();
+        p.style.setProperty('--len', len);
+        setTimeout(()=> p.classList.add('lit'), 120*i);
+      });
+    }, 200);
+  });
+
+  renderMobileList(data, mode);
+}
+
+function showDetail(e, n){
+  const rect = e.currentTarget.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+  detail.innerHTML = `<b>${n.title}</b><br>${n.detail}`;
+  detail.style.left = (rect.left - stageRect.left) + 'px';
+  detail.style.top = (rect.bottom - stageRect.top + 12) + 'px';
+  detail.classList.add('open');
+  e.stopPropagation();
+}
+document.addEventListener('click', ()=> detail.classList.remove('open'));
+
+function renderMobileList(data, mode){
+  mobileList.innerHTML = '';
+  if(mode === 'org'){
+    const levels = {ceo:0, eng:1, ops:1, biz:1, e1:2, e2:2, o1:2};
+    data.nodes.forEach(n=>{
+      const div = document.createElement('div');
+      div.className = 'mobile-item' + (n.root?' root':'') + (levels[n.id]===1?' indent-1':'') + (levels[n.id]===2?' indent-2':'');
+      div.innerHTML = `<div class="dot"></div><div class="m-text"><b>${n.title}</b><span>${n.role}</span></div>`;
+      mobileList.appendChild(div);
+    });
+  } else {
+    data.nodes.forEach(n=>{
+      const div = document.createElement('div');
+      div.className = 'mobile-item' + (n.decision?'':'');
+      div.innerHTML = `<div class="dot"></div><div class="m-text"><b>${n.title}</b><span>${n.role}</span></div>`;
+      mobileList.appendChild(div);
+    });
+  }
+}
+
+document.getElementById('modeToggle').addEventListener('click',(e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  [...e.currentTarget.children].forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render(btn.dataset.mode);
+});
+
+document.getElementById('deviceToggle').addEventListener('click',(e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  [...e.currentTarget.children].forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentDevice = btn.dataset.device;
+  stage.classList.toggle('mobile', currentDevice==='mobile');
+});
+
+render('org');
+</script>
+
+</body>
+</html>
