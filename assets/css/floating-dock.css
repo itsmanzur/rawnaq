@@ -255,3 +255,396 @@
         transition: none !important;
     }
 }
+
+/* ─────────────────────────────────────────────────────────────
+ * WHATSAPP CONTACT DOCK MODES STYLING
+ * ───────────────────────────────────────────────────────────── */
+.rawnaq-dock-container.rawnaq-whatsapp-dock-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    gap: 16px;
+    z-index: 99999;
+}
+
+/* Position specifics for WA Dock */
+.rawnaq-dock-container.rawnaq-whatsapp-dock-mode.pos-left {
+    align-items: flex-start;
+    left: var(--dock-offset, 20px);
+    right: auto;
+}
+
+.rawnaq-dock-container.rawnaq-whatsapp-dock-mode.pos-right {
+    align-items: flex-end;
+    right: var(--dock-offset, 20px);
+    left: auto;
+}
+
+/* Primary Trigger Button styling */
+.rawnaq-wa-main-trigger {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    color: #fff;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 100;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rawnaq-wa-main-trigger:hover {
+    transform: scale(1.08) rotate(5deg);
+}
+
+/* Glow Pulse Animation */
+.rawnaq-wa-main-trigger .pulse-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6);
+    animation: rawnaqPulse 2s infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes rawnaqPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+/* Status Indicator Dot */
+.rawnaq-wa-main-trigger .online-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    z-index: 10;
+}
+
+.rawnaq-wa-main-trigger.is-online .online-dot {
+    background-color: #22c55e; /* Green */
+}
+
+.rawnaq-wa-main-trigger.is-offline .online-dot {
+    background-color: #9ca3af; /* Gray */
+}
+
+/* Offline Badge text tag */
+.rawnaq-wa-main-trigger .offline-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* Secondary Channels tray */
+.rawnaq-wa-secondary-tray {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.6) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rawnaq-wa-secondary-tray.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
+}
+
+.rawnaq-sec-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #4b5563;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.rawnaq-sec-btn:hover {
+    transform: scale(1.08);
+    background: #f8fafc;
+}
+
+/* Greeting message bubble */
+.rawnaq-wa-greet {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    position: relative;
+    max-width: 240px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #1e293b;
+    z-index: 10;
+    animation: greetBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rawnaq-wa-greet.is-fadeout {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+    transition: all 0.3s ease;
+}
+
+@keyframes greetBounce {
+    0% {
+        opacity: 0;
+        transform: scale(0.6) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.rawnaq-wa-greet-close {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    font-size: 16px;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.rawnaq-wa-greet-close:hover {
+    color: #ef4444;
+}
+
+/* Multi-Agent Select Drawer */
+.rawnaq-wa-drawer {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 320px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8) translateY(30px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.rawnaq-dock-container.pos-left .rawnaq-wa-drawer {
+    left: 24px;
+    right: auto;
+}
+
+.rawnaq-wa-drawer.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
+}
+
+.rawnaq-wa-drawer-header {
+    background: #25d366; /* default branding, dynamically overwritten in CSS if needed */
+    padding: 16px 20px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rawnaq-wa-drawer-header h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.rawnaq-wa-drawer-close {
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.rawnaq-wa-agents-list {
+    padding: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.rawnaq-wa-agent-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.rawnaq-wa-agent-row:hover {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+}
+
+.rawnaq-wa-agent-row .agent-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid #e2e8f0;
+}
+
+.rawnaq-wa-agent-row .agent-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.rawnaq-wa-agent-row .agent-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.rawnaq-wa-agent-row .agent-role {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.rawnaq-wa-agent-row .agent-connect-icon {
+    font-size: 14px;
+    color: #25d366;
+    transition: transform 0.2s;
+}
+
+.rawnaq-wa-agent-row:hover .agent-connect-icon {
+    transform: translateX(4px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * DESKTOP QR CODE MODAL POPUP
+ * ───────────────────────────────────────────────────────────── */
+.rawnaq-wa-qr-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.rawnaq-wa-qr-modal.is-show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.rawnaq-wa-qr-content {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    transform: scale(0.85);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rawnaq-wa-qr-modal.is-show .rawnaq-wa-qr-content {
+    transform: scale(1);
+}
+
+.rawnaq-wa-qr-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-size: 22px;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.rawnaq-wa-qr-close:hover {
+    color: #ef4444;
+}
+
+.rawnaq-wa-qr-content h5 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.rawnaq-wa-qr-content p {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0 0 16px;
+}
+
+.rawnaq-wa-qr-code {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+    width: fit-content;
+    margin: 0 auto;
+    border: 1px solid #e2e8f0;
+}
+
+.rawnaq-wa-qr-code img {
+    max-width: 180px;
+    height: auto;
+}

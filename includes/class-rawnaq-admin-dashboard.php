@@ -272,13 +272,33 @@ class Rawnaq_Admin_Dashboard {
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card">
+                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
                             <h3>4. Floating Dock Menu</h3>
                             <p>A sticky action dock resembling macOS launch bars. Vanilla JS calculates cursor proximity distance to the icons, scaling nearest items exponentially. Tooltips overlay above each item on hover.</p>
                             <h4>Usage:</h4>
                             <ul>
                                 <li><strong>Elementor:</strong> Drag "Floating Dock Menu" widget. Add action link repeaters (home, email, generic settings). Select Alignment Position: Bottom Center, Sidebar Left, or Sidebar Right.</li>
                                 <li><strong>Gutenberg:</strong> Insert "Floating Dock Menu" block. Set position and add action links in block sidebar.</li>
+                            </ul>
+                        </div>
+
+                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
+                            <h3>5. Flow Chart</h3>
+                            <p>Interactive tree and process workflow charts. Supports Org tree (vertical structure), Process flow (horizontal/vertical lines), and Freeform modes (manual X-Y nodes plotting). Nodes can be styled into Rectangles, Circles, and Hexagons, and desktop users can click and drag the kancvas to pan.</p>
+                            <h4>Usage:</h4>
+                            <ul>
+                                <li><strong>Elementor:</strong> Drag "Flow Chart" widget. Map parent IDs inside the repeater nodes. Choose shape options, layout styles, and colors in the style tab.</li>
+                                <li><strong>Gutenberg:</strong> Search and insert "Flow Chart (Rawnaq)" block. Inspector controls allow dragging and arranging nodes coordinates, selecting shapes, and customizing accent colors.</li>
+                            </ul>
+                        </div>
+
+                        <div class="rawnaq-doc-card">
+                            <h3>6. Scroll Progress + TOC</h3>
+                            <p>Dynamic page scroll indicator bar and ring. Automatically scans page headings (H2, H3, H4) or uses manual entries to construct a smart Table of Contents with collapsible sub-sections, headings search filters, live remaining reading time tracker, and a radial action floating menu on mobile.</p>
+                            <h4>Usage:</h4>
+                            <ul>
+                                <li><strong>Elementor:</strong> Drag "Scroll Progress + TOC" widget. Configure progress style (Bar, Ring, or Both). Toggle mobile FAB radial menus and reading progress counters under settings.</li>
+                                <li><strong>Gutenberg:</strong> Insert "Scroll Progress + TOC (Rawnaq)" block. Edit heading scopes, colors, and border radii in the sidebar panel.</li>
                             </ul>
                         </div>
                     </div>

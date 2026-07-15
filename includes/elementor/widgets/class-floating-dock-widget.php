@@ -11,12 +11,209 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
     public function get_categories() { return [ 'rawnaq' ]; }
 
     public function get_style_depends()  { return [ 'rawnaq-floating-dock', 'dashicons' ]; }
-    public function get_script_depends() { return [ 'rawnaq-floating-dock' ]; }
+    public function get_script_depends() { return [ 'rawnaq-floating-dock', 'rawnaq-qrcode' ]; }
 
     protected function register_controls() {
+        $this->start_controls_section( 's_whatsapp_mode', [
+            'label' => esc_html__( 'WhatsApp Contact Mode', 'rawnaq' ),
+            'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+        ] );
+
+        $this->add_control( 'whatsapp_mode', [
+            'label'        => esc_html__( 'Enable WhatsApp Mode', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'no',
+        ] );
+
+        $this->add_control( 'primary_channel', [
+            'label'   => esc_html__( 'Primary Floating Channel', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'whatsapp',
+            'options' => [
+                'whatsapp'  => esc_html__( 'WhatsApp Chat', 'rawnaq' ),
+                'call'      => esc_html__( 'Phone Call', 'rawnaq' ),
+                'messenger' => esc_html__( 'FB Messenger', 'rawnaq' ),
+            ],
+            'condition' => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $ar = new \Elementor\Repeater();
+        $ar->add_control( 'agent_name', [
+            'label'       => esc_html__( 'Agent / Department Name', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => 'Sales Support',
+            'label_block' => true,
+        ] );
+        $ar->add_control( 'agent_role', [
+            'label'       => esc_html__( 'Role Label', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => 'Online Agent',
+        ] );
+        $ar->add_control( 'agent_number', [
+            'label'       => esc_html__( 'WhatsApp Number', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => '8801700000000',
+            'description' => esc_html__( 'Include country code without + or spaces', 'rawnaq' ),
+        ] );
+        $ar->add_control( 'agent_avatar', [
+            'label'   => esc_html__( 'Avatar Photo', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::MEDIA,
+        ] );
+        $ar->add_control( 'agent_msg', [
+            'label'       => esc_html__( 'Prefilled Message', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXTAREA,
+            'placeholder' => 'Hello, I want to inquire about...',
+        ] );
+
+        $this->add_control( 'whatsapp_agents', [
+            'label'       => esc_html__( 'WhatsApp Agents', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::REPEATER,
+            'fields'      => $ar->get_controls(),
+            'default'     => [
+                [
+                    'agent_name'   => 'Customer Support',
+                    'agent_role'   => 'Live Support',
+                    'agent_number' => '8801700000000',
+                ]
+            ],
+            'title_field' => '{{{ agent_name }}}',
+            'condition'   => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->add_control( 'sec_call', [
+            'label'       => esc_html__( 'Secondary Phone Number', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => '+8801700000000',
+            'condition'   => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+        $this->add_control( 'sec_messenger', [
+            'label'       => esc_html__( 'Secondary Messenger User', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => 'username',
+            'description' => 'e.g. rawnaq.support',
+            'condition'   => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+        $this->add_control( 'sec_email', [
+            'label'       => esc_html__( 'Secondary Email Address', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => 'support@example.com',
+            'condition'   => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+        $this->add_control( 'sec_telegram', [
+            'label'       => esc_html__( 'Secondary Telegram User', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => 'telegram_username',
+            'condition'   => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->add_control( 'timezone', [
+            'label'       => esc_html__( 'Business Timezone', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::SELECT,
+            'default'     => 'UTC+6',
+            'options'     => [
+                'UTC+0'  => 'UTC+0 (GMT)',
+                'UTC+1'  => 'UTC+1 (Europe)',
+                'UTC+5.5' => 'UTC+5:30 (India)',
+                'UTC+6'  => 'UTC+6 (Bangladesh)',
+                'UTC+7'  => 'UTC+7 (Jakarta)',
+                'UTC+8'  => 'UTC+8 (Singapore)',
+            ],
+            'condition'   => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->add_control( 'schedule_heading', [
+            'label'     => esc_html__( 'Business Weekly Schedule', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::HEADING,
+            'separator' => 'before',
+            'condition' => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $days = [ 'mon' => 'Monday', 'tue' => 'Tuesday', 'wed' => 'Wednesday', 'thu' => 'Thursday', 'fri' => 'Friday', 'sat' => 'Saturday', 'sun' => 'Sunday' ];
+        foreach ( $days as $key => $name ) {
+            $this->add_control( $key . '_enabled', [
+                'label'        => esc_html__( 'Active ' . $name, 'rawnaq' ),
+                'type'         => \Elementor\Controls_Manager::SWITCHER,
+                'return_value' => 'yes',
+                'default'      => 'yes',
+                'condition'    => [ 'whatsapp_mode' => 'yes' ],
+            ] );
+            $this->add_control( $key . '_open', [
+                'label'     => esc_html__( $name . ' Open Time', 'rawnaq' ),
+                'type'      => \Elementor\Controls_Manager::TEXT,
+                'default'   => '09:00',
+                'placeholder' => 'HH:MM (24h)',
+                'condition' => [ 'whatsapp_mode' => 'yes', $key . '_enabled' => 'yes' ],
+            ] );
+            $this->add_control( $key . '_close', [
+                'label'     => esc_html__( $name . ' Close Time', 'rawnaq' ),
+                'type'      => \Elementor\Controls_Manager::TEXT,
+                'default'   => '18:00',
+                'placeholder' => 'HH:MM (24h)',
+                'condition' => [ 'whatsapp_mode' => 'yes', $key . '_enabled' => 'yes' ],
+            ] );
+        }
+
+        $this->add_control( 'off_hours_behavior', [
+            'label'   => esc_html__( 'Off-hours Behavior', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'offline_badge',
+            'options' => [
+                'hide'          => esc_html__( 'Hide Dock Completely', 'rawnaq' ),
+                'offline_badge' => esc_html__( 'Show with Offline Badge', 'rawnaq' ),
+                'redirect'      => esc_html__( 'Redirect Clicks to URL', 'rawnaq' ),
+            ],
+            'separator' => 'before',
+            'condition' => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->add_control( 'off_hours_redirect_url', [
+            'label'       => esc_html__( 'Offline Redirect URL / Contact link', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => 'https://example.com/contact',
+            'condition'   => [ 'whatsapp_mode' => 'yes', 'off_hours_behavior' => 'redirect' ],
+        ] );
+
+        $this->add_control( 'qr_fallback', [
+            'label'        => esc_html__( 'Enable Desktop QR Fallback', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->add_control( 'trigger_delay', [
+            'label'   => esc_html__( 'Trigger Delay (sec)', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::NUMBER,
+            'default' => 0,
+            'min'     => 0,
+            'max'     => 60,
+            'condition' => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->add_control( 'trigger_scroll', [
+            'label'   => esc_html__( 'Trigger Scroll (%)', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::NUMBER,
+            'default' => 0,
+            'min'     => 0,
+            'max'     => 100,
+            'condition' => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->add_control( 'greeting_text', [
+            'label'       => esc_html__( 'Greeting Bubble Message', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => esc_html__( 'আসসালামু আলাইকুম, সাহায্য লাগবে?', 'rawnaq' ),
+            'label_block' => true,
+            'condition'   => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
+        $this->end_controls_section();
+
         $this->start_controls_section( 's_content', [
             'label' => esc_html__( 'Dock Items', 'rawnaq' ),
             'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+            'condition' => [ 'whatsapp_mode!' => 'yes' ],
         ] );
 
         $r = new \Elementor\Repeater();
@@ -104,6 +301,17 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
         ] );
 
+        $this->add_control( 'position_wa', [
+            'label'   => esc_html__( 'Dock Position', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'right',
+            'options' => [
+                'left'   => esc_html__( 'Bottom Left', 'rawnaq' ),
+                'right'  => esc_html__( 'Bottom Right', 'rawnaq' ),
+            ],
+            'condition' => [ 'whatsapp_mode' => 'yes' ],
+        ] );
+
         $this->add_control( 'position', [
             'label'   => esc_html__( 'Dock Position', 'rawnaq' ),
             'type'    => \Elementor\Controls_Manager::SELECT,
@@ -113,6 +321,7 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
                 'left'   => esc_html__( 'Sidebar Left', 'rawnaq' ),
                 'right'  => esc_html__( 'Sidebar Right', 'rawnaq' ),
             ],
+            'condition' => [ 'whatsapp_mode!' => 'yes' ],
         ] );
 
         $this->add_responsive_control( 'offset', [
@@ -315,10 +524,38 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
         }
     }
 
+    private function get_weekly_schedule_payload( $s ) {
+        $out = [];
+        $days = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ];
+        foreach ( $days as $day ) {
+            $out[ $day ] = [
+                'enabled' => ( $s[ $day . '_enabled' ] ?? 'yes' ) === 'yes',
+                'open'    => $s[ $day . '_open' ] ?? '09:00',
+                'close'   => $s[ $day . '_close' ] ?? '18:00',
+            ];
+        }
+        return $out;
+    }
+
+    private function get_whatsapp_agents_payload( $agents ) {
+        $out = [];
+        foreach ( $agents as $a ) {
+            $out[] = [
+                'name'   => sanitize_text_field( $a['agent_name'] ?? '' ),
+                'role'   => sanitize_text_field( $a['agent_role'] ?? '' ),
+                'number' => sanitize_text_field( $a['agent_number'] ?? '' ),
+                'avatar' => ! empty( $a['agent_avatar']['url'] ) ? esc_url_raw( $a['agent_avatar']['url'] ) : '',
+                'msg'    => sanitize_text_field( $a['agent_msg'] ?? '' ),
+            ];
+        }
+        return $out;
+    }
+
     protected function render() {
         $s             = $this->get_settings_for_display();
+        $is_wa_mode    = ( $s['whatsapp_mode'] ?? '' ) === 'yes';
         $items         = $s['dock_items'] ?? [];
-        $pos           = $s['position'] ?? 'bottom';
+        $pos           = $is_wa_mode ? ( $s['position_wa'] ?? 'right' ) : ( $s['position'] ?? 'bottom' );
         $hide_mobile   = ( $s['hide_mobile'] ?? '' ) === 'yes';
         $mobile_labels = ( $s['mobile_labels'] ?? '' ) === 'yes';
         $magnify       = ( $s['magnify'] ?? 'yes' ) === 'yes';
@@ -326,18 +563,45 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
         $item_size     = isset( $s['icon_size']['size'] ) ? intval( $s['icon_size']['size'] ) : 48;
 
         $classes = [ 'rawnaq-dock-container', 'pos-' . sanitize_html_class( $pos ) ];
+        if ( $is_wa_mode ) {
+            $classes[] = 'rawnaq-whatsapp-dock-mode';
+        }
         if ( $hide_mobile ) {
             $classes[] = 'hide-mobile';
         }
         if ( $mobile_labels ) {
             $classes[] = 'mobile-labels';
         }
+
+        $wa_cfg = [];
+        if ( $is_wa_mode ) {
+            $wa_cfg = [
+                'whatsappMode'      => true,
+                'primaryChannel'    => sanitize_key( $s['primary_channel'] ?? 'whatsapp' ),
+                'agents'            => $this->get_whatsapp_agents_payload( $s['whatsapp_agents'] ?? [] ),
+                'secCall'           => sanitize_text_field( $s['sec_call'] ?? '' ),
+                'secMessenger'      => sanitize_text_field( $s['sec_messenger'] ?? '' ),
+                'secEmail'          => sanitize_text_field( $s['sec_email'] ?? '' ),
+                'secTelegram'       => sanitize_text_field( $s['sec_telegram'] ?? '' ),
+                'timezone'          => sanitize_text_field( $s['timezone'] ?? 'UTC+6' ),
+                'schedule'          => $this->get_weekly_schedule_payload( $s ),
+                'offHoursBehavior'  => sanitize_key( $s['off_hours_behavior'] ?? 'offline_badge' ),
+                'offHoursRedirect'  => esc_url_raw( $s['off_hours_redirect_url'] ?? '' ),
+                'qrFallback'        => ( $s['qr_fallback'] ?? 'yes' ) === 'yes',
+                'triggerDelay'      => absint( $s['trigger_delay'] ?? 0 ),
+                'triggerScroll'     => absint( $s['trigger_scroll'] ?? 0 ),
+                'greetingText'      => sanitize_text_field( $s['greeting_text'] ?? '' ),
+            ];
+        }
         ?>
         <nav class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
              aria-label="<?php echo esc_attr__( 'Floating dock', 'rawnaq' ); ?>"
              data-magnify="<?php echo $magnify ? '1' : '0'; ?>"
              data-max-scale="<?php echo esc_attr( $max_scale ); ?>"
-             data-base-size="<?php echo esc_attr( $item_size ); ?>">
+             data-base-size="<?php echo esc_attr( $item_size ); ?>"
+             <?php if ( $is_wa_mode ) : ?>
+             data-wa-dock="<?php echo esc_attr( wp_json_encode( $wa_cfg ) ); ?>"
+             <?php endif; ?>>
             <?php foreach ( $items as $item ) :
                 $label = $item['label'] ?? '';
                 $badge = trim( (string) ( $item['badge'] ?? '' ) );
@@ -368,13 +632,16 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
     protected function content_template() {
         ?>
         <#
-        var pos = settings.position || 'bottom';
+        var isWa = settings.whatsapp_mode === 'yes';
+        var pos = isWa ? ( settings.position_wa || 'right' ) : ( settings.position || 'bottom' );
         var hideMobile = settings.hide_mobile === 'yes';
         var mobileLabels = settings.mobile_labels === 'yes';
         var magnify = settings.magnify === 'yes';
         var maxScale = ( settings.max_scale && settings.max_scale.size ) ? settings.max_scale.size : 1.6;
         var baseSize = ( settings.icon_size && settings.icon_size.size ) ? settings.icon_size.size : 48;
+        
         var classes = 'rawnaq-dock-container pos-' + pos;
+        if ( isWa ) { classes += ' rawnaq-whatsapp-dock-mode'; }
         if ( hideMobile ) { classes += ' hide-mobile'; }
         if ( mobileLabels ) { classes += ' mobile-labels'; }
         #>
@@ -383,7 +650,16 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
              data-max-scale="{{ maxScale }}"
              data-base-size="{{ baseSize }}">
             <#
-            if ( settings.dock_items ) {
+            if ( isWa ) {
+                #>
+                <a class="rawnaq-dock-item active-wa-trigger" href="#" style="--hover-color: #25d366;">
+                    <span class="rawnaq-dock-icon">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                    </span>
+                    <span class="rawnaq-dock-tooltip">{{ settings.greeting_text || 'Contact Us' }}</span>
+                </a>
+                <#
+            } else if ( settings.dock_items ) {
                 _.each( settings.dock_items, function( item ) {
                     var link = ( item.link && item.link.url ) ? item.link.url : '#';
                     var iconHTML = elementor.helpers.renderIcon( view, item.selected_icon, { 'aria-hidden': true }, 'i', 'object' );

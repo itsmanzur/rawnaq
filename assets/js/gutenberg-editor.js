@@ -11,6 +11,7 @@
     var Button = components.Button;
     var SelectControl = components.SelectControl;
     var ToggleControl = components.ToggleControl;
+    var ColorPalette = components.ColorPalette;
     var useEffect = element.useEffect;
     var useRef = element.useRef;
     var Fragment = element.Fragment;
@@ -728,7 +729,10 @@
                 margin: '0 auto'
             };
 
-            var className = 'rawnaq-dock-container pos-' + (attributes.position || 'bottom') +
+            var isWaMode = !!attributes.whatsappMode;
+            var activePos = isWaMode ? (attributes.positionWa || 'right') : (attributes.position || 'bottom');
+            var className = 'rawnaq-dock-container pos-' + activePos +
+                (isWaMode ? ' rawnaq-whatsapp-dock-mode' : '') +
                 (attributes.hideMobile ? ' hide-mobile' : '') +
                 (attributes.mobileLabels ? ' mobile-labels' : '');
 
@@ -772,23 +776,55 @@
                 );
             });
 
-            var previewItems = items.map(function(item, idx) {
-                return el('a', {
-                    className: 'rawnaq-dock-item',
-                    key: idx,
-                    href: '#',
-                    onClick: function(e) { e.preventDefault(); },
-                    style: { '--hover-color': item.color || '#6366f1' },
-                    'aria-label': item.label || ''
-                },
-                    el('span', { className: 'rawnaq-dock-icon' },
-                        el('span', { className: 'dashicons ' + (item.icon || 'dashicons-admin-generic'), 'aria-hidden': true })
-                    ),
-                    item.badge ? el('span', { className: 'rawnaq-dock-badge' }, item.badge) : null,
-                    item.label ? el('span', { className: 'rawnaq-dock-tooltip' }, item.label) : null,
-                    item.label ? el('span', { className: 'rawnaq-dock-mobile-label' }, item.label) : null
-                );
-            });
+            var previewItems;
+            if (isWaMode) {
+                var waIconClass = 'dashicons-whatsapp';
+                if (attributes.primaryChannel === 'call') {
+                    waIconClass = 'dashicons-phone';
+                } else if (attributes.primaryChannel === 'messenger') {
+                    waIconClass = 'dashicons-admin-comments';
+                }
+                var waBrandColor = '#25d366';
+                if (attributes.primaryChannel === 'call') {
+                    waBrandColor = '#3b82f6';
+                } else if (attributes.primaryChannel === 'messenger') {
+                    waBrandColor = '#a855f7';
+                }
+
+                previewItems = [
+                    el('a', {
+                        className: 'rawnaq-dock-item active-wa-trigger',
+                        key: 'wa-primary',
+                        href: '#',
+                        onClick: function(e) { e.preventDefault(); },
+                        style: { '--hover-color': waBrandColor },
+                        'aria-label': attributes.greetingText || 'Contact Us'
+                    },
+                        el('span', { className: 'rawnaq-dock-icon' },
+                            el('span', { className: 'dashicons ' + waIconClass, 'aria-hidden': true })
+                        ),
+                        el('span', { className: 'rawnaq-dock-tooltip' }, attributes.greetingText || 'Contact Us')
+                    )
+                ];
+            } else {
+                previewItems = items.map(function(item, idx) {
+                    return el('a', {
+                        className: 'rawnaq-dock-item',
+                        key: idx,
+                        href: '#',
+                        onClick: function(e) { e.preventDefault(); },
+                        style: { '--hover-color': item.color || '#6366f1' },
+                        'aria-label': item.label || ''
+                    },
+                        el('span', { className: 'rawnaq-dock-icon' },
+                            el('span', { className: 'dashicons ' + (item.icon || 'dashicons-admin-generic'), 'aria-hidden': true })
+                        ),
+                        item.badge ? el('span', { className: 'rawnaq-dock-badge' }, item.badge) : null,
+                        item.label ? el('span', { className: 'rawnaq-dock-tooltip' }, item.label) : null,
+                        item.label ? el('span', { className: 'rawnaq-dock-mobile-label' }, item.label) : null
+                    );
+                });
+            }
 
             return el(Fragment, {},
                 el(InspectorControls, {},
@@ -888,10 +924,23 @@
         attributes: {
             mode: { type: 'string', default: 'org' },
             connector: { type: 'string', default: 'curved' },
+            direction: { type: 'string', default: 'tb' },
+            shape: { type: 'string', default: 'rect' },
             nodesJson: {
                 type: 'string',
-                default: '[{"id":"ceo","parent":"","title":"Founder / CEO","role":"Leadership","icon":"★","detail":"Leads the company.","link":"","decision":false},{"id":"eng","parent":"ceo","title":"Engineering","role":"Product","icon":"⚙","detail":"Engineering roadmap.","link":"","decision":false},{"id":"ops","parent":"ceo","title":"Operations","role":"Delivery","icon":"◆","detail":"Project delivery.","link":"","decision":false},{"id":"e1","parent":"eng","title":"Frontend","role":"Team","icon":"▪","detail":"UI work.","link":"","decision":false}]'
-            }
+                default: '[{"id":"ceo","parent":"","title":"Founder / CEO","role":"Leadership","icon":"★","detail":"Leads the company.","link":"","decision":false,"x_pos":0,"y_pos":0,"badge":"","status":"default"}]'
+            },
+            accentColor:    { type: 'string', default: '#FBBF24' },
+            rootColorFrom:  { type: 'string', default: '#4338CA' },
+            rootColorTo:    { type: 'string', default: '#7C3AED' },
+            lineColor:      { type: 'string', default: '#E6E2F0' },
+            nodeBg:         { type: 'string', default: '#ffffff' },
+            nodeRadius:     { type: 'number', default: 14 },
+            dataSource:     { type: 'string', default: 'manual' },
+            sheetUrl:       { type: 'string', default: '' },
+            visualPreset:   { type: 'string', default: 'default' },
+            showSearch:     { type: 'boolean', default: false },
+            enableCollapse: { type: 'boolean', default: true }
         },
         edit: function(props) {
             var attributes = props.attributes;
@@ -912,7 +961,12 @@
             var cfg = {
                 mode: attributes.mode || 'org',
                 connector: attributes.connector || 'curved',
-                nodes: nodes
+                nodes: nodes,
+                direction: attributes.direction || 'tb',
+                shape: attributes.shape || 'rect',
+                visualPreset: attributes.visualPreset || 'default',
+                showSearch: !!attributes.showSearch,
+                enableCollapse: !!attributes.enableCollapse
             };
             var flowAttr = encodeURIComponent(JSON.stringify(cfg));
 
@@ -926,7 +980,7 @@
                     }
                 }, 80);
                 return function() { clearTimeout(t); };
-            }, [attributes.nodesJson, attributes.mode, attributes.connector, flowAttr]);
+            }, [attributes.nodesJson, attributes.mode, attributes.connector, attributes.direction, attributes.shape, attributes.accentColor, attributes.rootColorFrom, attributes.rootColorTo, attributes.lineColor, attributes.nodeBg, attributes.nodeRadius, attributes.dataSource, attributes.sheetUrl, attributes.visualPreset, attributes.showSearch, attributes.enableCollapse, flowAttr]);
 
             var fields = nodes.map(function(node, idx) {
                 return el('div', { key: idx, style: { background: '#f3f4f6', padding: '10px', marginBottom: '10px', borderRadius: '8px' } },
@@ -935,9 +989,45 @@
                     el(TextControl, { label: 'Parent ID', value: node.parent || '', onChange: function(v) { patchNode(idx, { parent: v }); } }),
                     el(TextControl, { label: 'Title', value: node.title || '', onChange: function(v) { patchNode(idx, { title: v }); } }),
                     el(TextControl, { label: 'Role / Subtitle', value: node.role || '', onChange: function(v) { patchNode(idx, { role: v }); } }),
-                    el(TextControl, { label: 'Icon (emoji or dashicons-*)', value: node.icon || '', onChange: function(v) { patchNode(idx, { icon: v }); } }),
+                    el(SelectControl, {
+                        label: 'Select Icon',
+                        value: node.icon || '●',
+                        options: [
+                            { label: 'Default Dot', value: '●' },
+                            { label: 'Leader Star', value: '★' },
+                            { label: 'Engineering Gear', value: 'dashicons-admin-generic' },
+                            { label: 'Analytics Chart', value: 'dashicons-chart-area' },
+                            { label: 'Team Group', value: 'dashicons-admin-users' },
+                            { label: 'Sketch Book', value: 'dashicons-welcome-write-blog' },
+                            { label: 'Check Milestone', value: 'dashicons-yes' },
+                            { label: 'Heart Favorite', value: 'dashicons-heart' },
+                            { label: 'Custom (type below)', value: 'custom' }
+                        ],
+                        onChange: function(v) { patchNode(idx, { icon: v }); }
+                    }),
+                    el(TextControl, {
+                        label: 'Custom Icon Class or Emoji',
+                        value: node.icon || '',
+                        onChange: function(v) { patchNode(idx, { icon: v }); }
+                    }),
                     el(TextareaControl, { label: 'Detail', value: node.detail || '', onChange: function(v) { patchNode(idx, { detail: v }); } }),
                     el(TextControl, { label: 'Link', value: node.link || '', onChange: function(v) { patchNode(idx, { link: v }); } }),
+                    el(TextControl, {
+                        label: 'Badge Label Tag',
+                        value: node.badge || '',
+                        onChange: function(v) { patchNode(idx, { badge: v }); }
+                    }),
+                    el(SelectControl, {
+                        label: 'Badge Accent Status',
+                        value: node.status || 'default',
+                        options: [
+                            { label: 'Standard (Gray)', value: 'default' },
+                            { label: 'Success (Green)', value: 'success' },
+                            { label: 'Warning (Orange)', value: 'warning' },
+                            { label: 'Danger (Red)', value: 'danger' }
+                        ],
+                        onChange: function(v) { patchNode(idx, { status: v }); }
+                    }),
                     el(ToggleControl, {
                         label: 'Decision node',
                         checked: !!node.decision,
@@ -954,13 +1044,59 @@
                 el(InspectorControls, {},
                     el(PanelBody, { title: 'Layout', initialOpen: true },
                         el(SelectControl, {
+                            label: 'Data Source',
+                            value: attributes.dataSource || 'manual',
+                            options: [
+                                { label: 'Manual Nodes Repeater', value: 'manual' },
+                                { label: 'WordPress Site Users', value: 'wp_users' },
+                                { label: 'Google Sheet CSV Sync', value: 'google_sheet' }
+                            ],
+                            onChange: function(v) { setAttributes({ dataSource: v }); }
+                        }),
+                        (attributes.dataSource === 'google_sheet') && el(TextControl, {
+                            label: 'Google Sheet CSV URL',
+                            value: attributes.sheetUrl || '',
+                            onChange: function(v) { setAttributes({ sheetUrl: v }); }
+                        }),
+                        el(SelectControl, {
                             label: 'Mode',
                             value: attributes.mode || 'org',
                             options: [
                                 { label: 'Org (tree)', value: 'org' },
-                                { label: 'Process (flow)', value: 'process' }
+                                { label: 'Process (flow)', value: 'process' },
+                                { label: 'Freeform (manual X-Y)', value: 'freeform' }
                             ],
                             onChange: function(v) { setAttributes({ mode: v }); }
+                        }),
+                        (attributes.mode !== 'freeform') && el(SelectControl, {
+                            label: 'Direction',
+                            value: attributes.direction || 'tb',
+                            options: [
+                                { label: 'Top to Bottom', value: 'tb' },
+                                { label: 'Left to Right', value: 'lr' },
+                                { label: 'Right to Left', value: 'rl' }
+                            ],
+                            onChange: function(v) { setAttributes({ direction: v }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Node Shape',
+                            value: attributes.shape || 'rect',
+                            options: [
+                                { label: 'Rounded Rectangle', value: 'rect' },
+                                { label: 'Circle', value: 'circle' },
+                                { label: 'Hexagon', value: 'hexagon' }
+                            ],
+                            onChange: function(v) { setAttributes({ shape: v }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Theme Preset',
+                            value: attributes.visualPreset || 'default',
+                            options: [
+                                { label: 'Corporate Solid', value: 'default' },
+                                { label: 'SaaS Glassmorphic', value: 'glass' },
+                                { label: 'Retro Technical Grid', value: 'retro' }
+                            ],
+                            onChange: function(v) { setAttributes({ visualPreset: v }); }
                         }),
                         el(SelectControl, {
                             label: 'Connector',
@@ -972,7 +1108,55 @@
                                 { label: 'Dashed', value: 'dashed' }
                             ],
                             onChange: function(v) { setAttributes({ connector: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Search Bar',
+                            checked: !!attributes.showSearch,
+                            onChange: function(v) { setAttributes({ showSearch: !!v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Enable Collapsible Branches',
+                            checked: !!attributes.enableCollapse,
+                            onChange: function(v) { setAttributes({ enableCollapse: !!v }); }
                         })
+                    ),
+                    el(PanelBody, { title: 'Styles & Colors', initialOpen: false },
+                        el('div', { style: { marginBottom: '15px' } },
+                            el('label', { style: { display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 'bold' } }, 'Line Color'),
+                            el(ColorPalette, {
+                                value: attributes.lineColor,
+                                onChange: function(v) { setAttributes({ lineColor: v || '#E6E2F0' }); }
+                            })
+                        ),
+                        el('div', { style: { marginBottom: '15px' } },
+                            el('label', { style: { display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 'bold' } }, 'Accent / Glow Color'),
+                            el(ColorPalette, {
+                                value: attributes.accentColor,
+                                onChange: function(v) { setAttributes({ accentColor: v || '#FBBF24' }); }
+                            })
+                        ),
+                        el('div', { style: { marginBottom: '15px' } },
+                            el('label', { style: { display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 'bold' } }, 'Root Gradient From'),
+                            el(ColorPalette, {
+                                value: attributes.rootColorFrom,
+                                onChange: function(v) { setAttributes({ rootColorFrom: v || '#4338CA' }); }
+                            })
+                        ),
+                        el('div', { style: { marginBottom: '15px' } },
+                            el('label', { style: { display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 'bold' } }, 'Root Gradient To'),
+                            el(ColorPalette, {
+                                value: attributes.rootColorTo,
+                                onChange: function(v) { setAttributes({ rootColorTo: v || '#7C3AED' }); }
+                            })
+                        ),
+                        el('div', { style: { marginBottom: '15px' } },
+                            el('label', { style: { display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 'bold' } }, 'Node Background'),
+                            el(ColorPalette, {
+                                value: attributes.nodeBg,
+                                onChange: function(v) { setAttributes({ nodeBg: v || '#ffffff' }); }
+                            })
+                        ),
+                        el(RangeControl, { label: 'Node Border Radius (px)', value: attributes.nodeRadius, min: 0, max: 40, onChange: function(v) { setAttributes({ nodeRadius: v }); } })
                     ),
                     el(PanelBody, { title: 'Nodes', initialOpen: true },
                         fields,
@@ -987,17 +1171,29 @@
                                     icon: '●',
                                     detail: '',
                                     link: '',
-                                    decision: false
+                                    decision: false,
+                                    x_pos: 0,
+                                    y_pos: 0,
+                                    badge: '',
+                                    status: 'default'
                                 }));
                             }
                         }, '+ Add Node')
                     )
                 ),
                 el('div', {
-                    className: 'rawnaq-flow-chart',
+                    className: 'rawnaq-flow-chart preset-' + (attributes.visualPreset || 'default'),
                     'data-flow': flowAttr,
                     ref: chartRef,
-                    style: { minHeight: '200px' }
+                    style: {
+                        minHeight: '200px',
+                        '--fc-amber': attributes.accentColor || '#FBBF24',
+                        '--fc-indigo': attributes.rootColorFrom || '#4338CA',
+                        '--fc-violet': attributes.rootColorTo || '#7C3AED',
+                        '--fc-line': attributes.lineColor || '#E6E2F0',
+                        '--fc-panel': attributes.nodeBg || '#ffffff',
+                        '--fc-radius': (attributes.nodeRadius || 14) + 'px'
+                    }
                 },
                     el('div', { className: 'rawnaq-flow-stage is-responsive' })
                 )
@@ -1025,7 +1221,9 @@
             readingTime: { type: 'boolean', default: true },
             showPercent: { type: 'boolean', default: true },
             mobileCollapse: { type: 'boolean', default: true },
-            manualJson: { type: 'string', default: '[]' }
+            manualJson: { type: 'string', default: '[]' },
+            collapseSubs: { type: 'boolean', default: false },
+            showSearch: { type: 'boolean', default: false }
         },
         edit: function(props) {
             var attributes = props.attributes;
@@ -1142,6 +1340,16 @@
                             label: 'Mobile FAB',
                             checked: attributes.mobileCollapse !== false,
                             onChange: function(v) { setAttributes({ mobileCollapse: !!v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Collapse Sub-headings',
+                            checked: !!attributes.collapseSubs,
+                            onChange: function(v) { setAttributes({ collapseSubs: !!v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Search Bar',
+                            checked: !!attributes.showSearch,
+                            onChange: function(v) { setAttributes({ showSearch: !!v }); }
                         })
                     ),
                     attributes.source === 'manual' ? el(PanelBody, { title: 'Manual Items', initialOpen: false },

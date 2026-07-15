@@ -284,3 +284,241 @@
         stroke-dashoffset: 0;
     }
 }
+
+/* --- Rawnaq Flow Chart Shapes & Pan Style upgrades --- */
+.rawnaq-flow-stage {
+    cursor: grab;
+    user-select: none;
+}
+
+.rawnaq-flow-stage.is-dragging {
+    cursor: grabbing;
+}
+
+.rawnaq-flow-node.shape-circle {
+    border-radius: 50% !important;
+    aspect-ratio: 1 / 1;
+    height: var(--fc-node-w);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+}
+
+.rawnaq-flow-node.shape-circle .rawnaq-flow-icon {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rawnaq-flow-node.shape-hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    aspect-ratio: 1.15 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+    border: none !important;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+}
+
+.rawnaq-flow-node.shape-hexagon.is-root {
+    background: linear-gradient(135deg, var(--fc-indigo), var(--fc-violet));
+    color: #fff;
+}
+
+.rawnaq-flow-node.shape-hexagon.is-decision {
+    background: var(--fc-amber-soft);
+}
+
+.rawnaq-flow-node.shape-hexagon .rawnaq-flow-icon {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- Rawnaq Flow Chart Search Inputs --- */
+.rawnaq-flow-search-wrap {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 24px;
+    position: relative;
+}
+
+.rawnaq-flow-search-input {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid var(--fc-line);
+    border-radius: 14px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fff;
+}
+
+.rawnaq-flow-search-input:focus {
+    border-color: var(--fc-indigo);
+    box-shadow: 0 4px 12px rgba(67, 56, 202, 0.08);
+}
+
+/* --- Search Fading & Highlighting --- */
+.rawnaq-flow-node.is-faded {
+    opacity: 0.15 !important;
+    filter: grayscale(80%) blur(0.5px);
+    pointer-events: none;
+}
+
+.rawnaq-flow-connectors path.is-faded {
+    opacity: 0.15 !important;
+}
+
+.rawnaq-flow-node.is-highlighted {
+    border-color: var(--fc-indigo) !important;
+    box-shadow: 0 10px 24px rgba(67, 56, 202, 0.2) !important;
+    transform: translateY(-4px) scale(1.04) !important;
+}
+
+.rawnaq-flow-connectors path.is-highlighted {
+    stroke: var(--fc-indigo) !important;
+    stroke-width: 3.5px !important;
+}
+
+/* --- Collapsible Branch Buttons --- */
+.rawnaq-flow-toggle-btn {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--fc-line);
+    background: #fff;
+    color: var(--fc-muted);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    z-index: 10;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.rawnaq-flow-toggle-btn:hover {
+    background: var(--fc-indigo);
+    color: #fff;
+    border-color: var(--fc-indigo);
+}
+
+.rawnaq-flow-node.is-root .rawnaq-flow-toggle-btn {
+    border-color: var(--fc-indigo);
+}
+
+/* --- Node Badge Tags --- */
+.rawnaq-flow-badge-tag {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 20px;
+    line-height: 1;
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.rawnaq-flow-badge-tag.status-default {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.rawnaq-flow-badge-tag.status-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.rawnaq-flow-badge-tag.status-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.rawnaq-flow-badge-tag.status-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * GLASSMORPHISM PRESET
+ * ───────────────────────────────────────────────────────────── */
+.rawnaq-flow-chart.preset-glass .rawnaq-flow-stage {
+    background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, rgba(0, 0, 0, 0) 90%), #f8fafc;
+}
+
+.rawnaq-flow-chart.preset-glass .rawnaq-flow-node {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.04);
+}
+
+.rawnaq-flow-chart.preset-glass .rawnaq-flow-node.is-root {
+    background: linear-gradient(135deg, rgba(67, 56, 202, 0.8), rgba(124, 58, 237, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * RETRO TECHNICAL GRID PRESET
+ * ───────────────────────────────────────────────────────────── */
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-stage {
+    background-color: #fafafa;
+    background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-node {
+    border: 2px solid #000000 !important;
+    border-radius: 0px !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-node:hover,
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-node:focus-visible {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #000000 !important;
+}
+
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-node.is-root {
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-node.is-decision {
+    background: #fef08a !important;
+}
+
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-connectors path {
+    stroke: #000000 !important;
+    stroke-width: 3.5px !important;
+}
+
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-connectors path.accent {
+    stroke: var(--fc-amber) !important;
+    stroke-width: 4px !important;
+}
+
+.rawnaq-flow-chart.preset-retro .rawnaq-flow-toggle-btn {
+    border: 2px solid #000 !important;
+    border-radius: 0% !important;
+    box-shadow: 2px 2px 0px #000 !important;
+}

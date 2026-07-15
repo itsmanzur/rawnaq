@@ -204,6 +204,8 @@ class Rawnaq_Gutenberg_Loader {
                     'showPercent'    => [ 'type' => 'boolean', 'default' => true ],
                     'mobileCollapse' => [ 'type' => 'boolean', 'default' => true ],
                     'manualJson'     => [ 'type' => 'string', 'default' => '[]' ],
+                    'collapseSubs'   => [ 'type' => 'boolean', 'default' => false ],
+                    'showSearch'     => [ 'type' => 'boolean', 'default' => false ],
                 ],
             ] );
         }
@@ -667,7 +669,8 @@ class Rawnaq_Gutenberg_Loader {
             'source'         => sanitize_key( $attributes['source'] ?? 'auto' ),
             'levels'         => $levels ?: [ 'h2', 'h3' ],
             'manual'         => $manual_clean,
-            'collapseSubs'   => false,
+            'collapseSubs'   => ! empty( $attributes['collapseSubs'] ),
+            'showSearch'     => ! empty( $attributes['showSearch'] ),
             'smooth'         => ! empty( $attributes['smooth'] ),
             'scrollOffset'   => absint( $attributes['scrollOffset'] ?? 80 ),
             'readingTime'    => ! empty( $attributes['readingTime'] ),

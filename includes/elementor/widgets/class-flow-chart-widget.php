@@ -247,7 +247,7 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
         var cfg = { mode: mode, connector: settings.connector || 'curved', nodes: nodes };
         var flowAttr = encodeURIComponent( JSON.stringify( cfg ) );
         #>
-        <div class="rawnaq-flow-chart" data-flow="{{ flowAttr }}">
+        <div class="rawnaq-flow-chart preset-{{ settings.visual_preset || 'default' }}" data-flow="{{ flowAttr }}">
             <div class="rawnaq-flow-stage is-responsive"></div>
         </div>
         <?php

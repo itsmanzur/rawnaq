@@ -130,6 +130,13 @@ class Rawnaq_Elements {
             RAWNAQ_VERSION,
             true
         );
+        wp_register_script(
+            'rawnaq-qrcode',
+            RAWNAQ_URL . 'assets/js/qrcode.min.js',
+            [],
+            '1.0.0',
+            true
+        );
 
         // 5. Flow Chart
         wp_register_style(
