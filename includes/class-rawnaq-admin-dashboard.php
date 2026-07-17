@@ -55,11 +55,13 @@ class Rawnaq_Admin_Dashboard {
             require_once RAWNAQ_PATH . 'includes/rawnaq-helpers.php';
         }
         $modules = rawnaq_get_modules();
+        $clicks  = function_exists( 'rawnaq_dock_get_clicks' ) ? rawnaq_dock_get_clicks() : [];
 
         // Check compatibility
         $php_version = phpversion();
         $wp_version  = get_bloginfo( 'version' );
         $elementor_active = did_action( 'elementor/loaded' ) ? 'Active' : 'Inactive';
+        $clicks_updated = ! empty( $clicks['updated'] ) ? (int) $clicks['updated'] : 0;
         ?>
         <div class="rawnaq-admin-wrap">
             <!-- Header Banner -->
@@ -86,6 +88,9 @@ class Rawnaq_Admin_Dashboard {
                         </a>
                         <a href="#docs" class="nav-item" data-tab="docs">
                             <span class="nav-icon">&#x1F4D6;</span> Documentation
+                        </a>
+                        <a href="#dock-stats" class="nav-item" data-tab="dock-stats">
+                            <span class="nav-icon">&#x1F4CA;</span> Dock Stats
                         </a>
                         <a href="#system" class="nav-item" data-tab="system">
                             <span class="nav-icon">&#x1F4BB;</span> System Info
@@ -185,6 +190,14 @@ class Rawnaq_Admin_Dashboard {
                                         'desc'        => __( 'Reading progress bar/ring with smart auto-highlighting table of contents.', 'rawnaq' ),
                                         'icon'        => 'toc',
                                     ],
+                                    [
+                                        'key'         => 'bento-grid',
+                                        'badge'       => __( 'Layouts', 'rawnaq' ),
+                                        'tone'        => 'tone-layouts',
+                                        'title'       => __( 'Bento Grid', 'rawnaq' ),
+                                        'desc'        => __( 'Apple-style asymmetric CSS grid with presets, stats, image & featured cells.', 'rawnaq' ),
+                                        'icon'        => 'bento',
+                                    ],
                                 ];
 
                                 foreach ( $module_defs as $mod ) :
@@ -203,6 +216,8 @@ class Rawnaq_Admin_Dashboard {
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="8" y="2" width="8" height="5" rx="1.5"/><rect x="2" y="17" width="7" height="5" rx="1.5"/><rect x="15" y="17" width="7" height="5" rx="1.5"/><path d="M12 7v4M12 11H5.5v6M12 11h6.5v6"/></svg>
                                                 <?php elseif ( 'toc' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="19" cy="12" r="2.5"/></svg>
+                                                <?php elseif ( 'bento' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="10" height="10" rx="2"/><rect x="15" y="3" width="6" height="4" rx="1.5"/><rect x="15" y="9" width="6" height="4" rx="1.5"/><rect x="3" y="15" width="6" height="6" rx="1.5"/><rect x="11" y="15" width="10" height="6" rx="1.5"/></svg>
                                                 <?php else : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="14" width="18" height="6" rx="3"/><rect x="5" y="16" width="3.2" height="3.2" rx="0.8"/><rect x="10.4" y="15.2" width="4" height="4" rx="1"/><rect x="16.2" y="16" width="3.2" height="3.2" rx="0.8"/></svg>
                                                 <?php endif; ?>
@@ -303,6 +318,67 @@ class Rawnaq_Admin_Dashboard {
                         </div>
                     </div>
 
+                    <!-- TAB: DOCK STATS -->
+                    <div id="tab-dock-stats" class="tab-panel">
+                        <h2><?php esc_html_e( 'Floating Dock Stats', 'rawnaq' ); ?></h2>
+                        <p class="section-desc"><?php esc_html_e( 'Simple site-wide click counters for Floating Dock / WhatsApp Contact Mode. Enable tracking per widget.', 'rawnaq' ); ?></p>
+
+                        <div class="grid-2" style="margin-bottom: 20px;">
+                            <div class="rawnaq-card">
+                                <h3 style="margin-top:0;"><?php esc_html_e( 'Total clicks', 'rawnaq' ); ?></h3>
+                                <p class="dock-stat-big" id="dock-stat-total"><?php echo esc_html( (string) absint( $clicks['total'] ?? 0 ) ); ?></p>
+                                <p class="section-desc" style="margin:0;">
+                                    <?php
+                                    if ( $clicks_updated ) {
+                                        printf(
+                                            /* translators: %s: localized datetime */
+                                            esc_html__( 'Last update: %s', 'rawnaq' ),
+                                            esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $clicks_updated ) )
+                                        );
+                                    } else {
+                                        esc_html_e( 'No clicks recorded yet.', 'rawnaq' );
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                            <div class="rawnaq-card">
+                                <h3 style="margin-top:0;"><?php esc_html_e( 'Actions', 'rawnaq' ); ?></h3>
+                                <p><?php esc_html_e( 'Reset clears all counters. This cannot be undone.', 'rawnaq' ); ?></p>
+                                <button type="button" class="btn btn-save" id="btn-reset-dock-clicks"><?php esc_html_e( 'Reset Counters', 'rawnaq' ); ?></button>
+                                <span class="save-status" id="dock-stats-status"></span>
+                            </div>
+                        </div>
+
+                        <div class="rawnaq-card">
+                            <table class="system-table" id="dock-stats-table">
+                                <tr>
+                                    <td><strong><?php esc_html_e( 'FAB / main button', 'rawnaq' ); ?></strong></td>
+                                    <td id="dock-stat-fab"><?php echo esc_html( (string) absint( $clicks['fab'] ?? 0 ) ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php esc_html_e( 'Agent selected', 'rawnaq' ); ?></strong></td>
+                                    <td id="dock-stat-agent"><?php echo esc_html( (string) absint( $clicks['agent'] ?? 0 ) ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php esc_html_e( 'WhatsApp opened (Web / mobile)', 'rawnaq' ); ?></strong></td>
+                                    <td id="dock-stat-web"><?php echo esc_html( (string) absint( $clicks['web'] ?? 0 ) ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php esc_html_e( 'Desktop chooser shown (QR + Web)', 'rawnaq' ); ?></strong></td>
+                                    <td id="dock-stat-chooser"><?php echo esc_html( (string) absint( $clicks['chooser'] ?? 0 ) ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php esc_html_e( 'Secondary channel', 'rawnaq' ); ?></strong></td>
+                                    <td id="dock-stat-secondary"><?php echo esc_html( (string) absint( $clicks['secondary'] ?? 0 ) ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php esc_html_e( 'Classic dock item', 'rawnaq' ); ?></strong></td>
+                                    <td id="dock-stat-classic"><?php echo esc_html( (string) absint( $clicks['classic'] ?? 0 ) ); ?></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- TAB 4: SYSTEM INFO -->
                     <div id="tab-system" class="tab-panel">
                         <h2>System Information</h2>
@@ -360,7 +436,7 @@ class Rawnaq_Admin_Dashboard {
             : [];
         $allowed = function_exists( 'rawnaq_default_modules' )
             ? array_keys( rawnaq_default_modules() )
-            : [ 'hub-diagram', 'tilt-card', 'scroll-timeline', 'floating-dock', 'flow-chart', 'scroll-progress-toc' ];
+            : [ 'hub-diagram', 'tilt-card', 'scroll-timeline', 'floating-dock', 'flow-chart', 'scroll-progress-toc', 'bento-grid' ];
 
         $sanitized_modules = [];
         foreach ( $allowed as $slug ) {

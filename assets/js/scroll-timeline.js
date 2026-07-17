@@ -1,5 +1,6 @@
 /**
- * Scroll-Sync Process Timeline — multi-instance, rAF scroll, Elementor-safe cleanup
+ * Scroll Sync Timeline — CSS scroll-driven when supported; JS fallback otherwise.
+ * Also: load-more (DOM or AJAX query), reduced-motion, Elementor re-init.
  */
 (function () {
     'use strict';
@@ -14,13 +15,27 @@
         return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
 
+    function supportsCssScrollTimeline() {
+        try {
+            return window.CSS && CSS.supports && (
+                CSS.supports('animation-timeline: view()') ||
+                CSS.supports('animation-timeline: scroll()')
+            );
+        } catch (e) {
+            return false;
+        }
+    }
+
     function destroyAll() {
         instances.forEach(function (inst) {
             if (inst.observer) {
                 inst.observer.disconnect();
             }
             if (inst.wrap) {
-                inst.wrap.classList.remove('tl-bound', 'tl-reduced-motion');
+                inst.wrap.classList.remove('tl-bound', 'tl-reduced-motion', 'tl-css-driven', 'tl-js-driven');
+            }
+            if (inst.loadBtn && inst.loadHandler) {
+                inst.loadBtn.removeEventListener('click', inst.loadHandler);
             }
         });
         instances = [];
@@ -28,18 +43,26 @@
 
     function updateFills() {
         instances.forEach(function (inst) {
-            var wrap = inst.wrap;
-            var activeLine = inst.activeLine;
-            if (!wrap || !activeLine) {
+            if (!inst.useJsMotion || !inst.wrap || !inst.activeLine) {
                 return;
             }
 
+            var wrap = inst.wrap;
+            var activeLine = inst.activeLine;
+            var horizontal = wrap.classList.contains('layout-horizontal') && window.innerWidth > 767;
             var rect = wrap.getBoundingClientRect();
             var viewportCenter = window.innerHeight / 2;
             var passed = viewportCenter - rect.top;
             var progress = rect.height > 0 ? passed / rect.height : 0;
             progress = Math.max(0, Math.min(1, progress));
-            activeLine.style.height = (progress * 100) + '%';
+
+            if (horizontal) {
+                activeLine.style.height = '';
+                activeLine.style.width = (progress * 100) + '%';
+            } else {
+                activeLine.style.width = '';
+                activeLine.style.height = (progress * 100) + '%';
+            }
         });
     }
 
@@ -65,6 +88,147 @@
         }
     }
 
+    function observeNewItems(observer, activateOnReveal, nodes) {
+        Array.prototype.forEach.call(nodes, function (item) {
+            if (activateOnReveal) {
+                item.classList.add('item-active');
+            }
+            if (observer) {
+                observer.observe(item);
+            }
+        });
+    }
+
+    function setupAjaxLoadMore(wrap, observer, activateOnReveal) {
+        var btnWrap = wrap.querySelector('.rawnaq-timeline-load-more');
+        var btn = btnWrap ? btnWrap.querySelector('button') : null;
+        if (!btn || !btnWrap) {
+            return { btn: null, handler: null };
+        }
+
+        var cfg = window.rawnaqTimeline || {};
+        var offset = parseInt(wrap.getAttribute('data-tl-offset'), 10) || 0;
+        var chunk = parseInt(wrap.getAttribute('data-load-chunk'), 10) || 3;
+        var query = wrap.getAttribute('data-tl-query') || '';
+        var layout = wrap.getAttribute('data-tl-layout') || 'alternating';
+        var showNumbers = wrap.getAttribute('data-show-numbers') === '1';
+        var loading = false;
+
+        function revealMore(e) {
+            if (e) {
+                e.preventDefault();
+            }
+            if (loading || !cfg.ajaxUrl || !cfg.nonce) {
+                return;
+            }
+            loading = true;
+            btn.disabled = true;
+
+            var body = new window.FormData();
+            body.append('action', 'rawnaq_timeline_load_more');
+            body.append('nonce', cfg.nonce);
+            body.append('offset', String(offset));
+            body.append('chunk', String(chunk));
+            body.append('query', query);
+            body.append('layout', layout);
+            body.append('show_numbers', showNumbers ? '1' : '0');
+
+            window.fetch(cfg.ajaxUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: body
+            }).then(function (res) {
+                return res.json();
+            }).then(function (json) {
+                loading = false;
+                btn.disabled = false;
+                if (!json || !json.success || !json.data) {
+                    return;
+                }
+                var data = json.data;
+                if (data.html) {
+                    var tmp = document.createElement('div');
+                    tmp.innerHTML = data.html;
+                    var nodes = Array.prototype.slice.call(tmp.querySelectorAll('.rawnaq-timeline-item'));
+                    nodes.forEach(function (node) {
+                        btnWrap.parentNode.insertBefore(node, btnWrap);
+                    });
+                    observeNewItems(observer, activateOnReveal, nodes);
+                }
+                offset = parseInt(data.next_offset, 10) || offset;
+                wrap.setAttribute('data-tl-offset', String(offset));
+                if (!data.has_more) {
+                    btnWrap.hidden = true;
+                }
+                updateFills();
+            }).catch(function () {
+                loading = false;
+                btn.disabled = false;
+            });
+        }
+
+        btn.addEventListener('click', revealMore);
+        return { btn: btn, handler: revealMore };
+    }
+
+    function setupDomLoadMore(wrap, observer, activateOnReveal) {
+        var initial = parseInt(wrap.getAttribute('data-initial-visible'), 10) || 0;
+        var items = Array.prototype.slice.call(wrap.querySelectorAll('.rawnaq-timeline-item'));
+        var btnWrap = wrap.querySelector('.rawnaq-timeline-load-more');
+        var btn = btnWrap ? btnWrap.querySelector('button') : null;
+
+        if (!initial || initial <= 0 || items.length <= initial) {
+            if (btnWrap) {
+                btnWrap.hidden = true;
+            }
+            return { btn: null, handler: null };
+        }
+
+        items.forEach(function (item, idx) {
+            if (idx >= initial) {
+                item.classList.add('tl-hidden');
+            } else {
+                item.classList.remove('tl-hidden');
+            }
+        });
+
+        if (!btn || !btnWrap) {
+            return { btn: null, handler: null };
+        }
+
+        btnWrap.hidden = false;
+        var nextIndex = initial;
+        var chunk = parseInt(wrap.getAttribute('data-load-chunk'), 10) || initial;
+
+        function revealMore() {
+            var end = Math.min(nextIndex + chunk, items.length);
+            for (var i = nextIndex; i < end; i++) {
+                items[i].classList.remove('tl-hidden');
+                if (activateOnReveal) {
+                    items[i].classList.add('item-active');
+                }
+                if (observer) {
+                    observer.observe(items[i]);
+                }
+            }
+            nextIndex = end;
+            if (nextIndex >= items.length) {
+                btnWrap.hidden = true;
+            }
+            updateFills();
+        }
+
+        btn.addEventListener('click', revealMore);
+        return { btn: btn, handler: revealMore };
+    }
+
+    function setupLoadMore(wrap, observer, activateOnReveal) {
+        if (wrap.getAttribute('data-tl-ajax') === '1') {
+            return setupAjaxLoadMore(wrap, observer, activateOnReveal);
+        }
+        return setupDomLoadMore(wrap, observer, activateOnReveal);
+    }
+
     function initWrapper(wrap) {
         if (!wrap || wrap.classList.contains('tl-bound')) {
             return;
@@ -72,19 +236,29 @@
         wrap.classList.add('tl-bound');
 
         var reduced = prefersReducedMotion();
-        if (reduced) {
-            wrap.classList.add('tl-reduced-motion');
-        }
-
+        var cssDriven = !reduced && supportsCssScrollTimeline();
         var activeLine = wrap.querySelector('.rawnaq-timeline-line-active');
         var items = wrap.querySelectorAll('.rawnaq-timeline-item');
         var observer = null;
+        var useJsMotion = false;
 
         if (reduced) {
+            wrap.classList.add('tl-reduced-motion');
             items.forEach(function (item) {
                 item.classList.add('item-active');
             });
+            if (activeLine) {
+                if (wrap.classList.contains('layout-horizontal') && window.innerWidth > 767) {
+                    activeLine.style.width = '100%';
+                } else {
+                    activeLine.style.height = '100%';
+                }
+            }
+        } else if (cssDriven) {
+            wrap.classList.add('tl-css-driven');
         } else {
+            wrap.classList.add('tl-js-driven');
+            useJsMotion = true;
             observer = new IntersectionObserver(
                 function (entries) {
                     entries.forEach(function (entry) {
@@ -100,33 +274,28 @@
                 }
             );
             items.forEach(function (item) {
-                observer.observe(item);
+                if (!item.classList.contains('tl-hidden')) {
+                    observer.observe(item);
+                }
             });
         }
+
+        var load = setupLoadMore(wrap, observer, reduced);
 
         instances.push({
             wrap: wrap,
             activeLine: activeLine,
-            observer: observer
+            observer: observer,
+            useJsMotion: useJsMotion,
+            loadBtn: load.btn,
+            loadHandler: load.handler
         });
     }
 
     function initTimeline(scope) {
-        var root = scope && scope.querySelectorAll ? scope : document;
-        // Elementor re-inits: wipe previous observers then rebuild all wrappers.
-        // Global scroll listener stays single; we rebuild the instances list.
         destroyAll();
 
-        var wrappers = root.querySelectorAll
-            ? root.querySelectorAll('.rawnaq-timeline-wrapper')
-            : [];
-
-        // If scoped (Elementor widget), still need other page instances re-bound
-        // after destroyAll — so always scan document.
-        if (scope && scope !== document) {
-            wrappers = document.querySelectorAll('.rawnaq-timeline-wrapper');
-        }
-
+        var wrappers = document.querySelectorAll('.rawnaq-timeline-wrapper');
         wrappers.forEach(initWrapper);
         bindGlobalListeners();
         updateFills();
@@ -156,8 +325,9 @@
         boot();
     }
 
-    // Elementor editor may load frontend after DOMContentLoaded
     if (window.jQuery) {
         jQuery(window).on('elementor/frontend/init', hookElementor);
     }
+
+    window.rawnaqTimelineInit = initTimeline;
 })();

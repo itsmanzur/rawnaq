@@ -337,6 +337,15 @@
     cursor: wait;
 }
 
+.dock-stat-big {
+    font-family: Fraunces, Georgia, serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    margin: 8px 0 12px;
+    color: var(--rq-accent);
+}
+
 /* ── Elements Manager ── */
 .modules-hero {
     display: flex;

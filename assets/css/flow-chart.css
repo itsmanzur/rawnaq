@@ -17,6 +17,47 @@
     font-family: inherit;
 }
 
+.rawnaq-flow-viewport {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    touch-action: pan-y;
+}
+
+.rawnaq-flow-viewport.has-zoom {
+    cursor: grab;
+    touch-action: none;
+}
+
+.rawnaq-flow-viewport.is-panning {
+    cursor: grabbing;
+}
+
+.rawnaq-flow-zoom {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.rawnaq-flow-zoom button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--fc-line);
+    border-radius: 8px;
+    background: var(--fc-panel);
+    color: var(--fc-ink);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.rawnaq-flow-zoom button:hover,
+.rawnaq-flow-zoom button:focus-visible {
+    border-color: var(--fc-indigo);
+    outline: none;
+}
+
 .rawnaq-flow-stage {
     position: relative;
     background: var(--fc-panel);
@@ -27,9 +68,16 @@
     min-height: 280px;
 }
 
+.rawnaq-flow-viewport .rawnaq-flow-stage {
+    border-radius: 0;
+    border: none;
+    overflow: visible;
+}
+
 .rawnaq-flow-canvas-wrap {
     position: relative;
     margin: 0 auto;
+    will-change: transform;
 }
 
 .rawnaq-flow-connectors {
@@ -126,6 +174,51 @@
 
 .rawnaq-flow-node.is-decision .rawnaq-flow-title {
     color: #92400e;
+}
+
+.rawnaq-flow-node.is-lazy {
+    content-visibility: auto;
+    contain-intrinsic-size: 72px 150px;
+}
+
+.rawnaq-flow-node.shape-circle {
+    border-radius: 50%;
+    width: 120px !important;
+    height: 120px;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.rawnaq-flow-node.shape-circle .rawnaq-flow-icon {
+    margin-bottom: 4px;
+}
+
+.rawnaq-flow-node.shape-hex {
+    border-radius: 0;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: var(--fc-panel);
+    border: none;
+    box-shadow: none;
+    padding: 18px 22px;
+    text-align: center;
+}
+
+.rawnaq-flow-node.shape-hex.is-root {
+    background: linear-gradient(135deg, var(--fc-indigo), var(--fc-violet));
+}
+
+.rawnaq-flow-node.shape-hex.is-decision {
+    background: var(--fc-amber-soft);
+}
+
+@media (max-width: 767px) {
+    .rawnaq-flow-zoom {
+        display: none;
+    }
 }
 
 .rawnaq-flow-icon {

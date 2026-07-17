@@ -85,6 +85,45 @@
                 }
             });
         });
+
+        $('#btn-reset-dock-clicks').on('click', function() {
+            if (!window.confirm('Reset all Floating Dock click counters?')) {
+                return;
+            }
+            var $btn = $(this);
+            var $status = $('#dock-stats-status');
+            $btn.prop('disabled', true);
+            $status.removeClass('success error').text('Resetting…');
+
+            $.ajax({
+                url: rawnaq_admin_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'rawnaq_dock_reset_clicks',
+                    nonce: rawnaq_admin_vars.nonce
+                },
+                success: function(response) {
+                    $btn.prop('disabled', false);
+                    if (response.success && response.data && response.data.clicks) {
+                        var c = response.data.clicks;
+                        $('#dock-stat-total').text(String(c.total || 0));
+                        $('#dock-stat-fab').text(String(c.fab || 0));
+                        $('#dock-stat-agent').text(String(c.agent || 0));
+                        $('#dock-stat-web').text(String(c.web || 0));
+                        $('#dock-stat-chooser').text(String(c.chooser || 0));
+                        $('#dock-stat-secondary').text(String(c.secondary || 0));
+                        $('#dock-stat-classic').text(String(c.classic || 0));
+                        $status.addClass('success').text('Counters reset.');
+                    } else {
+                        $status.addClass('error').text('Could not reset counters.');
+                    }
+                },
+                error: function() {
+                    $btn.prop('disabled', false);
+                    $status.addClass('error').text('Request failed.');
+                }
+            });
+        });
     });
 
 })(jQuery);

@@ -167,6 +167,15 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'condition'    => [ 'toc_position' => [ 'sticky', 'floating' ] ],
         ] );
 
+        $this->add_control( 'dock_attach', [
+            'label'        => esc_html__( 'Attach TOC to Floating Dock', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => '',
+            'description'  => esc_html__( 'When a Floating Dock is on the page, hide the TOC FAB and add a Contents button to the dock.', 'rawnaq' ),
+            'condition'    => [ 'toc_position' => 'floating' ],
+        ] );
+
         $this->end_controls_section();
 
         $this->start_controls_section( 's_style', [
@@ -227,6 +236,7 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'scrollOffset'   => isset( $s['scroll_offset'] ) ? (int) $s['scroll_offset'] : 80,
             'readingTime'    => ( $s['reading_time'] ?? '' ) === 'yes',
             'mobileCollapse' => ( $s['mobile_collapse'] ?? 'yes' ) === 'yes',
+            'dockAttach'     => ( $s['dock_attach'] ?? '' ) === 'yes',
             'hideIfShort'    => true,
         ];
     }

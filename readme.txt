@@ -3,7 +3,7 @@ Contributors: rawnaq
 Tags: elementor, gutenberg, timeline, diagram, performance
 Requires at least: 5.8
 Tested up to: 7.0
-Stable tag: 1.5.1
+Stable tag: 1.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,46 @@ Key highlights:
 3. Drop the widgets into Elementor or search for them in the Gutenberg block inserter.
 
 == Changelog ==
+
+= 1.10.0 =
+* Flow Chart: freeform X/Y layout, node shapes (rect/circle/hex), direction + RTL flip, zoom/pan, lazy mount for 20+ nodes, and Gutenberg parent Select with DFS cycle guards.
+* Scroll Progress + TOC: optional Floating Dock attach mode (Contents trigger in dock; FAB fallback when no dock).
+
+= 1.9.0 =
+* Scroll Timeline: WPML/Polylang readiness (wpml-config.xml + string registration), AJAX Load More for query mode, and an illustrative CSS-vs-JS benchmark demo (assets/demo + docs).
+
+= 1.8.0 =
+* Scroll Timeline: dynamic posts/CPT query source, Named Timeline Sync with Bento cells, and light WPML/i18n readiness (textdomain + rawnaq_timeline_steps filter).
+
+= 1.7.0 =
+* Scroll Sync Timeline: CSS scroll-driven animations with JS fallback, horizontal layout, RTL mirroring, step video embeds, line thickness, and Load More / initial visible steps (Elementor + Gutenberg).
+
+= 1.6.10 =
+* Bento Grid: per-cell content align (top / center / bottom).
+
+= 1.6.9 =
+* Bento Grid: separate column gap and row gap controls.
+
+= 1.6.8 =
+* Bento Grid: Video cells support YouTube and Vimeo embeds (plus mp4/webm).
+
+= 1.6.7 =
+* Bento Grid: new Testimonial cell type (quote, author, role, avatar, stars).
+
+= 1.6.6 =
+* Bento Grid: per-cell tag background/text color overrides.
+
+= 1.6.5 =
+* Bento Grid: per-cell CTA button (text + link) with global button colors.
+
+= 1.6.4 =
+* Bento Grid: image/video overlay opacity control.
+
+= 1.6.3 =
+* Bento Grid: per-cell tablet/mobile column/row span and order overrides.
+
+= 1.6.2 =
+* Bento Grid: Apply Preset replaces cells (spans + content) in Elementor and Gutenberg.
 
 = 1.5.0 =
 * New: Flow Chart widget/block (Org + Process modes, connectors, mobile list).

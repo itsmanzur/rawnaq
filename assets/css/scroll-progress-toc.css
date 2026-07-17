@@ -387,3 +387,59 @@
     opacity: 1;
     transform: translateY(0);
 }
+
+/* TOC attached to Floating Dock */
+.rawnaq-spt-toc.is-floating.dock-attached {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transform: translateY(-50%) translateX(12px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    bottom: auto;
+    top: 50%;
+}
+
+.rawnaq-spt-toc.is-floating.dock-attached.is-panel-open {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+}
+
+.rawnaq-spt.is-dock-attached .rawnaq-spt-fab-wrapper {
+    display: none !important;
+}
+
+.rawnaq-dock-item.is-toc-trigger {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+}
+
+.rawnaq-dock-item.is-toc-trigger .rawnaq-dock-icon {
+    font-size: calc(var(--dock-item-size, 48px) * 0.45);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.rawnaq-dock-item.is-toc-trigger.is-active {
+    box-shadow: 0 0 0 2px var(--hover-color, #4338ca);
+}
+
+@media (max-width: 767px) {
+    .rawnaq-spt-toc.is-floating.dock-attached {
+        top: auto;
+        bottom: var(--spt-dock-clear, 96px);
+        right: 16px;
+        left: 16px;
+        width: auto;
+        max-height: 55vh;
+        transform: translateY(12px);
+    }
+
+    .rawnaq-spt-toc.is-floating.dock-attached.is-panel-open {
+        transform: translateY(0);
+    }
+}
+

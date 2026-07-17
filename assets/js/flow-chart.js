@@ -1,5 +1,5 @@
 /**
- * Rawnaq Flow Chart — org/process layout, SVG connectors, detail popover, mobile list
+ * Rawnaq Flow Chart — org/process/freeform, direction, shapes, zoom/pan, lazy 20+
  */
 (function () {
     'use strict';
@@ -10,9 +10,16 @@
     var NODE_H = 72;
     var GAP_X = 40;
     var GAP_Y = 56;
+    var LAZY_THRESHOLD = 20;
+    var FREEFORM_W = 900;
+    var FREEFORM_H = 560;
 
     function prefersReducedMotion() {
         return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    function isMobile() {
+        return window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
     }
 
     function parseConfig(el) {
@@ -31,18 +38,55 @@
         }
     }
 
+    function resolveDirection(dir) {
+        var d = dir || 'tb';
+        if (d !== 'tb' && d !== 'lr' && d !== 'rl') {
+            d = 'tb';
+        }
+        var rtl = false;
+        try {
+            rtl = document.documentElement.getAttribute('dir') === 'rtl'
+                || !!(document.body && document.body.classList.contains('rtl'));
+        } catch (e) { /* ignore */ }
+        if (rtl) {
+            if (d === 'lr') {
+                return 'rl';
+            }
+            if (d === 'rl') {
+                return 'lr';
+            }
+        }
+        return d;
+    }
+
     function destroyInstance(inst) {
         if (inst.onDocClick) {
             document.removeEventListener('click', inst.onDocClick);
         }
-        if (inst.observer) {
-            inst.observer.disconnect();
+        if (inst.onWheel) {
+            inst.viewport && inst.viewport.removeEventListener('wheel', inst.onWheel);
+        }
+        if (inst.onPointerDown) {
+            inst.viewport && inst.viewport.removeEventListener('pointerdown', inst.onPointerDown);
+        }
+        if (inst.onPointerMove) {
+            document.removeEventListener('pointermove', inst.onPointerMove);
+        }
+        if (inst.onPointerUp) {
+            document.removeEventListener('pointerup', inst.onPointerUp);
+        }
+        if (inst.lazyObs) {
+            inst.lazyObs.disconnect();
         }
         if (inst.root) {
             inst.root.classList.remove('fc-bound');
             var stage = inst.root.querySelector('.rawnaq-flow-stage');
             if (stage) {
                 stage.innerHTML = '';
+            }
+            var chrome = inst.root.querySelector('.rawnaq-flow-zoom');
+            if (chrome) {
+                chrome.remove();
             }
         }
     }
@@ -65,6 +109,32 @@
         }
     }
 
+    function breakCycles(nodes) {
+        var byId = {};
+        nodes.forEach(function (n) {
+            byId[n.id] = n;
+        });
+        nodes.forEach(function (n) {
+            var parent = n.parent || '';
+            if (!parent || !byId[parent] || parent === n.id) {
+                n.parent = '';
+                return;
+            }
+            var seen = {};
+            seen[n.id] = true;
+            var cur = parent;
+            while (cur && byId[cur]) {
+                if (seen[cur]) {
+                    n.parent = '';
+                    return;
+                }
+                seen[cur] = true;
+                cur = byId[cur].parent || '';
+            }
+        });
+        return nodes;
+    }
+
     function buildTree(nodes) {
         var byId = {};
         var roots = [];
@@ -82,10 +152,11 @@
         return { byId: byId, roots: roots };
     }
 
-    function layoutOrg(nodes) {
+    function layoutOrg(nodes, direction) {
         var tree = buildTree(nodes);
         var positions = {};
-        var cursorX = 0;
+        var cursor = 0;
+        var horizontal = direction === 'lr' || direction === 'rl';
 
         function measure(node) {
             if (!node.children.length) {
@@ -104,9 +175,17 @@
         }
 
         function place(node, depth, left) {
-            var y = depth * (NODE_H + GAP_Y);
-            var x = left + (node._w - NODE_W) / 2;
-            positions[node.id] = { x: x, y: y, depth: depth };
+            if (horizontal) {
+                var x = depth * (NODE_W + GAP_X);
+                var y = left + (node._w - NODE_W) / 2;
+                positions[node.id] = { x: x, y: y, depth: depth };
+            } else {
+                positions[node.id] = {
+                    x: left + (node._w - NODE_W) / 2,
+                    y: depth * (NODE_H + GAP_Y),
+                    depth: depth
+                };
+            }
             var childLeft = left;
             node.children.forEach(function (c) {
                 place(c, depth + 1, childLeft);
@@ -116,24 +195,42 @@
 
         tree.roots.forEach(function (r) {
             measure(r);
-            place(r, 0, cursorX);
-            cursorX += r._w + GAP_X * 2;
+            place(r, 0, cursor);
+            cursor += r._w + GAP_X * 2;
         });
+
+        if (direction === 'rl') {
+            var maxX = 0;
+            Object.keys(positions).forEach(function (id) {
+                maxX = Math.max(maxX, positions[id].x + NODE_W);
+            });
+            Object.keys(positions).forEach(function (id) {
+                positions[id].x = maxX - positions[id].x - NODE_W;
+            });
+        }
 
         return positions;
     }
 
-    function layoutProcess(nodes) {
+    function layoutProcess(nodes, direction) {
         var tree = buildTree(nodes);
         var positions = {};
-        var col = 0;
+        var vertical = direction === 'tb';
 
         function place(node, column, row) {
-            positions[node.id] = {
-                x: column * (NODE_W + GAP_X),
-                y: row * (NODE_H + GAP_Y),
-                depth: column
-            };
+            if (vertical) {
+                positions[node.id] = {
+                    x: row * (NODE_W + GAP_X),
+                    y: column * (NODE_H + GAP_Y),
+                    depth: column
+                };
+            } else {
+                positions[node.id] = {
+                    x: column * (NODE_W + GAP_X),
+                    y: row * (NODE_H + GAP_Y),
+                    depth: column
+                };
+            }
             if (!node.children.length) {
                 return;
             }
@@ -149,53 +246,101 @@
 
         tree.roots.forEach(function (r, i) {
             place(r, 0, i * 2);
-            col += 1;
         });
 
-        // Normalize y so min is 0
         var minY = Infinity;
+        var minX = Infinity;
         Object.keys(positions).forEach(function (id) {
             minY = Math.min(minY, positions[id].y);
+            minX = Math.min(minX, positions[id].x);
         });
         Object.keys(positions).forEach(function (id) {
             positions[id].y -= minY;
+            positions[id].x -= minX;
         });
+
+        if (direction === 'rl') {
+            var maxX = 0;
+            Object.keys(positions).forEach(function (id) {
+                maxX = Math.max(maxX, positions[id].x + NODE_W);
+            });
+            Object.keys(positions).forEach(function (id) {
+                positions[id].x = maxX - positions[id].x - NODE_W;
+            });
+        }
 
         return positions;
     }
 
-    function edgePath(mode, connector, a, b, posA, posB) {
-        var ax = posA.x + NODE_W / 2;
-        var ay = posA.y + NODE_H;
-        var bx = posB.x + NODE_W / 2;
-        var by = posB.y;
-        var ayMid = posA.y + NODE_H / 2;
-        var byMid = posB.y + NODE_H / 2;
+    function layoutFreeform(nodes) {
+        var positions = {};
+        nodes.forEach(function (n) {
+            var px = typeof n.x === 'number' ? n.x : 10;
+            var py = typeof n.y === 'number' ? n.y : 10;
+            positions[n.id] = {
+                x: (Math.max(0, Math.min(100, px)) / 100) * (FREEFORM_W - NODE_W),
+                y: (Math.max(0, Math.min(100, py)) / 100) * (FREEFORM_H - NODE_H),
+                depth: 0
+            };
+        });
+        return positions;
+    }
 
+    function edgeAxis(direction, mode) {
+        if (mode === 'freeform') {
+            return 'auto';
+        }
         if (mode === 'process') {
-            ax = posA.x + NODE_W;
-            ay = ayMid;
-            bx = posB.x;
-            by = byMid;
-            var midX = (ax + bx) / 2;
+            return direction === 'tb' ? 'v' : 'h';
+        }
+        // org
+        return (direction === 'lr' || direction === 'rl') ? 'h' : 'v';
+    }
+
+    function edgePath(axis, connector, posA, posB, direction) {
+        var ax, ay, bx, by, mid;
+
+        if (axis === 'h' || (axis === 'auto' && Math.abs(posB.x - posA.x) >= Math.abs(posB.y - posA.y))) {
+            var goRight = direction === 'rl'
+                ? posB.x < posA.x
+                : posB.x >= posA.x;
+            if (goRight) {
+                ax = posA.x + NODE_W;
+                bx = posB.x;
+            } else {
+                ax = posA.x;
+                bx = posB.x + NODE_W;
+            }
+            ay = posA.y + NODE_H / 2;
+            by = posB.y + NODE_H / 2;
+            mid = (ax + bx) / 2;
             if (connector === 'straight') {
                 return 'M ' + ax + ' ' + ay + ' L ' + bx + ' ' + by;
             }
             if (connector === 'elbow') {
-                return 'M ' + ax + ' ' + ay + ' L ' + midX + ' ' + ay + ' L ' + midX + ' ' + by + ' L ' + bx + ' ' + by;
+                return 'M ' + ax + ' ' + ay + ' L ' + mid + ' ' + ay + ' L ' + mid + ' ' + by + ' L ' + bx + ' ' + by;
             }
-            return 'M ' + ax + ' ' + ay + ' C ' + midX + ' ' + ay + ', ' + midX + ' ' + by + ', ' + bx + ' ' + by;
+            return 'M ' + ax + ' ' + ay + ' C ' + mid + ' ' + ay + ', ' + mid + ' ' + by + ', ' + bx + ' ' + by;
         }
 
-        // org vertical
+        // vertical
+        ax = posA.x + NODE_W / 2;
+        bx = posB.x + NODE_W / 2;
+        if (posB.y >= posA.y) {
+            ay = posA.y + NODE_H;
+            by = posB.y;
+        } else {
+            ay = posA.y;
+            by = posB.y + NODE_H;
+        }
         if (connector === 'straight') {
             return 'M ' + ax + ' ' + ay + ' L ' + bx + ' ' + by;
         }
         if (connector === 'elbow') {
-            var midY = (ay + by) / 2;
-            return 'M ' + ax + ' ' + ay + ' L ' + ax + ' ' + midY + ' L ' + bx + ' ' + midY + ' L ' + bx + ' ' + by;
+            mid = (ay + by) / 2;
+            return 'M ' + ax + ' ' + ay + ' L ' + ax + ' ' + mid + ' L ' + bx + ' ' + mid + ' L ' + bx + ' ' + by;
         }
-        return 'M ' + ax + ' ' + ay + ' C ' + ax + ' ' + (ay + 30) + ', ' + bx + ' ' + (by - 30) + ', ' + bx + ' ' + by;
+        return 'M ' + ax + ' ' + ay + ' C ' + ax + ' ' + (ay + (by - ay) * 0.4) + ', ' + bx + ' ' + (by - (by - ay) * 0.4) + ', ' + bx + ' ' + by;
     }
 
     function escapeHtml(str) {
@@ -217,6 +362,27 @@
         return '<span class="rawnaq-flow-icon" aria-hidden="true">●</span>';
     }
 
+    function ensureViewport(root) {
+        var viewport = root.querySelector('.rawnaq-flow-viewport');
+        if (!viewport) {
+            viewport = document.createElement('div');
+            viewport.className = 'rawnaq-flow-viewport';
+            var stage = root.querySelector('.rawnaq-flow-stage');
+            if (stage) {
+                root.insertBefore(viewport, stage);
+                viewport.appendChild(stage);
+            } else {
+                root.appendChild(viewport);
+            }
+        }
+        return viewport;
+    }
+
+    function applyTransform(canvasWrap, scale, panX, panY) {
+        canvasWrap.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + ')';
+        canvasWrap.style.transformOrigin = '0 0';
+    }
+
     function initChart(root, force) {
         if (!root) {
             return;
@@ -230,8 +396,15 @@
         }
 
         root.classList.add('fc-bound');
-        var mode = cfg.mode === 'process' ? 'process' : 'org';
+        var mode = cfg.mode === 'process' ? 'process' : (cfg.mode === 'freeform' ? 'freeform' : 'org');
+        var direction = resolveDirection(cfg.direction || (mode === 'process' ? 'lr' : 'tb'));
+        var shape = cfg.shape || 'rect';
+        if (shape !== 'rect' && shape !== 'circle' && shape !== 'hex') {
+            shape = 'rect';
+        }
         var connector = cfg.connector || 'curved';
+        var zoomEnabled = cfg.zoom !== false && !isMobile();
+
         var nodes = cfg.nodes.map(function (n, i) {
             return {
                 id: String(n.id || ('n' + i)),
@@ -242,20 +415,30 @@
                 detail: n.detail || '',
                 link: n.link || '',
                 decision: !!n.decision,
-                root: !!n.root || (!n.parent)
+                x: typeof n.x === 'number' ? n.x : parseFloat(n.x) || 10,
+                y: typeof n.y === 'number' ? n.y : parseFloat(n.y) || 10,
+                shape: n.shape || shape
             };
         });
+        nodes = breakCycles(nodes);
 
-        // Flag actual roots (no parent or parent missing)
         var ids = {};
         nodes.forEach(function (n) { ids[n.id] = true; });
         nodes.forEach(function (n) {
             n.root = !n.parent || !ids[n.parent];
         });
 
-        var positions = mode === 'process' ? layoutProcess(nodes) : layoutOrg(nodes);
-        var maxX = 0;
-        var maxY = 0;
+        var positions;
+        if (mode === 'freeform') {
+            positions = layoutFreeform(nodes);
+        } else if (mode === 'process') {
+            positions = layoutProcess(nodes, direction);
+        } else {
+            positions = layoutOrg(nodes, direction);
+        }
+
+        var maxX = mode === 'freeform' ? FREEFORM_W : 0;
+        var maxY = mode === 'freeform' ? FREEFORM_H : 0;
         Object.keys(positions).forEach(function (id) {
             maxX = Math.max(maxX, positions[id].x + NODE_W);
             maxY = Math.max(maxY, positions[id].y + NODE_H);
@@ -263,14 +446,18 @@
         maxX += 24;
         maxY += 24;
 
+        var viewport = ensureViewport(root);
         var stage = root.querySelector('.rawnaq-flow-stage');
         if (!stage) {
             stage = document.createElement('div');
             stage.className = 'rawnaq-flow-stage is-responsive';
-            root.appendChild(stage);
+            viewport.appendChild(stage);
         } else {
             stage.classList.add('is-responsive');
             stage.innerHTML = '';
+            if (stage.parentNode !== viewport) {
+                viewport.appendChild(stage);
+            }
         }
 
         var wrap = document.createElement('div');
@@ -290,7 +477,10 @@
         var byId = {};
         nodes.forEach(function (n) { byId[n.id] = n; });
 
-        nodes.forEach(function (n) {
+        var useLazy = nodes.length >= LAZY_THRESHOLD;
+        var axis = edgeAxis(direction, mode);
+
+        nodes.forEach(function (n, idx) {
             var pos = positions[n.id];
             if (!pos) {
                 return;
@@ -303,13 +493,16 @@
                 el = document.createElement('button');
                 el.type = 'button';
             }
-            el.className = 'rawnaq-flow-node'
+            var nodeShape = n.shape || shape;
+            el.className = 'rawnaq-flow-node shape-' + nodeShape
                 + (n.root ? ' is-root' : '')
-                + (n.decision ? ' is-decision' : '');
+                + (n.decision ? ' is-decision' : '')
+                + (useLazy && idx >= 8 ? ' is-lazy' : '');
             el.style.left = pos.x + 'px';
             el.style.top = pos.y + 'px';
             el.style.width = NODE_W + 'px';
             el.setAttribute('data-id', n.id);
+            el.setAttribute('data-shape', nodeShape);
             el.innerHTML = renderIcon(n)
                 + '<div class="rawnaq-flow-title">' + escapeHtml(n.title) + '</div>'
                 + (n.role ? '<div class="rawnaq-flow-role">' + escapeHtml(n.role) + '</div>' : '');
@@ -321,7 +514,7 @@
                 return;
             }
             var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', edgePath(mode, connector, byId[n.parent], n, positions[n.parent], positions[n.id]));
+            path.setAttribute('d', edgePath(axis, connector, positions[n.parent], positions[n.id], direction));
             if (byId[n.parent].decision || n.decision) {
                 path.classList.add('accent');
             }
@@ -353,6 +546,85 @@
         stage.appendChild(wrap);
         stage.appendChild(mobile);
         stage.appendChild(detail);
+
+        // Zoom / pan
+        var scale = 1;
+        var panX = 0;
+        var panY = 0;
+        var dragging = false;
+        var lastX = 0;
+        var lastY = 0;
+        var onWheel = null;
+        var onPointerDown = null;
+        var onPointerMove = null;
+        var onPointerUp = null;
+
+        if (zoomEnabled) {
+            var chrome = document.createElement('div');
+            chrome.className = 'rawnaq-flow-zoom';
+            chrome.innerHTML = '<button type="button" class="fc-zoom-in" aria-label="Zoom in">+</button>'
+                + '<button type="button" class="fc-zoom-out" aria-label="Zoom out">−</button>'
+                + '<button type="button" class="fc-zoom-reset" aria-label="Reset zoom">⟲</button>';
+            root.insertBefore(chrome, viewport);
+
+            function clampScale(s) {
+                return Math.max(0.4, Math.min(2.5, s));
+            }
+            function refreshTransform() {
+                applyTransform(wrap, scale, panX, panY);
+            }
+
+            chrome.querySelector('.fc-zoom-in').addEventListener('click', function () {
+                scale = clampScale(scale + 0.15);
+                refreshTransform();
+            });
+            chrome.querySelector('.fc-zoom-out').addEventListener('click', function () {
+                scale = clampScale(scale - 0.15);
+                refreshTransform();
+            });
+            chrome.querySelector('.fc-zoom-reset').addEventListener('click', function () {
+                scale = 1;
+                panX = 0;
+                panY = 0;
+                refreshTransform();
+            });
+
+            onWheel = function (e) {
+                e.preventDefault();
+                var delta = e.deltaY > 0 ? -0.08 : 0.08;
+                scale = clampScale(scale + delta);
+                refreshTransform();
+            };
+            viewport.addEventListener('wheel', onWheel, { passive: false });
+
+            onPointerDown = function (e) {
+                if (e.target.closest && e.target.closest('.rawnaq-flow-node')) {
+                    return;
+                }
+                dragging = true;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                viewport.classList.add('is-panning');
+            };
+            onPointerMove = function (e) {
+                if (!dragging) {
+                    return;
+                }
+                panX += e.clientX - lastX;
+                panY += e.clientY - lastY;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                refreshTransform();
+            };
+            onPointerUp = function () {
+                dragging = false;
+                viewport.classList.remove('is-panning');
+            };
+            viewport.addEventListener('pointerdown', onPointerDown);
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+            viewport.classList.add('has-zoom');
+        }
 
         function showDetail(e, node, el) {
             if (!node.detail) {
@@ -386,32 +658,65 @@
         var reduced = prefersReducedMotion();
         var nodeEls = canvas.querySelectorAll('.rawnaq-flow-node');
         var paths = svg.querySelectorAll('path');
+        var lazyObs = null;
 
-        if (reduced) {
-            nodeEls.forEach(function (el) { el.classList.add('show'); });
-            paths.forEach(function (p) {
-                p.style.setProperty('--len', '0');
-                p.classList.add('lit');
+        function activateNode(el) {
+            el.classList.remove('is-lazy');
+            el.classList.add('show');
+        }
+
+        if (useLazy && 'IntersectionObserver' in window) {
+            lazyObs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        activateNode(entry.target);
+                        lazyObs.unobserve(entry.target);
+                    }
+                });
+            }, { root: stage, rootMargin: '80px', threshold: 0.01 });
+
+            nodeEls.forEach(function (el, i) {
+                if (i < 8 || reduced) {
+                    activateNode(el);
+                } else {
+                    lazyObs.observe(el);
+                }
             });
+        } else if (reduced) {
+            nodeEls.forEach(function (el) { el.classList.add('show'); });
         } else {
             requestAnimationFrame(function () {
                 nodeEls.forEach(function (el, i) {
                     setTimeout(function () { el.classList.add('show'); }, 70 * i);
                 });
-                setTimeout(function () {
-                    paths.forEach(function (p, i) {
-                        var len = 1;
-                        try { len = p.getTotalLength() || 1; } catch (err) { len = 1; }
-                        p.style.setProperty('--len', String(len));
-                        setTimeout(function () { p.classList.add('lit'); }, 100 * i);
-                    });
-                }, 180);
             });
+        }
+
+        if (reduced) {
+            paths.forEach(function (p) {
+                p.style.setProperty('--len', '0');
+                p.classList.add('lit');
+            });
+        } else {
+            setTimeout(function () {
+                paths.forEach(function (p, i) {
+                    var len = 1;
+                    try { len = p.getTotalLength() || 1; } catch (err) { len = 1; }
+                    p.style.setProperty('--len', String(len));
+                    setTimeout(function () { p.classList.add('lit'); }, 100 * i);
+                });
+            }, 180);
         }
 
         instances.push({
             root: root,
+            viewport: viewport,
             onDocClick: onDocClick,
+            onWheel: onWheel,
+            onPointerDown: onPointerDown,
+            onPointerMove: onPointerMove,
+            onPointerUp: onPointerUp,
+            lazyObs: lazyObs,
             observer: null
         });
     }
@@ -474,7 +779,6 @@
         jQuery(window).on('elementor/frontend/init', hookElementor);
     }
 
-    // Public API for Gutenberg / Elementor live preview
     window.rawnaqFlowChartBoot = function () { initAll(true); };
     window.rawnaqFlowChartMount = remount;
 })();

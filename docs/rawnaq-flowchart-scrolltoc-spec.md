@@ -1,5 +1,14 @@
 # Rawnaq — ফিচার স্পেক: Hub Diagram / Scroll Timeline সম্প্রসারণ
 
+> **Status (v1.10.0)** — Done checklist
+> - [x] Flow Chart: freeform X/Y, shapes (rect/circle/hex), direction TB/LR/RL + RTL flip
+> - [x] Flow Chart: zoom/pan canvas, lazy mount when ≥20 nodes, DFS parent-cycle guards
+> - [x] Flow Chart: Gutenberg parent SelectControl; Elementor parent_id text + cycle break
+> - [x] Scroll Progress + TOC: `dock_attach` / `dockAttach` → Floating Dock Contents trigger (FAB fallback)
+> - [ ] Custom SVG node shapes (out of scope)
+> - [ ] Full Elementor dynamic parent SELECT (out of scope)
+> - [ ] Multiple TOC links as separate dock items (out of scope)
+
 দুটো নতুন মডিউল কভার করা হয়েছে:
 1. **Flow Chart** (Hub Diagram-এর সম্প্রসারণ — org chart + process flow)
 2. **Scroll Progress + TOC** (Scroll Timeline-এর সম্প্রসারণ — reading progress + auto-highlighting সূচিপত্র)

@@ -25,6 +25,77 @@
         }
     }
 
+    function bentoParseVideo(url) {
+        var raw = (url || '').toString().trim();
+        if (!raw) {
+            return null;
+        }
+        var yt = raw.match(/(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
+        if (yt) {
+            return {
+                kind: 'youtube',
+                embed: 'https://www.youtube-nocookie.com/embed/' + yt[1] + '?rel=0&modestbranding=1'
+            };
+        }
+        var vim = raw.match(/(?:player\.)?vimeo\.com\/(?:video\/)?(\d+)/i);
+        if (vim) {
+            return {
+                kind: 'vimeo',
+                embed: 'https://player.vimeo.com/video/' + vim[1] + '?title=0&byline=0&portrait=0'
+            };
+        }
+        return { kind: 'file', src: raw };
+    }
+
+    function bentoTagEl(el, cell) {
+        if (!cell.tag) {
+            return null;
+        }
+        var cls = 'rawnaq-bento-tag';
+        var style = {};
+        if (cell.tagBg || cell.tagColor) {
+            cls += ' has-custom';
+            if (cell.tagBg) {
+                style.background = cell.tagBg;
+                style['--bento-tag-cell-bg'] = cell.tagBg;
+            }
+            if (cell.tagColor) {
+                style.color = cell.tagColor;
+                style['--bento-tag-cell-color'] = cell.tagColor;
+            }
+        }
+        return el('div', { className: cls, style: style }, cell.tag);
+    }
+
+    function bentoCellLayout(cell) {
+        var col = Math.max(1, parseInt(cell.col, 10) || 1);
+        var row = Math.max(1, parseInt(cell.row, 10) || 1);
+        var order = parseInt(cell.order, 10) || 0;
+        var colMd = parseInt(cell.colMd, 10) || 0;
+        var rowMd = parseInt(cell.rowMd, 10) || 0;
+        var orderMd = parseInt(cell.orderMd, 10) || 0;
+        var colSm = parseInt(cell.colSm, 10) || 0;
+        var rowSm = parseInt(cell.rowSm, 10) || 0;
+        var orderSm = parseInt(cell.orderSm, 10) || 0;
+        var style = {
+            gridColumn: 'span ' + col,
+            gridRow: 'span ' + row,
+            '--bento-span-col': String(col),
+            '--bento-span-row': String(row)
+        };
+        if (order !== 0) {
+            style.order = String(order);
+            style['--bento-order'] = String(order);
+        }
+        if (colMd > 0) style['--bento-span-col-md'] = String(colMd);
+        if (rowMd > 0) style['--bento-span-row-md'] = String(rowMd);
+        if (orderMd !== 0) style['--bento-order-md'] = String(orderMd);
+        if (colSm > 0) style['--bento-span-col-sm'] = String(colSm);
+        if (rowSm > 0) style['--bento-span-row-sm'] = String(rowSm);
+        if (orderSm !== 0) style['--bento-order-sm'] = String(orderSm);
+        return { style: style, hasSmSpan: colSm > 0 };
+    }
+
     // ─────────────────────────────────────────────────────────
     // 1. HUB DIAGRAM BLOCK
     // ─────────────────────────────────────────────────────────
@@ -431,12 +502,23 @@
         attributes: {
             stepsJson: {
                 type: 'string',
-                default: '[{"meta":"Phase 1","title":"Ideation & Sketching","desc":"Gather initial ideas and draft blueprints.","icon":"","imageUrl":"","imageId":0,"ctaText":"","ctaLink":""},{"meta":"Phase 2","title":"Prototype Review","desc":"Interactive mockups and client reviews.","icon":"","imageUrl":"","imageId":0,"ctaText":"","ctaLink":""},{"meta":"Phase 3","title":"Development & Coding","desc":"Build, test, and deploy clean code.","icon":"","imageUrl":"","imageId":0,"ctaText":"","ctaLink":""}]'
+                default: '[{"meta":"Phase 1","title":"Ideation & Sketching","desc":"Gather initial ideas and draft blueprints.","icon":"","imageUrl":"","imageId":0,"video":"","ctaText":"","ctaLink":""},{"meta":"Phase 2","title":"Prototype Review","desc":"Interactive mockups and client reviews.","icon":"","imageUrl":"","imageId":0,"video":"","ctaText":"","ctaLink":""},{"meta":"Phase 3","title":"Development & Coding","desc":"Build, test, and deploy clean code.","icon":"","imageUrl":"","imageId":0,"video":"","ctaText":"","ctaLink":""}]'
             },
             layout: { type: 'string', default: 'alternating' },
             showNumbers: { type: 'boolean', default: true },
+            timelineName: { type: 'string', default: '' },
+            source: { type: 'string', default: 'manual' },
+            postType: { type: 'string', default: 'post' },
+            postsPerPage: { type: 'number', default: 6 },
+            orderby: { type: 'string', default: 'date' },
+            order: { type: 'string', default: 'DESC' },
+            taxonomy: { type: 'string', default: '' },
+            terms: { type: 'string', default: '' },
+            includeIds: { type: 'string', default: '' },
+            excludeIds: { type: 'string', default: '' },
             lineBg: { type: 'string', default: '#e2e8f0' },
             lineActive: { type: 'string', default: '#6366f1' },
+            lineWidth: { type: 'number', default: 4 },
             bulletBorder: { type: 'string', default: '#cbd5e1' },
             bulletActive: { type: 'string', default: '#6366f1' },
             cardBg: { type: 'string', default: '#ffffff' },
@@ -446,7 +528,10 @@
             ctaColor: { type: 'string', default: '#6366f1' },
             cardRadius: { type: 'number', default: 16 },
             bulletSize: { type: 'number', default: 28 },
-            itemGap: { type: 'number', default: 20 }
+            itemGap: { type: 'number', default: 20 },
+            initialVisible: { type: 'number', default: 0 },
+            loadChunk: { type: 'number', default: 3 },
+            loadMoreText: { type: 'string', default: 'Load more' }
         },
         edit: function(props) {
             var attributes = props.attributes;
@@ -454,9 +539,17 @@
             var steps = safeParseJson(attributes.stepsJson, []);
             var layout = attributes.layout || 'alternating';
             var showNumbers = attributes.showNumbers !== false;
+            var source = attributes.source || 'manual';
+            var initialVisible = parseInt(attributes.initialVisible, 10) || 0;
+            var loadChunk = parseInt(attributes.loadChunk, 10) || 3;
+            var customTl = (attributes.timelineName || '').toString().replace(/[^a-zA-Z0-9_-]/g, '');
+            var tlName = customTl || 'rawnaq-tl-editor';
+            if (/^[0-9]/.test(tlName)) { tlName = 'tl-' + tlName; }
             var wrapStyle = {
+                'scroll-timeline-name': '--' + tlName,
                 '--tl-line-bg': attributes.lineBg || '#e2e8f0',
                 '--tl-line-active': attributes.lineActive || '#6366f1',
+                '--tl-line-width': (attributes.lineWidth || 4) + 'px',
                 '--tl-bullet-border': attributes.bulletBorder || '#cbd5e1',
                 '--tl-bullet-active': attributes.bulletActive || '#6366f1',
                 '--tl-card-bg': attributes.cardBg || '#ffffff',
@@ -480,6 +573,7 @@
             }
 
             function sideClass(idx) {
+                if (layout === 'horizontal') return 'h-item';
                 if (layout === 'left') return 'left-item';
                 if (layout === 'right') return 'right-item';
                 return (idx % 2 === 0) ? 'left-item' : 'right-item';
@@ -505,6 +599,11 @@
                         label: 'Dashicon Class', value: step.icon || '',
                         help: 'e.g. dashicons-star-filled',
                         onChange: function(val) { patchStep(idx, { icon: val }); }
+                    }),
+                    el(TextControl, {
+                        label: 'Video URL', value: step.video || '',
+                        help: 'YouTube, Vimeo, or mp4/webm — prefers over image when set.',
+                        onChange: function(val) { patchStep(idx, { video: val }); }
                     }),
                     el(MediaUploadCheck || 'div', {},
                         el(MediaUpload, {
@@ -557,7 +656,23 @@
             var timelineElements = steps.map(function(step, idx) {
                 var num = (idx + 1 < 10) ? ('0' + (idx + 1)) : String(idx + 1);
                 var children = [];
-                if (step.imageUrl) {
+                var videoParsed = bentoParseVideo(step.video);
+                if (videoParsed) {
+                    if (videoParsed.kind === 'file') {
+                        children.push(el('div', { className: 'rawnaq-timeline-media', key: 'vid' },
+                            el('video', { className: 'rawnaq-bento-video', src: videoParsed.src, muted: true, playsInline: true })
+                        ));
+                    } else {
+                        children.push(el('div', { className: 'rawnaq-timeline-media', key: 'vid' },
+                            el('iframe', {
+                                className: 'rawnaq-bento-embed',
+                                src: videoParsed.embed,
+                                title: 'Video',
+                                loading: 'lazy'
+                            })
+                        ));
+                    }
+                } else if (step.imageUrl) {
                     children.push(el('img', { className: 'rawnaq-timeline-thumb', src: step.imageUrl, alt: '', key: 'img' }));
                 }
                 if (step.meta) {
@@ -581,30 +696,128 @@
                 );
             });
 
-            var wrapClass = 'rawnaq-timeline-wrapper layout-' + layout + (showNumbers ? ' show-numbers' : '');
+            var wrapClass = 'rawnaq-timeline-wrapper layout-' + layout + ' is-editor' + (showNumbers ? ' show-numbers' : '');
+            var showLoadMore = initialVisible > 0 && steps.length > initialVisible;
 
             return el(Fragment, {},
                 el(InspectorControls, {},
                     el(PanelBody, { title: 'Layout', initialOpen: true },
+                        el(SelectControl, {
+                            label: 'Steps Source',
+                            value: source,
+                            options: [
+                                { label: 'Manual steps', value: 'manual' },
+                                { label: 'Posts / CPT query', value: 'query' }
+                            ],
+                            onChange: function(val) { setAttributes({ source: val }); }
+                        }),
                         el(SelectControl, {
                             label: 'Layout Mode',
                             value: layout,
                             options: [
                                 { label: 'Alternating (Left / Right)', value: 'alternating' },
                                 { label: 'All Left', value: 'left' },
-                                { label: 'All Right', value: 'right' }
+                                { label: 'All Right', value: 'right' },
+                                { label: 'Horizontal', value: 'horizontal' }
                             ],
                             onChange: function(val) { setAttributes({ layout: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Named Timeline ID',
+                            value: attributes.timelineName || '',
+                            help: 'Optional. Paste the same ID into Bento cells to sync scroll animations.',
+                            onChange: function(val) { setAttributes({ timelineName: val }); }
                         }),
                         el(ToggleControl, {
                             label: 'Show Step Numbers',
                             checked: showNumbers,
                             onChange: function(val) { setAttributes({ showNumbers: !!val }); }
-                        })
+                        }),
+                        el(RangeControl, {
+                            label: 'Initial Visible Steps',
+                            help: '0 = show all. Otherwise Load More reveals the rest.',
+                            value: initialVisible,
+                            onChange: function(val) { setAttributes({ initialVisible: val || 0 }); },
+                            min: 0, max: 50
+                        }),
+                        initialVisible > 0 ? el(RangeControl, {
+                            label: 'Load More Chunk Size',
+                            value: loadChunk,
+                            onChange: function(val) { setAttributes({ loadChunk: val || 3 }); },
+                            min: 1, max: 20
+                        }) : null,
+                        initialVisible > 0 ? el(TextControl, {
+                            label: 'Load More Label',
+                            value: attributes.loadMoreText || 'Load more',
+                            onChange: function(val) { setAttributes({ loadMoreText: val }); }
+                        }) : null
                     ),
+                    source === 'query' ? el(PanelBody, { title: 'Query', initialOpen: true },
+                        el(TextControl, {
+                            label: 'Post Type',
+                            value: attributes.postType || 'post',
+                            onChange: function(val) { setAttributes({ postType: val }); }
+                        }),
+                        el(RangeControl, {
+                            label: 'Posts Per Page',
+                            value: attributes.postsPerPage || 6,
+                            onChange: function(val) { setAttributes({ postsPerPage: val || 6 }); },
+                            min: 1, max: 50
+                        }),
+                        el(SelectControl, {
+                            label: 'Order By',
+                            value: attributes.orderby || 'date',
+                            options: [
+                                { label: 'Date', value: 'date' },
+                                { label: 'Title', value: 'title' },
+                                { label: 'Menu order', value: 'menu_order' },
+                                { label: 'Modified', value: 'modified' },
+                                { label: 'Random', value: 'rand' },
+                                { label: 'ID', value: 'ID' }
+                            ],
+                            onChange: function(val) { setAttributes({ orderby: val }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Order',
+                            value: attributes.order || 'DESC',
+                            options: [
+                                { label: 'Descending', value: 'DESC' },
+                                { label: 'Ascending', value: 'ASC' }
+                            ],
+                            onChange: function(val) { setAttributes({ order: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Taxonomy',
+                            value: attributes.taxonomy || '',
+                            help: 'e.g. category, post_tag',
+                            onChange: function(val) { setAttributes({ taxonomy: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Term Slugs',
+                            value: attributes.terms || '',
+                            help: 'Comma-separated',
+                            onChange: function(val) { setAttributes({ terms: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Include IDs',
+                            value: attributes.includeIds || '',
+                            onChange: function(val) { setAttributes({ includeIds: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Exclude IDs',
+                            value: attributes.excludeIds || '',
+                            onChange: function(val) { setAttributes({ excludeIds: val }); }
+                        })
+                    ) : null,
                     el(PanelBody, { title: 'Style & Colors', initialOpen: true },
                         el(TextControl, { label: 'Line Background (Hex)', value: attributes.lineBg || '#e2e8f0', onChange: function(val) { setAttributes({ lineBg: val }); } }),
                         el(TextControl, { label: 'Active Line (Hex)', value: attributes.lineActive || '#6366f1', onChange: function(val) { setAttributes({ lineActive: val }); } }),
+                        el(RangeControl, {
+                            label: 'Line Thickness (px)',
+                            value: attributes.lineWidth || 4,
+                            onChange: function(val) { setAttributes({ lineWidth: val }); },
+                            min: 1, max: 12
+                        }),
                         el(TextControl, { label: 'Bullet Border (Hex)', value: attributes.bulletBorder || '#cbd5e1', onChange: function(val) { setAttributes({ bulletBorder: val }); } }),
                         el(TextControl, { label: 'Active Bullet (Hex)', value: attributes.bulletActive || '#6366f1', onChange: function(val) { setAttributes({ bulletActive: val }); } }),
                         el(TextControl, { label: 'Card Background (Hex)', value: attributes.cardBg || '#ffffff', onChange: function(val) { setAttributes({ cardBg: val }); } }),
@@ -631,7 +844,7 @@
                             min: 8, max: 80
                         })
                     ),
-                    el(PanelBody, { title: 'Timeline Steps', initialOpen: false },
+                    source === 'manual' ? el(PanelBody, { title: 'Timeline Steps', initialOpen: false },
                         stepFields,
                         el(Button, {
                             isSecondary: true,
@@ -643,17 +856,39 @@
                                     icon: '',
                                     imageUrl: '',
                                     imageId: 0,
+                                    video: '',
                                     ctaText: '',
                                     ctaLink: ''
                                 }));
                             }
                         }, '+ Add Milestone')
-                    )
+                    ) : null
                 ),
-                el('div', { className: wrapClass, 'data-show-numbers': showNumbers ? '1' : '0', style: wrapStyle },
+                el('div', {
+                    className: wrapClass,
+                    'data-show-numbers': showNumbers ? '1' : '0',
+                    'data-tl-name': tlName,
+                    'data-initial-visible': '0',
+                    style: wrapStyle
+                },
                     el('div', { className: 'rawnaq-timeline-line-bg' }),
-                    el('div', { className: 'rawnaq-timeline-line-active', style: { height: '30%' } }),
-                    timelineElements
+                    el('div', { className: 'rawnaq-timeline-line-active', style: layout === 'horizontal' ? { width: '30%' } : { height: '30%' } }),
+                    source === 'query'
+                        ? el('div', { className: 'rawnaq-timeline-item left-item item-active' },
+                            el('span', { className: 'rawnaq-timeline-bullet' },
+                                showNumbers ? el('span', { className: 'num' }, '01') : null
+                            ),
+                            el('div', { className: 'rawnaq-timeline-card' },
+                                el('span', { className: 'rawnaq-timeline-meta' }, 'Query mode'),
+                                el('h4', {}, 'Posts load on the frontend'),
+                                el('p', {}, 'Preview the published page to see live CPT / post results.'),
+                                el('p', { style: { marginTop: '8px', fontSize: '12px', opacity: 0.8 } }, 'Named timeline: ' + tlName)
+                            )
+                        )
+                        : timelineElements,
+                    source !== 'query' && showLoadMore ? el('div', { className: 'rawnaq-timeline-load-more' },
+                        el('button', { type: 'button' }, attributes.loadMoreText || 'Load more')
+                    ) : null
                 )
             );
         },
@@ -663,6 +898,8 @@
     // ─────────────────────────────────────────────────────────
     // 4. FLOATING DOCK BLOCK
     // ─────────────────────────────────────────────────────────
+    var defaultWaSchedule = '{"mon":{"enabled":true,"open":"09:00","close":"18:00"},"tue":{"enabled":true,"open":"09:00","close":"18:00"},"wed":{"enabled":true,"open":"09:00","close":"18:00"},"thu":{"enabled":true,"open":"09:00","close":"18:00"},"fri":{"enabled":true,"open":"09:00","close":"18:00"},"sat":{"enabled":false,"open":"09:00","close":"18:00"},"sun":{"enabled":false,"open":"09:00","close":"18:00"}}';
+
     registerBlockType('rawnaq/floating-dock', {
         title: 'Floating Dock Menu (Rawnaq)',
         icon: 'navigator',
@@ -689,13 +926,52 @@
             badgeBg: { type: 'string', default: '#ef4444' },
             badgeColor: { type: 'string', default: '#ffffff' },
             magnify: { type: 'boolean', default: true },
-            maxScale: { type: 'number', default: 1.6 }
+            maxScale: { type: 'number', default: 1.6 },
+            whatsappMode: { type: 'boolean', default: false },
+            positionWa: { type: 'string', default: 'right' },
+            primaryChannel: { type: 'string', default: 'whatsapp' },
+            agentsJson: {
+                type: 'string',
+                default: '[{"name":"Customer Support","role":"Live Support","number":"8801700000000","avatar":"","msg":"আসসালামু আলাইকুম, আমি {pageTitle} পেজ থেকে লিখছি ({url})।"}]'
+            },
+            defaultMsg: {
+                type: 'string',
+                default: 'আসসালামু আলাইকুম, আমি {pageTitle} থেকে যোগাযোগ করছি।'
+            },
+            secCall: { type: 'string', default: '' },
+            secMessenger: { type: 'string', default: '' },
+            secEmail: { type: 'string', default: '' },
+            secTelegram: { type: 'string', default: '' },
+            timezone: { type: 'string', default: 'UTC+6' },
+            scheduleJson: { type: 'string', default: defaultWaSchedule },
+            offHoursBehavior: { type: 'string', default: 'offline_badge' },
+            offHoursRedirect: { type: 'string', default: '' },
+            qrFallback: { type: 'boolean', default: true },
+            desktopAction: { type: 'string', default: 'choice' },
+            triggerDelay: { type: 'number', default: 0 },
+            triggerScroll: { type: 'number', default: 0 },
+            greetingText: { type: 'string', default: 'আসসালামু আলাইকুম, সাহায্য লাগবে?' },
+            hideDesktop: { type: 'boolean', default: false },
+            safeOffset: { type: 'number', default: 0 },
+            visMode: { type: 'string', default: 'all' },
+            visIds: { type: 'string', default: '' },
+            visIncludeFront: { type: 'boolean', default: false },
+            visIncludeProducts: { type: 'boolean', default: false },
+            trackClicks: { type: 'boolean', default: true }
         },
         edit: function(props) {
             var attributes = props.attributes;
             var setAttributes = props.setAttributes;
             var items = safeParseJson(attributes.itemsJson, []);
+            var agents = safeParseJson(attributes.agentsJson, []);
             var magnify = attributes.magnify !== false;
+            var isWaMode = !!attributes.whatsappMode;
+            var schedule;
+            try {
+                schedule = JSON.parse(attributes.scheduleJson || defaultWaSchedule);
+            } catch (e) {
+                schedule = JSON.parse(defaultWaSchedule);
+            }
 
             function updateItems(newItems) {
                 setAttributes({ itemsJson: JSON.stringify(newItems) });
@@ -707,8 +983,25 @@
                 updateItems(updated);
             }
 
+            function updateAgents(next) {
+                setAttributes({ agentsJson: JSON.stringify(next) });
+            }
+
+            function patchAgent(idx, patch) {
+                var updated = agents.slice();
+                updated[idx] = Object.assign({}, updated[idx], patch);
+                updateAgents(updated);
+            }
+
+            function patchSchedule(day, patch) {
+                var next = Object.assign({}, schedule);
+                next[day] = Object.assign({}, next[day] || { enabled: true, open: '09:00', close: '18:00' }, patch);
+                setAttributes({ scheduleJson: JSON.stringify(next) });
+            }
+
             var wrapStyle = {
                 '--dock-offset': (attributes.offset || 20) + 'px',
+                '--dock-safe-offset': (attributes.safeOffset || 0) + 'px',
                 '--dock-bg': attributes.dockBg || 'rgba(255,255,255,0.55)',
                 '--dock-border': attributes.dockBorder || 'rgba(255,255,255,0.5)',
                 '--dock-blur': (attributes.dockBlur || 16) + 'px',
@@ -729,11 +1022,11 @@
                 margin: '0 auto'
             };
 
-            var isWaMode = !!attributes.whatsappMode;
             var activePos = isWaMode ? (attributes.positionWa || 'right') : (attributes.position || 'bottom');
             var className = 'rawnaq-dock-container pos-' + activePos +
                 (isWaMode ? ' rawnaq-whatsapp-dock-mode' : '') +
                 (attributes.hideMobile ? ' hide-mobile' : '') +
+                (attributes.hideDesktop ? ' hide-desktop' : '') +
                 (attributes.mobileLabels ? ' mobile-labels' : '');
 
             var itemFields = items.map(function(item, idx) {
@@ -776,6 +1069,58 @@
                 );
             });
 
+            var agentFields = agents.map(function(agent, idx) {
+                return el('div', { style: { background: '#ecfdf5', padding: '10px', marginBottom: '10px', borderRadius: '6px' }, key: 'ag-' + idx },
+                    el('p', { style: { margin: '0 0 8px', fontWeight: 700 } }, 'Agent ' + (idx + 1)),
+                    el(TextControl, { label: 'Name', value: agent.name || '', onChange: function(val) { patchAgent(idx, { name: val }); } }),
+                    el(TextControl, { label: 'Role', value: agent.role || '', onChange: function(val) { patchAgent(idx, { role: val }); } }),
+                    el(TextControl, {
+                        label: 'WhatsApp Number', value: agent.number || '',
+                        help: 'Country code, no + or spaces (e.g. 88017…)',
+                        onChange: function(val) { patchAgent(idx, { number: val }); }
+                    }),
+                    el(TextControl, { label: 'Avatar URL', value: agent.avatar || '', onChange: function(val) { patchAgent(idx, { avatar: val }); } }),
+                    el(TextareaControl, {
+                        label: 'Prefilled Message',
+                        value: agent.msg || '',
+                        help: 'Tokens: {pageTitle} {url} {siteTitle} {date} {time} · Woo: {productName} {price} {sku} {productUrl}',
+                        onChange: function(val) { patchAgent(idx, { msg: val }); }
+                    }),
+                    el(Button, {
+                        isDestructive: true, isSmall: true,
+                        onClick: function() { updateAgents(agents.filter(function(_, i) { return i !== idx; })); }
+                    }, 'Remove')
+                );
+            });
+
+            var dayKeys = [
+                { key: 'mon', label: 'Mon' }, { key: 'tue', label: 'Tue' }, { key: 'wed', label: 'Wed' },
+                { key: 'thu', label: 'Thu' }, { key: 'fri', label: 'Fri' }, { key: 'sat', label: 'Sat' },
+                { key: 'sun', label: 'Sun' }
+            ];
+            var scheduleFields = dayKeys.map(function(d) {
+                var day = schedule[d.key] || { enabled: true, open: '09:00', close: '18:00' };
+                return el('div', { key: d.key, style: { marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #e5e7eb' } },
+                    el(ToggleControl, {
+                        label: d.label + ' open',
+                        checked: !!day.enabled,
+                        onChange: function(val) { patchSchedule(d.key, { enabled: !!val }); }
+                    }),
+                    day.enabled ? el(TextControl, {
+                        label: 'Hours (open–close)',
+                        value: (day.open || '09:00') + '–' + (day.close || '18:00'),
+                        help: 'Format: 09:00–18:00',
+                        onChange: function(val) {
+                            var parts = String(val || '').split(/[–\-]/);
+                            patchSchedule(d.key, {
+                                open: (parts[0] || '09:00').trim(),
+                                close: (parts[1] || '18:00').trim()
+                            });
+                        }
+                    }) : null
+                );
+            });
+
             var previewItems;
             if (isWaMode) {
                 var waIconClass = 'dashicons-whatsapp';
@@ -788,22 +1133,19 @@
                 if (attributes.primaryChannel === 'call') {
                     waBrandColor = '#3b82f6';
                 } else if (attributes.primaryChannel === 'messenger') {
-                    waBrandColor = '#a855f7';
+                    waBrandColor = '#0084ff';
                 }
 
                 previewItems = [
-                    el('a', {
-                        className: 'rawnaq-dock-item active-wa-trigger',
+                    el('button', {
+                        type: 'button',
+                        className: 'rawnaq-wa-main-trigger is-online',
                         key: 'wa-primary',
-                        href: '#',
-                        onClick: function(e) { e.preventDefault(); },
-                        style: { '--hover-color': waBrandColor },
+                        style: { backgroundColor: waBrandColor },
                         'aria-label': attributes.greetingText || 'Contact Us'
                     },
-                        el('span', { className: 'rawnaq-dock-icon' },
-                            el('span', { className: 'dashicons ' + waIconClass, 'aria-hidden': true })
-                        ),
-                        el('span', { className: 'rawnaq-dock-tooltip' }, attributes.greetingText || 'Contact Us')
+                        el('span', { className: 'dashicons ' + waIconClass, 'aria-hidden': true }),
+                        el('span', { className: 'online-dot', 'aria-hidden': true })
                     )
                 ];
             } else {
@@ -828,8 +1170,113 @@
 
             return el(Fragment, {},
                 el(InspectorControls, {},
-                    el(PanelBody, { title: 'Layout', initialOpen: true },
+                    el(PanelBody, { title: 'WhatsApp Contact Mode', initialOpen: true },
+                        el(ToggleControl, {
+                            label: 'Enable WhatsApp Mode',
+                            checked: isWaMode,
+                            onChange: function(val) { setAttributes({ whatsappMode: !!val }); }
+                        }),
+                        isWaMode ? el(SelectControl, {
+                            label: 'Position',
+                            value: attributes.positionWa || 'right',
+                            options: [
+                                { label: 'Bottom Right', value: 'right' },
+                                { label: 'Bottom Left', value: 'left' }
+                            ],
+                            onChange: function(val) { setAttributes({ positionWa: val }); }
+                        }) : null,
+                        isWaMode ? el(SelectControl, {
+                            label: 'Primary Channel',
+                            value: attributes.primaryChannel || 'whatsapp',
+                            options: [
+                                { label: 'WhatsApp Chat', value: 'whatsapp' },
+                                { label: 'Phone Call', value: 'call' },
+                                { label: 'FB Messenger', value: 'messenger' }
+                            ],
+                            onChange: function(val) { setAttributes({ primaryChannel: val }); }
+                        }) : null,
+                        isWaMode ? el(TextControl, {
+                            label: 'Greeting Bubble',
+                            value: attributes.greetingText || '',
+                            onChange: function(val) { setAttributes({ greetingText: val }); }
+                        }) : null,
+                        isWaMode ? el(SelectControl, {
+                            label: 'Desktop Chat Action',
+                            value: attributes.desktopAction || 'choice',
+                            options: [
+                                { label: 'Show options (Web + QR)', value: 'choice' },
+                                { label: 'Open WhatsApp Web directly', value: 'web' },
+                                { label: 'QR first (Web still available)', value: 'qr' }
+                            ],
+                            help: 'Phones always open the app. Desktop can offer both.',
+                            onChange: function(val) { setAttributes({ desktopAction: val, qrFallback: val !== 'web' }); }
+                        }) : null,
+                        isWaMode ? el(RangeControl, {
+                            label: 'Trigger Delay (sec)',
+                            value: attributes.triggerDelay || 0,
+                            onChange: function(val) { setAttributes({ triggerDelay: val || 0 }); },
+                            min: 0, max: 60
+                        }) : null,
+                        isWaMode ? el(RangeControl, {
+                            label: 'Trigger Scroll (%)',
+                            value: attributes.triggerScroll || 0,
+                            onChange: function(val) { setAttributes({ triggerScroll: val || 0 }); },
+                            min: 0, max: 100
+                        }) : null
+                    ),
+                    isWaMode ? el(PanelBody, { title: 'WhatsApp Agents', initialOpen: true },
+                        agentFields,
+                        el(Button, {
+                            isSecondary: true,
+                            onClick: function() {
+                                updateAgents(agents.concat({
+                                    name: 'Agent',
+                                    role: 'Support',
+                                    number: '8801700000000',
+                                    avatar: '',
+                                    msg: 'আসসালামু আলাইকুম, আমি {pageTitle} পেজ থেকে লিখছি ({url})।'
+                                }));
+                            }
+                        }, '+ Add Agent'),
+                        el(TextareaControl, {
+                            label: 'Default Prefilled Message',
+                            value: attributes.defaultMsg || '',
+                            help: 'Used when an agent has no message. Same tokens as above.',
+                            onChange: function(val) { setAttributes({ defaultMsg: val }); }
+                        })
+                    ) : null,
+                    isWaMode ? el(PanelBody, { title: 'Secondary Channels', initialOpen: false },
+                        el(TextControl, { label: 'Call Number', value: attributes.secCall || '', onChange: function(val) { setAttributes({ secCall: val }); } }),
+                        el(TextControl, { label: 'Messenger Username', value: attributes.secMessenger || '', onChange: function(val) { setAttributes({ secMessenger: val }); } }),
+                        el(TextControl, { label: 'Email', value: attributes.secEmail || '', onChange: function(val) { setAttributes({ secEmail: val }); } }),
+                        el(TextControl, { label: 'Telegram Username', value: attributes.secTelegram || '', onChange: function(val) { setAttributes({ secTelegram: val }); } })
+                    ) : null,
+                    isWaMode ? el(PanelBody, { title: 'Business Hours', initialOpen: false },
+                        el(TextControl, {
+                            label: 'Timezone offset',
+                            value: attributes.timezone || 'UTC+6',
+                            help: 'e.g. UTC+6 for Bangladesh',
+                            onChange: function(val) { setAttributes({ timezone: val }); }
+                        }),
+                        scheduleFields,
                         el(SelectControl, {
+                            label: 'Off-hours Behavior',
+                            value: attributes.offHoursBehavior || 'offline_badge',
+                            options: [
+                                { label: 'Offline badge', value: 'offline_badge' },
+                                { label: 'Hide dock', value: 'hide' },
+                                { label: 'Redirect URL', value: 'redirect' }
+                            ],
+                            onChange: function(val) { setAttributes({ offHoursBehavior: val }); }
+                        }),
+                        attributes.offHoursBehavior === 'redirect' ? el(TextControl, {
+                            label: 'Redirect URL',
+                            value: attributes.offHoursRedirect || '',
+                            onChange: function(val) { setAttributes({ offHoursRedirect: val }); }
+                        }) : null
+                    ) : null,
+                    el(PanelBody, { title: 'Layout', initialOpen: !isWaMode },
+                        !isWaMode ? el(SelectControl, {
                             label: 'Position', value: attributes.position || 'bottom',
                             options: [
                                 { label: 'Bottom Center', value: 'bottom' },
@@ -837,25 +1284,70 @@
                                 { label: 'Sidebar Right', value: 'right' }
                             ],
                             onChange: function(val) { setAttributes({ position: val }); }
-                        }),
+                        }) : null,
                         el(RangeControl, {
                             label: 'Edge Offset (px)',
                             value: attributes.offset || 20,
                             onChange: function(val) { setAttributes({ offset: val }); },
                             min: 0, max: 80
                         }),
+                        el(RangeControl, {
+                            label: 'Extra Bottom Offset (cookie/banners)',
+                            value: attributes.safeOffset || 0,
+                            onChange: function(val) { setAttributes({ safeOffset: val || 0 }); },
+                            min: 0, max: 160
+                        }),
                         el(ToggleControl, {
                             label: 'Hide on Mobile',
                             checked: !!attributes.hideMobile,
                             onChange: function(val) { setAttributes({ hideMobile: !!val }); }
                         }),
-                        !attributes.hideMobile ? el(ToggleControl, {
+                        el(ToggleControl, {
+                            label: 'Hide on Desktop',
+                            checked: !!attributes.hideDesktop,
+                            onChange: function(val) { setAttributes({ hideDesktop: !!val }); }
+                        }),
+                        !attributes.hideMobile && !isWaMode ? el(ToggleControl, {
                             label: 'Show Labels on Mobile',
                             checked: !!attributes.mobileLabels,
                             onChange: function(val) { setAttributes({ mobileLabels: !!val }); }
                         }) : null
                     ),
-                    el(PanelBody, { title: 'Style & Colors', initialOpen: true },
+                    el(PanelBody, { title: 'Page Visibility', initialOpen: false },
+                        el(SelectControl, {
+                            label: 'Show Dock On',
+                            value: attributes.visMode || 'all',
+                            options: [
+                                { label: 'Entire site', value: 'all' },
+                                { label: 'Only selected pages', value: 'include' },
+                                { label: 'Everywhere except selected', value: 'exclude' }
+                            ],
+                            onChange: function(val) { setAttributes({ visMode: val }); }
+                        }),
+                        (attributes.visMode || 'all') !== 'all' ? el(TextControl, {
+                            label: 'Page / Post IDs',
+                            value: attributes.visIds || '',
+                            help: 'Comma-separated IDs, e.g. 12, 45, 88',
+                            onChange: function(val) { setAttributes({ visIds: val }); }
+                        }) : null,
+                        (attributes.visMode || 'all') !== 'all' ? el(ToggleControl, {
+                            label: 'Also match Front Page',
+                            checked: !!attributes.visIncludeFront,
+                            onChange: function(val) { setAttributes({ visIncludeFront: !!val }); }
+                        }) : null,
+                        (attributes.visMode || 'all') !== 'all' ? el(ToggleControl, {
+                            label: 'Also match WooCommerce Products',
+                            checked: !!attributes.visIncludeProducts,
+                            onChange: function(val) { setAttributes({ visIncludeProducts: !!val }); }
+                        }) : null,
+                        el(ToggleControl, {
+                            label: 'Track Clicks (site-wide)',
+                            checked: attributes.trackClicks !== false,
+                            help: 'Totals show under Rawnaq → Dock Stats',
+                            onChange: function(val) { setAttributes({ trackClicks: !!val }); }
+                        })
+                    ),
+                    !isWaMode ? el(PanelBody, { title: 'Style & Colors', initialOpen: true },
                         el(TextControl, { label: 'Dock Background', value: attributes.dockBg || '', onChange: function(val) { setAttributes({ dockBg: val }); } }),
                         el(TextControl, { label: 'Dock Border', value: attributes.dockBorder || '', onChange: function(val) { setAttributes({ dockBorder: val }); } }),
                         el(RangeControl, { label: 'Glass Blur (px)', value: attributes.dockBlur || 16, onChange: function(val) { setAttributes({ dockBlur: val }); }, min: 0, max: 40 }),
@@ -868,8 +1360,8 @@
                         el(RangeControl, { label: 'Item Radius', value: attributes.itemRadius || 12, onChange: function(val) { setAttributes({ itemRadius: val }); }, min: 0, max: 24 }),
                         el(TextControl, { label: 'Badge Background (Hex)', value: attributes.badgeBg || '#ef4444', onChange: function(val) { setAttributes({ badgeBg: val }); } }),
                         el(TextControl, { label: 'Badge Text (Hex)', value: attributes.badgeColor || '#ffffff', onChange: function(val) { setAttributes({ badgeColor: val }); } })
-                    ),
-                    el(PanelBody, { title: 'Magnify Effect', initialOpen: false },
+                    ) : null,
+                    !isWaMode ? el(PanelBody, { title: 'Magnify Effect', initialOpen: false },
                         el(ToggleControl, {
                             label: 'Enable Magnify',
                             checked: magnify,
@@ -881,8 +1373,8 @@
                             onChange: function(val) { setAttributes({ maxScale: (val || 160) / 100 }); },
                             min: 110, max: 200
                         }) : null
-                    ),
-                    el(PanelBody, { title: 'Dock Items', initialOpen: false },
+                    ) : null,
+                    !isWaMode ? el(PanelBody, { title: 'Dock Items', initialOpen: false },
                         itemFields,
                         el(Button, {
                             isSecondary: true,
@@ -897,7 +1389,7 @@
                                 }));
                             }
                         }, '+ Add Item')
-                    )
+                    ) : null
                 ),
                 el('div', { style: { padding: '24px', background: '#e8ecf1', borderRadius: '12px' } },
                     el('nav', {
@@ -958,15 +1450,20 @@
                 updateNodes(updated);
             }
 
+            var mappedNodes = nodes.map(function(n) {
+                return Object.assign({}, n, {
+                    x: typeof n.x === 'number' ? n.x : (parseFloat(n.x_pos) || 10),
+                    y: typeof n.y === 'number' ? n.y : (parseFloat(n.y_pos) || 10)
+                });
+            });
+            var shapeVal = attributes.shape === 'hexagon' ? 'hex' : (attributes.shape || 'rect');
             var cfg = {
                 mode: attributes.mode || 'org',
                 connector: attributes.connector || 'curved',
-                nodes: nodes,
+                nodes: mappedNodes,
                 direction: attributes.direction || 'tb',
-                shape: attributes.shape || 'rect',
-                visualPreset: attributes.visualPreset || 'default',
-                showSearch: !!attributes.showSearch,
-                enableCollapse: !!attributes.enableCollapse
+                shape: shapeVal,
+                zoom: true
             };
             var flowAttr = encodeURIComponent(JSON.stringify(cfg));
 
@@ -980,13 +1477,23 @@
                     }
                 }, 80);
                 return function() { clearTimeout(t); };
-            }, [attributes.nodesJson, attributes.mode, attributes.connector, attributes.direction, attributes.shape, attributes.accentColor, attributes.rootColorFrom, attributes.rootColorTo, attributes.lineColor, attributes.nodeBg, attributes.nodeRadius, attributes.dataSource, attributes.sheetUrl, attributes.visualPreset, attributes.showSearch, attributes.enableCollapse, flowAttr]);
+            }, [attributes.nodesJson, attributes.mode, attributes.connector, attributes.direction, attributes.shape, attributes.accentColor, attributes.rootColorFrom, attributes.rootColorTo, attributes.lineColor, attributes.nodeBg, attributes.nodeRadius, flowAttr]);
 
             var fields = nodes.map(function(node, idx) {
+                var parentOptions = [{ label: '— Root (no parent) —', value: '' }].concat(
+                    nodes.filter(function(n, i) { return i !== idx && n.id; }).map(function(n) {
+                        return { label: (n.title || n.id) + ' (' + n.id + ')', value: n.id };
+                    })
+                );
                 return el('div', { key: idx, style: { background: '#f3f4f6', padding: '10px', marginBottom: '10px', borderRadius: '8px' } },
                     el('p', { style: { margin: '0 0 8px', fontWeight: 700 } }, 'Node ' + (idx + 1)),
                     el(TextControl, { label: 'ID', value: node.id || '', onChange: function(v) { patchNode(idx, { id: v }); } }),
-                    el(TextControl, { label: 'Parent ID', value: node.parent || '', onChange: function(v) { patchNode(idx, { parent: v }); } }),
+                    el(SelectControl, {
+                        label: 'Parent',
+                        value: node.parent || '',
+                        options: parentOptions,
+                        onChange: function(v) { patchNode(idx, { parent: v }); }
+                    }),
                     el(TextControl, { label: 'Title', value: node.title || '', onChange: function(v) { patchNode(idx, { title: v }); } }),
                     el(TextControl, { label: 'Role / Subtitle', value: node.role || '', onChange: function(v) { patchNode(idx, { role: v }); } }),
                     el(SelectControl, {
@@ -1012,26 +1519,22 @@
                     }),
                     el(TextareaControl, { label: 'Detail', value: node.detail || '', onChange: function(v) { patchNode(idx, { detail: v }); } }),
                     el(TextControl, { label: 'Link', value: node.link || '', onChange: function(v) { patchNode(idx, { link: v }); } }),
-                    el(TextControl, {
-                        label: 'Badge Label Tag',
-                        value: node.badge || '',
-                        onChange: function(v) { patchNode(idx, { badge: v }); }
-                    }),
-                    el(SelectControl, {
-                        label: 'Badge Accent Status',
-                        value: node.status || 'default',
-                        options: [
-                            { label: 'Standard (Gray)', value: 'default' },
-                            { label: 'Success (Green)', value: 'success' },
-                            { label: 'Warning (Orange)', value: 'warning' },
-                            { label: 'Danger (Red)', value: 'danger' }
-                        ],
-                        onChange: function(v) { patchNode(idx, { status: v }); }
-                    }),
                     el(ToggleControl, {
                         label: 'Decision node',
                         checked: !!node.decision,
                         onChange: function(v) { patchNode(idx, { decision: !!v }); }
+                    }),
+                    (attributes.mode === 'freeform') && el(RangeControl, {
+                        label: 'Freeform X (%)',
+                        value: typeof node.x === 'number' ? node.x : (parseFloat(node.x_pos) || 10),
+                        min: 0, max: 100,
+                        onChange: function(v) { patchNode(idx, { x: v, x_pos: v }); }
+                    }),
+                    (attributes.mode === 'freeform') && el(RangeControl, {
+                        label: 'Freeform Y (%)',
+                        value: typeof node.y === 'number' ? node.y : (parseFloat(node.y_pos) || 10),
+                        min: 0, max: 100,
+                        onChange: function(v) { patchNode(idx, { y: v, y_pos: v }); }
                     }),
                     el(Button, {
                         isDestructive: true, isSmall: true,
@@ -1080,23 +1583,13 @@
                         }),
                         el(SelectControl, {
                             label: 'Node Shape',
-                            value: attributes.shape || 'rect',
+                            value: attributes.shape === 'hexagon' ? 'hex' : (attributes.shape || 'rect'),
                             options: [
                                 { label: 'Rounded Rectangle', value: 'rect' },
                                 { label: 'Circle', value: 'circle' },
-                                { label: 'Hexagon', value: 'hexagon' }
+                                { label: 'Hexagon', value: 'hex' }
                             ],
                             onChange: function(v) { setAttributes({ shape: v }); }
-                        }),
-                        el(SelectControl, {
-                            label: 'Theme Preset',
-                            value: attributes.visualPreset || 'default',
-                            options: [
-                                { label: 'Corporate Solid', value: 'default' },
-                                { label: 'SaaS Glassmorphic', value: 'glass' },
-                                { label: 'Retro Technical Grid', value: 'retro' }
-                            ],
-                            onChange: function(v) { setAttributes({ visualPreset: v }); }
                         }),
                         el(SelectControl, {
                             label: 'Connector',
@@ -1108,16 +1601,6 @@
                                 { label: 'Dashed', value: 'dashed' }
                             ],
                             onChange: function(v) { setAttributes({ connector: v }); }
-                        }),
-                        el(ToggleControl, {
-                            label: 'Show Search Bar',
-                            checked: !!attributes.showSearch,
-                            onChange: function(v) { setAttributes({ showSearch: !!v }); }
-                        }),
-                        el(ToggleControl, {
-                            label: 'Enable Collapsible Branches',
-                            checked: !!attributes.enableCollapse,
-                            onChange: function(v) { setAttributes({ enableCollapse: !!v }); }
                         })
                     ),
                     el(PanelBody, { title: 'Styles & Colors', initialOpen: false },
@@ -1172,17 +1655,17 @@
                                     detail: '',
                                     link: '',
                                     decision: false,
-                                    x_pos: 0,
-                                    y_pos: 0,
-                                    badge: '',
-                                    status: 'default'
+                                    x: 20,
+                                    y: 20,
+                                    x_pos: 20,
+                                    y_pos: 20
                                 }));
                             }
                         }, '+ Add Node')
                     )
                 ),
                 el('div', {
-                    className: 'rawnaq-flow-chart preset-' + (attributes.visualPreset || 'default'),
+                    className: 'rawnaq-flow-chart',
                     'data-flow': flowAttr,
                     ref: chartRef,
                     style: {
@@ -1195,7 +1678,9 @@
                         '--fc-radius': (attributes.nodeRadius || 14) + 'px'
                     }
                 },
-                    el('div', { className: 'rawnaq-flow-stage is-responsive' })
+                    el('div', { className: 'rawnaq-flow-viewport' },
+                        el('div', { className: 'rawnaq-flow-stage is-responsive' })
+                    )
                 )
             );
         },
@@ -1223,7 +1708,8 @@
             mobileCollapse: { type: 'boolean', default: true },
             manualJson: { type: 'string', default: '[]' },
             collapseSubs: { type: 'boolean', default: false },
-            showSearch: { type: 'boolean', default: false }
+            showSearch: { type: 'boolean', default: false },
+            dockAttach: { type: 'boolean', default: false }
         },
         edit: function(props) {
             var attributes = props.attributes;
@@ -1341,6 +1827,12 @@
                             checked: attributes.mobileCollapse !== false,
                             onChange: function(v) { setAttributes({ mobileCollapse: !!v }); }
                         }),
+                        (attributes.tocPosition === 'floating') && el(ToggleControl, {
+                            label: 'Attach TOC to Floating Dock',
+                            checked: !!attributes.dockAttach,
+                            help: 'If a Floating Dock exists on the page, inject a Contents button and hide the TOC FAB.',
+                            onChange: function(v) { setAttributes({ dockAttach: !!v }); }
+                        }),
                         el(ToggleControl, {
                             label: 'Collapse Sub-headings',
                             checked: !!attributes.collapseSubs,
@@ -1377,6 +1869,568 @@
                     el('p', { style: { margin: '6px 0 0', fontSize: '12px', color: '#6b6478' } },
                         'Preview on the frontend — headings are detected from the page content.'
                     )
+                )
+            );
+        },
+        save: function() { return null; }
+    });
+
+    // ─────────────────────────────────────────────────────────
+    // 7. BENTO GRID BLOCK
+    // ─────────────────────────────────────────────────────────
+    var defaultBentoCells = (function() {
+        var pack = window.rawnaqBentoPresets && rawnaqBentoPresets.featured;
+        if (pack && pack.cells && pack.cells.length) {
+            return JSON.stringify(pack.cells);
+        }
+        return '[{"type":"featured","col":2,"row":2,"tag":"Highlight","title":"Zero-jQuery performance","subtitle":"Per-page assets, clean output","icon":"dashicons-star-filled","image":"","video":"","stat":"42","suffix":"+","prefix":"","link":""},{"type":"image","col":2,"row":1,"tag":"Showcase","title":"Project gallery","subtitle":"Client work highlights","icon":"","image":"","video":"","stat":"","suffix":"","prefix":"","link":""},{"type":"stat","col":1,"row":1,"tag":"","title":"","subtitle":"Active installs","icon":"","image":"","video":"","stat":"42","suffix":"+","prefix":"","link":""},{"type":"text","col":1,"row":1,"tag":"","title":"Fast setup","subtitle":"Ready in minutes","icon":"dashicons-performance","image":"","video":"","stat":"","suffix":"","prefix":"","link":""}]';
+    })();
+
+    registerBlockType('rawnaq/bento-grid', {
+        title: 'Bento Grid (Rawnaq)',
+        icon: 'grid-view',
+        category: 'design',
+        attributes: {
+            preset: { type: 'string', default: 'featured' },
+            columns: { type: 'number', default: 4 },
+            rowHeight: { type: 'number', default: 140 },
+            gap: { type: 'number', default: 16 },
+            columnGap: { type: 'number', default: 16 },
+            rowGap: { type: 'number', default: 16 },
+            radius: { type: 'number', default: 18 },
+            reveal: { type: 'boolean', default: true },
+            hoverEffect: { type: 'string', default: 'lift' },
+            hairline: { type: 'boolean', default: false },
+            overlayOpacity: { type: 'number', default: 100 },
+            tagBg: { type: 'string', default: '#fef3c7' },
+            tagColor: { type: 'string', default: '#92400e' },
+            titleColor: { type: 'string', default: '#13231c' },
+            subColor: { type: 'string', default: '#5c6f66' },
+            iconColor: { type: 'string', default: '#0f766e' },
+            statColor: { type: 'string', default: '#0f766e' },
+            cellBg: { type: 'string', default: '#ffffff' },
+            cellBorder: { type: 'string', default: '#d7e2dc' },
+            featuredFrom: { type: 'string', default: '#0f766e' },
+            featuredTo: { type: 'string', default: '#134e4a' },
+            ctaBg: { type: 'string', default: '#fbbf24' },
+            ctaColor: { type: 'string', default: '#92400e' },
+            cellsJson: { type: 'string', default: defaultBentoCells }
+        },
+        edit: function(props) {
+            var attributes = props.attributes;
+            var setAttributes = props.setAttributes;
+            var cells = safeParseJson(attributes.cellsJson, []);
+            var gridRef = useRef ? useRef(null) : { current: null };
+
+            function updateCells(next) {
+                setAttributes({ cellsJson: JSON.stringify(next) });
+            }
+
+            function patchCell(idx, patch) {
+                var updated = cells.slice();
+                updated[idx] = Object.assign({}, updated[idx], patch);
+                updateCells(updated);
+            }
+
+            function applyBentoPreset() {
+                var key = attributes.preset || 'featured';
+                if (key === 'custom') {
+                    return;
+                }
+                var pack = window.rawnaqBentoPresets && rawnaqBentoPresets[key];
+                if (!pack || !pack.cells) {
+                    return;
+                }
+                var next = {
+                    cellsJson: JSON.stringify(pack.cells)
+                };
+                if (pack.columns) {
+                    next.columns = pack.columns;
+                }
+                setAttributes(next);
+            }
+
+            var cols = 4;
+            if (attributes.preset === 'wide') {
+                cols = 3;
+            } else if (attributes.preset === 'custom') {
+                cols = Math.max(2, Math.min(6, attributes.columns || 4));
+            } else if (attributes.preset === 'equal' || attributes.preset === 'featured') {
+                cols = 4;
+            }
+
+            useEffect(function() {
+                var t = setTimeout(function() {
+                    var node = gridRef.current;
+                    if (node && typeof window.rawnaqBentoGridMount === 'function') {
+                        node.classList.remove('bento-bound');
+                        window.rawnaqBentoGridMount(node);
+                    }
+                }, 50);
+                return function() { clearTimeout(t); };
+            }, [attributes.cellsJson, attributes.preset, attributes.columns, attributes.reveal]);
+
+            var cellFields = cells.map(function(cell, idx) {
+                return el('div', {
+                    key: idx,
+                    style: { background: '#f3f7f4', padding: '10px', marginBottom: '10px', borderRadius: '8px' }
+                },
+                    el('p', { style: { margin: '0 0 8px', fontWeight: 700 } }, 'Cell ' + (idx + 1)),
+                    el(SelectControl, {
+                        label: 'Type',
+                        value: cell.type || 'text',
+                        options: [
+                            { label: 'Icon + Text', value: 'text' },
+                            { label: 'Featured', value: 'featured' },
+                            { label: 'Image', value: 'image' },
+                            { label: 'Stat', value: 'stat' },
+                            { label: 'Video', value: 'video' },
+                            { label: 'Testimonial', value: 'testimonial' }
+                        ],
+                        onChange: function(val) { patchCell(idx, { type: val }); }
+                    }),
+                    el(RangeControl, {
+                        label: 'Column Span', value: cell.col || 1,
+                        onChange: function(val) { patchCell(idx, { col: val || 1 }); },
+                        min: 1, max: 6
+                    }),
+                    el(RangeControl, {
+                        label: 'Row Span', value: cell.row || 1,
+                        onChange: function(val) { patchCell(idx, { row: val || 1 }); },
+                        min: 1, max: 4
+                    }),
+                    el(SelectControl, {
+                        label: 'Content Align',
+                        value: cell.align || '',
+                        options: [
+                            { label: 'Default (by type)', value: '' },
+                            { label: 'Top', value: 'top' },
+                            { label: 'Center', value: 'center' },
+                            { label: 'Bottom', value: 'bottom' }
+                        ],
+                        help: 'Vertical alignment of cell content',
+                        onChange: function(val) { patchCell(idx, { align: val || '' }); }
+                    }),
+                    el(RangeControl, {
+                        label: 'Order (Desktop)', value: cell.order || 0,
+                        onChange: function(val) { patchCell(idx, { order: val || 0 }); },
+                        min: -20, max: 20,
+                        help: '0 = natural order'
+                    }),
+                    el('p', { style: { margin: '12px 0 6px', fontWeight: 600, fontSize: '12px' } }, 'Tablet / Mobile'),
+                    el(RangeControl, {
+                        label: 'Col Span (Tablet ≤900px)', value: cell.colMd || 0,
+                        onChange: function(val) { patchCell(idx, { colMd: val || 0 }); },
+                        min: 0, max: 6,
+                        help: '0 = inherit desktop; tablet grid is 2 cols'
+                    }),
+                    el(RangeControl, {
+                        label: 'Row Span (Tablet)', value: cell.rowMd || 0,
+                        onChange: function(val) { patchCell(idx, { rowMd: val || 0 }); },
+                        min: 0, max: 4
+                    }),
+                    el(RangeControl, {
+                        label: 'Order (Tablet)', value: cell.orderMd || 0,
+                        onChange: function(val) { patchCell(idx, { orderMd: val || 0 }); },
+                        min: -20, max: 20
+                    }),
+                    el(RangeControl, {
+                        label: 'Col Span (Mobile ≤640px)', value: cell.colSm || 0,
+                        onChange: function(val) { patchCell(idx, { colSm: val || 0 }); },
+                        min: 0, max: 2,
+                        help: '0 = full width; 1 = half of 2-col mobile grid'
+                    }),
+                    el(RangeControl, {
+                        label: 'Row Span (Mobile)', value: cell.rowSm || 0,
+                        onChange: function(val) { patchCell(idx, { rowSm: val || 0 }); },
+                        min: 0, max: 4
+                    }),
+                    el(RangeControl, {
+                        label: 'Order (Mobile)', value: cell.orderSm || 0,
+                        onChange: function(val) { patchCell(idx, { orderSm: val || 0 }); },
+                        min: -20, max: 20
+                    }),
+                    el(TextControl, {
+                        label: 'Tag', value: cell.tag || '',
+                        onChange: function(val) { patchCell(idx, { tag: val }); }
+                    }),
+                    cell.tag ? el(TextControl, {
+                        label: 'Tag Background', value: cell.tagBg || '',
+                        onChange: function(val) { patchCell(idx, { tagBg: val }); },
+                        help: 'Optional override — empty uses global Tag / Badge colors'
+                    }) : null,
+                    cell.tag ? el(TextControl, {
+                        label: 'Tag Text Color', value: cell.tagColor || '',
+                        onChange: function(val) { patchCell(idx, { tagColor: val }); }
+                    }) : null,
+                    (cell.type || 'text') !== 'stat' ? el(TextControl, {
+                        label: cell.type === 'testimonial' ? 'Author Name' : 'Title',
+                        value: cell.title || '',
+                        onChange: function(val) { patchCell(idx, { title: val }); }
+                    }) : null,
+                    el(TextareaControl, {
+                        label: cell.type === 'testimonial' ? 'Quote' : 'Subtitle',
+                        value: cell.subtitle || '',
+                        onChange: function(val) { patchCell(idx, { subtitle: val }); }
+                    }),
+                    cell.type === 'testimonial' ? el(Fragment, {},
+                        el(TextControl, {
+                            label: 'Author Role / Company', value: cell.role || '',
+                            onChange: function(val) { patchCell(idx, { role: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Avatar URL', value: cell.avatar || '',
+                            onChange: function(val) { patchCell(idx, { avatar: val }); }
+                        }),
+                        el(RangeControl, {
+                            label: 'Star Rating', value: typeof cell.rating === 'number' ? cell.rating : 5,
+                            onChange: function(val) { patchCell(idx, { rating: typeof val === 'number' ? val : 0 }); },
+                            min: 0, max: 5,
+                            help: '0 hides stars'
+                        })
+                    ) : null,
+                    (cell.type === 'text' || cell.type === 'featured') ? el(TextControl, {
+                        label: 'Dashicon', value: cell.icon || '',
+                        help: 'e.g. dashicons-star-filled',
+                        onChange: function(val) { patchCell(idx, { icon: val }); }
+                    }) : null,
+                    cell.type === 'image' ? el(TextControl, {
+                        label: 'Image URL', value: cell.image || '',
+                        onChange: function(val) { patchCell(idx, { image: val }); }
+                    }) : null,
+                    cell.type === 'video' ? el(TextControl, {
+                        label: 'Video URL', value: cell.video || '',
+                        help: 'YouTube, Vimeo, or direct mp4/webm URL',
+                        onChange: function(val) { patchCell(idx, { video: val }); }
+                    }) : null,
+                    cell.type === 'stat' ? el(Fragment, {},
+                        el(TextControl, {
+                            label: 'Stat Value', value: cell.stat || '',
+                            onChange: function(val) { patchCell(idx, { stat: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Suffix', value: cell.suffix || '',
+                            onChange: function(val) { patchCell(idx, { suffix: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Prefix', value: cell.prefix || '',
+                            onChange: function(val) { patchCell(idx, { prefix: val }); }
+                        })
+                    ) : null,
+                    el(TextControl, {
+                        label: 'Link', value: cell.link || '',
+                        onChange: function(val) { patchCell(idx, { link: val }); },
+                        help: 'Whole-cell link when CTA is empty'
+                    }),
+                    el(TextControl, {
+                        label: 'Sync Timeline ID',
+                        value: cell.timelineSync || '',
+                        onChange: function(val) { patchCell(idx, { timelineSync: val }); },
+                        help: 'Paste Named Timeline ID from Scroll Sync Timeline'
+                    }),
+                    el(TextControl, {
+                        label: 'CTA Button Text', value: cell.ctaText || '',
+                        onChange: function(val) { patchCell(idx, { ctaText: val }); },
+                        help: 'Optional button under cell content'
+                    }),
+                    cell.ctaText ? el(TextControl, {
+                        label: 'CTA Button Link', value: cell.ctaLink || '',
+                        onChange: function(val) { patchCell(idx, { ctaLink: val }); },
+                        help: 'Falls back to Cell Link if empty'
+                    }) : null,
+                    el(Button, {
+                        isDestructive: true, isSmall: true,
+                        onClick: function() { updateCells(cells.filter(function(_, i) { return i !== idx; })); }
+                    }, 'Remove')
+                );
+            });
+
+            var previewCells = cells.map(function(cell, idx) {
+                var type = cell.type || 'text';
+                var layout = bentoCellLayout(cell);
+                var cls = 'rawnaq-bento-cell is-in';
+                if (type === 'featured') cls += ' is-featured';
+                if (type === 'image') cls += ' is-image';
+                if (type === 'stat') cls += ' is-stat';
+                if (type === 'video') cls += ' is-video';
+                if (type === 'testimonial') cls += ' is-testimonial';
+                if (cell.align === 'top' || cell.align === 'center' || cell.align === 'bottom') {
+                    cls += ' is-align-' + cell.align;
+                }
+                if (layout.hasSmSpan) cls += ' has-sm-span';
+                var syncTl = (cell.timelineSync || '').toString().replace(/[^a-zA-Z0-9_-]/g, '');
+                if (syncTl && /^[0-9]/.test(syncTl)) { syncTl = 'tl-' + syncTl; }
+                if (syncTl) { cls += ' tl-sync'; }
+                var style = layout.style;
+                if (syncTl) { style += 'animation-timeline:--' + syncTl + ';'; }
+                var attrs = { className: cls, style: style, key: idx };
+                if (syncTl) { attrs['data-tl-sync'] = syncTl; }
+                var ctaText = (cell.ctaText || '').toString().trim();
+                var ctaUrl = cell.ctaLink || cell.link || '';
+                var ctaEl = ctaText
+                    ? (ctaUrl
+                        ? el('a', { className: 'rawnaq-bento-cta', href: ctaUrl }, ctaText)
+                        : el('span', { className: 'rawnaq-bento-cta is-static' }, ctaText))
+                    : null;
+                var rating = Math.max(0, Math.min(5, parseInt(cell.rating, 10) || 0));
+                var stars = '';
+                for (var si = 0; si < rating; si++) { stars += '★'; }
+
+                if (type === 'testimonial') {
+                    return el('div', attrs,
+                        bentoTagEl(el, cell),
+                        cell.subtitle ? el('blockquote', { className: 'rawnaq-bento-quote' }, cell.subtitle) : null,
+                        rating > 0 ? el('div', { className: 'rawnaq-bento-stars' }, stars) : null,
+                        (cell.title || cell.role || cell.avatar) ? el('div', { className: 'rawnaq-bento-author' },
+                            cell.avatar
+                                ? el('img', { className: 'rawnaq-bento-avatar', src: cell.avatar, alt: '' })
+                                : (cell.title
+                                    ? el('div', { className: 'rawnaq-bento-avatar is-placeholder' }, (cell.title || '').charAt(0).toUpperCase())
+                                    : null),
+                            (cell.title || cell.role) ? el('div', { className: 'rawnaq-bento-author-meta' },
+                                cell.title ? el('div', { className: 'rawnaq-bento-author-name' }, cell.title) : null,
+                                cell.role ? el('div', { className: 'rawnaq-bento-author-role' }, cell.role) : null
+                            ) : null
+                        ) : null,
+                        ctaEl
+                    );
+                }
+                if (type === 'image') {
+                    return el('div', attrs,
+                        cell.image
+                            ? el('img', { className: 'rawnaq-bento-media', src: cell.image, alt: '' })
+                            : el('div', { className: 'rawnaq-bento-media', style: { background: 'linear-gradient(135deg,#0f766e,#134e4a)' } }),
+                        el('div', { className: 'rawnaq-bento-overlay' }),
+                        el('div', { className: 'rawnaq-bento-body' },
+                            bentoTagEl(el, cell),
+                            cell.title ? el('div', { className: 'rawnaq-bento-title' }, cell.title) : null,
+                            cell.subtitle ? el('div', { className: 'rawnaq-bento-sub' }, cell.subtitle) : null,
+                            ctaEl
+                        )
+                    );
+                }
+                if (type === 'stat') {
+                    return el('div', attrs,
+                        bentoTagEl(el, cell),
+                        el('div', { className: 'rawnaq-bento-num' }, (cell.prefix || '') + (cell.stat || '0') + (cell.suffix || '')),
+                        cell.subtitle ? el('div', { className: 'rawnaq-bento-sub' }, cell.subtitle) : null,
+                        ctaEl
+                    );
+                }
+                if (type === 'video') {
+                    var parsedVid = bentoParseVideo(cell.video || '');
+                    if (parsedVid && (parsedVid.kind === 'youtube' || parsedVid.kind === 'vimeo')) {
+                        cls += ' is-embed';
+                    }
+                    return el('div', attrs,
+                        parsedVid && parsedVid.embed
+                            ? el('iframe', {
+                                className: 'rawnaq-bento-embed',
+                                src: parsedVid.embed,
+                                title: 'Video',
+                                allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                            })
+                            : (parsedVid && parsedVid.src
+                                ? el('video', { className: 'rawnaq-bento-video', muted: true, playsInline: true, src: parsedVid.src })
+                                : el('div', { className: 'rawnaq-bento-media', style: { background: '#1e1b2e' } })),
+                        el('div', { className: 'rawnaq-bento-overlay' }),
+                        el('div', { className: 'rawnaq-bento-body' },
+                            bentoTagEl(el, cell),
+                            cell.title ? el('div', { className: 'rawnaq-bento-title' }, cell.title) : null,
+                            cell.subtitle ? el('div', { className: 'rawnaq-bento-sub' }, cell.subtitle) : null,
+                            ctaEl
+                        )
+                    );
+                }
+                return el('div', attrs,
+                    bentoTagEl(el, cell),
+                    cell.icon ? el('div', { className: 'rawnaq-bento-icon' },
+                        el('span', { className: 'dashicons ' + cell.icon })
+                    ) : null,
+                    cell.title ? el('div', { className: 'rawnaq-bento-title' }, cell.title) : null,
+                    cell.subtitle ? el('div', { className: 'rawnaq-bento-sub' }, cell.subtitle) : null,
+                    ctaEl
+                );
+            });
+
+            return el(Fragment, {},
+                el(InspectorControls, {},
+                    el(PanelBody, { title: 'Layout', initialOpen: true },
+                        el(SelectControl, {
+                            label: 'Preset',
+                            value: attributes.preset || 'featured',
+                            options: [
+                                { label: '1 large + 4 small', value: 'featured' },
+                                { label: '2×2 equal', value: 'equal' },
+                                { label: '1 wide + stacked', value: 'wide' },
+                                { label: 'Custom columns', value: 'custom' }
+                            ],
+                            help: 'Choose a layout, then Apply Preset to replace cells.',
+                            onChange: function(val) { setAttributes({ preset: val }); }
+                        }),
+                        attributes.preset !== 'custom' ? el(Button, {
+                            isPrimary: true,
+                            style: { marginBottom: '12px' },
+                            onClick: applyBentoPreset
+                        }, 'Apply Preset to Cells') : null,
+                        attributes.preset === 'custom' ? el(RangeControl, {
+                            label: 'Columns', value: attributes.columns || 4,
+                            onChange: function(val) { setAttributes({ columns: val }); },
+                            min: 2, max: 6
+                        }) : null,
+                        el(RangeControl, {
+                            label: 'Row Height', value: attributes.rowHeight || 140,
+                            onChange: function(val) { setAttributes({ rowHeight: val }); },
+                            min: 80, max: 240
+                        }),
+                        el(RangeControl, {
+                            label: 'Column Gap',
+                            value: typeof attributes.columnGap === 'number' ? attributes.columnGap : (attributes.gap || 16),
+                            onChange: function(val) { setAttributes({ columnGap: typeof val === 'number' ? val : 16 }); },
+                            min: 0, max: 40
+                        }),
+                        el(RangeControl, {
+                            label: 'Row Gap',
+                            value: typeof attributes.rowGap === 'number' ? attributes.rowGap : (attributes.gap || 16),
+                            onChange: function(val) { setAttributes({ rowGap: typeof val === 'number' ? val : 16 }); },
+                            min: 0, max: 40
+                        }),
+                        el(RangeControl, {
+                            label: 'Radius', value: attributes.radius || 18,
+                            onChange: function(val) { setAttributes({ radius: val }); },
+                            min: 0, max: 40
+                        }),
+                        el(SelectControl, {
+                            label: 'Hover',
+                            value: attributes.hoverEffect || 'lift',
+                            options: [
+                                { label: 'Lift', value: 'lift' },
+                                { label: 'Zoom media', value: 'zoom' },
+                                { label: 'Tint', value: 'tint' },
+                                { label: 'None', value: 'none' }
+                            ],
+                            onChange: function(val) { setAttributes({ hoverEffect: val }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Scroll Reveal',
+                            checked: attributes.reveal !== false,
+                            onChange: function(val) { setAttributes({ reveal: !!val }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Hairline Borders',
+                            checked: !!attributes.hairline,
+                            onChange: function(val) { setAttributes({ hairline: !!val }); }
+                        }),
+                        el(RangeControl, {
+                            label: 'Image Overlay Opacity',
+                            value: typeof attributes.overlayOpacity === 'number' ? attributes.overlayOpacity : 100,
+                            onChange: function(val) { setAttributes({ overlayOpacity: typeof val === 'number' ? val : 100 }); },
+                            min: 0,
+                            max: 100,
+                            help: 'Dark gradient on image/video cells. 0 = none, 100 = default.'
+                        })
+                    ),
+                    el(PanelBody, { title: 'Tag / Badge', initialOpen: true },
+                        el('p', { style: { margin: '0 0 8px', fontSize: '12px', color: '#5c6f66' } },
+                            'Small pill labels like HIGHLIGHT / SHOWCASE'),
+                        el(TextControl, {
+                            label: 'Tag Background', value: attributes.tagBg || '#fef3c7',
+                            onChange: function(val) { setAttributes({ tagBg: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Tag Text', value: attributes.tagColor || '#92400e',
+                            onChange: function(val) { setAttributes({ tagColor: val }); }
+                        })
+                    ),
+                    el(PanelBody, { title: 'Colors', initialOpen: false },
+                        el(TextControl, {
+                            label: 'Title', value: attributes.titleColor || '#13231c',
+                            onChange: function(val) { setAttributes({ titleColor: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Subtitle', value: attributes.subColor || '#5c6f66',
+                            onChange: function(val) { setAttributes({ subColor: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Icon', value: attributes.iconColor || '#0f766e',
+                            onChange: function(val) { setAttributes({ iconColor: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Stat Number', value: attributes.statColor || '#0f766e',
+                            onChange: function(val) { setAttributes({ statColor: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Cell Background', value: attributes.cellBg || '#ffffff',
+                            onChange: function(val) { setAttributes({ cellBg: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Cell Border', value: attributes.cellBorder || '#d7e2dc',
+                            onChange: function(val) { setAttributes({ cellBorder: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Featured From', value: attributes.featuredFrom || '#0f766e',
+                            onChange: function(val) { setAttributes({ featuredFrom: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Featured To', value: attributes.featuredTo || '#134e4a',
+                            onChange: function(val) { setAttributes({ featuredTo: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'CTA Background', value: attributes.ctaBg || '#fbbf24',
+                            onChange: function(val) { setAttributes({ ctaBg: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'CTA Text', value: attributes.ctaColor || '#92400e',
+                            onChange: function(val) { setAttributes({ ctaColor: val }); }
+                        })
+                    ),
+                    el(PanelBody, { title: 'Cells', initialOpen: true },
+                        cellFields,
+                        el(Button, {
+                            isSecondary: true,
+                            onClick: function() {
+                                updateCells(cells.concat({
+                                    type: 'text', col: 1, row: 1, tag: '', title: 'New cell',
+                                    subtitle: '', icon: 'dashicons-admin-generic', image: '', video: '',
+                                    stat: '', suffix: '', prefix: '', link: '', ctaText: '', ctaLink: '',
+                                    role: '', avatar: '', rating: 0, align: '',
+                                    order: 0, colMd: 0, rowMd: 0, orderMd: 0, colSm: 0, rowSm: 0, orderSm: 0
+                                }));
+                            }
+                        }, '+ Add Cell')
+                    )
+                ),
+                el('div', { className: 'rawnaq-bento-editor-frame' },
+                    el('div', {
+                        ref: gridRef,
+                        className: 'rawnaq-bento-grid' + (attributes.hairline ? ' rawnaq-bento-hairline' : ''),
+                        style: {
+                            '--bento-row': (attributes.rowHeight || 140) + 'px',
+                            '--bento-gap-col': (typeof attributes.columnGap === 'number' ? attributes.columnGap : (attributes.gap || 16)) + 'px',
+                            '--bento-gap-row': (typeof attributes.rowGap === 'number' ? attributes.rowGap : (attributes.gap || 16)) + 'px',
+                            '--bento-radius': (attributes.radius || 18) + 'px',
+                            '--bento-tag-bg': attributes.tagBg || '#fef3c7',
+                            '--bento-tag-color': attributes.tagColor || '#92400e',
+                            '--bento-title-color': attributes.titleColor || '#13231c',
+                            '--bento-sub-color': attributes.subColor || '#5c6f66',
+                            '--bento-icon-color': attributes.iconColor || '#0f766e',
+                            '--bento-stat-color': attributes.statColor || '#0f766e',
+                            '--bento-panel': attributes.cellBg || '#ffffff',
+                            '--bento-line': attributes.cellBorder || '#d7e2dc',
+                            '--bento-featured-from': attributes.featuredFrom || '#0f766e',
+                            '--bento-featured-to': attributes.featuredTo || '#134e4a',
+                            '--bento-accent': attributes.iconColor || '#0f766e',
+                            '--bento-overlay-opacity': String(
+                                Math.max(0, Math.min(100, typeof attributes.overlayOpacity === 'number' ? attributes.overlayOpacity : 100)) / 100
+                            ),
+                            '--bento-cta-bg': attributes.ctaBg || '#fbbf24',
+                            '--bento-cta-color': attributes.ctaColor || '#92400e'
+                        },
+                        'data-cols': String(cols),
+                        'data-reveal': '0',
+                        'data-hover': attributes.hoverEffect || 'lift',
+                        role: 'list'
+                    }, previewCells)
                 )
             );
         },

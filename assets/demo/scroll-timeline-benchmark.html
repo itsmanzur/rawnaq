@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rawnaq — Scroll Timeline Benchmark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0c1f1a;
+      --moss: #1a4d3e;
+      --lime: #c8f542;
+      --sand: #e8dfc8;
+      --fog: rgba(232, 223, 200, 0.12);
+      --jank: #9a3412;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Manrope, system-ui, sans-serif;
+      color: var(--sand);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(200, 245, 66, 0.18), transparent 55%),
+        radial-gradient(900px 500px at 90% 20%, rgba(26, 77, 62, 0.9), transparent 50%),
+        linear-gradient(165deg, #061410 0%, #0c1f1a 45%, #132a22 100%);
+      min-height: 100vh;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      align-content: end;
+      padding: clamp(2rem, 6vw, 4.5rem);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60L60 0H40L0 40zM60 60V40L40 60z' fill='%23c8f542' fill-opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .brand {
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(3.2rem, 10vw, 7rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin: 0 0 1rem;
+      position: relative;
+    }
+    .brand span { color: var(--lime); }
+    .lede {
+      max-width: 28rem;
+      font-size: 1.05rem;
+      line-height: 1.55;
+      opacity: 0.88;
+      margin: 0 0 1.75rem;
+      position: relative;
+    }
+    .cta {
+      display: inline-flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .cta a {
+      display: inline-block;
+      padding: 0.85rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+    .cta a:hover { transform: translateY(-2px); }
+    .cta .primary {
+      background: var(--lime);
+      color: var(--ink);
+    }
+    .cta .ghost {
+      border: 1px solid rgba(232, 223, 200, 0.35);
+      color: var(--sand);
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid rgba(232, 223, 200, 0.15);
+    }
+    @media (max-width: 860px) {
+      .compare { grid-template-columns: 1fr; }
+    }
+    .pane {
+      padding: clamp(1.5rem, 4vw, 2.75rem);
+      min-height: 70vh;
+    }
+    .pane-css {
+      background: rgba(12, 31, 26, 0.55);
+      border-right: 1px solid rgba(232, 223, 200, 0.12);
+    }
+    .pane-js {
+      background: rgba(40, 18, 12, 0.45);
+    }
+    .pane h2 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.65rem;
+      margin: 0 0 0.4rem;
+    }
+    .pane p.note {
+      margin: 0 0 1.5rem;
+      font-size: 0.9rem;
+      opacity: 0.75;
+      max-width: 36rem;
+    }
+
+    .track {
+      position: relative;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 1rem 0 3rem;
+    }
+    .line-bg {
+      position: absolute;
+      left: 18px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: rgba(232, 223, 200, 0.2);
+      border-radius: 999px;
+    }
+    .line-fill {
+      position: absolute;
+      left: 18px;
+      top: 0;
+      width: 3px;
+      background: var(--lime);
+      border-radius: 999px;
+      transform-origin: top center;
+      height: 0%;
+    }
+    .pane-css .line-fill {
+      height: 100%;
+    }
+    @supports (animation-timeline: view()) {
+      @keyframes fill-y {
+        from { transform: scaleY(0); }
+        to { transform: scaleY(1); }
+      }
+      .pane-css .line-fill {
+        animation: fill-y linear both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+        height: 100%;
+      }
+      @keyframes item-in {
+        from { opacity: 0.25; transform: translateY(16px); }
+        to { opacity: 1; transform: none; }
+      }
+      .pane-css .step {
+        animation: item-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 40%;
+      }
+    }
+    .step {
+      position: relative;
+      padding: 1rem 0 1rem 3rem;
+      opacity: 0.35;
+    }
+    .step .dot {
+      position: absolute;
+      left: 10px;
+      top: 1.35rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(232, 223, 200, 0.35);
+      background: var(--ink);
+    }
+    .step strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+    .step span {
+      font-size: 0.82rem;
+      opacity: 0.7;
+    }
+    .pane-css .step.is-on,
+    .pane-js .step.is-on {
+      opacity: 1;
+    }
+    .pane-css .step.is-on .dot,
+    .pane-js .step.is-on .dot {
+      border-color: var(--lime);
+      box-shadow: 0 0 0 3px rgba(200, 245, 66, 0.2);
+    }
+    .pane-js .line-fill { background: #fb923c; }
+    .pane-js .step.is-on .dot { border-color: #fb923c; }
+
+    .footer {
+      padding: 2rem clamp(1.5rem, 4vw, 2.75rem) 3rem;
+      font-size: 0.8rem;
+      opacity: 0.55;
+      border-top: 1px solid rgba(232, 223, 200, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <header class="hero" id="top">
+    <h1 class="brand">Rawnaq<span>.</span></h1>
+    <p class="lede">Scroll Timeline on the compositor thread — not another jQuery scroll listener fighting the main thread.</p>
+    <div class="cta">
+      <a class="primary" href="#css-path">CSS scroll path</a>
+      <a class="ghost" href="#js-path">JS jank simulation</a>
+    </div>
+  </header>
+
+  <section class="compare" aria-label="Side by side comparison">
+    <div class="pane pane-css" id="css-path">
+      <h2>Native CSS scroll-driven</h2>
+      <p class="note">Uses <code>animation-timeline: view()</code> when supported. Line fill and reveals scrub with scroll — no motion JS. Illustrative only, not a lab benchmark.</p>
+      <div class="track" id="css-track">
+        <div class="line-bg"></div>
+        <div class="line-fill" id="css-fill"></div>
+        <!-- steps injected -->
+      </div>
+    </div>
+    <div class="pane pane-js" id="js-path">
+      <h2>Legacy scroll-event thrash</h2>
+      <p class="note">Forced layout reads on every scroll + many nodes — the “jQuery-era” feel agencies still ship by default.</p>
+      <div class="track" id="js-track">
+        <div class="line-bg"></div>
+        <div class="line-fill" id="js-fill"></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer">Open this file from <code>assets/demo/scroll-timeline-benchmark.html</code>. Pair with WordPress plugin v1.9+ for query AJAX, Named Sync, and WPML config. See <code>docs/scroll-timeline-benchmark.md</code>.</p>
+
+  <script>
+    (function () {
+      function makeSteps(track, count, prefix) {
+        var frag = document.createDocumentFragment();
+        for (var i = 1; i <= count; i++) {
+          var el = document.createElement('div');
+          el.className = 'step';
+          el.innerHTML = '<i class="dot" aria-hidden="true"></i><strong>' + prefix + ' milestone ' + i + '</strong><span>Scroll to scrub progress through the story.</span>';
+          frag.appendChild(el);
+        }
+        track.appendChild(frag);
+      }
+
+      var cssTrack = document.getElementById('css-track');
+      var jsTrack = document.getElementById('js-track');
+      makeSteps(cssTrack, 12, 'CSS');
+      makeSteps(jsTrack, 40, 'JS');
+
+      var cssFill = document.getElementById('css-fill');
+      var jsFill = document.getElementById('js-fill');
+      var cssSteps = cssTrack.querySelectorAll('.step');
+      var jsSteps = jsTrack.querySelectorAll('.step');
+      var supports = false;
+      try {
+        supports = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+      } catch (e) {}
+
+      function progressFor(el) {
+        var rect = el.getBoundingClientRect();
+        var mid = window.innerHeight * 0.5;
+        var p = (mid - rect.top) / Math.max(rect.height, 1);
+        return Math.max(0, Math.min(1, p));
+      }
+
+      function syncCssFallback() {
+        if (supports) return;
+        var p = progressFor(cssTrack);
+        cssFill.style.height = (p * 100) + '%';
+        cssSteps.forEach(function (step, i) {
+          var on = (i / cssSteps.length) < p + 0.08;
+          step.classList.toggle('is-on', on);
+        });
+      }
+
+      function syncJsJank() {
+        // Intentional main-thread work: many getBoundingClientRect + style writes.
+        var p = progressFor(jsTrack);
+        jsFill.style.height = (p * 100) + '%';
+        for (var n = 0; n < 80; n++) {
+          void jsTrack.offsetHeight;
+        }
+        jsSteps.forEach(function (step, i) {
+          var r = step.getBoundingClientRect();
+          var on = r.top < window.innerHeight * 0.7;
+          step.classList.toggle('is-on', on);
+          step.style.transform = on ? 'translateY(0)' : 'translateY(8px)';
+        });
+      }
+
+      var ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          syncCssFallback();
+          syncJsJank();
+          ticking = false;
+        });
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      onScroll();
+
+      if (supports) {
+        cssSteps.forEach(function (s) { s.classList.add('is-on'); });
+      }
+    })();
+  </script>
+</body>
+</html>

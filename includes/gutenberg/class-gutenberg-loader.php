@@ -32,10 +32,22 @@ class Rawnaq_Gutenberg_Loader {
                 'rawnaq-hub-diagram',
                 'rawnaq-flow-chart',
                 'rawnaq-scroll-progress-toc',
+                'rawnaq-bento-grid',
             ],
             RAWNAQ_VERSION,
             true
         );
+
+        if ( function_exists( 'rawnaq_bento_preset_for_gutenberg' ) ) {
+            $bento_presets = [];
+            foreach ( [ 'featured', 'equal', 'wide' ] as $key ) {
+                $pack = rawnaq_bento_preset_for_gutenberg( $key );
+                if ( $pack ) {
+                    $bento_presets[ $key ] = $pack;
+                }
+            }
+            wp_localize_script( 'rawnaq-gutenberg-editor', 'rawnaqBentoPresets', $bento_presets );
+        }
 
         // 1. Hub Diagram Block
         if ( rawnaq_is_module_enabled( 'hub-diagram' ) ) {
@@ -112,22 +124,36 @@ class Rawnaq_Gutenberg_Loader {
                 'attributes'      => [
                     'stepsJson'   => [
                         'type'    => 'string',
-                        'default' => '[{"meta":"Phase 1","title":"Ideation & Sketching","desc":"Gather initial ideas and draft blueprints.","icon":"","imageUrl":"","imageId":0,"ctaText":"","ctaLink":""},{"meta":"Phase 2","title":"Prototype Review","desc":"Interactive mockups and client reviews.","icon":"","imageUrl":"","imageId":0,"ctaText":"","ctaLink":""},{"meta":"Phase 3","title":"Development & Coding","desc":"Build, test, and deploy clean code.","icon":"","imageUrl":"","imageId":0,"ctaText":"","ctaLink":""}]',
+                        'default' => '[{"meta":"Phase 1","title":"Ideation & Sketching","desc":"Gather initial ideas and draft blueprints.","icon":"","imageUrl":"","imageId":0,"video":"","ctaText":"","ctaLink":""},{"meta":"Phase 2","title":"Prototype Review","desc":"Interactive mockups and client reviews.","icon":"","imageUrl":"","imageId":0,"video":"","ctaText":"","ctaLink":""},{"meta":"Phase 3","title":"Development & Coding","desc":"Build, test, and deploy clean code.","icon":"","imageUrl":"","imageId":0,"video":"","ctaText":"","ctaLink":""}]',
                     ],
-                    'layout'       => [ 'type' => 'string', 'default' => 'alternating' ],
-                    'showNumbers'  => [ 'type' => 'boolean', 'default' => true ],
-                    'lineBg'       => [ 'type' => 'string', 'default' => '#e2e8f0' ],
-                    'lineActive'   => [ 'type' => 'string', 'default' => '#6366f1' ],
-                    'bulletBorder' => [ 'type' => 'string', 'default' => '#cbd5e1' ],
-                    'bulletActive' => [ 'type' => 'string', 'default' => '#6366f1' ],
-                    'cardBg'       => [ 'type' => 'string', 'default' => '#ffffff' ],
-                    'metaColor'    => [ 'type' => 'string', 'default' => '#6366f1' ],
-                    'titleColor'   => [ 'type' => 'string', 'default' => '#1a1a1a' ],
-                    'descColor'    => [ 'type' => 'string', 'default' => '#666666' ],
-                    'ctaColor'     => [ 'type' => 'string', 'default' => '#6366f1' ],
-                    'cardRadius'   => [ 'type' => 'number', 'default' => 16 ],
-                    'bulletSize'   => [ 'type' => 'number', 'default' => 28 ],
-                    'itemGap'      => [ 'type' => 'number', 'default' => 20 ],
+                    'layout'          => [ 'type' => 'string', 'default' => 'alternating' ],
+                    'showNumbers'     => [ 'type' => 'boolean', 'default' => true ],
+                    'timelineName'    => [ 'type' => 'string', 'default' => '' ],
+                    'source'          => [ 'type' => 'string', 'default' => 'manual' ],
+                    'postType'        => [ 'type' => 'string', 'default' => 'post' ],
+                    'postsPerPage'    => [ 'type' => 'number', 'default' => 6 ],
+                    'orderby'         => [ 'type' => 'string', 'default' => 'date' ],
+                    'order'           => [ 'type' => 'string', 'default' => 'DESC' ],
+                    'taxonomy'        => [ 'type' => 'string', 'default' => '' ],
+                    'terms'           => [ 'type' => 'string', 'default' => '' ],
+                    'includeIds'      => [ 'type' => 'string', 'default' => '' ],
+                    'excludeIds'      => [ 'type' => 'string', 'default' => '' ],
+                    'lineBg'          => [ 'type' => 'string', 'default' => '#e2e8f0' ],
+                    'lineActive'      => [ 'type' => 'string', 'default' => '#6366f1' ],
+                    'lineWidth'       => [ 'type' => 'number', 'default' => 4 ],
+                    'bulletBorder'    => [ 'type' => 'string', 'default' => '#cbd5e1' ],
+                    'bulletActive'    => [ 'type' => 'string', 'default' => '#6366f1' ],
+                    'cardBg'          => [ 'type' => 'string', 'default' => '#ffffff' ],
+                    'metaColor'       => [ 'type' => 'string', 'default' => '#6366f1' ],
+                    'titleColor'      => [ 'type' => 'string', 'default' => '#1a1a1a' ],
+                    'descColor'       => [ 'type' => 'string', 'default' => '#666666' ],
+                    'ctaColor'        => [ 'type' => 'string', 'default' => '#6366f1' ],
+                    'cardRadius'      => [ 'type' => 'number', 'default' => 16 ],
+                    'bulletSize'      => [ 'type' => 'number', 'default' => 28 ],
+                    'itemGap'         => [ 'type' => 'number', 'default' => 20 ],
+                    'initialVisible'  => [ 'type' => 'number', 'default' => 0 ],
+                    'loadChunk'       => [ 'type' => 'number', 'default' => 3 ],
+                    'loadMoreText'    => [ 'type' => 'string', 'default' => 'Load more' ],
                 ]
             ] );
         }
@@ -162,6 +188,41 @@ class Rawnaq_Gutenberg_Loader {
                     'badgeColor'   => [ 'type' => 'string', 'default' => '#ffffff' ],
                     'magnify'      => [ 'type' => 'boolean', 'default' => true ],
                     'maxScale'     => [ 'type' => 'number', 'default' => 1.6 ],
+                    // WhatsApp Contact Mode
+                    'whatsappMode'      => [ 'type' => 'boolean', 'default' => false ],
+                    'positionWa'        => [ 'type' => 'string', 'default' => 'right' ],
+                    'primaryChannel'    => [ 'type' => 'string', 'default' => 'whatsapp' ],
+                    'agentsJson'        => [
+                        'type'    => 'string',
+                        'default' => '[{"name":"Customer Support","role":"Live Support","number":"8801700000000","avatar":"","msg":"আসসালামু আলাইকুম, আমি {pageTitle} পেজ থেকে লিখছি ({url})।"}]',
+                    ],
+                    'defaultMsg'        => [
+                        'type'    => 'string',
+                        'default' => 'আসসালামু আলাইকুম, আমি {pageTitle} থেকে যোগাযোগ করছি।',
+                    ],
+                    'secCall'           => [ 'type' => 'string', 'default' => '' ],
+                    'secMessenger'      => [ 'type' => 'string', 'default' => '' ],
+                    'secEmail'          => [ 'type' => 'string', 'default' => '' ],
+                    'secTelegram'       => [ 'type' => 'string', 'default' => '' ],
+                    'timezone'          => [ 'type' => 'string', 'default' => 'UTC+6' ],
+                    'scheduleJson'      => [
+                        'type'    => 'string',
+                        'default' => '{"mon":{"enabled":true,"open":"09:00","close":"18:00"},"tue":{"enabled":true,"open":"09:00","close":"18:00"},"wed":{"enabled":true,"open":"09:00","close":"18:00"},"thu":{"enabled":true,"open":"09:00","close":"18:00"},"fri":{"enabled":true,"open":"09:00","close":"18:00"},"sat":{"enabled":false,"open":"09:00","close":"18:00"},"sun":{"enabled":false,"open":"09:00","close":"18:00"}}',
+                    ],
+                    'offHoursBehavior'  => [ 'type' => 'string', 'default' => 'offline_badge' ],
+                    'offHoursRedirect'  => [ 'type' => 'string', 'default' => '' ],
+                    'qrFallback'        => [ 'type' => 'boolean', 'default' => true ],
+                    'desktopAction'     => [ 'type' => 'string', 'default' => 'choice' ],
+                    'triggerDelay'      => [ 'type' => 'number', 'default' => 0 ],
+                    'triggerScroll'     => [ 'type' => 'number', 'default' => 0 ],
+                    'greetingText'      => [ 'type' => 'string', 'default' => 'আসসালামু আলাইকুম, সাহায্য লাগবে?' ],
+                    'hideDesktop'       => [ 'type' => 'boolean', 'default' => false ],
+                    'safeOffset'        => [ 'type' => 'number', 'default' => 0 ],
+                    'visMode'           => [ 'type' => 'string', 'default' => 'all' ],
+                    'visIds'            => [ 'type' => 'string', 'default' => '' ],
+                    'visIncludeFront'   => [ 'type' => 'boolean', 'default' => false ],
+                    'visIncludeProducts'=> [ 'type' => 'boolean', 'default' => false ],
+                    'trackClicks'       => [ 'type' => 'boolean', 'default' => true ],
                 ]
             ] );
         }
@@ -176,9 +237,11 @@ class Rawnaq_Gutenberg_Loader {
                 'attributes'      => [
                     'mode'      => [ 'type' => 'string', 'default' => 'org' ],
                     'connector' => [ 'type' => 'string', 'default' => 'curved' ],
+                    'direction' => [ 'type' => 'string', 'default' => 'tb' ],
+                    'shape'     => [ 'type' => 'string', 'default' => 'rect' ],
                     'nodesJson' => [
                         'type'    => 'string',
-                        'default' => '[{"id":"ceo","parent":"","title":"Founder / CEO","role":"Leadership","icon":"★","detail":"Leads the company.","link":"","decision":false},{"id":"eng","parent":"ceo","title":"Engineering","role":"Product","icon":"⚙","detail":"Engineering roadmap.","link":"","decision":false},{"id":"ops","parent":"ceo","title":"Operations","role":"Delivery","icon":"◆","detail":"Project delivery.","link":"","decision":false},{"id":"e1","parent":"eng","title":"Frontend","role":"Team","icon":"▪","detail":"UI work.","link":"","decision":false}]',
+                        'default' => '[{"id":"ceo","parent":"","title":"Founder / CEO","role":"Leadership","icon":"★","detail":"Leads the company.","link":"","decision":false,"x":40,"y":5},{"id":"eng","parent":"ceo","title":"Engineering","role":"Product","icon":"⚙","detail":"Engineering roadmap.","link":"","decision":false,"x":15,"y":40},{"id":"ops","parent":"ceo","title":"Operations","role":"Delivery","icon":"◆","detail":"Project delivery.","link":"","decision":false,"x":40,"y":40},{"id":"e1","parent":"eng","title":"Frontend","role":"Team","icon":"▪","detail":"UI work.","link":"","decision":false,"x":5,"y":75}]',
                     ],
                 ],
             ] );
@@ -206,6 +269,46 @@ class Rawnaq_Gutenberg_Loader {
                     'manualJson'     => [ 'type' => 'string', 'default' => '[]' ],
                     'collapseSubs'   => [ 'type' => 'boolean', 'default' => false ],
                     'showSearch'     => [ 'type' => 'boolean', 'default' => false ],
+                    'dockAttach'     => [ 'type' => 'boolean', 'default' => false ],
+                ],
+            ] );
+        }
+
+        // 7. Bento Grid Block
+        if ( rawnaq_is_module_enabled( 'bento-grid' ) ) {
+            register_block_type( 'rawnaq/bento-grid', [
+                'editor_script'   => 'rawnaq-gutenberg-editor',
+                'editor_style'    => 'rawnaq-bento-grid',
+                'style'           => 'rawnaq-bento-grid',
+                'render_callback' => [ $this, 'render_bento_grid_block' ],
+                'attributes'      => [
+                    'preset'      => [ 'type' => 'string', 'default' => 'featured' ],
+                    'columns'     => [ 'type' => 'number', 'default' => 4 ],
+                    'rowHeight'   => [ 'type' => 'number', 'default' => 140 ],
+                    'gap'         => [ 'type' => 'number', 'default' => 16 ],
+                    'columnGap'   => [ 'type' => 'number', 'default' => 16 ],
+                    'rowGap'      => [ 'type' => 'number', 'default' => 16 ],
+                    'radius'      => [ 'type' => 'number', 'default' => 18 ],
+                    'reveal'      => [ 'type' => 'boolean', 'default' => true ],
+                    'hoverEffect' => [ 'type' => 'string', 'default' => 'lift' ],
+                    'hairline'    => [ 'type' => 'boolean', 'default' => false ],
+                    'overlayOpacity' => [ 'type' => 'number', 'default' => 100 ],
+                    'tagBg'       => [ 'type' => 'string', 'default' => '#fef3c7' ],
+                    'tagColor'    => [ 'type' => 'string', 'default' => '#92400e' ],
+                    'titleColor'  => [ 'type' => 'string', 'default' => '#13231c' ],
+                    'subColor'    => [ 'type' => 'string', 'default' => '#5c6f66' ],
+                    'iconColor'   => [ 'type' => 'string', 'default' => '#0f766e' ],
+                    'statColor'   => [ 'type' => 'string', 'default' => '#0f766e' ],
+                    'cellBg'      => [ 'type' => 'string', 'default' => '#ffffff' ],
+                    'cellBorder'  => [ 'type' => 'string', 'default' => '#d7e2dc' ],
+                    'featuredFrom'=> [ 'type' => 'string', 'default' => '#0f766e' ],
+                    'featuredTo'  => [ 'type' => 'string', 'default' => '#134e4a' ],
+                    'ctaBg'       => [ 'type' => 'string', 'default' => '#fbbf24' ],
+                    'ctaColor'    => [ 'type' => 'string', 'default' => '#92400e' ],
+                    'cellsJson'   => [
+                        'type'    => 'string',
+                        'default' => '[{"type":"featured","col":2,"row":2,"tag":"Highlight","title":"Zero-jQuery performance","subtitle":"Per-page assets, clean output","icon":"dashicons-star-filled","image":"","video":"","stat":"42","suffix":"+","prefix":"","link":""},{"type":"image","col":2,"row":1,"tag":"Showcase","title":"Project gallery","subtitle":"Client work highlights","icon":"","image":"","video":"","stat":"","suffix":"","prefix":"","link":""},{"type":"stat","col":1,"row":1,"tag":"","title":"","subtitle":"Active installs","icon":"","image":"","video":"","stat":"42","suffix":"+","prefix":"","link":""},{"type":"text","col":1,"row":1,"tag":"","title":"Fast setup","subtitle":"Ready in minutes","icon":"dashicons-performance","image":"","video":"","stat":"","suffix":"","prefix":"","link":""}]',
+                    ],
                 ],
             ] );
         }
@@ -225,8 +328,10 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_style( 'rawnaq-floating-dock' );
         wp_enqueue_style( 'rawnaq-flow-chart' );
         wp_enqueue_style( 'rawnaq-scroll-progress-toc' );
+        wp_enqueue_style( 'rawnaq-bento-grid' );
         wp_enqueue_script( 'rawnaq-hub-diagram' );
         wp_enqueue_script( 'rawnaq-flow-chart' );
+        wp_enqueue_script( 'rawnaq-bento-grid' );
     }
 
     // ── Render Callbacks ──
@@ -398,86 +503,133 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_script( 'rawnaq-scroll-timeline' );
 
-        $steps        = json_decode( $attributes['stepsJson'] ?? '[]', true ) ?: [];
-        $layout       = sanitize_html_class( $attributes['layout'] ?? 'alternating' );
-        if ( ! in_array( $layout, [ 'alternating', 'left', 'right' ], true ) ) {
+        $source = sanitize_key( $attributes['source'] ?? 'manual' );
+        $block_id = ! empty( $attributes['anchor'] )
+            ? sanitize_html_class( $attributes['anchor'] )
+            : substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+        $fallback_tl = 'rawnaq-tl-' . $block_id;
+        $custom_tl   = trim( (string) ( $attributes['timelineName'] ?? '' ) );
+        $tl_name     = function_exists( 'rawnaq_timeline_sanitize_tl_name' )
+            ? rawnaq_timeline_sanitize_tl_name( $custom_tl ? $custom_tl : $fallback_tl, $fallback_tl )
+            : ( $custom_tl ? $custom_tl : $fallback_tl );
+
+        $use_ajax = false;
+        $query_b64 = '';
+        $ajax_offset = 0;
+        $has_more = false;
+
+        if ( 'query' === $source && function_exists( 'rawnaq_timeline_query_result' ) ) {
+            $payload = [
+                'post_type' => $attributes['postType'] ?? 'post',
+                'orderby'   => $attributes['orderby'] ?? 'date',
+                'order'     => $attributes['order'] ?? 'DESC',
+                'taxonomy'  => $attributes['taxonomy'] ?? '',
+                'terms'     => $attributes['terms'] ?? '',
+                'include'     => $attributes['includeIds'] ?? '',
+                'exclude_ids' => $attributes['excludeIds'] ?? '',
+                'max'         => max( 1, absint( $attributes['postsPerPage'] ?? 6 ) ),
+            ];
+            $initial_visible_pre = max( 0, absint( $attributes['initialVisible'] ?? 0 ) );
+            $use_ajax = $initial_visible_pre > 0;
+            $max      = (int) $payload['max'];
+            $per_page = $use_ajax ? min( $initial_visible_pre, $max ) : $max;
+            $result   = rawnaq_timeline_query_result(
+                array_merge( $payload, [
+                    'posts_per_page' => $per_page,
+                    'offset'         => 0,
+                ] ),
+                [
+                    'builder'  => 'gutenberg',
+                    'block_id' => $block_id,
+                ]
+            );
+            $steps       = $result['steps'];
+            $ajax_offset = count( $steps );
+            $found       = (int) $result['found_posts'];
+            $has_more    = $use_ajax && $ajax_offset < $max && $ajax_offset < $found;
+            $query_b64   = base64_encode( wp_json_encode( rawnaq_timeline_sanitize_query_args( $payload ) ) );
+        } else {
+            $steps = json_decode( $attributes['stepsJson'] ?? '[]', true ) ?: [];
+            if ( function_exists( 'rawnaq_timeline_filter_steps' ) ) {
+                $steps = rawnaq_timeline_filter_steps( $steps, [
+                    'source'   => 'manual',
+                    'builder'  => 'gutenberg',
+                    'block_id' => $block_id,
+                ] );
+            }
+        }
+
+        $layout = sanitize_html_class( $attributes['layout'] ?? 'alternating' );
+        if ( ! in_array( $layout, [ 'alternating', 'left', 'right', 'horizontal' ], true ) ) {
             $layout = 'alternating';
         }
-        $show_numbers = ! empty( $attributes['showNumbers'] );
-        $wrap_class   = 'rawnaq-timeline-wrapper layout-' . $layout;
+        $show_numbers    = ! empty( $attributes['showNumbers'] );
+        $initial_visible = max( 0, absint( $attributes['initialVisible'] ?? 0 ) );
+        $load_chunk      = max( 1, absint( $attributes['loadChunk'] ?? 3 ) );
+        $load_more_text  = trim( (string) ( $attributes['loadMoreText'] ?? '' ) );
+        if ( '' === $load_more_text ) {
+            $load_more_text = function_exists( 'rawnaq_translate' )
+                ? rawnaq_translate( 'load_more', __( 'Load more', 'rawnaq' ) )
+                : __( 'Load more', 'rawnaq' );
+        } elseif ( function_exists( 'rawnaq_translate' ) ) {
+            $load_more_text = rawnaq_translate( 'load_more', $load_more_text );
+        }
+        $wrap_class = 'rawnaq-timeline-wrapper layout-' . $layout;
         if ( $show_numbers ) {
             $wrap_class .= ' show-numbers';
         }
 
         $style_vars = [
-            '--tl-line-bg'      => sanitize_hex_color( $attributes['lineBg'] ?? '' ) ?: '#e2e8f0',
-            '--tl-line-active'  => sanitize_hex_color( $attributes['lineActive'] ?? '' ) ?: '#6366f1',
-            '--tl-bullet-border'=> sanitize_hex_color( $attributes['bulletBorder'] ?? '' ) ?: '#cbd5e1',
-            '--tl-bullet-active'=> sanitize_hex_color( $attributes['bulletActive'] ?? '' ) ?: '#6366f1',
-            '--tl-card-bg'      => sanitize_hex_color( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
-            '--tl-meta'         => sanitize_hex_color( $attributes['metaColor'] ?? '' ) ?: '#6366f1',
-            '--tl-title'        => sanitize_hex_color( $attributes['titleColor'] ?? '' ) ?: '#1a1a1a',
-            '--tl-desc'         => sanitize_hex_color( $attributes['descColor'] ?? '' ) ?: '#666666',
-            '--tl-cta'          => sanitize_hex_color( $attributes['ctaColor'] ?? '' ) ?: '#6366f1',
-            '--tl-card-radius'  => max( 0, min( 40, absint( $attributes['cardRadius'] ?? 16 ) ) ) . 'px',
-            '--tl-bullet-size'  => max( 16, min( 48, absint( $attributes['bulletSize'] ?? 28 ) ) ) . 'px',
-            '--tl-item-pad-y'   => max( 8, min( 80, absint( $attributes['itemGap'] ?? 20 ) ) ) . 'px',
+            '--tl-line-bg'       => sanitize_hex_color( $attributes['lineBg'] ?? '' ) ?: '#e2e8f0',
+            '--tl-line-active'   => sanitize_hex_color( $attributes['lineActive'] ?? '' ) ?: '#6366f1',
+            '--tl-line-width'    => max( 1, min( 12, absint( $attributes['lineWidth'] ?? 4 ) ) ) . 'px',
+            '--tl-bullet-border' => sanitize_hex_color( $attributes['bulletBorder'] ?? '' ) ?: '#cbd5e1',
+            '--tl-bullet-active' => sanitize_hex_color( $attributes['bulletActive'] ?? '' ) ?: '#6366f1',
+            '--tl-card-bg'       => sanitize_hex_color( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
+            '--tl-meta'          => sanitize_hex_color( $attributes['metaColor'] ?? '' ) ?: '#6366f1',
+            '--tl-title'         => sanitize_hex_color( $attributes['titleColor'] ?? '' ) ?: '#1a1a1a',
+            '--tl-desc'          => sanitize_hex_color( $attributes['descColor'] ?? '' ) ?: '#666666',
+            '--tl-cta'           => sanitize_hex_color( $attributes['ctaColor'] ?? '' ) ?: '#6366f1',
+            '--tl-card-radius'   => max( 0, min( 40, absint( $attributes['cardRadius'] ?? 16 ) ) ) . 'px',
+            '--tl-bullet-size'   => max( 16, min( 48, absint( $attributes['bulletSize'] ?? 28 ) ) ) . 'px',
+            '--tl-item-pad-y'    => max( 8, min( 80, absint( $attributes['itemGap'] ?? 20 ) ) ) . 'px',
         ];
-        $style_attr = '';
+        $style_attr = 'scroll-timeline-name: --' . $tl_name . ';';
         foreach ( $style_vars as $prop => $val ) {
             $style_attr .= $prop . ':' . $val . ';';
         }
 
+        $show_load = $use_ajax
+            ? $has_more
+            : ( $initial_visible > 0 && count( $steps ) > $initial_visible );
+
         ob_start();
         ?>
-        <div class="<?php echo esc_attr( $wrap_class ); ?>" data-show-numbers="<?php echo $show_numbers ? '1' : '0'; ?>" style="<?php echo esc_attr( $style_attr ); ?>">
+        <div
+            class="<?php echo esc_attr( $wrap_class ); ?>"
+            data-show-numbers="<?php echo $show_numbers ? '1' : '0'; ?>"
+            data-tl-name="<?php echo esc_attr( $tl_name ); ?>"
+            data-initial-visible="<?php echo esc_attr( (string) ( $use_ajax ? 0 : $initial_visible ) ); ?>"
+            data-load-chunk="<?php echo esc_attr( (string) $load_chunk ); ?>"
+            <?php if ( $use_ajax ) : ?>
+                data-tl-ajax="1"
+                data-tl-offset="<?php echo esc_attr( (string) $ajax_offset ); ?>"
+                data-tl-query="<?php echo esc_attr( $query_b64 ); ?>"
+                data-tl-layout="<?php echo esc_attr( $layout ); ?>"
+            <?php endif; ?>
+            style="<?php echo esc_attr( $style_attr ); ?>"
+        >
             <div class="rawnaq-timeline-line-bg"></div>
             <div class="rawnaq-timeline-line-active"></div>
-            <?php foreach ( $steps as $index => $step ) :
-                if ( 'left' === $layout ) {
-                    $side = 'left-item';
-                } elseif ( 'right' === $layout ) {
-                    $side = 'right-item';
-                } else {
-                    $side = ( 0 === ( $index % 2 ) ) ? 'left-item' : 'right-item';
-                }
-                $num      = str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT );
-                $meta     = $step['meta'] ?? '';
-                $title    = $step['title'] ?? '';
-                $desc     = $step['desc'] ?? '';
-                $icon     = $step['icon'] ?? '';
-                $img      = $step['imageUrl'] ?? '';
-                $cta_text = trim( (string) ( $step['ctaText'] ?? '' ) );
-                $cta_link = $step['ctaLink'] ?? '';
-                ?>
-                <div class="rawnaq-timeline-item <?php echo esc_attr( $side ); ?>">
-                    <span class="rawnaq-timeline-bullet">
-                        <?php if ( $show_numbers ) : ?>
-                            <span class="num"><?php echo esc_html( $num ); ?></span>
-                        <?php endif; ?>
-                    </span>
-                    <div class="rawnaq-timeline-card">
-                        <?php if ( $img ) : ?>
-                            <img class="rawnaq-timeline-thumb" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
-                        <?php endif; ?>
-                        <?php if ( $meta ) : ?>
-                            <span class="rawnaq-timeline-meta"><?php echo esc_html( $meta ); ?></span>
-                        <?php endif; ?>
-                        <?php if ( $icon ) : ?>
-                            <span class="rawnaq-timeline-icon"><span class="dashicons <?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span></span>
-                        <?php endif; ?>
-                        <?php if ( $title ) : ?>
-                            <h4><?php echo esc_html( $title ); ?></h4>
-                        <?php endif; ?>
-                        <?php if ( $desc ) : ?>
-                            <p><?php echo esc_html( $desc ); ?></p>
-                        <?php endif; ?>
-                        <?php if ( $cta_text && $cta_link ) : ?>
-                            <a class="rawnaq-timeline-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
-                        <?php endif; ?>
-                    </div>
+            <?php
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes.
+            echo rawnaq_timeline_render_items_html( $steps, $layout, $show_numbers, 0 );
+            ?>
+            <?php if ( $show_load ) : ?>
+                <div class="rawnaq-timeline-load-more">
+                    <button type="button"><?php echo esc_html( $load_more_text ); ?></button>
                 </div>
-            <?php endforeach; ?>
+            <?php endif; ?>
         </div>
         <?php
         return ob_get_clean();
@@ -489,36 +641,88 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_script( 'rawnaq-floating-dock' );
 
         $a = wp_parse_args( $attributes, [
-            'position'     => 'bottom',
-            'itemsJson'    => '[]',
-            'offset'       => 20,
-            'hideMobile'   => false,
-            'mobileLabels' => false,
-            'dockBg'       => 'rgba(255,255,255,0.55)',
-            'dockBorder'   => 'rgba(255,255,255,0.5)',
-            'dockBlur'     => 16,
-            'dockRadius'   => 24,
-            'dockGap'      => 12,
-            'dockPad'      => 10,
-            'itemBg'       => '#ffffff',
-            'iconColor'    => '#444444',
-            'itemSize'     => 48,
-            'itemRadius'   => 12,
-            'badgeBg'      => '#ef4444',
-            'badgeColor'   => '#ffffff',
-            'magnify'      => true,
-            'maxScale'     => 1.6,
+            'position'         => 'bottom',
+            'itemsJson'        => '[]',
+            'offset'           => 20,
+            'hideMobile'       => false,
+            'mobileLabels'     => false,
+            'dockBg'           => 'rgba(255,255,255,0.55)',
+            'dockBorder'       => 'rgba(255,255,255,0.5)',
+            'dockBlur'         => 16,
+            'dockRadius'       => 24,
+            'dockGap'          => 12,
+            'dockPad'          => 10,
+            'itemBg'           => '#ffffff',
+            'iconColor'        => '#444444',
+            'itemSize'         => 48,
+            'itemRadius'       => 12,
+            'badgeBg'          => '#ef4444',
+            'badgeColor'       => '#ffffff',
+            'magnify'          => true,
+            'maxScale'         => 1.6,
+            'whatsappMode'     => false,
+            'positionWa'       => 'right',
+            'primaryChannel'   => 'whatsapp',
+            'agentsJson'       => '[]',
+            'defaultMsg'       => '',
+            'secCall'          => '',
+            'secMessenger'     => '',
+            'secEmail'         => '',
+            'secTelegram'      => '',
+            'timezone'         => 'UTC+6',
+            'scheduleJson'     => '{}',
+            'offHoursBehavior' => 'offline_badge',
+            'offHoursRedirect' => '',
+            'qrFallback'       => true,
+            'desktopAction'    => 'choice',
+            'triggerDelay'     => 0,
+            'triggerScroll'    => 0,
+            'greetingText'     => '',
+            'hideDesktop'      => false,
+            'safeOffset'       => 0,
+            'visMode'          => 'all',
+            'visIds'           => '',
+            'visIncludeFront'  => false,
+            'visIncludeProducts' => false,
+            'trackClicks'      => true,
         ] );
 
+        if ( ! rawnaq_dock_is_visible( [
+            'mode'             => $a['visMode'] ?? 'all',
+            'ids'              => $a['visIds'] ?? '',
+            'include_front'    => ! empty( $a['visIncludeFront'] ),
+            'include_products' => ! empty( $a['visIncludeProducts'] ),
+        ] ) ) {
+            return '';
+        }
+
+        $is_wa = ! empty( $a['whatsappMode'] );
+        if ( $is_wa ) {
+            wp_enqueue_script( 'rawnaq-qrcode' );
+        }
+
+        $track_clicks = ! isset( $a['trackClicks'] ) || ! empty( $a['trackClicks'] );
+
         $items = json_decode( $a['itemsJson'], true ) ?: [];
-        $pos   = sanitize_html_class( $a['position'] ?: 'bottom' );
-        if ( ! in_array( $pos, [ 'bottom', 'left', 'right' ], true ) ) {
+        $pos   = $is_wa
+            ? sanitize_html_class( $a['positionWa'] ?: 'right' )
+            : sanitize_html_class( $a['position'] ?: 'bottom' );
+        if ( $is_wa && ! in_array( $pos, [ 'left', 'right' ], true ) ) {
+            $pos = 'right';
+        }
+        if ( ! $is_wa && ! in_array( $pos, [ 'bottom', 'left', 'right' ], true ) ) {
             $pos = 'bottom';
         }
 
         $classes = [ 'rawnaq-dock-container', 'pos-' . $pos ];
+        if ( $is_wa ) {
+            $classes[] = 'rawnaq-whatsapp-dock-mode';
+        }
         if ( ! empty( $a['hideMobile'] ) ) {
             $classes[] = 'hide-mobile';
+        }
+        if ( ! empty( $a['hideDesktop'] ) ) {
+            $classes[] = 'hide-desktop';
         }
         if ( ! empty( $a['mobileLabels'] ) ) {
             $classes[] = 'mobile-labels';
@@ -526,6 +730,7 @@ class Rawnaq_Gutenberg_Loader {
 
         $style_parts = [
             '--dock-offset:' . absint( $a['offset'] ) . 'px',
+            '--dock-safe-offset:' . absint( $a['safeOffset'] ) . 'px',
             '--dock-bg:' . esc_attr( $a['dockBg'] ),
             '--dock-border:' . esc_attr( $a['dockBorder'] ),
             '--dock-blur:' . absint( $a['dockBlur'] ) . 'px',
@@ -547,6 +752,51 @@ class Rawnaq_Gutenberg_Loader {
             $max_scale = 1.6;
         }
 
+        $wa_attr = '';
+        if ( $is_wa ) {
+            $agents_raw = json_decode( $a['agentsJson'], true );
+            $agents     = [];
+            if ( is_array( $agents_raw ) ) {
+                foreach ( $agents_raw as $agent ) {
+                    $agents[] = [
+                        'name'   => sanitize_text_field( $agent['name'] ?? '' ),
+                        'role'   => sanitize_text_field( $agent['role'] ?? '' ),
+                        'number' => sanitize_text_field( $agent['number'] ?? '' ),
+                        'avatar' => ! empty( $agent['avatar'] ) ? esc_url_raw( $agent['avatar'] ) : '',
+                        'msg'    => sanitize_textarea_field( $agent['msg'] ?? '' ),
+                    ];
+                }
+            }
+            $schedule = json_decode( $a['scheduleJson'], true );
+            if ( ! is_array( $schedule ) ) {
+                $schedule = [];
+            }
+            $wa_cfg = [
+                'whatsappMode'     => true,
+                'primaryChannel'   => sanitize_key( $a['primaryChannel'] ?: 'whatsapp' ),
+                'agents'           => $agents,
+                'defaultMsg'       => sanitize_textarea_field( $a['defaultMsg'] ?? '' ),
+                'pageContext'      => function_exists( 'rawnaq_get_wa_page_context' ) ? rawnaq_get_wa_page_context() : [],
+                'secCall'          => sanitize_text_field( $a['secCall'] ),
+                'secMessenger'     => sanitize_text_field( $a['secMessenger'] ),
+                'secEmail'         => sanitize_email( $a['secEmail'] ),
+                'secTelegram'      => sanitize_text_field( $a['secTelegram'] ),
+                'timezone'         => sanitize_text_field( $a['timezone'] ?: 'UTC+6' ),
+                'schedule'         => $schedule,
+                'offHoursBehavior' => sanitize_key( $a['offHoursBehavior'] ?: 'offline_badge' ),
+                'offHoursRedirect' => esc_url_raw( $a['offHoursRedirect'] ),
+                'qrFallback'       => ( $a['desktopAction'] ?? 'choice' ) !== 'web',
+                'desktopAction'    => in_array( ( $a['desktopAction'] ?? 'choice' ), [ 'choice', 'web', 'qr' ], true )
+                    ? ( $a['desktopAction'] ?? 'choice' )
+                    : 'choice',
+                'triggerDelay'     => absint( $a['triggerDelay'] ),
+                'triggerScroll'    => absint( $a['triggerScroll'] ),
+                'greetingText'     => sanitize_text_field( $a['greetingText'] ),
+                'trackClicks'      => $track_clicks,
+            ];
+            $wa_attr = rawurlencode( wp_json_encode( $wa_cfg ) );
+        }
+
         ob_start();
         ?>
         <nav class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
@@ -554,31 +804,37 @@ class Rawnaq_Gutenberg_Loader {
              aria-label="<?php echo esc_attr__( 'Floating dock', 'rawnaq' ); ?>"
              data-magnify="<?php echo $magnify ? '1' : '0'; ?>"
              data-max-scale="<?php echo esc_attr( $max_scale ); ?>"
-             data-base-size="<?php echo esc_attr( absint( $a['itemSize'] ) ); ?>">
-            <?php foreach ( $items as $item ) :
-                $label  = $item['label'] ?? '';
-                $icon   = $item['icon'] ?? 'dashicons-admin-generic';
-                $link   = ! empty( $item['link'] ) ? $item['link'] : '#';
-                $target = ( isset( $item['target'] ) && $item['target'] === '_blank' ) ? '_blank' : '_self';
-                $rel_value = $target === '_blank' ? 'noopener' : '';
-                $badge  = trim( (string) ( $item['badge'] ?? '' ) );
-                $color  = sanitize_hex_color( $item['color'] ?? '' ) ?: '#6366f1';
-                ?>
-                <a class="rawnaq-dock-item"
-                   href="<?php echo esc_url( $link ); ?>"
-                   target="<?php echo esc_attr( $target ); ?>"<?php if ( $rel_value ) : ?> rel="<?php echo esc_attr( $rel_value ); ?>"<?php endif; ?>
-                   style="--hover-color: <?php echo esc_attr( $color ); ?>;"
-                   aria-label="<?php echo esc_attr( $label ); ?>">
-                    <span class="rawnaq-dock-icon"><span class="dashicons <?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span></span>
-                    <?php if ( $badge !== '' ) : ?>
-                        <span class="rawnaq-dock-badge"><?php echo esc_html( $badge ); ?></span>
-                    <?php endif; ?>
-                    <?php if ( $label ) : ?>
-                        <span class="rawnaq-dock-tooltip"><?php echo esc_html( $label ); ?></span>
-                        <span class="rawnaq-dock-mobile-label"><?php echo esc_html( $label ); ?></span>
-                    <?php endif; ?>
-                </a>
-            <?php endforeach; ?>
+             data-base-size="<?php echo esc_attr( absint( $a['itemSize'] ) ); ?>"
+             data-track-clicks="<?php echo $track_clicks ? '1' : '0'; ?>"
+             <?php if ( $wa_attr ) : ?>
+             data-wa-dock="<?php echo esc_attr( $wa_attr ); ?>"
+             <?php endif; ?>>
+            <?php if ( ! $is_wa ) : ?>
+                <?php foreach ( $items as $item ) :
+                    $label  = $item['label'] ?? '';
+                    $icon   = $item['icon'] ?? 'dashicons-admin-generic';
+                    $link   = ! empty( $item['link'] ) ? $item['link'] : '#';
+                    $target = ( isset( $item['target'] ) && $item['target'] === '_blank' ) ? '_blank' : '_self';
+                    $rel_value = $target === '_blank' ? 'noopener' : '';
+                    $badge  = trim( (string) ( $item['badge'] ?? '' ) );
+                    $color  = sanitize_hex_color( $item['color'] ?? '' ) ?: '#6366f1';
+                    ?>
+                    <a class="rawnaq-dock-item"
+                       href="<?php echo esc_url( $link ); ?>"
+                       target="<?php echo esc_attr( $target ); ?>"<?php if ( $rel_value ) : ?> rel="<?php echo esc_attr( $rel_value ); ?>"<?php endif; ?>
+                       style="--hover-color: <?php echo esc_attr( $color ); ?>;"
+                       aria-label="<?php echo esc_attr( $label ); ?>">
+                        <span class="rawnaq-dock-icon"><span class="dashicons <?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span></span>
+                        <?php if ( $badge !== '' ) : ?>
+                            <span class="rawnaq-dock-badge"><?php echo esc_html( $badge ); ?></span>
+                        <?php endif; ?>
+                        <?php if ( $label ) : ?>
+                            <span class="rawnaq-dock-tooltip"><?php echo esc_html( $label ); ?></span>
+                            <span class="rawnaq-dock-mobile-label"><?php echo esc_html( $label ); ?></span>
+                        <?php endif; ?>
+                    </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </nav>
         <?php
         return ob_get_clean();
@@ -589,10 +845,24 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_script( 'rawnaq-flow-chart' );
 
-        $mode = ( $attributes['mode'] ?? 'org' ) === 'process' ? 'process' : 'org';
+        $mode = sanitize_key( $attributes['mode'] ?? 'org' );
+        if ( ! in_array( $mode, [ 'org', 'process', 'freeform' ], true ) ) {
+            $mode = 'org';
+        }
         $conn = sanitize_key( $attributes['connector'] ?? 'curved' );
         if ( ! in_array( $conn, [ 'curved', 'elbow', 'straight', 'dashed' ], true ) ) {
             $conn = 'curved';
+        }
+        $dir = sanitize_key( $attributes['direction'] ?? 'tb' );
+        if ( ! in_array( $dir, [ 'tb', 'lr', 'rl' ], true ) ) {
+            $dir = 'tb';
+        }
+        $shape = sanitize_key( $attributes['shape'] ?? 'rect' );
+        if ( 'hexagon' === $shape ) {
+            $shape = 'hex';
+        }
+        if ( ! in_array( $shape, [ 'rect', 'circle', 'hex' ], true ) ) {
+            $shape = 'rect';
         }
         $raw_nodes = json_decode( $attributes['nodesJson'] ?? '[]', true );
         if ( ! is_array( $raw_nodes ) ) {
@@ -616,6 +886,8 @@ class Rawnaq_Gutenberg_Loader {
             if ( $parent === $id ) {
                 $parent = '';
             }
+            $x = isset( $item['x'] ) ? (float) $item['x'] : (float) ( $item['x_pos'] ?? 10 );
+            $y = isset( $item['y'] ) ? (float) $item['y'] : (float) ( $item['y_pos'] ?? 10 );
             $nodes[] = [
                 'id'       => $id,
                 'parent'   => $parent,
@@ -625,17 +897,47 @@ class Rawnaq_Gutenberg_Loader {
                 'detail'   => sanitize_textarea_field( $item['detail'] ?? '' ),
                 'link'     => ! empty( $item['link'] ) ? esc_url_raw( $item['link'] ) : '',
                 'decision' => ! empty( $item['decision'] ),
+                'x'        => max( 0, min( 100, $x ) ),
+                'y'        => max( 0, min( 100, $y ) ),
             ];
         }
+        $by_id = [];
+        foreach ( $nodes as $n ) {
+            $by_id[ $n['id'] ] = $n;
+        }
+        foreach ( $nodes as &$n ) {
+            $parent = $n['parent'];
+            if ( '' === $parent || ! isset( $by_id[ $parent ] ) ) {
+                $n['parent'] = '';
+                continue;
+            }
+            $walk = [ $n['id'] => true ];
+            $cur  = $parent;
+            while ( '' !== $cur && isset( $by_id[ $cur ] ) ) {
+                if ( isset( $walk[ $cur ] ) ) {
+                    $n['parent'] = '';
+                    break;
+                }
+                $walk[ $cur ] = true;
+                $cur = $by_id[ $cur ]['parent'] ?? '';
+            }
+        }
+        unset( $n );
+
         $cfg = [
             'mode'      => $mode,
+            'direction' => $dir,
+            'shape'     => $shape,
             'connector' => $conn,
+            'zoom'      => true,
             'nodes'     => $nodes,
         ];
         ob_start();
         ?>
         <div class="rawnaq-flow-chart" data-flow="<?php echo esc_attr( rawurlencode( wp_json_encode( $cfg ) ) ); ?>">
-            <div class="rawnaq-flow-stage is-responsive"></div>
+            <div class="rawnaq-flow-viewport">
+                <div class="rawnaq-flow-stage is-responsive"></div>
+            </div>
         </div>
         <?php
         return ob_get_clean();
@@ -675,6 +977,7 @@ class Rawnaq_Gutenberg_Loader {
             'scrollOffset'   => absint( $attributes['scrollOffset'] ?? 80 ),
             'readingTime'    => ! empty( $attributes['readingTime'] ),
             'mobileCollapse' => ! empty( $attributes['mobileCollapse'] ),
+            'dockAttach'     => ! empty( $attributes['dockAttach'] ),
             'hideIfShort'    => true,
         ];
         if ( ! in_array( $cfg['progress'], [ 'bar', 'ring', 'both', 'none' ], true ) ) {
@@ -696,6 +999,311 @@ class Rawnaq_Gutenberg_Loader {
                     <ul class="rawnaq-spt-list"></ul>
                 </nav>
             <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function render_bento_grid_block( $attributes ) {
+        wp_enqueue_style( 'rawnaq-bento-grid' );
+        wp_enqueue_style( 'dashicons' );
+        wp_enqueue_script( 'rawnaq-bento-grid' );
+
+        $a = wp_parse_args( $attributes, [
+            'preset'      => 'featured',
+            'columns'     => 4,
+            'rowHeight'   => 140,
+            'gap'         => 16,
+            'columnGap'   => 16,
+            'rowGap'      => 16,
+            'radius'      => 18,
+            'reveal'      => true,
+            'hoverEffect' => 'lift',
+            'hairline'    => false,
+            'overlayOpacity' => 100,
+            'tagBg'       => '#fef3c7',
+            'tagColor'    => '#92400e',
+            'titleColor'  => '#13231c',
+            'subColor'    => '#5c6f66',
+            'iconColor'   => '#0f766e',
+            'statColor'   => '#0f766e',
+            'cellBg'      => '#ffffff',
+            'cellBorder'  => '#d7e2dc',
+            'featuredFrom'=> '#0f766e',
+            'featuredTo'  => '#134e4a',
+            'ctaBg'       => '#fbbf24',
+            'ctaColor'    => '#92400e',
+            'cellsJson'   => '[]',
+        ] );
+
+        $preset = sanitize_key( $a['preset'] );
+        if ( 'wide' === $preset ) {
+            $cols = 3;
+        } elseif ( 'custom' === $preset ) {
+            $cols = max( 2, min( 6, absint( $a['columns'] ) ?: 4 ) );
+        } else {
+            $cols = 4;
+        }
+
+        $cells_raw = json_decode( $a['cellsJson'], true );
+        if ( ! is_array( $cells_raw ) ) {
+            $cells_raw = [];
+        }
+
+        $hover = sanitize_key( $a['hoverEffect'] );
+        if ( ! in_array( $hover, [ 'lift', 'zoom', 'tint', 'none' ], true ) ) {
+            $hover = 'lift';
+        }
+
+        $classes = [ 'rawnaq-bento-grid' ];
+        if ( ! empty( $a['hairline'] ) ) {
+            $classes[] = 'rawnaq-bento-hairline';
+        }
+
+        $overlay_opacity = isset( $a['overlayOpacity'] ) ? floatval( $a['overlayOpacity'] ) : 100;
+        $overlay_opacity = max( 0, min( 100, $overlay_opacity ) ) / 100;
+
+        $legacy_gap = absint( $attributes['gap'] ?? 16 );
+        $col_gap    = array_key_exists( 'columnGap', $attributes ) ? absint( $a['columnGap'] ) : $legacy_gap;
+        $row_gap    = array_key_exists( 'rowGap', $attributes ) ? absint( $a['rowGap'] ) : $legacy_gap;
+
+        $style = sprintf(
+            '--bento-row:%dpx;--bento-gap-col:%dpx;--bento-gap-row:%dpx;--bento-radius:%dpx;--bento-tag-bg:%s;--bento-tag-color:%s;--bento-title-color:%s;--bento-sub-color:%s;--bento-icon-color:%s;--bento-stat-color:%s;--bento-panel:%s;--bento-line:%s;--bento-featured-from:%s;--bento-featured-to:%s;--bento-accent:%s;--bento-overlay-opacity:%s;--bento-cta-bg:%s;--bento-cta-color:%s;',
+            absint( $a['rowHeight'] ),
+            $col_gap,
+            $row_gap,
+            absint( $a['radius'] ),
+            esc_attr( $a['tagBg'] ),
+            esc_attr( $a['tagColor'] ),
+            esc_attr( $a['titleColor'] ),
+            esc_attr( $a['subColor'] ),
+            esc_attr( $a['iconColor'] ),
+            esc_attr( $a['statColor'] ),
+            esc_attr( $a['cellBg'] ),
+            esc_attr( $a['cellBorder'] ),
+            esc_attr( $a['featuredFrom'] ),
+            esc_attr( $a['featuredTo'] ),
+            esc_attr( $a['iconColor'] ?: '#0f766e' ),
+            esc_attr( (string) $overlay_opacity ),
+            esc_attr( $a['ctaBg'] ),
+            esc_attr( $a['ctaColor'] )
+        );
+
+        ob_start();
+        ?>
+        <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
+             style="<?php echo esc_attr( $style ); ?>"
+             data-cols="<?php echo esc_attr( (string) $cols ); ?>"
+             data-reveal="<?php echo ! empty( $a['reveal'] ) ? '1' : '0'; ?>"
+             data-hover="<?php echo esc_attr( $hover ); ?>"
+             role="list">
+            <?php foreach ( $cells_raw as $cell ) :
+                $type     = sanitize_key( $cell['type'] ?? 'text' );
+                $tag      = sanitize_text_field( $cell['tag'] ?? '' );
+                $title    = sanitize_text_field( $cell['title'] ?? '' );
+                $subtitle = sanitize_text_field( $cell['subtitle'] ?? '' );
+                $icon     = sanitize_html_class( $cell['icon'] ?? '' );
+                $image    = ! empty( $cell['image'] ) ? esc_url( $cell['image'] ) : '';
+                $video    = ! empty( $cell['video'] ) ? esc_url( $cell['video'] ) : '';
+                $link     = ! empty( $cell['link'] ) ? esc_url( $cell['link'] ) : '';
+                $stat     = sanitize_text_field( $cell['stat'] ?? '' );
+                $suffix   = sanitize_text_field( $cell['suffix'] ?? '' );
+                $prefix   = sanitize_text_field( $cell['prefix'] ?? '' );
+                $num      = floatval( preg_replace( '/[^\d.]/', '', $stat ) );
+                $cta_text = sanitize_text_field( $cell['ctaText'] ?? '' );
+                $cta_link = ! empty( $cell['ctaLink'] ) ? esc_url( $cell['ctaLink'] ) : '';
+                if ( $cta_text && ! $cta_link && $link ) {
+                    $cta_link = $link;
+                }
+                $has_cta = '' !== $cta_text;
+                $tag_attrs = function_exists( 'rawnaq_bento_tag_attrs' )
+                    ? rawnaq_bento_tag_attrs( $cell['tagBg'] ?? '', $cell['tagColor'] ?? '' )
+                    : [ 'class' => 'rawnaq-bento-tag', 'style' => '' ];
+                $role   = sanitize_text_field( $cell['role'] ?? '' );
+                $avatar = ! empty( $cell['avatar'] ) ? esc_url( $cell['avatar'] ) : '';
+                $rating = max( 0, min( 5, absint( $cell['rating'] ?? 0 ) ) );
+
+                $layout = function_exists( 'rawnaq_bento_cell_layout' )
+                    ? rawnaq_bento_cell_layout( [
+                        'col'      => $cell['col'] ?? 1,
+                        'row'      => $cell['row'] ?? 1,
+                        'order'    => $cell['order'] ?? 0,
+                        'col_md'   => $cell['colMd'] ?? 0,
+                        'row_md'   => $cell['rowMd'] ?? 0,
+                        'order_md' => $cell['orderMd'] ?? 0,
+                        'col_sm'   => $cell['colSm'] ?? 0,
+                        'row_sm'   => $cell['rowSm'] ?? 0,
+                        'order_sm' => $cell['orderSm'] ?? 0,
+                    ] )
+                    : [
+                        'style'   => sprintf(
+                            'grid-column:span %d;grid-row:span %d;',
+                            max( 1, absint( $cell['col'] ?? 1 ) ),
+                            max( 1, absint( $cell['row'] ?? 1 ) )
+                        ),
+                        'classes' => [],
+                    ];
+
+                $cell_classes = array_merge( [ 'rawnaq-bento-cell' ], $layout['classes'] );
+                $align_class  = function_exists( 'rawnaq_bento_align_class' )
+                    ? rawnaq_bento_align_class( $cell['align'] ?? '' )
+                    : '';
+                if ( $align_class ) {
+                    $cell_classes[] = $align_class;
+                }
+                if ( 'featured' === $type ) {
+                    $cell_classes[] = 'is-featured';
+                } elseif ( 'image' === $type ) {
+                    $cell_classes[] = 'is-image';
+                } elseif ( 'stat' === $type ) {
+                    $cell_classes[] = 'is-stat';
+                } elseif ( 'video' === $type ) {
+                    $cell_classes[] = 'is-video';
+                    $vid_parsed     = function_exists( 'rawnaq_bento_parse_video' ) ? rawnaq_bento_parse_video( $video ) : null;
+                    if ( $vid_parsed && in_array( $vid_parsed['kind'], [ 'youtube', 'vimeo' ], true ) ) {
+                        $cell_classes[] = 'is-embed';
+                    }
+                } elseif ( 'testimonial' === $type ) {
+                    $cell_classes[] = 'is-testimonial';
+                }
+
+                $sync_raw  = trim( (string) ( $cell['timelineSync'] ?? $cell['sync_timeline'] ?? '' ) );
+                $sync_name = $sync_raw ? ( function_exists( 'rawnaq_timeline_sanitize_tl_name' )
+                    ? rawnaq_timeline_sanitize_tl_name( $sync_raw, $sync_raw )
+                    : preg_replace( '/[^a-zA-Z0-9_-]/', '', $sync_raw ) ) : '';
+                if ( $sync_name ) {
+                    $cell_classes[] = 'tl-sync';
+                }
+
+                $cell_style = $layout['style'];
+                if ( $sync_name ) {
+                    $cell_style .= 'animation-timeline:--' . $sync_name . ';';
+                }
+                $tag_name = ( $link && ! $has_cta ) ? 'a' : 'div';
+                if ( ! in_array( $tag_name, [ 'a', 'div' ], true ) ) {
+                    $tag_name = 'div';
+                }
+                ?>
+                <<?php echo tag_escape( $tag_name ); ?>
+                    class="<?php echo esc_attr( implode( ' ', $cell_classes ) ); ?>"
+                    style="<?php echo esc_attr( $cell_style ); ?>"
+                    <?php if ( $sync_name ) : ?>data-tl-sync="<?php echo esc_attr( $sync_name ); ?>"<?php endif; ?>
+                    <?php if ( $link && ! $has_cta ) : ?>href="<?php echo esc_url( $link ); ?>"<?php endif; ?>
+                    role="listitem">
+                    <?php if ( 'testimonial' === $type ) : ?>
+                        <?php if ( $tag ) : ?>
+                            <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
+                        <?php endif; ?>
+                        <?php if ( $subtitle ) : ?>
+                            <blockquote class="rawnaq-bento-quote"><?php echo esc_html( $subtitle ); ?></blockquote>
+                        <?php endif; ?>
+                        <?php if ( $rating > 0 ) : ?>
+                            <div class="rawnaq-bento-stars" aria-label="<?php echo esc_attr( sprintf( /* translators: %d: star count */ __( '%d out of 5 stars', 'rawnaq' ), $rating ) ); ?>"><?php echo esc_html( str_repeat( '★', $rating ) ); ?></div>
+                        <?php endif; ?>
+                        <?php if ( $title || $role || $avatar ) : ?>
+                            <div class="rawnaq-bento-author">
+                                <?php if ( $avatar ) : ?>
+                                    <img class="rawnaq-bento-avatar" src="<?php echo esc_url( $avatar ); ?>" alt="" loading="lazy" decoding="async" />
+                                <?php elseif ( $title ) : ?>
+                                    <div class="rawnaq-bento-avatar is-placeholder" aria-hidden="true"><?php echo esc_html( strtoupper( function_exists( 'mb_substr' ) ? mb_substr( $title, 0, 1 ) : substr( $title, 0, 1 ) ) ); ?></div>
+                                <?php endif; ?>
+                                <?php if ( $title || $role ) : ?>
+                                    <div class="rawnaq-bento-author-meta">
+                                        <?php if ( $title ) : ?><div class="rawnaq-bento-author-name"><?php echo esc_html( $title ); ?></div><?php endif; ?>
+                                        <?php if ( $role ) : ?><div class="rawnaq-bento-author-role"><?php echo esc_html( $role ); ?></div><?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ( $has_cta ) : ?>
+                            <?php if ( $cta_link ) : ?>
+                                <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
+                            <?php else : ?>
+                                <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php elseif ( 'image' === $type ) : ?>
+                        <?php if ( $image ) : ?>
+                            <img class="rawnaq-bento-media" src="<?php echo esc_url( $image ); ?>" alt="" loading="lazy" decoding="async" />
+                        <?php else : ?>
+                            <div class="rawnaq-bento-media" style="background:linear-gradient(135deg,#0f766e,#134e4a);" aria-hidden="true"></div>
+                        <?php endif; ?>
+                        <div class="rawnaq-bento-overlay" aria-hidden="true"></div>
+                        <div class="rawnaq-bento-body">
+                            <?php if ( $tag ) : ?>
+                                <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
+                            <?php endif; ?>
+                            <?php if ( $title ) : ?><div class="rawnaq-bento-title"><?php echo esc_html( $title ); ?></div><?php endif; ?>
+                            <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
+                            <?php if ( $has_cta ) : ?>
+                                <?php if ( $cta_link ) : ?>
+                                    <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
+                                <?php else : ?>
+                                    <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    <?php elseif ( 'video' === $type ) : ?>
+                        <?php if ( function_exists( 'rawnaq_bento_video_markup' ) ) : ?>
+                            <?php
+                            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup helper escapes.
+                            echo rawnaq_bento_video_markup( $video );
+                            ?>
+                        <?php elseif ( $video ) : ?>
+                            <video class="rawnaq-bento-video" muted playsinline loop preload="metadata" src="<?php echo esc_url( $video ); ?>"></video>
+                        <?php else : ?>
+                            <div class="rawnaq-bento-media" style="background:#1e1b2e;" aria-hidden="true"></div>
+                        <?php endif; ?>
+                        <div class="rawnaq-bento-overlay" aria-hidden="true"></div>
+                        <div class="rawnaq-bento-body">
+                            <?php if ( $tag ) : ?>
+                                <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
+                            <?php endif; ?>
+                            <?php if ( $title ) : ?><div class="rawnaq-bento-title"><?php echo esc_html( $title ); ?></div><?php endif; ?>
+                            <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
+                            <?php if ( $has_cta ) : ?>
+                                <?php if ( $cta_link ) : ?>
+                                    <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
+                                <?php else : ?>
+                                    <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    <?php elseif ( 'stat' === $type ) : ?>
+                        <?php if ( $tag ) : ?>
+                            <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
+                        <?php endif; ?>
+                        <div class="rawnaq-bento-num"
+                             data-count="<?php echo esc_attr( (string) $num ); ?>"
+                             data-suffix="<?php echo esc_attr( $suffix ); ?>"
+                             data-prefix="<?php echo esc_attr( $prefix ); ?>"><?php echo esc_html( $prefix . $stat . $suffix ); ?></div>
+                        <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
+                        <?php if ( $has_cta ) : ?>
+                            <?php if ( $cta_link ) : ?>
+                                <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
+                            <?php else : ?>
+                                <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php else : ?>
+                        <?php if ( $tag ) : ?>
+                            <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
+                        <?php endif; ?>
+                        <?php if ( $icon ) : ?>
+                            <div class="rawnaq-bento-icon" aria-hidden="true"><span class="dashicons <?php echo esc_attr( $icon ); ?>"></span></div>
+                        <?php endif; ?>
+                        <?php if ( $title ) : ?><div class="rawnaq-bento-title"><?php echo esc_html( $title ); ?></div><?php endif; ?>
+                        <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
+                        <?php if ( $has_cta ) : ?>
+                            <?php if ( $cta_link ) : ?>
+                                <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
+                            <?php else : ?>
+                                <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </<?php echo tag_escape( $tag_name ); ?>>
+            <?php endforeach; ?>
         </div>
         <?php
         return ob_get_clean();

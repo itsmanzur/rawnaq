@@ -12,6 +12,37 @@ class Rawnaq_Elementor_Loader {
 
         add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
         add_action( 'elementor/elements/categories_registered', [ $this, 'add_widget_category' ] );
+        add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_scripts' ] );
+    }
+
+    public function enqueue_editor_scripts() {
+        if ( ! rawnaq_is_module_enabled( 'bento-grid' ) ) {
+            return;
+        }
+
+        wp_enqueue_script(
+            'rawnaq-bento-grid-editor',
+            RAWNAQ_URL . 'assets/js/bento-grid-editor.js',
+            [ 'jquery', 'elementor-editor' ],
+            RAWNAQ_VERSION,
+            true
+        );
+
+        $presets = [];
+        foreach ( [ 'featured', 'equal', 'wide' ] as $key ) {
+            $pack = rawnaq_bento_preset_for_elementor( $key );
+            if ( $pack ) {
+                $presets[ $key ] = $pack;
+            }
+        }
+
+        wp_localize_script( 'rawnaq-bento-grid-editor', 'rawnaqBentoEditor', [
+            'presets' => $presets,
+            'i18n'    => [
+                'applied'    => __( 'Preset applied — cells updated.', 'rawnaq' ),
+                'customHint' => __( 'Pick a layout preset (not Custom), then Apply.', 'rawnaq' ),
+            ],
+        ] );
     }
 
     public function add_widget_category( $elements_manager ) {
@@ -59,6 +90,12 @@ class Rawnaq_Elementor_Loader {
         if ( rawnaq_is_module_enabled( 'scroll-progress-toc' ) ) {
             require_once RAWNAQ_PATH . 'includes/elementor/widgets/class-scroll-progress-toc-widget.php';
             $widgets_manager->register( new Rawnaq_Scroll_Progress_Toc_Widget() );
+        }
+
+        // 7. Bento Grid
+        if ( rawnaq_is_module_enabled( 'bento-grid' ) ) {
+            require_once RAWNAQ_PATH . 'includes/elementor/widgets/class-bento-grid-widget.php';
+            $widgets_manager->register( new Rawnaq_Bento_Grid_Widget() );
         }
     }
 }

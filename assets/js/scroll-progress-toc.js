@@ -316,8 +316,11 @@
             if (inst.ring && inst.ring.parentNode) {
                 inst.ring.parentNode.removeChild(inst.ring);
             }
+            if (inst.dockItem && inst.dockItem.parentNode) {
+                inst.dockItem.parentNode.removeChild(inst.dockItem);
+            }
             if (inst.root) {
-                inst.root.classList.remove('spt-bound');
+                inst.root.classList.remove('spt-bound', 'is-dock-attached');
             }
         });
         instances = [];
@@ -414,11 +417,75 @@
             buildTocList(toc, items, cfg);
             inst.observer = observeActive(items, toc);
 
+            var dockAttached = false;
+            function tryDockAttach() {
+                if (dockAttached || !cfg.dockAttach || tocPos !== 'floating') {
+                    return false;
+                }
+                var dock = document.querySelector('.rawnaq-dock-container');
+                if (!dock) {
+                    return false;
+                }
+                var existing = dock.querySelector('.rawnaq-dock-item.is-toc-trigger');
+                if (existing) {
+                    inst.dockItem = existing;
+                    dockAttached = true;
+                    root.classList.add('is-dock-attached');
+                    toc.classList.add('dock-attached');
+                    return true;
+                }
+                var dockBtn = document.createElement('button');
+                dockBtn.type = 'button';
+                dockBtn.className = 'rawnaq-dock-item is-toc-trigger';
+                dockBtn.setAttribute('aria-label', cfg.tocTitle || 'Contents');
+                dockBtn.setAttribute('aria-expanded', 'false');
+                dockBtn.style.setProperty('--hover-color', '#4338ca');
+                dockBtn.innerHTML = '<span class="rawnaq-dock-icon" aria-hidden="true">≡</span>'
+                    + '<span class="rawnaq-dock-tooltip">' + (cfg.tocTitle || 'Contents') + '</span>'
+                    + '<span class="rawnaq-dock-mobile-label">' + (cfg.tocTitle || 'Contents') + '</span>';
+                dock.appendChild(dockBtn);
+                dockBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var open = toc.classList.toggle('is-panel-open');
+                    dockBtn.classList.toggle('is-active', open);
+                    dockBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                });
+                inst.dockItem = dockBtn;
+                dockAttached = true;
+                root.classList.add('is-dock-attached');
+                toc.classList.add('dock-attached');
+                var dockOffset = getComputedStyle(dock).getPropertyValue('--dock-safe-offset') || '0px';
+                var dockBottom = getComputedStyle(dock).getPropertyValue('--dock-offset') || '20px';
+                root.style.setProperty('--spt-dock-clear', 'calc(' + dockBottom.trim() + ' + ' + dockOffset.trim() + ' + 72px)');
+                var existingFab = root.querySelector('.rawnaq-spt-fab-wrapper');
+                if (existingFab) {
+                    existingFab.hidden = true;
+                    existingFab.style.display = 'none';
+                }
+                return true;
+            }
+
+            if (cfg.dockAttach && tocPos === 'floating') {
+                tryDockAttach();
+                if (!dockAttached) {
+                    setTimeout(function () {
+                        if (tryDockAttach()) {
+                            var fab = root.querySelector('.rawnaq-spt-fab-wrapper');
+                            if (fab) {
+                                fab.hidden = true;
+                                fab.style.display = 'none';
+                            }
+                        }
+                    }, 400);
+                }
+            }
+
             var fabWrapper = root.querySelector('.rawnaq-spt-fab-wrapper');
-            if (!fabWrapper && root.classList.contains('has-mobile-fab')) {
+            if (!dockAttached && !fabWrapper && root.classList.contains('has-mobile-fab')) {
                 fabWrapper = document.createElement('div');
                 fabWrapper.className = 'rawnaq-spt-fab-wrapper';
-                fabWrapper.innerHTML = 
+                fabWrapper.innerHTML =
                     '<button type="button" class="rawnaq-spt-fab-trigger" aria-label="Toggle Actions">≡</button>' +
                     '<div class="rawnaq-spt-radial-menu">' +
                         '<button type="button" class="rawnaq-spt-action-btn action-toc" title="Toggle Contents">📖</button>' +
@@ -429,7 +496,12 @@
                 root.appendChild(fabWrapper);
             }
 
-            if (fabWrapper) {
+            if (dockAttached && fabWrapper) {
+                fabWrapper.hidden = true;
+                fabWrapper.style.display = 'none';
+            }
+
+            if (fabWrapper && !dockAttached) {
                 var trigger = fabWrapper.querySelector('.rawnaq-spt-fab-trigger');
                 var radialMenu = fabWrapper.querySelector('.rawnaq-spt-radial-menu');
                 var toast = fabWrapper.querySelector('.rawnaq-spt-toast-msg');
