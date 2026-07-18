@@ -55,6 +55,10 @@ class Rawnaq_Admin_Dashboard {
             require_once RAWNAQ_PATH . 'includes/rawnaq-helpers.php';
         }
         $modules = rawnaq_get_modules();
+        $settings = get_option( 'rawnaq_settings', [] );
+        if ( ! is_array( $settings ) ) {
+            $settings = [];
+        }
         $clicks  = function_exists( 'rawnaq_dock_get_clicks' ) ? rawnaq_dock_get_clicks() : [];
 
         // Check compatibility
@@ -114,7 +118,7 @@ class Rawnaq_Admin_Dashboard {
                         <div class="grid-2">
                             <div class="rawnaq-card">
                                 <h3>Quick Start</h3>
-                                <p>To use our widgets, simply go to your page builder and search for the active elements (e.g. <strong>Hub Diagram</strong>, <strong>3D Tilt Card</strong>, <strong>Scroll Sync Timeline</strong>, <strong>Floating Dock Menu</strong>) inside Elementor or Gutenberg.</p>
+                                <p>To use our widgets, search for any active element in Elementor or Gutenberg: <strong>Hub Diagram</strong>, <strong>3D Tilt Card</strong>, <strong>Scroll Sync Timeline</strong>, <strong>Floating Dock</strong>, <strong>Flow Chart</strong>, <strong>Scroll Progress + TOC</strong>, <strong>Bento Grid</strong>, <strong>Scroll Story Chapters</strong>, <strong>Smart Form</strong>, or <strong>Case-Study Grid</strong>.</p>
                                 <a href="#modules" class="btn btn-primary trigger-tab-change" data-target="modules">Manage Elements</a>
                             </div>
                             <div class="rawnaq-card">
@@ -198,6 +202,30 @@ class Rawnaq_Admin_Dashboard {
                                         'desc'        => __( 'Apple-style asymmetric CSS grid with presets, stats, image & featured cells.', 'rawnaq' ),
                                         'icon'        => 'bento',
                                     ],
+                                    [
+                                        'key'         => 'scroll-story',
+                                        'badge'       => __( 'Layouts', 'rawnaq' ),
+                                        'tone'        => 'tone-layouts',
+                                        'title'       => __( 'Scroll Story Chapters', 'rawnaq' ),
+                                        'desc'        => __( 'Scrollytelling: pinned media column that swaps as chapter text scrolls into view.', 'rawnaq' ),
+                                        'icon'        => 'story',
+                                    ],
+                                    [
+                                        'key'         => 'smart-form',
+                                        'badge'       => __( 'Conversion', 'rawnaq' ),
+                                        'tone'        => 'tone-nav',
+                                        'title'       => __( 'Smart Form', 'rawnaq' ),
+                                        'desc'        => __( 'Lead form with email + WhatsApp redirect (Phase 1), honeypot spam guard, admin logs.', 'rawnaq' ),
+                                        'icon'        => 'form',
+                                    ],
+                                    [
+                                        'key'         => 'case-study-grid',
+                                        'badge'       => __( 'Portfolio', 'rawnaq' ),
+                                        'tone'        => 'tone-layouts',
+                                        'title'       => __( 'Case-Study Grid', 'rawnaq' ),
+                                        'desc'        => __( 'CPT/manual portfolio with Discuss CTA (Form/Dock) and Story/Timeline highlight sync.', 'rawnaq' ),
+                                        'icon'        => 'cases',
+                                    ],
                                 ];
 
                                 foreach ( $module_defs as $mod ) :
@@ -218,6 +246,12 @@ class Rawnaq_Admin_Dashboard {
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 6h16M4 12h10M4 18h14"/><circle cx="19" cy="12" r="2.5"/></svg>
                                                 <?php elseif ( 'bento' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="10" height="10" rx="2"/><rect x="15" y="3" width="6" height="4" rx="1.5"/><rect x="15" y="9" width="6" height="4" rx="1.5"/><rect x="3" y="15" width="6" height="6" rx="1.5"/><rect x="11" y="15" width="10" height="6" rx="1.5"/></svg>
+                                                <?php elseif ( 'story' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="8" height="16" rx="2"/><path d="M14 7h7M14 12h7M14 17h5"/></svg>
+                                                <?php elseif ( 'form' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+                                                <?php elseif ( 'cases' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="10" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="16" width="8" height="4" rx="1.5"/></svg>
                                                 <?php else : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="14" width="18" height="6" rx="3"/><rect x="5" y="16" width="3.2" height="3.2" rx="0.8"/><rect x="10.4" y="15.2" width="4" height="4" rx="1"/><rect x="16.2" y="16" width="3.2" height="3.2" rx="0.8"/></svg>
                                                 <?php endif; ?>
@@ -245,6 +279,37 @@ class Rawnaq_Admin_Dashboard {
                                 <?php endforeach; ?>
                             </div>
 
+                            <div class="rawnaq-card" style="margin: 24px 0;">
+                                <h3 style="margin-top:0;"><?php esc_html_e( 'Smart Form & shared WhatsApp', 'rawnaq' ); ?></h3>
+                                <p class="section-desc"><?php esc_html_e( 'Site-wide defaults used by Smart Form and Floating Dock (when an agent number is blank).', 'rawnaq' ); ?></p>
+                                <?php
+                                $sf_settings = is_array( $settings ) ? $settings : [];
+                                $default_wa  = sanitize_text_field( $sf_settings['default_wa_number'] ?? '' );
+                                $rc_site     = sanitize_text_field( $sf_settings['recaptcha_site_key'] ?? '' );
+                                $rc_secret   = sanitize_text_field( $sf_settings['recaptcha_secret_key'] ?? '' );
+                                $max_up      = isset( $sf_settings['sf_max_upload_mb'] ) ? absint( $sf_settings['sf_max_upload_mb'] ) : 5;
+                                if ( $max_up < 1 ) {
+                                    $max_up = 5;
+                                }
+                                ?>
+                                <p>
+                                    <label for="rawnaq-default-wa"><strong><?php esc_html_e( 'Default WhatsApp number', 'rawnaq' ); ?></strong></label><br />
+                                    <input type="text" class="regular-text" id="rawnaq-default-wa" name="default_wa_number" value="<?php echo esc_attr( $default_wa ); ?>" placeholder="8801XXXXXXXXX" />
+                                </p>
+                                <p>
+                                    <label for="rawnaq-sf-max-mb"><strong><?php esc_html_e( 'Smart Form max upload (MB)', 'rawnaq' ); ?></strong></label><br />
+                                    <input type="number" min="1" max="25" id="rawnaq-sf-max-mb" name="sf_max_upload_mb" value="<?php echo esc_attr( (string) $max_up ); ?>" />
+                                </p>
+                                <p>
+                                    <label for="rawnaq-rc-site"><strong><?php esc_html_e( 'reCAPTCHA v3 site key', 'rawnaq' ); ?></strong></label><br />
+                                    <input type="text" class="regular-text" id="rawnaq-rc-site" name="recaptcha_site_key" value="<?php echo esc_attr( $rc_site ); ?>" />
+                                </p>
+                                <p>
+                                    <label for="rawnaq-rc-secret"><strong><?php esc_html_e( 'reCAPTCHA v3 secret key', 'rawnaq' ); ?></strong></label><br />
+                                    <input type="password" class="regular-text" id="rawnaq-rc-secret" name="recaptcha_secret_key" value="<?php echo esc_attr( $rc_secret ); ?>" autocomplete="off" />
+                                </p>
+                            </div>
+
                             <div class="form-footer modules-footer">
                                 <button type="submit" class="btn btn-save" id="btn-save-settings"><?php esc_html_e( 'Save Changes', 'rawnaq' ); ?></button>
                                 <span class="save-status" id="save-status-msg"></span>
@@ -259,7 +324,7 @@ class Rawnaq_Admin_Dashboard {
 
                         <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
                             <h3>1. Hub Diagram</h3>
-                            <p>A highly performant radial workflow diagram connecting spokes to a center circle. Features responsive auto-timeline columns on mobile and animated glow particle flows.</p>
+                            <p>A highly performant radial workflow diagram connecting spokes to a center circle. Features responsive auto-timeline columns on mobile and animated glow particle flows. Pick icons with the Elementor Icons control (Font Awesome / Dashicons). Frontend <strong>PNG / SVG export</strong> for proposals.</p>
                             <h4>Usage:</h4>
                             <ul>
                                 <li><strong>Elementor:</strong> Search for "Hub Diagram" widget, drag and edit text details. In the Style tab, check the Layout option to switch from horizontal rows to 360° Radial mode, or enable Glow Flow lines.</li>
@@ -269,52 +334,142 @@ class Rawnaq_Admin_Dashboard {
 
                         <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
                             <h3>2. 3D Tilt Card</h3>
-                            <p>A card widget that calculates coordinate locations of the mouse cursor inside the card box dynamically and tilts the element on rotateX/rotateY axes, creating a parallax 3D effect.</p>
+                            <p>A lightweight taste card: mouse tilt / glare with reduced-motion and coarse-pointer respect. Kept intentionally small — not a deep media-card suite.</p>
                             <h4>Usage:</h4>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "3D Tilt Card" widget, choose standard Dashicon, write title text, select redirect URL, and adjust the Max Tilt Intensity slider in settings.</li>
+                                <li><strong>Elementor:</strong> Drag "3D Tilt Card" widget, choose an icon from the Icons picker, write title text, select redirect URL, and adjust the Max Tilt Intensity slider in settings.</li>
                                 <li><strong>Gutenberg:</strong> Search and insert "3D Tilt Card" block. Settings sidebar contains title, description, link options, and tilt intensity controls.</li>
                             </ul>
                         </div>
 
                         <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
                             <h3>3. Scroll Sync Timeline</h3>
-                            <p>A vertical milestones process tracker. Utilizes IntersectionObserver on the client-side to track card viewport entry, revealing nodes smoothly. The main center line fills color based on vertical viewport scroll progress.</p>
+                            <p><strong>Flagship motion module.</strong> On modern browsers the line fill and step reveals use native CSS <code>animation-timeline</code> / <code>view()</code> (compositor-thread, near zero JS). Older browsers get a lightweight vanilla JS fallback. Supports horizontal and vertical layouts, RTL, media embeds, CPT query source, Load More / AJAX, Named Timeline Sync with Bento, agency presets (Company Story / Changelog / Case Study), and WPML/Polylang readiness.</p>
+                            <p>
+                                <a class="doc-btn" href="<?php echo esc_url( RAWNAQ_URL . 'assets/demo/scroll-timeline-benchmark.html' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open CSS vs JS benchmark demo', 'rawnaq' ); ?></a>
+                            </p>
                             <h4>Usage:</h4>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Scroll Sync Timeline" widget. Add steps inside the content repeater fields. Color codes can be customized under the Style tab.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Scroll Sync Timeline" block. Add new milestones in inspector control sidebar fields.</li>
+                                <li><strong>Elementor:</strong> Drag "Scroll Sync Timeline" widget. Add steps in the repeater or switch to Query mode. Look for the CSS-driven badge in the editor when supported.</li>
+                                <li><strong>Gutenberg:</strong> Insert "Scroll Sync Timeline" block. Configure milestones, layout, and query options in the inspector.</li>
                             </ul>
                         </div>
 
                         <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>4. Floating Dock Menu</h3>
-                            <p>A sticky action dock resembling macOS launch bars. Vanilla JS calculates cursor proximity distance to the icons, scaling nearest items exponentially. Tooltips overlay above each item on hover.</p>
+                            <h3>4. Floating Dock Menu (WhatsApp Contact Mode)</h3>
+                            <p>Two products in one: a classic macOS-style magnify dock, and <strong>WhatsApp Contact Mode</strong> (recommended for SMB/agency sites) with multi-agent routing, business hours / timezone, offline behaviors, desktop QR + Web chooser, page-aware message placeholders, and optional click stats.</p>
                             <h4>Usage:</h4>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Floating Dock Menu" widget. Add action link repeaters (home, email, generic settings). Select Alignment Position: Bottom Center, Sidebar Left, or Sidebar Right.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Floating Dock Menu" block. Set position and add action links in block sidebar.</li>
+                                <li><strong>Elementor:</strong> Drag "Floating Dock Menu". Enable WhatsApp mode for agents and schedules, or stay in classic mode for icon links. Set position and visibility rules.</li>
+                                <li><strong>Gutenberg:</strong> Insert "Floating Dock Menu" block. Configure agents/schedule JSON and position in the sidebar.</li>
                             </ul>
                         </div>
 
                         <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
                             <h3>5. Flow Chart</h3>
-                            <p>Interactive tree and process workflow charts. Supports Org tree (vertical structure), Process flow (horizontal/vertical lines), and Freeform modes (manual X-Y nodes plotting). Nodes can be styled into Rectangles, Circles, and Hexagons, and desktop users can click and drag the kancvas to pan.</p>
+                            <p>Interactive tree and process workflow charts. Supports Org tree, Process flow, and Freeform (manual X/Y %) modes; node shapes (rect / circle / hex); direction TB/LR/RL with RTL flip; zoom/pan on desktop; lazy mount for 20+ nodes. Parent cycles are auto-cleared (DFS). Optional <strong>WordPress Users</strong> data source builds an org chart from users (parent via user meta <code>rawnaq_reports_to</code>, else nest under first admin). Frontend <strong>PNG / SVG export</strong> for proposals.</p>
                             <h4>Usage:</h4>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Flow Chart" widget. Map parent IDs inside the repeater nodes. Choose shape options, layout styles, and colors in the style tab.</li>
-                                <li><strong>Gutenberg:</strong> Search and insert "Flow Chart (Rawnaq)" block. Inspector controls allow dragging and arranging nodes coordinates, selecting shapes, and customizing accent colors.</li>
+                                <li><strong>Elementor:</strong> Drag "Flow Chart". Choose Manual or WP Users source, map parent Node IDs in the repeater when manual, pick icons from the Icons control, choose shape and direction.</li>
+                                <li><strong>Gutenberg:</strong> Insert "Flow Chart (Rawnaq)". Switch Nodes Source to WP Users for live org, or use the Parent dropdown for manual trees; freeform mode exposes X/Y ranges.</li>
+                            </ul>
+                        </div>
+
+                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
+                            <h3>6. Scroll Progress + TOC</h3>
+                            <p>Page scroll progress (bar / ring / both) plus a smart Table of Contents: auto H2–H4 or manual entries, collapse subs, optional search filter, reading time, mobile FAB, optional <strong>Attach to Floating Dock</strong>, ring size control, and optional <strong>Sync Timeline ID</strong> to show the active Scroll Sync Timeline step as “Chapter …” near the TOC.</p>
+                            <h4>Usage:</h4>
+                            <ul>
+                                <li><strong>Elementor:</strong> Drag "Scroll Progress + TOC". Enable TOC Search Filter, Dock Attach, Sync Timeline ID, and Ring Size under content/style when needed.</li>
+                                <li><strong>Gutenberg:</strong> Insert "Scroll Progress + TOC (Rawnaq)". Toggle search, dock attach, ring size, and Sync Timeline ID in the inspector.</li>
+                            </ul>
+                        </div>
+
+                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
+                            <h3>7. Bento Grid</h3>
+                            <p>CSS Grid marketing layouts with Apply Preset, cell types (featured, image, video, stat, text, testimonial), tablet/mobile span overrides, CTAs, Elementor canvas resize handles, and optional Sync Timeline ID to pair with Scroll Sync Timeline. In <strong>Gutenberg</strong>, cells are InnerBlocks (`Bento Cell`) so you can nest core headings, images, and buttons.</p>
+                            <h4>Usage:</h4>
+                            <ul>
+                                <li><strong>Elementor:</strong> Drag "Bento Grid". Pick a preset to replace cells, then refine per-cell content and responsive spans. In the editor, drag the SE handle on a cell to change col/row span.</li>
+                                <li><strong>Gutenberg:</strong> Insert "Bento Grid (Rawnaq)". Edit nested Bento Cell blocks on the canvas; Apply Preset reseeds cells. Legacy cellsJson still renders if no InnerBlocks content is saved.</li>
+                            </ul>
+                        </div>
+
+                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
+                            <h3>8. Scroll Story Chapters</h3>
+                            <p>Scrollytelling MVP: sticky pinned media that swaps as each chapter scrolls into view, progress dots, captions, optional CTAs, reduced-motion fallback. Dual Elementor + Gutenberg; assets load only when used.</p>
+                            <h4>Usage:</h4>
+                            <ul>
+                                <li><strong>Elementor:</strong> Drag "Scroll Story Chapters". Add chapter repeater rows (title, body, image, caption, CTA). Choose media left/right and accent color.</li>
+                                <li><strong>Gutenberg:</strong> Insert "Scroll Story Chapters (Rawnaq)". Edit chapters in the sidebar; preview lists chapter titles in the editor canvas.</li>
                             </ul>
                         </div>
 
                         <div class="rawnaq-doc-card">
-                            <h3>6. Scroll Progress + TOC</h3>
-                            <p>Dynamic page scroll indicator bar and ring. Automatically scans page headings (H2, H3, H4) or uses manual entries to construct a smart Table of Contents with collapsible sub-sections, headings search filters, live remaining reading time tracker, and a radial action floating menu on mobile.</p>
-                            <h4>Usage:</h4>
+                            <h3>9. Smart Form (Phase 1)</h3>
+
+                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
+                            <p><strong>Smart Form</strong> is Rawnaq’s lightweight lead / contact form for agency and SMB sites. Visitors fill a customizable set of fields; submissions go out by <strong>email</strong> (WordPress <code>wp_mail</code>) and/or open <strong>WhatsApp</strong> with a prefilled message via <code>wa.me</code>. No third-party form SaaS and no WhatsApp Business API in Phase 1 — keep the stack simple and the frontend vanilla JS.</p>
+                            <p>It ships on both <strong>Elementor</strong> and <strong>Gutenberg</strong>, loads CSS/JS only when the form is on the page, and includes built-in spam guards (honeypot + time trap), optional GDPR-style consent, loading / double-submit protection, and an optional admin submission log.</p>
+                            <p><em>Phase 1 note:</em> WhatsApp delivery means a browser redirect to WhatsApp Web / the app with your template text already filled in. Official Business API, CRM webhooks, and multi-step forms are out of scope for this release.</p>
+
+                            <h4><?php esc_html_e( 'What you can configure', 'rawnaq' ); ?></h4>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Scroll Progress + TOC" widget. Configure progress style (Bar, Ring, or Both). Toggle mobile FAB radial menus and reading progress counters under settings.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Scroll Progress + TOC (Rawnaq)" block. Edit heading scopes, colors, and border radii in the sidebar panel.</li>
+                                <li><strong>Fields:</strong> Text, Email, Phone, Textarea, Select, Checkbox, Date, Number, URL, Hidden, Rating, File — each with ID, label, width, optional <strong>step</strong> (multi-step), and <strong>Show if</strong> conditionals.</li>
+                                <li><strong>Layout presets:</strong> Name+Email side by side, Compact lead, Full contact, Multi-step project inquiry — one-click Apply Preset.</li>
+                                <li><strong>Email / WhatsApp:</strong> Templates support <code>{field_id}</code> plus <code>{pageTitle}</code>, <code>{url}</code>, <code>{siteTitle}</code>, <code>{date}</code>, <code>{time}</code>. Blank WA number uses the shared site default (Modules tab).</li>
+                                <li><strong>After submit:</strong> Thank-you, redirect, or open WhatsApp.</li>
+                                <li><strong>Extras:</strong> Consent, admin log + CSV/unread, file attach (size limit), optional reCAPTCHA v3, webhook/Slack.</li>
+                                <li><strong>Style:</strong> Label/input/button colors, input size, radius, full-width button.</li>
                             </ul>
+
+                            <h4><?php esc_html_e( 'How to use', 'rawnaq' ); ?></h4>
+                            <ol>
+                                <li>Enable the <strong>Smart Form</strong> module on the Rawnaq Modules tab (if it is not already on).</li>
+                                <li><strong>Elementor:</strong> Search for <em>Smart Form</em>, drag it onto the page. Use the Fields repeater, Delivery panel, and Style tab.</li>
+                                <li><strong>Gutenberg:</strong> Insert <em>Smart Form (Rawnaq)</em>. Edit fields and delivery in the block inspector; the canvas preview lists field labels.</li>
+                                <li>Set at least one delivery channel (email and/or WhatsApp). For WhatsApp, enter a full international number and customize the template.</li>
+                                <li>Choose <em>After submit</em>: message (default), redirect (set URL), or open WhatsApp (requires WhatsApp delivery + number).</li>
+                                <li>Publish and test once as a visitor — confirm email arrives and/or WhatsApp opens with the expected text.</li>
+                            </ol>
+
+                            <h4><?php esc_html_e( 'Tips', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li>Field <strong>IDs</strong> must match placeholders in the WhatsApp template: a field with ID <code>phone</code> becomes <code>{phone}</code>.</li>
+                                <li>Keep Field IDs short, lowercase, and unique (letters, numbers, underscores).</li>
+                                <li><strong>Layout:</strong> set consecutive fields to 50% for a two-column row, or 33% for three columns. Below ~640px all fields stack full-width.</li>
+                                <li>Spam: bots that fill the hidden honeypot or submit in under ~2 seconds are rejected silently on the server.</li>
+                                <li>For reliable email on local / shared hosts, pair WordPress with an SMTP plugin; Smart Form uses core <code>wp_mail</code>.</li>
+                                <li>Logged submissions are private (admin-only CPT) — turn logging off if you do not want stored lead copies.</li>
+                            </ul>
+                        </div>
+
+                        <div class="rawnaq-doc-card">
+                            <h3>10. Case-Study Grid</h3>
+                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
+                            <p><strong>Case-Study Grid</strong> is a structured project portfolio for AEC firms and agencies. Source projects from the <em>Case Studies</em> CPT (under Rawnaq) or enter them manually. Cards support multi-image galleries, sector / year / service filters, modal or link-out, and client-side load more for large portfolios.</p>
+                            <h4><?php esc_html_e( 'How to use', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>CPT:</strong> Add posts under <em>Rawnaq → Case Studies</em> (sector taxonomy + meta for budget, year, gallery URLs, services). Set the widget/block source to <em>Query</em> — no repeater needed.</li>
+                                <li><strong>Elementor:</strong> Drag <em>Case-Study Grid</em>. Choose Manual or Query, layouts (Bento / Uniform / Masonry), multi-filters, click action (modal / URL / both), and load-more chunk.</li>
+                                <li><strong>Gutenberg:</strong> Insert <em>Case-Study Grid</em>. Manual mode uses one <em>Case-Study Card</em> InnerBlock per project (cover + gallery + link). Query mode pulls from the CPT.</li>
+                                <li>Modal gallery is a multi-image slider when more than one URL is set. With click = link or both, cards open the case-study page URL.</li>
+                                <li>NDA toggles hide budget and/or client on cards and in the modal while keeping the data in the editor.</li>
+                            </ul>
+                            <h4><?php esc_html_e( 'Discuss this project', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li>Modal (and link-only cards) show a <em>Discuss this project</em> button. Target: Auto (Smart Form → Dock WA), Form only, Dock only, or Off.</li>
+                                <li>Form mode prefills <code>sf_message</code> (and <code>sf_project</code> / <code>sf_project_id</code> if those fields exist) then scrolls to the form. Include <code>{message}</code> in the Smart Form WhatsApp template so WA delivery keeps the context.</li>
+                                <li>Dock mode calls <code>rawnaqDockOpen({ message })</code> with a one-shot message — agent templates are not permanently changed.</li>
+                            </ul>
+                            <h4><?php esc_html_e( 'Scroll Story / Timeline sync', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li>On each Story chapter or Timeline step, set <em>Case-Study project ID</em> (e.g. <code>post-123</code> for CPT posts) or slug.</li>
+                                <li>As the chapter becomes active, the matching Case-Study card gets <code>.is-related</code> and scrolls into view if needed.</li>
+                                <li>Query-driven Timeline steps auto-set <code>data-project-id="post-{ID}"</code> from the post ID.</li>
+                            </ul>
+                            <h4><?php esc_html_e( 'Static demo', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'Marketing showcase of all modules (no WordPress): open assets/demo/index.html in a browser.', 'rawnaq' ); ?></p>
                         </div>
                     </div>
 
@@ -374,6 +529,10 @@ class Rawnaq_Admin_Dashboard {
                                 <tr>
                                     <td><strong><?php esc_html_e( 'Classic dock item', 'rawnaq' ); ?></strong></td>
                                     <td id="dock-stat-classic"><?php echo esc_html( (string) absint( $clicks['classic'] ?? 0 ) ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php esc_html_e( 'Offline diverted (lead / redirect)', 'rawnaq' ); ?></strong></td>
+                                    <td id="dock-stat-offline"><?php echo esc_html( (string) absint( $clicks['offline'] ?? 0 ) ); ?></td>
                                 </tr>
                             </table>
                         </div>
@@ -436,7 +595,7 @@ class Rawnaq_Admin_Dashboard {
             : [];
         $allowed = function_exists( 'rawnaq_default_modules' )
             ? array_keys( rawnaq_default_modules() )
-            : [ 'hub-diagram', 'tilt-card', 'scroll-timeline', 'floating-dock', 'flow-chart', 'scroll-progress-toc', 'bento-grid' ];
+            : [ 'hub-diagram', 'tilt-card', 'scroll-timeline', 'floating-dock', 'flow-chart', 'scroll-progress-toc', 'bento-grid', 'scroll-story', 'smart-form', 'case-study-grid' ];
 
         $sanitized_modules = [];
         foreach ( $allowed as $slug ) {
@@ -448,6 +607,10 @@ class Rawnaq_Admin_Dashboard {
             $settings = [];
         }
         $settings['modules'] = $sanitized_modules;
+        $settings['default_wa_number']    = isset( $form_data['default_wa_number'] ) ? sanitize_text_field( $form_data['default_wa_number'] ) : '';
+        $settings['recaptcha_site_key']   = isset( $form_data['recaptcha_site_key'] ) ? sanitize_text_field( $form_data['recaptcha_site_key'] ) : '';
+        $settings['recaptcha_secret_key'] = isset( $form_data['recaptcha_secret_key'] ) ? sanitize_text_field( $form_data['recaptcha_secret_key'] ) : '';
+        $settings['sf_max_upload_mb']     = isset( $form_data['sf_max_upload_mb'] ) ? max( 1, min( 25, absint( $form_data['sf_max_upload_mb'] ) ) ) : 5;
         update_option( 'rawnaq_settings', $settings );
 
         wp_send_json_success( esc_html__( 'Settings saved successfully!', 'rawnaq' ) );

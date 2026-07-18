@@ -305,10 +305,55 @@
         return observer;
     }
 
+    function bindTimelineSync(inst, tlName) {
+        var name = String(tlName || '').replace(/[^a-zA-Z0-9_-]/g, '');
+        if (!name || !inst.chapterEl) {
+            return;
+        }
+        var wrap = document.querySelector('.rawnaq-timeline-wrapper[data-tl-name="' + name + '"]');
+        if (!wrap) {
+            return;
+        }
+        function refresh() {
+            var active = wrap.querySelector('.rawnaq-timeline-item.item-active');
+            if (!active) {
+                inst.chapterEl.hidden = true;
+                return;
+            }
+            var title = '';
+            var h = active.querySelector('h4, h3, .rawnaq-timeline-title');
+            if (h) {
+                title = (h.textContent || '').trim();
+            }
+            var items = wrap.querySelectorAll('.rawnaq-timeline-item');
+            var idx = 0;
+            for (var i = 0; i < items.length; i++) {
+                if (items[i] === active) {
+                    idx = i + 1;
+                    break;
+                }
+            }
+            inst.chapterEl.hidden = false;
+            inst.chapterEl.textContent = title
+                ? ('Chapter ' + idx + ': ' + title)
+                : ('Chapter ' + idx);
+        }
+        refresh();
+        if (typeof MutationObserver === 'undefined') {
+            return;
+        }
+        var mo = new MutationObserver(refresh);
+        mo.observe(wrap, { attributes: true, attributeFilter: ['class'], subtree: true });
+        inst.timelineMo = mo;
+    }
+
     function destroyAll() {
         instances.forEach(function (inst) {
             if (inst.observer) {
                 inst.observer.disconnect();
+            }
+            if (inst.timelineMo) {
+                inst.timelineMo.disconnect();
             }
             if (inst.bar && inst.bar.parentNode) {
                 inst.bar.parentNode.removeChild(inst.bar);
@@ -366,6 +411,10 @@
                 + '<circle class="rawnaq-spt-ring-fg" cx="24" cy="24" r="20"></circle>'
                 + '</svg>'
                 + (cfg.showPercent !== false ? '<span class="rawnaq-spt-ring-label">0%</span>' : '');
+            var ringSize = (getComputedStyle(root).getPropertyValue('--spt-ring-size') || '').trim();
+            if (ringSize) {
+                ring.style.setProperty('--spt-ring-size', ringSize);
+            }
             document.body.appendChild(ring);
             inst.ring = ring;
             inst.ringFg = ring.querySelector('.rawnaq-spt-ring-fg');
@@ -412,6 +461,23 @@
                     readEl.hidden = false;
                     readEl.textContent = mins + ' min read';
                 }
+            }
+
+            var chapterEl = toc.querySelector('.rawnaq-spt-chapter');
+            if (!chapterEl) {
+                chapterEl = document.createElement('p');
+                chapterEl.className = 'rawnaq-spt-chapter';
+                chapterEl.hidden = true;
+                var titleNode = toc.querySelector('.rawnaq-spt-title');
+                if (titleNode && titleNode.parentNode) {
+                    titleNode.parentNode.insertBefore(chapterEl, titleNode);
+                } else {
+                    toc.insertBefore(chapterEl, toc.firstChild);
+                }
+            }
+            inst.chapterEl = chapterEl;
+            if (cfg.syncTimeline) {
+                bindTimelineSync(inst, cfg.syncTimeline);
             }
 
             buildTocList(toc, items, cfg);

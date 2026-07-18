@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -15,7 +15,195 @@ function rawnaq_default_modules() {
 		'flow-chart'          => '1',
 		'scroll-progress-toc' => '1',
 		'bento-grid'          => '1',
+		'scroll-story'        => '1',
+		'smart-form'          => '1',
+		'case-study-grid'     => '1',
 	];
+}
+
+/**
+ * Render Scroll Story / Scrollytelling chapter markup (Elementor + Gutenberg).
+ *
+ * @param array  $chapters List of chapter arrays (title, body, image, caption, ctaText, ctaUrl, ctaExt, ctaNof).
+ * @param string $side     left|right for pinned media.
+ */
+function rawnaq_scroll_story_markup( $chapters, $side = 'left' ) {
+	if ( ! is_array( $chapters ) || ! $chapters ) {
+		return;
+	}
+	$side         = ( 'right' === $side ) ? 'right' : 'left';
+	$layout_class = 'rawnaq-story-layout' . ( 'right' === $side ? ' is-media-right' : '' );
+	?>
+	<div class="rawnaq-story">
+		<div class="<?php echo esc_attr( $layout_class ); ?>">
+			<aside class="rawnaq-story-pin">
+				<div class="rawnaq-story-media-stack">
+					<?php foreach ( $chapters as $i => $ch ) : ?>
+						<div class="rawnaq-story-media<?php echo 0 === $i ? ' is-active' : ''; ?>" data-index="<?php echo esc_attr( (string) $i ); ?>">
+							<?php if ( ! empty( $ch['image'] ) ) : ?>
+								<img src="<?php echo esc_url( $ch['image'] ); ?>" alt="" loading="<?php echo 0 === $i ? 'eager' : 'lazy'; ?>" />
+							<?php else : ?>
+								<div class="rawnaq-story-media-fallback"><?php echo esc_html( $ch['title'] ?: ( 'Chapter ' . ( $i + 1 ) ) ); ?></div>
+							<?php endif; ?>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<p class="rawnaq-story-caption"<?php echo empty( $chapters[0]['caption'] ) ? ' hidden' : ''; ?>><?php echo esc_html( $chapters[0]['caption'] ?? '' ); ?></p>
+				<ol class="rawnaq-story-dots" aria-label="<?php echo esc_attr__( 'Story progress', 'rawnaq' ); ?>">
+					<?php foreach ( $chapters as $i => $ch ) : ?>
+						<li>
+							<button type="button"
+								class="rawnaq-story-dot<?php echo 0 === $i ? ' is-active' : ''; ?>"
+								aria-label="<?php echo esc_attr( sprintf( /* translators: %d: chapter number */ __( 'Go to chapter %d', 'rawnaq' ), $i + 1 ) ); ?>"
+								aria-current="<?php echo 0 === $i ? 'true' : 'false'; ?>"></button>
+						</li>
+					<?php endforeach; ?>
+				</ol>
+			</aside>
+			<div class="rawnaq-story-chapters">
+				<?php foreach ( $chapters as $i => $ch ) : ?>
+					<section class="rawnaq-story-chapter<?php echo 0 === $i ? ' is-active' : ''; ?>"
+						data-index="<?php echo esc_attr( (string) $i ); ?>"
+						data-caption="<?php echo esc_attr( $ch['caption'] ?? '' ); ?>"
+						<?php if ( ! empty( $ch['projectId'] ) ) : ?>
+							data-project-id="<?php echo esc_attr( (string) $ch['projectId'] ); ?>"
+						<?php endif; ?>
+						<?php if ( ! empty( $ch['projectSlug'] ) ) : ?>
+							data-project-slug="<?php echo esc_attr( (string) $ch['projectSlug'] ); ?>"
+						<?php endif; ?>>
+						<span class="rawnaq-story-kicker"><?php echo esc_html( sprintf( /* translators: %d: chapter number */ __( 'Chapter %d', 'rawnaq' ), $i + 1 ) ); ?></span>
+						<?php if ( ! empty( $ch['title'] ) ) : ?>
+							<h3><?php echo esc_html( $ch['title'] ); ?></h3>
+						<?php endif; ?>
+						<?php if ( ! empty( $ch['body'] ) ) : ?>
+							<p><?php echo esc_html( $ch['body'] ); ?></p>
+						<?php endif; ?>
+						<?php if ( ! empty( $ch['ctaText'] ) && ! empty( $ch['ctaUrl'] ) ) : ?>
+							<?php
+							$rel = [];
+							if ( ! empty( $ch['ctaExt'] ) ) {
+								$rel[] = 'noopener';
+							}
+							if ( ! empty( $ch['ctaNof'] ) ) {
+								$rel[] = 'nofollow';
+							}
+							?>
+							<a class="rawnaq-story-cta" href="<?php echo esc_url( $ch['ctaUrl'] ); ?>"
+								<?php echo ! empty( $ch['ctaExt'] ) ? ' target="_blank"' : ''; ?>
+								<?php echo $rel ? ' rel="' . esc_attr( implode( ' ', $rel ) ) . '"' : ''; ?>
+							><?php echo esc_html( $ch['ctaText'] ); ?></a>
+						<?php endif; ?>
+					</section>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Build Flow Chart nodes from WordPress users (org chart seed).
+ *
+ * Parent resolution: user meta `rawnaq_reports_to` (user ID), else non-admins
+ * nest under the first administrator found.
+ *
+ * @param array $args {
+ *     @type int    $number Max users.
+ *     @type string $role   Optional role slug filter.
+ * }
+ * @return array<int, array<string, mixed>>
+ */
+function rawnaq_flow_nodes_from_users( $args = [] ) {
+	$number = isset( $args['number'] ) ? max( 1, min( 50, absint( $args['number'] ) ) ) : 20;
+	$query  = [
+		'number'  => $number,
+		'orderby' => 'display_name',
+		'order'   => 'ASC',
+		'fields'  => 'all_with_meta',
+	];
+	if ( ! empty( $args['role'] ) ) {
+		$query['role'] = sanitize_key( $args['role'] );
+	}
+
+	$users = get_users( $query );
+	if ( ! $users ) {
+		return [];
+	}
+
+	$admin_node = '';
+	$nodes      = [];
+
+	foreach ( $users as $user ) {
+		$uid  = (int) $user->ID;
+		$id   = 'user-' . $uid;
+		$roles = is_array( $user->roles ) ? $user->roles : [];
+		if ( ! $admin_node && in_array( 'administrator', $roles, true ) ) {
+			$admin_node = $id;
+		}
+	}
+
+	foreach ( $users as $user ) {
+		$uid   = (int) $user->ID;
+		$id    = 'user-' . $uid;
+		$roles = is_array( $user->roles ) ? $user->roles : [];
+		$role  = $roles ? ucwords( str_replace( '_', ' ', $roles[0] ) ) : __( 'Team', 'rawnaq' );
+
+		$parent_meta = absint( get_user_meta( $uid, 'rawnaq_reports_to', true ) );
+		$parent      = $parent_meta > 0 ? 'user-' . $parent_meta : '';
+		if ( '' === $parent && $admin_node && $id !== $admin_node && ! in_array( 'administrator', $roles, true ) ) {
+			$parent = $admin_node;
+		}
+		if ( $parent === $id ) {
+			$parent = '';
+		}
+
+		$nodes[] = [
+			'id'       => $id,
+			'parent'   => $parent,
+			'title'    => $user->display_name ? $user->display_name : $user->user_login,
+			'role'     => $role,
+			'icon'     => 'fas fa-user',
+			'image'    => get_avatar_url( $uid, [ 'size' => 96 ] ) ?: '',
+			'detail'   => $user->user_email,
+			'link'     => get_author_posts_url( $uid ),
+			'decision' => false,
+			'x'        => 10,
+			'y'        => 10,
+		];
+	}
+
+	/**
+	 * Filter org nodes generated from WP users.
+	 *
+	 * @param array $nodes Nodes.
+	 * @param array $args  Query args.
+	 */
+	return apply_filters( 'rawnaq_flow_user_nodes', $nodes, $args );
+}
+
+/**
+ * Convert an Elementor Icons control value to a CSS class / emoji token for JS widgets.
+ *
+ * @param array|string $icon Elementor icon array or legacy string.
+ * @param string       $legacy Optional legacy dashicon/emoji string.
+ * @return string
+ */
+function rawnaq_elementor_icon_token( $icon, $legacy = '' ) {
+	if ( is_string( $icon ) && '' !== $icon ) {
+		return sanitize_text_field( $icon );
+	}
+	if ( is_array( $icon ) && ! empty( $icon['value'] ) && is_string( $icon['value'] ) ) {
+		$token = trim( $icon['value'] );
+		// Dashicons library often stores bare name without prefix.
+		if ( isset( $icon['library'] ) && 'dashicons' === $icon['library'] && 0 !== strpos( $token, 'dashicons-' ) ) {
+			$token = 'dashicons-' . ltrim( $token, '-' );
+		}
+		return sanitize_text_field( $token );
+	}
+	if ( is_string( $legacy ) && '' !== $legacy ) {
+		return sanitize_text_field( $legacy );
+	}
+	return '';
 }
 
 /**
@@ -213,6 +401,7 @@ function rawnaq_dock_click_defaults() {
 		'chooser'   => 0,
 		'secondary' => 0,
 		'classic'   => 0,
+		'offline'   => 0,
 		'total'     => 0,
 		'updated'   => 0,
 	];
@@ -237,7 +426,7 @@ function rawnaq_dock_get_clicks() {
  */
 function rawnaq_dock_track_click( $type ) {
 	$type = sanitize_key( $type );
-	$allowed = [ 'fab', 'agent', 'web', 'chooser', 'secondary', 'classic' ];
+	$allowed = [ 'fab', 'agent', 'web', 'chooser', 'secondary', 'classic', 'offline' ];
 	if ( ! in_array( $type, $allowed, true ) ) {
 		return false;
 	}
@@ -248,6 +437,159 @@ function rawnaq_dock_track_click( $type ) {
 	$data['updated'] = time();
 	update_option( 'rawnaq_dock_clicks', $data, false );
 	return true;
+}
+
+/**
+ * Scroll Timeline agency presets (shared Elementor + Gutenberg).
+ *
+ * @return array<string, array{label:string,steps:array<int,array<string,string>>}>
+ */
+function rawnaq_timeline_presets() {
+	$presets = [
+		'company-story' => [
+			'label' => __( 'Company Story', 'rawnaq' ),
+			'steps' => [
+				[
+					'meta'  => '2018',
+					'title' => __( 'Founded', 'rawnaq' ),
+					'desc'  => __( 'Started with a small team and a clear product vision.', 'rawnaq' ),
+				],
+				[
+					'meta'  => '2020',
+					'title' => __( 'First Product Launch', 'rawnaq' ),
+					'desc'  => __( 'Shipped v1 to early customers and refined the roadmap from real usage.', 'rawnaq' ),
+				],
+				[
+					'meta'  => '2023',
+					'title' => __( 'Scale & Partners', 'rawnaq' ),
+					'desc'  => __( 'Expanded the team, opened new markets, and built lasting partnerships.', 'rawnaq' ),
+				],
+				[
+					'meta'  => 'Today',
+					'title' => __( 'What We Build Now', 'rawnaq' ),
+					'desc'  => __( 'Focused on performance-first tools agencies and brands rely on daily.', 'rawnaq' ),
+				],
+			],
+		],
+		'changelog'     => [
+			'label' => __( 'Changelog', 'rawnaq' ),
+			'steps' => [
+				[
+					'meta'  => 'v1.0',
+					'title' => __( 'Initial Release', 'rawnaq' ),
+					'desc'  => __( 'Core modules, dual builder support, and modular asset loading.', 'rawnaq' ),
+				],
+				[
+					'meta'  => 'v1.5',
+					'title' => __( 'Flow & TOC', 'rawnaq' ),
+					'desc'  => __( 'Added Flow Chart and Scroll Progress + TOC for structure and reading UX.', 'rawnaq' ),
+				],
+				[
+					'meta'  => 'v1.7',
+					'title' => __( 'CSS Scroll Timeline', 'rawnaq' ),
+					'desc'  => __( 'Native animation-timeline path with JS fallback and horizontal layouts.', 'rawnaq' ),
+				],
+				[
+					'meta'  => 'v1.10',
+					'title' => __( 'Suite Polish', 'rawnaq' ),
+					'desc'  => __( 'Freeform charts, TOC dock attach, WPML readiness, and trust/parity fixes.', 'rawnaq' ),
+				],
+			],
+		],
+		'case-study'    => [
+			'label' => __( 'Case Study Journey', 'rawnaq' ),
+			'steps' => [
+				[
+					'meta'  => __( '01 Â· Challenge', 'rawnaq' ),
+					'title' => __( 'The Problem', 'rawnaq' ),
+					'desc'  => __( 'Clarify the business goal, constraints, and what success looks like.', 'rawnaq' ),
+				],
+				[
+					'meta'  => __( '02 Â· Approach', 'rawnaq' ),
+					'title' => __( 'How We Worked', 'rawnaq' ),
+					'desc'  => __( 'Research, prototypes, and a phased plan aligned with stakeholders.', 'rawnaq' ),
+				],
+				[
+					'meta'  => __( '03 Â· Launch', 'rawnaq' ),
+					'title' => __( 'Go Live', 'rawnaq' ),
+					'desc'  => __( 'Ship, train the team, and monitor the first weeks of real traffic.', 'rawnaq' ),
+				],
+				[
+					'meta'  => __( '04 Â· Results', 'rawnaq' ),
+					'title' => __( 'Outcomes', 'rawnaq' ),
+					'desc'  => __( 'Measurable impact â€” conversions, speed, or engagement â€” with room to iterate.', 'rawnaq' ),
+				],
+			],
+		],
+	];
+
+	/**
+	 * Filter timeline agency presets.
+	 *
+	 * @param array $presets Preset map.
+	 */
+	return apply_filters( 'rawnaq_timeline_presets', $presets );
+}
+
+/**
+ * Preset steps shaped for Elementor repeater fields.
+ *
+ * @param string $key Preset key.
+ * @return array{label:string,steps:array<int,array<string,string>>}|null
+ */
+function rawnaq_timeline_preset_for_elementor( $key ) {
+	$presets = rawnaq_timeline_presets();
+	if ( empty( $presets[ $key ]['steps'] ) ) {
+		return null;
+	}
+	$steps = [];
+	foreach ( $presets[ $key ]['steps'] as $step ) {
+		$steps[] = [
+			'meta'  => $step['meta'] ?? '',
+			'title' => $step['title'] ?? '',
+			'desc'  => $step['desc'] ?? '',
+			'icon'  => $step['icon'] ?? '',
+			'image' => [ 'url' => '', 'id' => '' ],
+			'video' => '',
+			'cta_text' => $step['cta_text'] ?? '',
+			'cta_link' => [ 'url' => '' ],
+		];
+	}
+	return [
+		'label' => $presets[ $key ]['label'] ?? $key,
+		'steps' => $steps,
+	];
+}
+
+/**
+ * Preset steps shaped for Gutenberg stepsJson objects.
+ *
+ * @param string $key Preset key.
+ * @return array{label:string,steps:array<int,array<string,mixed>>}|null
+ */
+function rawnaq_timeline_preset_for_gutenberg( $key ) {
+	$presets = rawnaq_timeline_presets();
+	if ( empty( $presets[ $key ]['steps'] ) ) {
+		return null;
+	}
+	$steps = [];
+	foreach ( $presets[ $key ]['steps'] as $step ) {
+		$steps[] = [
+			'meta'     => $step['meta'] ?? '',
+			'title'    => $step['title'] ?? '',
+			'desc'     => $step['desc'] ?? '',
+			'icon'     => $step['icon'] ?? '',
+			'imageUrl' => '',
+			'imageId'  => 0,
+			'video'    => '',
+			'ctaText'  => $step['cta_text'] ?? '',
+			'ctaLink'  => '',
+		];
+	}
+	return [
+		'label' => $presets[ $key ]['label'] ?? $key,
+		'steps' => $steps,
+	];
 }
 
 /**
@@ -724,7 +1066,7 @@ function rawnaq_i18n_strings() {
 	return [
 		'load_more'     => 'Load more',
 		'read_more'     => 'Read more',
-		'engine_badge'  => 'Native CSS scroll animations — no motion JS in this browser.',
+		'engine_badge'  => 'Native CSS scroll animations â€” no motion JS in this browser.',
 		'query_mode'    => 'Query mode',
 		'posts_frontend'=> 'Posts load on the frontend',
 		'posts_preview' => 'Save and preview the page to see live CPT / post results.',
@@ -804,7 +1146,7 @@ function rawnaq_timeline_resolve_post_id( $id, $post_type = 'post' ) {
  * Filter timeline steps (manual or query) for WPML/tools.
  *
  * @param array $steps   Step arrays.
- * @param array $context Context (source, widget_id, …).
+ * @param array $context Context (source, widget_id, â€¦).
  * @return array
  */
 function rawnaq_timeline_filter_steps( $steps, $context = [] ) {
@@ -1075,8 +1417,15 @@ function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $sh
 		$video = trim( (string) ( $step['video'] ?? ( $step['video_url']['url'] ?? '' ) ) );
 		$cta_text = trim( (string) ( $step['ctaText'] ?? $step['cta_text'] ?? '' ) );
 		$cta_link = $step['ctaLink'] ?? ( $step['cta_link']['url'] ?? '' );
+		$project_id = (string) ( $step['projectId'] ?? $step['project_id'] ?? '' );
+		if ( ! $project_id && ! empty( $step['post_id'] ) ) {
+			$project_id = 'post-' . absint( $step['post_id'] );
+		}
+		$project_slug = (string) ( $step['projectSlug'] ?? $step['project_slug'] ?? '' );
 		?>
-		<div class="rawnaq-timeline-item <?php echo esc_attr( $side ); ?>">
+		<div class="rawnaq-timeline-item <?php echo esc_attr( $side ); ?>"
+			<?php if ( $project_id ) : ?>data-project-id="<?php echo esc_attr( $project_id ); ?>"<?php endif; ?>
+			<?php if ( $project_slug ) : ?>data-project-slug="<?php echo esc_attr( $project_slug ); ?>"<?php endif; ?>>
 			<span class="rawnaq-timeline-bullet">
 				<?php if ( $show_numbers ) : ?>
 					<span class="num"><?php echo esc_html( $num ); ?></span>
@@ -1116,3 +1465,6 @@ function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $sh
 	}
 	return (string) ob_get_clean();
 }
+
+require_once RAWNAQ_PATH . 'includes/rawnaq-smart-form.php';
+require_once RAWNAQ_PATH . 'includes/rawnaq-case-study.php';

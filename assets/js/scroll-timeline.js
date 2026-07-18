@@ -64,6 +64,63 @@
                 activeLine.style.height = (progress * 100) + '%';
             }
         });
+
+        emitPrimaryTimelineActive();
+    }
+
+    var lastTimelineKeys = {};
+
+    function emitPrimaryTimelineActive() {
+        var wraps = document.querySelectorAll('.rawnaq-timeline-wrapper');
+        wraps.forEach(function (wrap) {
+            var items = wrap.querySelectorAll('.rawnaq-timeline-item:not(.tl-hidden)');
+            if (!items.length) {
+                return;
+            }
+            var viewportCenter = window.innerHeight / 2;
+            var best = null;
+            var bestDist = Infinity;
+            var bestIndex = -1;
+            items.forEach(function (item, idx) {
+                var r = item.getBoundingClientRect();
+                var mid = (r.top + r.bottom) / 2;
+                var dist = Math.abs(mid - viewportCenter);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = item;
+                    bestIndex = idx;
+                }
+            });
+            if (!best) {
+                return;
+            }
+            // Ignore when the "closest" item is still far outside the viewport —
+            // otherwise scrolling the Case-Study section keeps re-targeting old steps.
+            var bestRect = best.getBoundingClientRect();
+            var inBand = bestRect.bottom > -40 && bestRect.top < viewportCenter * 2 + 40;
+            if (!inBand) {
+                return;
+            }
+            var titleEl = best.querySelector('h4');
+            var wrapKey = wrap.getAttribute('data-tl-name') || 'tl';
+            var key = bestIndex + ':' +
+                (best.getAttribute('data-project-id') || '') + ':' +
+                (best.getAttribute('data-project-slug') || '');
+            if (lastTimelineKeys[wrapKey] === key) {
+                return;
+            }
+            lastTimelineKeys[wrapKey] = key;
+            wrap.dispatchEvent(new CustomEvent('rawnaq:scroll:active', {
+                bubbles: true,
+                detail: {
+                    module: 'timeline',
+                    index: bestIndex,
+                    projectId: best.getAttribute('data-project-id') || '',
+                    projectSlug: best.getAttribute('data-project-slug') || '',
+                    title: titleEl ? (titleEl.textContent || '').trim() : ''
+                }
+            }));
+        });
     }
 
     function onScrollOrResize() {
@@ -73,6 +130,10 @@
         ticking = true;
         window.requestAnimationFrame(function () {
             updateFills();
+            // CSS-driven timelines still need highlight sync on scroll.
+            if (!instances.some(function (i) { return i.useJsMotion; })) {
+                emitPrimaryTimelineActive();
+            }
             ticking = false;
         });
     }
@@ -264,13 +325,18 @@
                     entries.forEach(function (entry) {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('item-active');
+                            entry.target.classList.remove('item-leaving');
+                        } else {
+                            // Match CSS scrub feel: deactivate when leaving viewport.
+                            entry.target.classList.remove('item-active');
+                            entry.target.classList.add('item-leaving');
                         }
                     });
                 },
                 {
                     root: null,
-                    rootMargin: '0px 0px -25% 0px',
-                    threshold: 0.1
+                    rootMargin: '0px 0px -18% 0px',
+                    threshold: [0, 0.15, 0.35, 0.55]
                 }
             );
             items.forEach(function (item) {

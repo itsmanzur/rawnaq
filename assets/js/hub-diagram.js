@@ -96,6 +96,22 @@
             h.appendChild(this.nodesEl);
 
             this.render(true);
+            this._attachExport();
+        },
+        _attachExport: function() {
+            if (this.cfg && this.cfg.export === false) {
+                return;
+            }
+            if (!window.rawnaqDiagramExport || !rawnaqDiagramExport.attachToolbar) {
+                return;
+            }
+            var host = this.host;
+            rawnaqDiagramExport.attachToolbar(host, {
+                filenameBase: 'rawnaq-hub-diagram',
+                background: '#ffffff',
+                getTarget: function () { return host; },
+                getHide: function () { return ['.rawnaq-diagram-export']; }
+            });
         },
         _isMobile: function(width) {
             return width < 768;
@@ -152,7 +168,19 @@
 
             if (node.icon) {
                 var iconSpan = document.createElement('span');
-                iconSpan.className = 'hd-card-icon dashicons ' + node.icon;
+                var icon = String(node.icon);
+                if (icon.indexOf('dashicons-') === 0) {
+                    iconSpan.className = 'hd-card-icon dashicons ' + icon;
+                } else if (/\bfa[srb]?\b|\beicon-/.test(icon) || icon.indexOf(' ') !== -1) {
+                    var iEl = document.createElement('i');
+                    iEl.className = icon;
+                    iEl.setAttribute('aria-hidden', 'true');
+                    iconSpan.className = 'hd-card-icon';
+                    iconSpan.appendChild(iEl);
+                } else {
+                    iconSpan.className = 'hd-card-icon';
+                    iconSpan.textContent = icon;
+                }
                 if (node.cardColor) iconSpan.style.color = node.cardColor;
                 inner.appendChild(iconSpan);
             }

@@ -62,6 +62,244 @@ class Rawnaq_Elements {
         add_action( 'wp_ajax_rawnaq_dock_reset_clicks', [ $this, 'ajax_dock_reset_clicks' ] );
         add_action( 'wp_ajax_rawnaq_timeline_load_more', [ $this, 'ajax_timeline_load_more' ] );
         add_action( 'wp_ajax_nopriv_rawnaq_timeline_load_more', [ $this, 'ajax_timeline_load_more' ] );
+        add_action( 'wp_ajax_rawnaq_smart_form_submit', [ $this, 'ajax_smart_form_submit' ] );
+        add_action( 'wp_ajax_nopriv_rawnaq_smart_form_submit', [ $this, 'ajax_smart_form_submit' ] );
+        add_action( 'init', [ $this, 'maybe_register_smart_form_cpt' ] );
+    }
+
+    /**
+     * Register form submission CPT when Smart Form module is on.
+     */
+    public function maybe_register_smart_form_cpt() {
+        if ( function_exists( 'rawnaq_is_module_enabled' ) && rawnaq_is_module_enabled( 'smart-form' )
+            && function_exists( 'rawnaq_smart_form_register_cpt' ) ) {
+            rawnaq_smart_form_register_cpt();
+            if ( is_admin() && class_exists( 'Rawnaq_Smart_Form_Admin' ) ) {
+                static $sf_admin = null;
+                if ( null === $sf_admin ) {
+                    $sf_admin = new Rawnaq_Smart_Form_Admin();
+                }
+            } elseif ( is_admin() ) {
+                $admin_file = RAWNAQ_PATH . 'includes/class-rawnaq-smart-form-admin.php';
+                if ( file_exists( $admin_file ) ) {
+                    require_once $admin_file;
+                    static $sf_admin2 = null;
+                    if ( null === $sf_admin2 ) {
+                        $sf_admin2 = new Rawnaq_Smart_Form_Admin();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Public AJAX: Smart Form submit (email, WA redirect, files, webhook, recaptcha).
+     */
+    public function ajax_smart_form_submit() {
+        check_ajax_referer( 'rawnaq_smart_form', 'nonce' );
+
+        $hp = isset( $_POST['rawnaq_hp'] ) ? sanitize_text_field( wp_unslash( $_POST['rawnaq_hp'] ) ) : '';
+        if ( '' !== $hp ) {
+            wp_send_json_error( [ 'message' => 'spam' ], 400 );
+        }
+
+        $ts  = isset( $_POST['rawnaq_ts'] ) ? absint( wp_unslash( $_POST['rawnaq_ts'] ) ) : 0;
+        $now = time();
+        if ( ! $ts || ( $now - $ts ) < 2 || ( $now - $ts ) > WEEK_IN_SECONDS ) {
+            wp_send_json_error( [ 'message' => __( 'Please wait a moment and try again.', 'rawnaq' ) ], 400 );
+        }
+
+        $cfg_json = '{}';
+        if ( isset( $_POST['cfg'] ) ) {
+            // JSON payload — cannot pass through sanitize_text_field without corrupting structure.
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            $raw = wp_unslash( $_POST['cfg'] );
+            $cfg_json = is_string( $raw ) ? $raw : '{}';
+        }
+        $cfg = json_decode( $cfg_json, true );
+        if ( ! is_array( $cfg ) ) {
+            $cfg = [];
+        }
+
+        if ( ! empty( $cfg['recaptchaEnabled'] ) ) {
+            $token = isset( $_POST['rawnaq_recaptcha'] ) ? sanitize_text_field( wp_unslash( $_POST['rawnaq_recaptcha'] ) ) : '';
+            if ( ! function_exists( 'rawnaq_smart_form_verify_recaptcha' ) || ! rawnaq_smart_form_verify_recaptcha( $token ) ) {
+                wp_send_json_error( [ 'message' => __( 'Spam check failed. Please try again.', 'rawnaq' ) ], 400 );
+            }
+        }
+
+        $fields_cfg = function_exists( 'rawnaq_smart_form_normalize_fields' )
+            ? rawnaq_smart_form_normalize_fields( $cfg['fields'] ?? [] )
+            : [];
+        $posted = [];
+        if ( isset( $_POST['fields'] ) && is_array( $_POST['fields'] ) ) {
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep sanitizes every leaf.
+            $posted = map_deep( wp_unslash( $_POST['fields'] ), 'sanitize_text_field' );
+        }
+
+        $values = [];
+        foreach ( $fields_cfg as $field ) {
+            if ( 'file' === $field['type'] ) {
+                continue;
+            }
+            // Skip conditional fields that are empty and not visible (client may omit).
+            $id  = $field['id'];
+            $raw = isset( $posted[ $id ] ) ? $posted[ $id ] : '';
+            if ( is_array( $raw ) ) {
+                $raw = implode( ', ', $raw );
+            }
+            $val = sanitize_text_field( (string) $raw );
+            if ( 'textarea' === $field['type'] ) {
+                $val = sanitize_textarea_field( (string) $raw );
+            } elseif ( 'email' === $field['type'] ) {
+                $val = sanitize_email( (string) $raw );
+            } elseif ( 'url' === $field['type'] ) {
+                $val = esc_url_raw( (string) $raw );
+            } elseif ( 'number' === $field['type'] || 'rating' === $field['type'] ) {
+                $val = is_numeric( $raw ) ? (string) $raw : '';
+            } elseif ( 'hidden' === $field['type'] && '' === $val ) {
+                $val = sanitize_text_field( $field['defaultValue'] ?? '' );
+            }
+
+            $conditional_hidden = false;
+            if ( ! empty( $field['showIf'] ) ) {
+                $dep = isset( $posted[ $field['showIf'] ] ) ? sanitize_text_field( (string) $posted[ $field['showIf'] ] ) : '';
+                $want = (string) ( $field['showIfValue'] ?? '' );
+                if ( '' !== $want && $dep !== $want ) {
+                    $conditional_hidden = true;
+                }
+            }
+            if ( $conditional_hidden ) {
+                continue;
+            }
+
+            if ( ! empty( $field['required'] ) && '' === $val ) {
+                wp_send_json_error( [
+                    'message' => sanitize_text_field( $cfg['errorMessage'] ?? __( 'Please fill in the required fields correctly.', 'rawnaq' ) ),
+                ], 400 );
+            }
+            if ( 'email' === $field['type'] && $val && ! is_email( $val ) ) {
+                wp_send_json_error( [
+                    'message' => sanitize_text_field( $cfg['errorMessage'] ?? __( 'Please fill in the required fields correctly.', 'rawnaq' ) ),
+                ], 400 );
+            }
+            if ( 'url' === $field['type'] && $val && ! filter_var( $val, FILTER_VALIDATE_URL ) ) {
+                wp_send_json_error( [
+                    'message' => sanitize_text_field( $cfg['errorMessage'] ?? __( 'Please fill in the required fields correctly.', 'rawnaq' ) ),
+                ], 400 );
+            }
+            $values[ $id ] = $val;
+        }
+
+        $upload = function_exists( 'rawnaq_smart_form_handle_uploads' )
+            ? rawnaq_smart_form_handle_uploads( $fields_cfg )
+            : [ 'values' => [], 'attachments' => [], 'errors' => [] ];
+        if ( ! empty( $upload['errors'] ) ) {
+            wp_send_json_error( [
+                'message' => __( 'File upload failed. Check size and type, then try again.', 'rawnaq' ),
+            ], 400 );
+        }
+        foreach ( $upload['values'] as $k => $v ) {
+            $values[ $k ] = $v;
+        }
+        $attachments = $upload['attachments'] ?? [];
+
+        if ( ! empty( $cfg['consentEnabled'] ) ) {
+            $consent = isset( $posted['consent'] ) ? sanitize_text_field( (string) $posted['consent'] ) : '';
+            if ( '1' !== $consent ) {
+                wp_send_json_error( [
+                    'message' => __( 'Please accept the consent checkbox.', 'rawnaq' ),
+                ], 400 );
+            }
+            $values['consent'] = 'yes';
+        }
+
+        $form_id = isset( $_POST['form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['form_id'] ) ) : '';
+        $tpl_vals = function_exists( 'rawnaq_smart_form_template_values' )
+            ? rawnaq_smart_form_template_values( $values )
+            : $values;
+
+        $mail_ok = true;
+        if ( ! empty( $cfg['deliveryEmail'] ) ) {
+            $to = sanitize_email( $cfg['emailTo'] ?? '' );
+            if ( ! $to ) {
+                $to = get_option( 'admin_email' );
+            }
+            $subject = sanitize_text_field( $cfg['emailSubject'] ?? '' );
+            if ( ! $subject ) {
+                $subject = __( 'New website inquiry', 'rawnaq' );
+            }
+            if ( function_exists( 'rawnaq_smart_form_fill_template' ) ) {
+                $subject = rawnaq_smart_form_fill_template( $subject, $tpl_vals );
+            }
+            $body_lines = [];
+            foreach ( $values as $k => $v ) {
+                $body_lines[] = $k . ': ' . $v;
+            }
+            $body_lines[] = '';
+            $body_lines[] = 'Page: ' . ( $tpl_vals['pageTitle'] ?? '' );
+            $body_lines[] = 'URL: ' . ( $tpl_vals['url'] ?? '' );
+            $body    = implode( "\n", $body_lines );
+            $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
+            if ( ! empty( $values['email'] ) && is_email( $values['email'] ) ) {
+                $headers[] = 'Reply-To: ' . $values['email'];
+            }
+            $mail_ok = wp_mail( $to, $subject, $body, $headers, $attachments );
+        }
+
+        if ( ! empty( $cfg['logSubmissions'] ) && function_exists( 'rawnaq_smart_form_log_submission' ) ) {
+            rawnaq_smart_form_log_submission( $form_id, $values, $cfg );
+        }
+
+        if ( ! empty( $cfg['webhookEnabled'] ) && ! empty( $cfg['webhookUrl'] ) && function_exists( 'rawnaq_smart_form_send_webhook' ) ) {
+            rawnaq_smart_form_send_webhook(
+                $cfg['webhookUrl'],
+                [
+                    'subject' => $cfg['emailSubject'] ?? 'Smart Form',
+                    'form_id' => $form_id,
+                    'fields'  => $values,
+                    'page'    => [
+                        'title' => $tpl_vals['pageTitle'] ?? '',
+                        'url'   => $tpl_vals['url'] ?? '',
+                    ],
+                ]
+            );
+        }
+
+        $wa_url = '';
+        $wa_num = function_exists( 'rawnaq_smart_form_resolve_wa_number' )
+            ? rawnaq_smart_form_resolve_wa_number( $cfg['waNumber'] ?? '' )
+            : ( $cfg['waNumber'] ?? '' );
+        if ( ( ! empty( $cfg['deliveryWhatsapp'] ) || ( ( $cfg['afterSubmit'] ?? '' ) === 'whatsapp' ) )
+            && $wa_num
+            && function_exists( 'rawnaq_smart_form_wa_url' ) ) {
+            $tpl = $cfg['waTemplate'] ?? '';
+            if ( ! $tpl ) {
+                $tpl = "New inquiry:\nName: {name}\nPhone: {phone}\nEmail: {email}\nMessage: {message}\nPage: {pageTitle}\nURL: {url}";
+            }
+            $text   = function_exists( 'rawnaq_smart_form_fill_template' )
+                ? rawnaq_smart_form_fill_template( $tpl, $tpl_vals )
+                : $tpl;
+            $wa_url = rawnaq_smart_form_wa_url( $wa_num, $text );
+        }
+
+        $after    = sanitize_key( $cfg['afterSubmit'] ?? 'message' );
+        $redirect = '';
+        if ( 'redirect' === $after && ! empty( $cfg['redirectUrl'] ) ) {
+            $redirect = esc_url_raw( $cfg['redirectUrl'] );
+        }
+        $open_wa = ( 'whatsapp' === $after );
+
+        if ( ! empty( $cfg['deliveryEmail'] ) && ! $mail_ok && ! $wa_url ) {
+            wp_send_json_error( [ 'message' => __( 'Could not send email. Please try again later.', 'rawnaq' ) ], 500 );
+        }
+
+        wp_send_json_success( [
+            'message'      => sanitize_text_field( $cfg['successMessage'] ?? __( 'Message sent successfully.', 'rawnaq' ) ),
+            'whatsappUrl'  => $wa_url,
+            'openWhatsapp' => $open_wa,
+            'redirectUrl'  => $redirect,
+        ] );
     }
 
     /**
@@ -164,13 +402,13 @@ class Rawnaq_Elements {
         wp_register_style(
             'rawnaq-hub-diagram',
             RAWNAQ_URL . 'assets/css/hub-diagram.css',
-            [],
+            [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-hub-diagram',
             RAWNAQ_URL . 'assets/js/hub-diagram.js',
-            [],
+            [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION,
             true
         );
@@ -185,6 +423,21 @@ class Rawnaq_Elements {
         wp_register_script(
             'rawnaq-tilt-card',
             RAWNAQ_URL . 'assets/js/tilt-card.js',
+            [],
+            RAWNAQ_VERSION,
+            true
+        );
+
+        // Diagram PNG/SVG export (shared by Flow + Hub)
+        wp_register_style(
+            'rawnaq-diagram-export',
+            RAWNAQ_URL . 'assets/css/diagram-export.css',
+            [],
+            RAWNAQ_VERSION
+        );
+        wp_register_script(
+            'rawnaq-diagram-export',
+            RAWNAQ_URL . 'assets/js/diagram-export.js',
             [],
             RAWNAQ_VERSION,
             true
@@ -240,13 +493,13 @@ class Rawnaq_Elements {
         wp_register_style(
             'rawnaq-flow-chart',
             RAWNAQ_URL . 'assets/css/flow-chart.css',
-            [],
+            [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-flow-chart',
             RAWNAQ_URL . 'assets/js/flow-chart.js',
-            [],
+            [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION,
             true
         );
@@ -276,6 +529,65 @@ class Rawnaq_Elements {
         wp_register_script(
             'rawnaq-bento-grid',
             RAWNAQ_URL . 'assets/js/bento-grid.js',
+            [],
+            RAWNAQ_VERSION,
+            true
+        );
+
+        // 8. Scroll Story / Scrollytelling
+        wp_register_style(
+            'rawnaq-scroll-story',
+            RAWNAQ_URL . 'assets/css/scroll-story.css',
+            [],
+            RAWNAQ_VERSION
+        );
+        wp_register_script(
+            'rawnaq-scroll-story',
+            RAWNAQ_URL . 'assets/js/scroll-story.js',
+            [],
+            RAWNAQ_VERSION,
+            true
+        );
+
+        // 9. Smart Form
+        wp_register_style(
+            'rawnaq-smart-form',
+            RAWNAQ_URL . 'assets/css/smart-form.css',
+            [],
+            RAWNAQ_VERSION
+        );
+        wp_register_script(
+            'rawnaq-smart-form',
+            RAWNAQ_URL . 'assets/js/smart-form.js',
+            [],
+            RAWNAQ_VERSION,
+            true
+        );
+        wp_localize_script( 'rawnaq-smart-form', 'rawnaqSmartForm', [
+            'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+            'nonce'           => wp_create_nonce( 'rawnaq_smart_form' ),
+            'recaptchaSiteKey'=> function_exists( 'rawnaq_smart_form_recaptcha_keys' ) ? rawnaq_smart_form_recaptcha_keys()['site'] : '',
+        ] );
+
+        // 10. Case-Study Grid
+        wp_register_style(
+            'rawnaq-case-study-grid',
+            RAWNAQ_URL . 'assets/css/case-study-grid.css',
+            [],
+            RAWNAQ_VERSION
+        );
+        wp_register_script(
+            'rawnaq-case-study-grid',
+            RAWNAQ_URL . 'assets/js/case-study-grid.js',
+            [],
+            RAWNAQ_VERSION,
+            true
+        );
+
+        // Cross-module bridge (Case-Study discuss + scroll highlight)
+        wp_register_script(
+            'rawnaq-bridge',
+            RAWNAQ_URL . 'assets/js/rawnaq-bridge.js',
             [],
             RAWNAQ_VERSION,
             true

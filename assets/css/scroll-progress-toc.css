@@ -8,6 +8,7 @@
     --spt-panel: #ffffff;
     --spt-bar-h: 4px;
     --spt-offset: 80px;
+    --spt-ring-size: 56px;
     font-family: inherit;
     color: var(--spt-ink);
 }
@@ -44,8 +45,23 @@
     right: 20px;
     bottom: 24px;
     z-index: 100000;
-    width: 56px;
-    height: 56px;
+    width: var(--spt-ring-size, 56px);
+    height: var(--spt-ring-size, 56px);
+}
+
+.rawnaq-spt-chapter {
+    margin: 0 0 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--spt-accent-deep) 8%, #fff);
+    color: var(--spt-accent-deep);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.rawnaq-spt-chapter[hidden] {
+    display: none !important;
 }
 
 .rawnaq-spt-ring svg {

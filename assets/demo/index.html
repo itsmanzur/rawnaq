@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rawnaq — Module Showcase</title>
+  <meta name="description" content="Static marketing demo of every Rawnaq Elementor & Gutenberg module — zero jQuery, on-demand assets." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- Dashicons optional: copy from WP core or skip — demo modules below do not require them. -->
+
+  <link rel="stylesheet" href="../css/diagram-export.css" />
+  <link rel="stylesheet" href="../css/hub-diagram.css" />
+  <link rel="stylesheet" href="../css/tilt-card.css" />
+  <link rel="stylesheet" href="../css/scroll-timeline.css" />
+  <link rel="stylesheet" href="../css/floating-dock.css" />
+  <link rel="stylesheet" href="../css/flow-chart.css" />
+  <link rel="stylesheet" href="../css/scroll-progress-toc.css" />
+  <link rel="stylesheet" href="../css/bento-grid.css" />
+  <link rel="stylesheet" href="../css/scroll-story.css" />
+  <link rel="stylesheet" href="../css/smart-form.css" />
+  <link rel="stylesheet" href="../css/case-study-grid.css" />
+
+  <style>
+    :root {
+      --ink: #0c1f1a;
+      --moss: #1a4d3e;
+      --lime: #c8f542;
+      --sand: #e8dfc8;
+      --paper: #f4efe4;
+      --card: #ffffff;
+      --muted: #5c6f66;
+      --line: rgba(12, 31, 26, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Manrope, system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+
+    .demo-top {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(10px);
+      background: rgba(244, 239, 228, 0.88);
+      border-bottom: 1px solid var(--line);
+    }
+    .demo-top-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+    .demo-logo {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .demo-logo span { color: #6b8f00; }
+    .demo-nav {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .demo-nav a {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 0.35rem 0.55rem;
+      border-radius: 999px;
+      color: var(--muted);
+    }
+    .demo-nav a:hover { background: rgba(26, 77, 62, 0.08); color: var(--ink); }
+    .demo-nav a.is-active {
+      background: var(--ink);
+      color: var(--lime);
+    }
+
+    .try-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0 0 1rem;
+    }
+    .try-chip {
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .try-chip:hover {
+      border-color: var(--moss);
+      background: #ecfccb;
+      transform: translateY(-1px);
+    }
+    .try-chip:focus-visible {
+      outline: 2px solid var(--moss);
+      outline-offset: 2px;
+    }
+
+    .demo-reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .demo-reveal.is-in {
+      opacity: 1;
+      transform: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .demo-reveal { opacity: 1; transform: none; transition: none; }
+      .brand { transition: none !important; }
+    }
+    .brand { transition: transform 0.2s ease-out; will-change: transform; }
+
+    .demo-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 1.5rem;
+      transform: translateX(-50%) translateY(12px);
+      z-index: 80;
+      max-width: min(92vw, 420px);
+      padding: 0.75rem 1.1rem;
+      border-radius: 4px;
+      background: var(--ink);
+      color: var(--sand);
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 12px 32px rgba(12, 31, 26, 0.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .demo-toast.is-show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .rawnaq-cs-card.demo-pulse {
+      animation: demoPulse 0.85s ease;
+    }
+    @keyframes demoPulse {
+      0%, 100% { transform: scale(1); }
+      40% { transform: scale(1.02); }
+    }
+    .rawnaq-tilt-card.demo-tilt-wobble {
+      animation: demoTilt 0.7s ease;
+    }
+    @keyframes demoTilt {
+      0% { transform: perspective(800px) rotateY(0) rotateX(0); }
+      25% { transform: perspective(800px) rotateY(10deg) rotateX(-6deg); }
+      50% { transform: perspective(800px) rotateY(-10deg) rotateX(6deg); }
+      100% { transform: perspective(800px) rotateY(0) rotateX(0); }
+    }
+    .rawnaq-bento-cell.demo-bento-on {
+      outline: 2px solid var(--moss);
+      outline-offset: 2px;
+    }
+    .tilt-row {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .tilt-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      align-content: end;
+      padding: clamp(2rem, 6vw, 4.5rem);
+      color: var(--sand);
+      background:
+        radial-gradient(1100px 560px at 8% -8%, rgba(200, 245, 66, 0.2), transparent 55%),
+        radial-gradient(900px 480px at 92% 18%, rgba(26, 77, 62, 0.95), transparent 52%),
+        linear-gradient(165deg, #061410 0%, #0c1f1a 48%, #132a22 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60L60 0H40L0 40zM60 60V40L40 60z' fill='%23c8f542' fill-opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 1120px; margin: 0 auto; width: 100%; }
+    .brand {
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(3.4rem, 11vw, 7.2rem);
+      font-weight: 700;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      margin: 0 0 1rem;
+    }
+    .brand em { font-style: normal; color: var(--lime); }
+    .lede {
+      max-width: 32rem;
+      font-size: 1.08rem;
+      opacity: 0.9;
+      margin: 0 0 1.75rem;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.85rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      border-radius: 2px;
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-lime { background: var(--lime); color: var(--ink); }
+    .btn-ghost { background: transparent; color: var(--sand); box-shadow: inset 0 0 0 1.5px rgba(232, 223, 200, 0.45); }
+    .btn:hover { transform: translateY(-1px); }
+
+    .shell {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.25rem 5rem;
+    }
+    .module {
+      padding: 4.5rem 0 1rem;
+      border-top: 1px solid var(--line);
+      scroll-margin-top: 4.5rem;
+    }
+    .module:first-of-type { border-top: 0; }
+    .mod-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--moss);
+      margin: 0 0 0.4rem;
+    }
+    .mod-title {
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+      line-height: 1.15;
+    }
+    .mod-desc {
+      max-width: 38rem;
+      color: var(--muted);
+      margin: 0 0 1.75rem;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1.25rem;
+      overflow: hidden;
+    }
+    .panel-tight { padding: 0; }
+    .grid-2 {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 860px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .grid-2.is-story { grid-template-columns: 1.1fr 0.9fr; }
+    }
+    .note {
+      margin-top: 0.85rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .hub-diagram-host { width: 100%; background: #faf8f3; border-radius: 4px; }
+    .rawnaq-tilt-container { max-width: 380px; }
+    .rawnaq-bento-grid {
+      --bento-cols: 4;
+      --bento-row: 120px;
+      --bento-gap-col: 14px;
+      --bento-gap-row: 14px;
+      --bento-radius: 16px;
+      --bento-tag-bg: #ecfccb;
+      --bento-tag-color: #3f6212;
+      --bento-title-color: #13231c;
+      --bento-sub-color: #5c6f66;
+      --bento-stat-color: #1a4d3e;
+      --bento-cell-bg: #fff;
+      --bento-cell-border: #d7e2dc;
+      --bento-featured-from: #1a4d3e;
+      --bento-featured-to: #0c1f1a;
+    }
+    .rawnaq-story { --story-accent: #1a4d3e; }
+    .rawnaq-smart-form {
+      --sf-accent: #c8f542;
+      --sf-accent-deep: #1a4d3e;
+      --sf-btn-text: #0c1f1a;
+    }
+    .rawnaq-case-study {
+      --cs-accent: #c8f542;
+      --cs-card-bg: #fff;
+      --cs-card-border: #d7e2dc;
+      --cs-radius: 16px;
+      --cs-cols: 2;
+    }
+    .rawnaq-spt-toc.is-sticky {
+      position: sticky;
+      top: 4.25rem;
+      max-height: calc(100vh - 5rem);
+      overflow: auto;
+    }
+    .layout-with-toc {
+      display: grid;
+      gap: 1.5rem;
+    }
+    @media (min-width: 960px) {
+      .layout-with-toc { grid-template-columns: 220px 1fr; align-items: start; }
+    }
+    .footer {
+      padding: 3rem 1.25rem 7rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--line);
+      background: #efe9dc;
+    }
+    .footer strong {
+      font-family: Fraunces, Georgia, serif;
+      color: var(--ink);
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="demo-top">
+    <div class="demo-top-inner">
+      <a class="demo-logo" href="#top">Rawnaq <span>demo</span></a>
+      <nav class="demo-nav" aria-label="Modules">
+        <a href="#hub">Hub</a>
+        <a href="#tilt">Tilt</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#flow">Flow</a>
+        <a href="#bento">Bento</a>
+        <a href="#story">Story</a>
+        <a href="#cases">Cases</a>
+        <a href="#form">Form</a>
+        <a href="#dock">Dock</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <h1 class="brand">Rawnaq<em>.</em></h1>
+      <p class="lede">Ten Elementor + Gutenberg modules. Vanilla JS. On-demand assets. Click the Try it chips — filters, modal, discuss, dock, and scroll sync are live on this page.</p>
+      <div class="cta-row">
+        <a class="btn btn-lime" href="#hub">Browse modules</a>
+        <button type="button" class="btn btn-ghost" data-demo-action="open-modal">Open a case study</button>
+        <button type="button" class="btn btn-ghost" data-demo-action="dock">Ping Dock WA</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell">
+    <div class="layout-with-toc">
+      <aside>
+        <div class="rawnaq-spt" style="--spt-offset:80px;--spt-ring-size:52px"
+             data-spt='{"progress":"both","barPosition":"top","showPercent":true,"tocPosition":"sticky","tocTitle":"On this page","source":"auto","levels":["h2"],"manual":[],"collapseSubs":false,"showSearch":false,"smooth":true,"scrollOffset":90,"readingTime":false,"mobileCollapse":true,"dockAttach":false,"syncTimeline":"","hideIfShort":false}'>
+          <nav class="rawnaq-spt-toc is-sticky" aria-label="Contents">
+            <p class="rawnaq-spt-reading" hidden></p>
+            <p class="rawnaq-spt-chapter" hidden></p>
+            <h3 class="rawnaq-spt-title">On this page</h3>
+            <ul class="rawnaq-spt-list"></ul>
+          </nav>
+        </div>
+      </aside>
+
+      <main class="entry-content">
+        <!-- 1. Hub -->
+        <section class="module" id="hub">
+          <p class="mod-kicker">01 · Diagrams</p>
+          <h2 class="mod-title">Hub Diagram</h2>
+          <p class="mod-desc">Hub-and-spoke workflow map with live node cards. Click a spoke to jump to that module.</p>
+          <div class="try-bar">
+            <button type="button" class="try-chip" data-demo-action="pulse" data-demo-arg="post-1">Pulse Civic card</button>
+            <button type="button" class="try-chip" data-demo-action="dock">Open Dock</button>
+          </div>
+          <div class="panel panel-tight">
+            <div class="hub-diagram-host" style="height:480px" data-hub='{"centerTitle":"Rawnaq","centerSubtitle":"MODULE\nCORE","lineColor":"#c2c2c2","seg1Color":"#E8793A","seg2Color":"#D4A92A","seg3Color":"#26B8B8","cardShape":"rect","lineStyle":"solid","glowLines":"no","centerStyle":"conic","layoutFlow":"horizontal","export":false,"top":[{"id":"n0","label":"Hub","color":"#E8793A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"","link":"#hub","target":"_self"},{"id":"n1","label":"Timeline","color":"#D4A92A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"","link":"#timeline","target":"_self"},{"id":"n2","label":"Bento","color":"#26B8B8","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"","link":"#bento","target":"_self"}],"bottom":[{"id":"n3","label":"Dock","color":"#1a4d3e","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"","link":"#dock","target":"_self"},{"id":"n4","label":"Form","color":"#65a30d","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"","link":"#form","target":"_self"},{"id":"n5","label":"Cases","color":"#b45309","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"","link":"#cases","target":"_self"}]}'></div>
+          </div>
+        </section>
+
+        <!-- 2. Tilt -->
+        <section class="module" id="tilt">
+          <p class="mod-kicker">02 · Interaction</p>
+          <h2 class="mod-title">3D Tilt Card</h2>
+          <p class="mod-desc">Pointer-driven tilt with glare — kept deliberately light.</p>
+          <div class="try-bar">
+            <button type="button" class="try-chip" data-demo-action="tilt">Preview wobble</button>
+          </div>
+          <div class="panel">
+            <div class="tilt-row">
+              <div class="rawnaq-tilt-container">
+                <div class="rawnaq-tilt-card align-bottom has-image"
+                     style="--overlay:.55;--glare:.4;--hover-scale:1.03;height:360px;border-radius:12px;overflow:hidden"
+                     data-tilt-max="14" data-hover-scale="1.03" data-glare="0.4">
+                  <img class="rawnaq-tilt-image" src="https://images.unsplash.com/photo-1487958449943-2429e8be8624?w=800&q=80" alt="" />
+                  <span class="rawnaq-tilt-overlay" aria-hidden="true"></span>
+                  <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
+                  <span class="rawnaq-tilt-badge">AEC</span>
+                  <div class="rawnaq-tilt-content">
+                    <h3 class="rawnaq-tilt-title">Studio portfolio tile</h3>
+                    <p class="rawnaq-tilt-desc">Hover for live parallax.</p>
+                    <span class="rawnaq-tilt-btn is-static">View project</span>
+                  </div>
+                </div>
+              </div>
+              <div class="rawnaq-tilt-container">
+                <div class="rawnaq-tilt-card align-bottom has-image"
+                     style="--overlay:.45;--glare:.35;--hover-scale:1.04;height:360px;border-radius:12px;overflow:hidden"
+                     data-tilt-max="18" data-hover-scale="1.04" data-glare="0.35">
+                  <img class="rawnaq-tilt-image" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80" alt="" />
+                  <span class="rawnaq-tilt-overlay" aria-hidden="true"></span>
+                  <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
+                  <span class="rawnaq-tilt-badge">Stronger</span>
+                  <div class="rawnaq-tilt-content">
+                    <h3 class="rawnaq-tilt-title">Higher tilt max</h3>
+                    <p class="rawnaq-tilt-desc">Same component, different intensity.</p>
+                    <span class="rawnaq-tilt-btn is-static">Compare feel</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Timeline -->
+        <section class="module" id="timeline">
+          <p class="mod-kicker">03 · Narrative</p>
+          <h2 class="mod-title">Scroll Sync Timeline</h2>
+          <p class="mod-desc">CSS scroll-driven when supported. Scroll the steps — matching Case-Study cards get a live accent ring (toast confirms sync).</p>
+          <div class="try-bar">
+            <button type="button" class="try-chip" data-demo-action="pulse" data-demo-arg="post-1">Highlight Civic</button>
+            <button type="button" class="try-chip" data-demo-action="pulse" data-demo-arg="post-2">Highlight Transit</button>
+            <a class="try-chip" href="#cases" style="text-decoration:none">Jump to cards</a>
+          </div>
+          <div class="panel">
+            <div class="rawnaq-timeline-wrapper layout-alternating show-numbers"
+                 data-show-numbers="1" data-tl-name="rawnaq-demo-tl" data-initial-visible="0" data-load-chunk="3"
+                 style="scroll-timeline-name: --rawnaq-demo-tl;">
+              <div class="rawnaq-timeline-line-bg"></div>
+              <div class="rawnaq-timeline-line-active"></div>
+              <div class="rawnaq-timeline-item left-item" data-project-id="post-1" data-project-slug="civic-center">
+                <span class="rawnaq-timeline-bullet"><span class="num">01</span></span>
+                <div class="rawnaq-timeline-card">
+                  <span class="rawnaq-timeline-meta">2024 · Civic</span>
+                  <h4>Riverfront Civic Center</h4>
+                  <p>Scroll here to highlight the matching case-study card.</p>
+                </div>
+              </div>
+              <div class="rawnaq-timeline-item right-item" data-project-id="post-2" data-project-slug="transit-hub">
+                <span class="rawnaq-timeline-bullet"><span class="num">02</span></span>
+                <div class="rawnaq-timeline-card">
+                  <span class="rawnaq-timeline-meta">2023 · Infrastructure</span>
+                  <h4>Northline Transit Hub</h4>
+                  <p>Intermodal upgrade delivered under live rail ops.</p>
+                </div>
+              </div>
+              <div class="rawnaq-timeline-item left-item">
+                <span class="rawnaq-timeline-bullet"><span class="num">03</span></span>
+                <div class="rawnaq-timeline-card">
+                  <span class="rawnaq-timeline-meta">Next</span>
+                  <h4>Ship the suite</h4>
+                  <p>Modular toggles keep unused widgets off the page.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Flow -->
+        <section class="module" id="flow">
+          <p class="mod-kicker">04 · Org / process</p>
+          <h2 class="mod-title">Flow Chart</h2>
+          <p class="mod-desc">Org trees, process maps, freeform nodes — plus WP Users seeding in the plugin.</p>
+          <div class="panel panel-tight" style="min-height:360px">
+            <div class="rawnaq-flow-chart" data-flow='{"mode":"org","direction":"tb","shape":"rect","connector":"curved","zoom":true,"export":false,"nodes":[{"id":"ceo","parent":"","title":"Studio Lead","role":"Director","icon":"","detail":"","link":"","decision":false},{"id":"des","parent":"ceo","title":"Design","role":"Team","icon":"","detail":"","link":"","decision":false},{"id":"eng","parent":"ceo","title":"Engineering","role":"Team","icon":"","detail":"","link":"","decision":false},{"id":"fe","parent":"eng","title":"Frontend","role":"Craft","icon":"","detail":"","link":"","decision":false},{"id":"be","parent":"eng","title":"WordPress","role":"Craft","icon":"","detail":"","link":"","decision":false}]}'>
+              <div class="rawnaq-flow-viewport"><div class="rawnaq-flow-stage is-responsive"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. Bento -->
+        <section class="module" id="bento">
+          <p class="mod-kicker">05 · Layouts</p>
+          <h2 class="mod-title">Bento Grid</h2>
+          <p class="mod-desc">Asymmetric marketing grid with stats, featured tiles, and reveal motion. Click any cell.</p>
+          <div class="try-bar">
+            <span class="try-chip" style="cursor:default;opacity:.75">Click cells below</span>
+          </div>
+          <div class="panel">
+            <div class="rawnaq-bento-grid" data-cols="4" data-reveal="1" data-hover="lift" role="list"
+                 style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:var(--bento-row);gap:var(--bento-gap-row) var(--bento-gap-col)">
+              <div class="rawnaq-bento-cell is-featured" style="grid-column:span 2;grid-row:span 2;border-radius:var(--bento-radius);padding:1.25rem;background:linear-gradient(145deg,var(--bento-featured-from),var(--bento-featured-to));color:#fff" role="listitem" data-bento-index="0">
+                <div class="rawnaq-bento-tag" style="display:inline-block;background:var(--bento-tag-bg);color:var(--bento-tag-color);padding:0.2rem 0.55rem;border-radius:999px;font-size:0.72rem;font-weight:700">Featured</div>
+                <div class="rawnaq-bento-title" style="font-family:Fraunces,Georgia,serif;font-size:1.6rem;margin-top:0.75rem;color:#fff">Zero-jQuery suite</div>
+                <div class="rawnaq-bento-sub" style="opacity:.85;margin-top:.4rem">Per-page assets. Clean output.</div>
+              </div>
+              <div class="rawnaq-bento-cell is-stat" style="grid-column:span 1;grid-row:span 1;border:1px solid var(--bento-cell-border);border-radius:var(--bento-radius);padding:1rem;background:#fff" role="listitem" data-bento-index="1">
+                <div class="rawnaq-bento-num" data-count="10" data-suffix="" data-prefix="" style="font-size:2rem;font-weight:700;color:var(--bento-stat-color)">0</div>
+                <div class="rawnaq-bento-sub">Modules</div>
+              </div>
+              <div class="rawnaq-bento-cell" style="grid-column:span 1;grid-row:span 1;border:1px solid var(--bento-cell-border);border-radius:var(--bento-radius);padding:1rem;background:#fff" role="listitem" data-bento-index="2">
+                <div class="rawnaq-bento-tag" style="display:inline-block;background:var(--bento-tag-bg);color:var(--bento-tag-color);padding:0.2rem 0.55rem;border-radius:999px;font-size:0.72rem;font-weight:700">Builders</div>
+                <div class="rawnaq-bento-title" style="font-weight:700;margin-top:.5rem">Elementor + GB</div>
+                <div class="rawnaq-bento-sub" style="color:var(--bento-sub-color);font-size:.9rem">Same UX both ways</div>
+              </div>
+              <div class="rawnaq-bento-cell is-stat" style="grid-column:span 2;grid-row:span 1;border:1px solid var(--bento-cell-border);border-radius:var(--bento-radius);padding:1rem;background:#fff" role="listitem" data-bento-index="3">
+                <div class="rawnaq-bento-num" data-count="0" data-suffix="" data-prefix="" style="font-size:1.4rem;font-weight:700;color:var(--bento-stat-color)">jQuery</div>
+                <div class="rawnaq-bento-sub">Frontend dependency count</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. Story + Cases bridge -->
+        <section class="module" id="story">
+          <p class="mod-kicker">06 · Scrollytelling</p>
+          <h2 class="mod-title">Scroll Story Chapters</h2>
+          <p class="mod-desc">Pinned media swaps as chapters enter view. Linked project IDs highlight Case-Study cards — watch for the toast.</p>
+          <div class="try-bar">
+            <a class="try-chip" href="#cases" style="text-decoration:none">See synced cards</a>
+            <button type="button" class="try-chip" data-demo-action="pulse" data-demo-arg="post-1">Pulse Civic</button>
+          </div>
+          <div class="panel">
+            <div class="rawnaq-story">
+              <div class="rawnaq-story-layout">
+                <aside class="rawnaq-story-pin">
+                  <div class="rawnaq-story-media-stack">
+                    <div class="rawnaq-story-media is-active" data-index="0">
+                      <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900&q=80" alt="" loading="eager" />
+                    </div>
+                    <div class="rawnaq-story-media" data-index="1">
+                      <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=900&q=80" alt="" loading="lazy" />
+                    </div>
+                  </div>
+                  <p class="rawnaq-story-caption">Waterfront civic campus</p>
+                  <ol class="rawnaq-story-dots" aria-label="Story progress">
+                    <li><button type="button" class="rawnaq-story-dot is-active" aria-label="Chapter 1" aria-current="true"></button></li>
+                    <li><button type="button" class="rawnaq-story-dot" aria-label="Chapter 2" aria-current="false"></button></li>
+                  </ol>
+                </aside>
+                <div class="rawnaq-story-chapters">
+                  <section class="rawnaq-story-chapter is-active" data-index="0" data-caption="Waterfront civic campus" data-project-id="post-1" data-project-slug="civic-center">
+                    <span class="rawnaq-story-kicker">Chapter 1</span>
+                    <h3>Riverfront Civic Center</h3>
+                    <p>Flood-resilient public rooms along the embankment — scroll to sync the portfolio card.</p>
+                  </section>
+                  <section class="rawnaq-story-chapter" data-index="1" data-caption="Active rail canopy" data-project-id="post-2" data-project-slug="transit-hub">
+                    <span class="rawnaq-story-kicker">Chapter 2</span>
+                    <h3>Northline Transit Hub</h3>
+                    <p>Canopy package coordinated with live operations and overnight closures.</p>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. Case studies -->
+        <section class="module" id="cases">
+          <p class="mod-kicker">07 · Portfolio</p>
+          <h2 class="mod-title">Case-Study Grid</h2>
+          <p class="mod-desc">Open a card → gallery slider → Discuss prefills the Smart Form. Filters and load-more are wired.</p>
+          <div class="try-bar">
+            <button type="button" class="try-chip" data-demo-action="open-modal">Open modal</button>
+            <button type="button" class="try-chip" data-demo-action="filter" data-demo-arg="Civic">Filter Civic</button>
+            <button type="button" class="try-chip" data-demo-action="filter" data-demo-arg="Infrastructure">Filter Infra</button>
+            <button type="button" class="try-chip" data-demo-action="filter" data-demo-arg="">Clear filter</button>
+            <button type="button" class="try-chip" data-demo-action="load-more">Load more</button>
+            <button type="button" class="try-chip" data-demo-action="form">Prefill form</button>
+          </div>
+          <div class="panel">
+            <div class="rawnaq-case-study" id="cs-demo"
+                 data-cs='{"layout":"uniform","columns":2,"showFilter":true,"filterYear":true,"filterService":false,"clickAction":"modal","discussTarget":"auto","initialVisible":2,"loadChunk":2}'
+                 style="--cs-cols:2">
+              <div class="rawnaq-cs-filters" data-filter="sector" role="tablist" aria-label="Filter by sector">
+                <button type="button" class="rawnaq-cs-chip is-active" data-sector="" role="tab" aria-selected="true">All sectors</button>
+                <button type="button" class="rawnaq-cs-chip" data-sector="Civic" role="tab" aria-selected="false">Civic</button>
+                <button type="button" class="rawnaq-cs-chip" data-sector="Infrastructure" role="tab" aria-selected="false">Infrastructure</button>
+                <button type="button" class="rawnaq-cs-chip" data-sector="Adaptive Reuse" role="tab" aria-selected="false">Adaptive Reuse</button>
+              </div>
+              <div class="rawnaq-cs-filters rawnaq-cs-filters-year" data-filter="year" role="tablist" aria-label="Filter by year">
+                <button type="button" class="rawnaq-cs-chip is-active" data-year="" role="tab" aria-selected="true">All years</button>
+                <button type="button" class="rawnaq-cs-chip" data-year="2025" role="tab" aria-selected="false">2025</button>
+                <button type="button" class="rawnaq-cs-chip" data-year="2024" role="tab" aria-selected="false">2024</button>
+                <button type="button" class="rawnaq-cs-chip" data-year="2023" role="tab" aria-selected="false">2023</button>
+                <button type="button" class="rawnaq-cs-chip" data-year="2022" role="tab" aria-selected="false">2022</button>
+              </div>
+              <div class="rawnaq-cs-grid is-uniform">
+                <article class="rawnaq-cs-card" tabindex="0" role="button"
+                  data-project-id="post-1" data-project-slug="civic-center"
+                  data-sector="Civic" data-year="2024" data-services="Architecture,MEP" data-link=""
+                  data-project='{"id":"post-1","postId":1,"slug":"civic-center","title":"Riverfront Civic Center","image":"https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80","gallery":["https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80","https://images.unsplash.com/photo-1487958449943-2429e8be8624?w=800&q=80"],"sector":"Civic","size":"120,000 sq ft","budget":"$45–60M","year":"2024","client":"City Planning Board","services":["Architecture","MEP"],"detail":"Mixed-use civic hub with flood-resilient ground floor and public plaza.","link":""}'>
+                  <div class="rawnaq-cs-media">
+                    <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80" alt="" loading="lazy" />
+                    <span class="rawnaq-cs-badge">Civic</span>
+                  </div>
+                  <div class="rawnaq-cs-body">
+                    <h3 class="rawnaq-cs-title">Riverfront Civic Center</h3>
+                    <p class="rawnaq-cs-excerpt">Mixed-use civic hub along the waterfront.</p>
+                    <ul class="rawnaq-cs-meta"><li><span>Year</span> 2024</li><li><span>Scope</span> 120,000 sq ft</li></ul>
+                    <span class="rawnaq-cs-view">View case study</span>
+                  </div>
+                </article>
+                <article class="rawnaq-cs-card" tabindex="0" role="button"
+                  data-project-id="post-2" data-project-slug="transit-hub"
+                  data-sector="Infrastructure" data-year="2023" data-services="Civil,Structural" data-link=""
+                  data-project='{"id":"post-2","postId":2,"slug":"transit-hub","title":"Northline Transit Hub","image":"https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80","gallery":["https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80"],"sector":"Infrastructure","size":"18 platforms","budget":"$28M","year":"2023","client":"Regional Transit Authority","services":["Civil","Structural"],"detail":"Intermodal station upgrade coordinated with active rail operations.","link":""}'>
+                  <div class="rawnaq-cs-media">
+                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80" alt="" loading="lazy" />
+                    <span class="rawnaq-cs-badge">Infrastructure</span>
+                  </div>
+                  <div class="rawnaq-cs-body">
+                    <h3 class="rawnaq-cs-title">Northline Transit Hub</h3>
+                    <p class="rawnaq-cs-excerpt">Intermodal station upgrade.</p>
+                    <ul class="rawnaq-cs-meta"><li><span>Year</span> 2023</li><li><span>Scope</span> 18 platforms</li></ul>
+                    <span class="rawnaq-cs-view">View case study</span>
+                  </div>
+                </article>
+                <article class="rawnaq-cs-card is-load-hidden" tabindex="0" role="button"
+                  data-project-id="post-3" data-project-slug="oakridge"
+                  data-sector="Adaptive Reuse" data-year="2022" data-services="Architecture,Interior" data-link=""
+                  data-project='{"id":"post-3","postId":3,"slug":"oakridge","title":"Oakridge Adaptive Reuse","image":"https://images.unsplash.com/photo-1464146072230-91cabc968266?w=800&q=80","gallery":["https://images.unsplash.com/photo-1464146072230-91cabc968266?w=800&q=80"],"sector":"Adaptive Reuse","size":"64 units","budget":"$12M","year":"2022","client":"Private Developer","services":["Architecture","Interior"],"detail":"Mill building converted to housing with retained historic fabric.","link":""}'>
+                  <div class="rawnaq-cs-media">
+                    <img src="https://images.unsplash.com/photo-1464146072230-91cabc968266?w=800&q=80" alt="" loading="lazy" />
+                    <span class="rawnaq-cs-badge">Adaptive Reuse</span>
+                  </div>
+                  <div class="rawnaq-cs-body">
+                    <h3 class="rawnaq-cs-title">Oakridge Adaptive Reuse</h3>
+                    <p class="rawnaq-cs-excerpt">Mill building converted to housing.</p>
+                    <ul class="rawnaq-cs-meta"><li><span>Year</span> 2022</li><li><span>Scope</span> 64 units</li></ul>
+                    <span class="rawnaq-cs-view">View case study</span>
+                  </div>
+                </article>
+                <article class="rawnaq-cs-card is-load-hidden" tabindex="0" role="button"
+                  data-project-id="post-4" data-project-slug="lab-annex"
+                  data-sector="Civic" data-year="2025" data-services="Architecture,Lab Planning" data-link=""
+                  data-project='{"id":"post-4","postId":4,"slug":"lab-annex","title":"Summit Laboratory Annex","image":"https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80","gallery":["https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80"],"sector":"Civic","size":"42,000 sq ft","budget":"$22M","year":"2025","client":"University Facilities","services":["Architecture","Lab Planning"],"detail":"Flexible wet-lab annex designed for future reconfiguration.","link":""}'>
+                  <div class="rawnaq-cs-media">
+                    <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80" alt="" loading="lazy" />
+                    <span class="rawnaq-cs-badge">Civic</span>
+                  </div>
+                  <div class="rawnaq-cs-body">
+                    <h3 class="rawnaq-cs-title">Summit Laboratory Annex</h3>
+                    <p class="rawnaq-cs-excerpt">Flexible wet-lab annex.</p>
+                    <ul class="rawnaq-cs-meta"><li><span>Year</span> 2025</li><li><span>Scope</span> 42,000 sq ft</li></ul>
+                    <span class="rawnaq-cs-view">View case study</span>
+                  </div>
+                </article>
+              </div>
+              <div class="rawnaq-cs-load-more-wrap">
+                <button type="button" class="rawnaq-cs-load-more" data-load-chunk="2">Load more projects</button>
+              </div>
+              <div class="rawnaq-cs-modal" hidden>
+                <div class="rawnaq-cs-modal-backdrop" data-cs-close></div>
+                <div class="rawnaq-cs-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cs-demo-modal-title">
+                  <button type="button" class="rawnaq-cs-modal-close" data-cs-close aria-label="Close">&times;</button>
+                  <div class="rawnaq-cs-modal-media">
+                    <div class="rawnaq-cs-slider">
+                      <button type="button" class="rawnaq-cs-slider-prev" data-cs-prev aria-label="Previous">&#8249;</button>
+                      <div class="rawnaq-cs-slider-track"></div>
+                      <button type="button" class="rawnaq-cs-slider-next" data-cs-next aria-label="Next">&#8250;</button>
+                      <div class="rawnaq-cs-slider-dots"></div>
+                    </div>
+                  </div>
+                  <div class="rawnaq-cs-modal-content">
+                    <p class="rawnaq-cs-modal-sector"></p>
+                    <h3 class="rawnaq-cs-modal-title" id="cs-demo-modal-title"></h3>
+                    <ul class="rawnaq-cs-modal-meta"></ul>
+                    <div class="rawnaq-cs-modal-services"></div>
+                    <div class="rawnaq-cs-modal-detail"></div>
+                    <p class="rawnaq-cs-modal-link-wrap" hidden>
+                      <a class="rawnaq-cs-modal-link" href="#" target="_blank" rel="noopener noreferrer">View full page</a>
+                    </p>
+                    <p class="rawnaq-cs-modal-discuss-wrap">
+                      <button type="button" class="rawnaq-cs-discuss" data-cs-discuss>Discuss this project</button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="note">Try sector + year chips together. Timeline / Story sync adds the accent ring without stealing scroll.</p>
+          </div>
+        </section>
+
+        <!-- 8. Smart Form -->
+        <section class="module" id="form">
+          <p class="mod-kicker">08 · Conversion</p>
+          <h2 class="mod-title">Smart Form</h2>
+          <p class="mod-desc">Lead capture UI is live. Discuss from a case study prefills the message — or use the chip below.</p>
+          <div class="try-bar">
+            <button type="button" class="try-chip" data-demo-action="form">Prefill message</button>
+            <button type="button" class="try-chip" data-demo-action="open-modal">Open case → Discuss</button>
+          </div>
+          <div class="panel">
+            <div class="rawnaq-smart-form" data-form-id="demo-sf">
+              <form class="rawnaq-smart-form-el" method="post" novalidate data-form-id="demo-sf"
+                    data-sf='{"afterSubmit":"message","successMessage":"Thanks — this static demo does not submit to WordPress.","errorMessage":"Check required fields.","submitLabel":"Send inquiry","multiStep":false,"fields":[]}'
+                    data-step-index="0">
+                <div class="rawnaq-smart-form-fields rawnaq-sf-step-panel is-active" data-step="1">
+                  <div class="rawnaq-sf-field" data-field-id="name" data-width="50" data-type="text">
+                    <label class="rawnaq-sf-label" for="sf-name">Name <span class="req">*</span></label>
+                    <input class="rawnaq-sf-input" id="sf-name" name="sf_name" type="text" required data-sf-type="text" />
+                    <p class="rawnaq-sf-error" hidden>Required</p>
+                  </div>
+                  <div class="rawnaq-sf-field" data-field-id="email" data-width="50" data-type="email">
+                    <label class="rawnaq-sf-label" for="sf-email">Email</label>
+                    <input class="rawnaq-sf-input" id="sf-email" name="sf_email" type="email" data-sf-type="email" />
+                    <p class="rawnaq-sf-error" hidden>Invalid</p>
+                  </div>
+                  <div class="rawnaq-sf-field" data-field-id="message" data-width="100" data-type="textarea">
+                    <label class="rawnaq-sf-label" for="sf-message">Message</label>
+                    <textarea class="rawnaq-sf-textarea" id="sf-message" name="sf_message" rows="4" data-sf-type="textarea" placeholder="Discuss a project — or type freely"></textarea>
+                    <p class="rawnaq-sf-error" hidden></p>
+                  </div>
+                  <input type="hidden" name="sf_project" value="" />
+                  <input type="hidden" name="sf_project_id" value="" />
+                </div>
+                <input class="rawnaq-sf-hp" type="text" name="rawnaq_hp" value="" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <input type="hidden" name="rawnaq_ts" value="0" />
+                <div class="rawnaq-sf-actions">
+                  <button type="submit" class="rawnaq-sf-submit">
+                    <span class="rawnaq-sf-spinner" aria-hidden="true"></span>
+                    <span class="rawnaq-sf-submit-label">Send inquiry</span>
+                  </button>
+                </div>
+                <div class="rawnaq-sf-status" role="status"><span class="rawnaq-sf-status-text"></span></div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. Dock note -->
+        <section class="module" id="dock">
+          <p class="mod-kicker">09 · Contact</p>
+          <h2 class="mod-title">Floating Dock</h2>
+          <p class="mod-desc">WhatsApp Contact Mode is fixed bottom-right. If Discuss finds no form fields, it falls back here via <code>rawnaqDockOpen</code>.</p>
+          <div class="try-bar">
+            <button type="button" class="try-chip" data-demo-action="dock">Open Dock with message</button>
+          </div>
+          <div class="panel">
+            <p style="margin:0;color:var(--muted)">Tap the green FAB, or use the chip above for a one-shot demo message. Number is a placeholder.</p>
+          </div>
+        </section>
+
+        <!-- 10. Progress TOC already in aside; mention -->
+        <section class="module" id="toc">
+          <p class="mod-kicker">10 · Reading UX</p>
+          <h2 class="mod-title">Scroll Progress + TOC</h2>
+          <p class="mod-desc">The sticky sidebar and top progress bar on this page are the live Scroll Progress + TOC module — auto-built from these <code>h2</code> headings.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p><strong>Rawnaq</strong></p>
+    <p>Static showcase · open <code>assets/demo/index.html</code> in a browser · WordPress plugin v1.17+</p>
+  </footer>
+
+  <!-- Floating Dock (WhatsApp) -->
+  <nav class="rawnaq-dock-container pos-right rawnaq-whatsapp-dock-mode"
+       aria-label="Floating dock"
+       data-magnify="0" data-max-scale="1.6" data-base-size="56" data-track-clicks="0"
+       data-wa-dock='{"whatsappMode":true,"primaryChannel":"whatsapp","agents":[{"name":"Rawnaq Desk","role":"Demo","number":"15551234567","avatar":"","msg":"Hi — I am on the {pageTitle} demo ({url})."}],"defaultMsg":"Hello from the Rawnaq demo.","pageContext":{"pageTitle":"Rawnaq Module Showcase","url":"assets/demo/index.html","siteTitle":"Rawnaq"},"secCall":"","secMessenger":"","secEmail":"","secTelegram":"","timezone":"UTC+6","schedule":{},"offHoursBehavior":"offline_badge","desktopAction":"web","qrFallback":false,"triggerDelay":0,"triggerScroll":0,"greetingText":"Questions about a module?","trackClicks":false}'></nav>
+
+  <script src="../js/diagram-export.js"></script>
+  <script src="../js/hub-diagram.js"></script>
+  <script src="../js/tilt-card.js"></script>
+  <script src="../js/scroll-timeline.js"></script>
+  <script src="../js/qrcode.min.js"></script>
+  <script src="../js/floating-dock.js"></script>
+  <script src="../js/flow-chart.js"></script>
+  <script src="../js/scroll-progress-toc.js"></script>
+  <script src="../js/bento-grid.js"></script>
+  <script src="../js/scroll-story.js"></script>
+  <script src="../js/smart-form.js"></script>
+  <script src="../js/case-study-grid.js"></script>
+  <script src="../js/rawnaq-bridge.js"></script>
+  <script src="demo-enhance.js"></script>
+  <script>
+    // Soften Smart Form AJAX on static demo — show friendly status instead of failing hard.
+    (function () {
+      var form = document.querySelector('.rawnaq-smart-form form');
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        if (window.rawnaqSmartForm && window.rawnaqSmartForm.ajaxUrl) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var status = form.querySelector('.rawnaq-sf-status-text');
+        if (status) {
+          status.textContent = 'Nice — form UI works. Connect WordPress for real email / WhatsApp delivery.';
+        }
+        var box = form.querySelector('.rawnaq-sf-status');
+        if (box) box.classList.add('is-ok');
+      }, true);
+    })();
+  </script>
+</body>
+</html>

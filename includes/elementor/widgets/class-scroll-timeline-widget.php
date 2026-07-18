@@ -11,7 +11,7 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
     public function get_categories() { return [ 'rawnaq' ]; }
 
     public function get_style_depends()  { return [ 'rawnaq-scroll-timeline', 'rawnaq-fonts', 'dashicons' ]; }
-    public function get_script_depends() { return [ 'rawnaq-scroll-timeline' ]; }
+    public function get_script_depends() { return [ 'rawnaq-scroll-timeline', 'rawnaq-bridge' ]; }
 
     protected function register_controls() {
         $this->start_controls_section( 's_content', [
@@ -89,6 +89,19 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             ],
         ] );
 
+        $r->add_control( 'project_id', [
+            'label'       => esc_html__( 'Case-Study project ID', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => '',
+            'description' => esc_html__( 'Match Case-Study card id (e.g. post-123).', 'rawnaq' ),
+        ] );
+
+        $r->add_control( 'project_slug', [
+            'label'   => esc_html__( 'Case-Study project slug', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::TEXT,
+            'default' => '',
+        ] );
+
         $this->add_control( 'source', [
             'label'   => esc_html__( 'Steps Source', 'rawnaq' ),
             'type'    => \Elementor\Controls_Manager::SELECT,
@@ -97,6 +110,36 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
                 'manual' => esc_html__( 'Manual steps', 'rawnaq' ),
                 'query'  => esc_html__( 'Posts / CPT query', 'rawnaq' ),
             ],
+        ] );
+
+        $preset_options = [ '' => esc_html__( '— Choose a preset —', 'rawnaq' ) ];
+        if ( function_exists( 'rawnaq_timeline_presets' ) ) {
+            foreach ( rawnaq_timeline_presets() as $key => $pack ) {
+                $preset_options[ $key ] = $pack['label'] ?? $key;
+            }
+        }
+
+        $this->add_control( 'agency_preset', [
+            'label'       => esc_html__( 'Agency Preset', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::SELECT,
+            'default'     => '',
+            'options'     => $preset_options,
+            'condition'   => [ 'source' => 'manual' ],
+            'description' => esc_html__( 'Seed steps for Company Story, Changelog, or Case Study. Apply replaces the Steps repeater.', 'rawnaq' ),
+        ] );
+
+        $this->add_control( 'apply_agency_preset', [
+            'type'        => \Elementor\Controls_Manager::BUTTON,
+            'label'       => esc_html__( 'Apply Preset', 'rawnaq' ),
+            'text'        => esc_html__( 'Apply Preset to Steps', 'rawnaq' ),
+            'button_type' => 'success',
+            'event'       => 'rawnaq:timeline:applyPreset',
+            'separator'   => 'after',
+            'condition'   => [
+                'source'         => 'manual',
+                'agency_preset!' => '',
+            ],
+            'description' => esc_html__( 'Replaces timeline steps with the selected preset.', 'rawnaq' ),
         ] );
 
         $this->add_control( 'steps', [
@@ -593,8 +636,15 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
                 if ( empty( $cta_link['url'] ) && ! empty( $step['ctaLink'] ) ) {
                     $cta_link = [ 'url' => $step['ctaLink'] ];
                 }
+                $project_id = (string) ( $step['project_id'] ?? $step['projectId'] ?? '' );
+                if ( ! $project_id && ! empty( $step['post_id'] ) ) {
+                    $project_id = 'post-' . absint( $step['post_id'] );
+                }
+                $project_slug = (string) ( $step['project_slug'] ?? $step['projectSlug'] ?? '' );
                 ?>
-                <div class="rawnaq-timeline-item <?php echo esc_attr( $side ); ?>">
+                <div class="rawnaq-timeline-item <?php echo esc_attr( $side ); ?>"
+                    <?php if ( $project_id ) : ?>data-project-id="<?php echo esc_attr( $project_id ); ?>"<?php endif; ?>
+                    <?php if ( $project_slug ) : ?>data-project-slug="<?php echo esc_attr( $project_slug ); ?>"<?php endif; ?>>
                     <span class="rawnaq-timeline-bullet">
                         <?php if ( $show_numbers ) : ?>
                             <span class="num"><?php echo esc_html( $num ); ?></span>

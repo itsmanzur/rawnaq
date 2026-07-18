@@ -29,6 +29,7 @@ class Rawnaq_Gutenberg_Loader {
                 'wp-element',
                 'wp-components',
                 'wp-block-editor',
+                'wp-data',
                 'rawnaq-hub-diagram',
                 'rawnaq-flow-chart',
                 'rawnaq-scroll-progress-toc',
@@ -47,6 +48,17 @@ class Rawnaq_Gutenberg_Loader {
                 }
             }
             wp_localize_script( 'rawnaq-gutenberg-editor', 'rawnaqBentoPresets', $bento_presets );
+        }
+
+        if ( function_exists( 'rawnaq_timeline_preset_for_gutenberg' ) ) {
+            $tl_presets = [];
+            foreach ( array_keys( rawnaq_timeline_presets() ) as $key ) {
+                $pack = rawnaq_timeline_preset_for_gutenberg( $key );
+                if ( $pack ) {
+                    $tl_presets[ $key ] = $pack;
+                }
+            }
+            wp_localize_script( 'rawnaq-gutenberg-editor', 'rawnaqTimelinePresets', $tl_presets );
         }
 
         // 1. Hub Diagram Block
@@ -211,6 +223,8 @@ class Rawnaq_Gutenberg_Loader {
                     ],
                     'offHoursBehavior'  => [ 'type' => 'string', 'default' => 'offline_badge' ],
                     'offHoursRedirect'  => [ 'type' => 'string', 'default' => '' ],
+                    'offHoursEmail'     => [ 'type' => 'string', 'default' => '' ],
+                    'offHoursFormNote'  => [ 'type' => 'string', 'default' => 'We are offline right now. Leave a message and we will reply by email.' ],
                     'qrFallback'        => [ 'type' => 'boolean', 'default' => true ],
                     'desktopAction'     => [ 'type' => 'string', 'default' => 'choice' ],
                     'triggerDelay'      => [ 'type' => 'number', 'default' => 0 ],
@@ -239,9 +253,22 @@ class Rawnaq_Gutenberg_Loader {
                     'connector' => [ 'type' => 'string', 'default' => 'curved' ],
                     'direction' => [ 'type' => 'string', 'default' => 'tb' ],
                     'shape'     => [ 'type' => 'string', 'default' => 'rect' ],
+                    'avatarShape' => [ 'type' => 'string', 'default' => 'rounded' ],
+                    'avatarSize' => [ 'type' => 'number', 'default' => 30 ],
+                    'avatarGap' => [ 'type' => 'number', 'default' => 8 ],
+                    'avatarBg' => [ 'type' => 'string', 'default' => '#FEF3C7' ],
+                    'avatarIconColor' => [ 'type' => 'string', 'default' => '#92400E' ],
+                    'avatarIconSize' => [ 'type' => 'number', 'default' => 14 ],
+                    'avatarBorderColor' => [ 'type' => 'string', 'default' => '' ],
+                    'avatarBorderWidth' => [ 'type' => 'number', 'default' => 0 ],
+                    'avatarObjectFit' => [ 'type' => 'string', 'default' => 'cover' ],
+                    'avatarShadow' => [ 'type' => 'boolean', 'default' => false ],
+                    'dataSource'=> [ 'type' => 'string', 'default' => 'manual' ],
+                    'usersRole' => [ 'type' => 'string', 'default' => '' ],
+                    'usersNumber'=> [ 'type' => 'number', 'default' => 20 ],
                     'nodesJson' => [
                         'type'    => 'string',
-                        'default' => '[{"id":"ceo","parent":"","title":"Founder / CEO","role":"Leadership","icon":"★","detail":"Leads the company.","link":"","decision":false,"x":40,"y":5},{"id":"eng","parent":"ceo","title":"Engineering","role":"Product","icon":"⚙","detail":"Engineering roadmap.","link":"","decision":false,"x":15,"y":40},{"id":"ops","parent":"ceo","title":"Operations","role":"Delivery","icon":"◆","detail":"Project delivery.","link":"","decision":false,"x":40,"y":40},{"id":"e1","parent":"eng","title":"Frontend","role":"Team","icon":"▪","detail":"UI work.","link":"","decision":false,"x":5,"y":75}]',
+                        'default' => '[{"id":"ceo","parent":"","title":"Founder / CEO","role":"Leadership","icon":"★","image":"","detail":"Leads the company.","link":"","decision":false,"x":40,"y":5},{"id":"eng","parent":"ceo","title":"Engineering","role":"Product","icon":"⚙","image":"","detail":"Engineering roadmap.","link":"","decision":false,"x":15,"y":40},{"id":"ops","parent":"ceo","title":"Operations","role":"Delivery","icon":"◆","image":"","detail":"Project delivery.","link":"","decision":false,"x":40,"y":40},{"id":"e1","parent":"eng","title":"Frontend","role":"Team","icon":"▪","image":"","detail":"UI work.","link":"","decision":false,"x":5,"y":75}]',
                     ],
                 ],
             ] );
@@ -270,12 +297,38 @@ class Rawnaq_Gutenberg_Loader {
                     'collapseSubs'   => [ 'type' => 'boolean', 'default' => false ],
                     'showSearch'     => [ 'type' => 'boolean', 'default' => false ],
                     'dockAttach'     => [ 'type' => 'boolean', 'default' => false ],
+                    'syncTimeline'   => [ 'type' => 'string', 'default' => '' ],
+                    'ringSize'       => [ 'type' => 'number', 'default' => 56 ],
                 ],
             ] );
         }
 
-        // 7. Bento Grid Block
+        // 7. Bento Grid Block (+ cell child for InnerBlocks)
         if ( rawnaq_is_module_enabled( 'bento-grid' ) ) {
+            register_block_type( 'rawnaq/bento-cell', [
+                'editor_script' => 'rawnaq-gutenberg-editor',
+                'editor_style'  => 'rawnaq-bento-grid',
+                'style'         => 'rawnaq-bento-grid',
+                'attributes'    => [
+                    'cellType'   => [ 'type' => 'string', 'default' => 'text' ],
+                    'colSpan'    => [ 'type' => 'number', 'default' => 1 ],
+                    'rowSpan'    => [ 'type' => 'number', 'default' => 1 ],
+                    'colMd'      => [ 'type' => 'number', 'default' => 0 ],
+                    'rowMd'      => [ 'type' => 'number', 'default' => 0 ],
+                    'colSm'      => [ 'type' => 'number', 'default' => 0 ],
+                    'rowSm'      => [ 'type' => 'number', 'default' => 0 ],
+                    'orderDesk'  => [ 'type' => 'number', 'default' => 0 ],
+                    'orderMd'    => [ 'type' => 'number', 'default' => 0 ],
+                    'orderSm'    => [ 'type' => 'number', 'default' => 0 ],
+                    'align'      => [ 'type' => 'string', 'default' => '' ],
+                    'tag'        => [ 'type' => 'string', 'default' => '' ],
+                    'link'       => [ 'type' => 'string', 'default' => '' ],
+                    'mediaUrl'   => [ 'type' => 'string', 'default' => '' ],
+                    'tagBg'      => [ 'type' => 'string', 'default' => '' ],
+                    'tagColor'   => [ 'type' => 'string', 'default' => '' ],
+                ],
+            ] );
+
             register_block_type( 'rawnaq/bento-grid', [
                 'editor_script'   => 'rawnaq-gutenberg-editor',
                 'editor_style'    => 'rawnaq-bento-grid',
@@ -312,6 +365,147 @@ class Rawnaq_Gutenberg_Loader {
                 ],
             ] );
         }
+
+        // 8. Scroll Story Chapters
+        if ( rawnaq_is_module_enabled( 'scroll-story' ) ) {
+            register_block_type( 'rawnaq/scroll-story', [
+                'editor_script'   => 'rawnaq-gutenberg-editor',
+                'editor_style'    => 'rawnaq-scroll-story',
+                'style'           => 'rawnaq-scroll-story',
+                'render_callback' => [ $this, 'render_scroll_story_block' ],
+                'attributes'      => [
+                    'mediaSide'    => [ 'type' => 'string', 'default' => 'left' ],
+                    'accent'       => [ 'type' => 'string', 'default' => '#0f766e' ],
+                    'chaptersJson' => [
+                        'type'    => 'string',
+                        'default' => '[{"title":"The challenge","body":"Set the scene. What problem or opportunity opens the story?","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The approach","body":"Explain the turning point — method, insight, or decision.","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The outcome","body":"Close with the result readers should remember.","image":"","caption":"","ctaText":"","ctaUrl":""}]',
+                    ],
+                ],
+            ] );
+        }
+
+        // 9. Smart Form
+        if ( rawnaq_is_module_enabled( 'smart-form' ) ) {
+            register_block_type( 'rawnaq/smart-form', [
+                'editor_script'   => 'rawnaq-gutenberg-editor',
+                'editor_style'    => 'rawnaq-smart-form',
+                'style'           => 'rawnaq-smart-form',
+                'render_callback' => [ $this, 'render_smart_form_block' ],
+                'attributes'      => [
+                    'fieldsJson'         => [
+                        'type'    => 'string',
+                        'default' => '[{"id":"name","type":"text","label":"Name","placeholder":"","required":true,"options":"","width":"50","step":1},{"id":"email","type":"email","label":"Email","placeholder":"","required":true,"options":"","width":"50","step":1},{"id":"phone","type":"phone","label":"Phone","placeholder":"","required":false,"options":"","width":"100","step":1},{"id":"message","type":"textarea","label":"Message","placeholder":"","required":true,"options":"","width":"100","step":1}]',
+                    ],
+                    'deliveryEmail'      => [ 'type' => 'boolean', 'default' => true ],
+                    'deliveryWhatsapp'   => [ 'type' => 'boolean', 'default' => true ],
+                    'emailTo'            => [ 'type' => 'string', 'default' => '' ],
+                    'emailSubject'       => [ 'type' => 'string', 'default' => 'New website inquiry' ],
+                    'waNumber'           => [ 'type' => 'string', 'default' => '' ],
+                    'waTemplate'         => [ 'type' => 'string', 'default' => "New inquiry:\nName: {name}\nPhone: {phone}\nEmail: {email}\nMessage: {message}\nPage: {pageTitle}\nURL: {url}" ],
+                    'afterSubmit'        => [ 'type' => 'string', 'default' => 'message' ],
+                    'redirectUrl'        => [ 'type' => 'string', 'default' => '' ],
+                    'submitLabel'        => [ 'type' => 'string', 'default' => 'Send message' ],
+                    'successMessage'     => [ 'type' => 'string', 'default' => 'Message sent successfully.' ],
+                    'errorMessage'       => [ 'type' => 'string', 'default' => 'Please fill in the required fields correctly.' ],
+                    'consentEnabled'     => [ 'type' => 'boolean', 'default' => false ],
+                    'consentText'        => [ 'type' => 'string', 'default' => 'I agree to the processing of my data.' ],
+                    'logSubmissions'     => [ 'type' => 'boolean', 'default' => true ],
+                    'recaptchaEnabled'   => [ 'type' => 'boolean', 'default' => false ],
+                    'webhookEnabled'     => [ 'type' => 'boolean', 'default' => false ],
+                    'webhookUrl'         => [ 'type' => 'string', 'default' => '' ],
+                    'buttonFullWidth'    => [ 'type' => 'boolean', 'default' => false ],
+                    'accent'             => [ 'type' => 'string', 'default' => '#fbbf24' ],
+                    'accentDeep'         => [ 'type' => 'string', 'default' => '#0f766e' ],
+                    'buttonText'         => [ 'type' => 'string', 'default' => '#92400e' ],
+                    'labelColor'         => [ 'type' => 'string', 'default' => '' ],
+                    'inputBg'            => [ 'type' => 'string', 'default' => '' ],
+                    'inputBorder'        => [ 'type' => 'string', 'default' => '' ],
+                ],
+            ] );
+        }
+
+        // 10. Case-Study Grid (+ card child for InnerBlocks)
+        if ( rawnaq_is_module_enabled( 'case-study-grid' ) ) {
+            $cs_default = wp_json_encode(
+                array_map(
+                    static function ( $p ) {
+                        return [
+                            'title'    => $p['title'],
+                            'image'    => '',
+                            'gallery'  => [],
+                            'sector'   => $p['sector'],
+                            'size'     => $p['size'],
+                            'budget'   => $p['budget'],
+                            'year'     => $p['year'],
+                            'client'   => $p['client'],
+                            'services' => $p['services'],
+                            'excerpt'  => $p['excerpt'],
+                            'detail'   => $p['detail'],
+                            'link'     => '',
+                            'featured' => ! empty( $p['featured'] ),
+                            'col'      => $p['col'] ?? 1,
+                            'row'      => $p['row'] ?? 1,
+                        ];
+                    },
+                    function_exists( 'rawnaq_case_study_sample_projects' ) ? rawnaq_case_study_sample_projects() : []
+                )
+            );
+
+            register_block_type( 'rawnaq/case-study-card', [
+                'editor_script' => 'rawnaq-gutenberg-editor',
+                'editor_style'  => 'rawnaq-case-study-grid',
+                'attributes'    => [
+                    'title'       => [ 'type' => 'string', 'default' => 'Project' ],
+                    'image'       => [ 'type' => 'string', 'default' => '' ],
+                    'galleryJson' => [ 'type' => 'string', 'default' => '[]' ],
+                    'projectId'   => [ 'type' => 'string', 'default' => '' ],
+                    'projectSlug' => [ 'type' => 'string', 'default' => '' ],
+                    'sector'      => [ 'type' => 'string', 'default' => '' ],
+                    'size'        => [ 'type' => 'string', 'default' => '' ],
+                    'budget'      => [ 'type' => 'string', 'default' => '' ],
+                    'year'        => [ 'type' => 'string', 'default' => '' ],
+                    'client'      => [ 'type' => 'string', 'default' => '' ],
+                    'services'    => [ 'type' => 'string', 'default' => '' ],
+                    'excerpt'     => [ 'type' => 'string', 'default' => '' ],
+                    'detail'      => [ 'type' => 'string', 'default' => '' ],
+                    'link'        => [ 'type' => 'string', 'default' => '' ],
+                    'featured'    => [ 'type' => 'boolean', 'default' => false ],
+                    'col'         => [ 'type' => 'number', 'default' => 1 ],
+                    'row'         => [ 'type' => 'number', 'default' => 1 ],
+                ],
+            ] );
+
+            register_block_type( 'rawnaq/case-study-grid', [
+                'editor_script'   => 'rawnaq-gutenberg-editor',
+                'editor_style'    => 'rawnaq-case-study-grid',
+                'style'           => 'rawnaq-case-study-grid',
+                'render_callback' => [ $this, 'render_case_study_grid_block' ],
+                'attributes'      => [
+                    'source'         => [ 'type' => 'string', 'default' => 'manual' ],
+                    'projectsJson'   => [ 'type' => 'string', 'default' => $cs_default ?: '[]' ],
+                    'queryNumber'    => [ 'type' => 'number', 'default' => 12 ],
+                    'queryOrderby'   => [ 'type' => 'string', 'default' => 'date' ],
+                    'queryOrder'     => [ 'type' => 'string', 'default' => 'DESC' ],
+                    'querySector'    => [ 'type' => 'string', 'default' => '' ],
+                    'layout'         => [ 'type' => 'string', 'default' => 'bento' ],
+                    'columns'        => [ 'type' => 'number', 'default' => 3 ],
+                    'showFilter'     => [ 'type' => 'boolean', 'default' => true ],
+                    'filterYear'     => [ 'type' => 'boolean', 'default' => true ],
+                    'filterService'  => [ 'type' => 'boolean', 'default' => true ],
+                    'sort'           => [ 'type' => 'string', 'default' => 'custom' ],
+                    'hideBudget'     => [ 'type' => 'boolean', 'default' => false ],
+                    'hideClient'     => [ 'type' => 'boolean', 'default' => false ],
+                    'clickAction'    => [ 'type' => 'string', 'default' => 'modal' ],
+                    'discussTarget'  => [ 'type' => 'string', 'default' => 'auto' ],
+                    'initialVisible' => [ 'type' => 'number', 'default' => 0 ],
+                    'loadChunk'      => [ 'type' => 'number', 'default' => 6 ],
+                    'accent'         => [ 'type' => 'string', 'default' => '#fbbf24' ],
+                    'cardBg'         => [ 'type' => 'string', 'default' => '#ffffff' ],
+                    'cardBorder'     => [ 'type' => 'string', 'default' => '#d7e2dc' ],
+                    'radius'         => [ 'type' => 'number', 'default' => 18 ],
+                ],
+            ] );
+        }
     }
 
     public function enqueue_editor_assets() {
@@ -329,9 +523,16 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_style( 'rawnaq-flow-chart' );
         wp_enqueue_style( 'rawnaq-scroll-progress-toc' );
         wp_enqueue_style( 'rawnaq-bento-grid' );
+        wp_enqueue_style( 'rawnaq-scroll-story' );
+        wp_enqueue_style( 'rawnaq-smart-form' );
+        wp_enqueue_style( 'rawnaq-case-study-grid' );
         wp_enqueue_script( 'rawnaq-hub-diagram' );
         wp_enqueue_script( 'rawnaq-flow-chart' );
         wp_enqueue_script( 'rawnaq-bento-grid' );
+        wp_enqueue_script( 'rawnaq-scroll-story' );
+        wp_enqueue_script( 'rawnaq-smart-form' );
+        wp_enqueue_script( 'rawnaq-case-study-grid' );
+        wp_enqueue_script( 'rawnaq-bridge' );
     }
 
     // ── Render Callbacks ──
@@ -375,6 +576,7 @@ class Rawnaq_Gutenberg_Loader {
             'centerStyle'    => $attributes['centerStyle'],
             'layoutFlow'     => $attributes['layoutFlow'],
             'importJson'     => $attributes['importJson'],
+            'export'         => ! isset( $attributes['showExport'] ) || ! empty( $attributes['showExport'] ),
             'top'            => $map( $top ),
             'bottom'         => $map( $bot ),
         ];
@@ -502,6 +704,7 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_style( 'rawnaq-scroll-timeline' );
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_script( 'rawnaq-scroll-timeline' );
+        wp_enqueue_script( 'rawnaq-bridge' );
 
         $source = sanitize_key( $attributes['source'] ?? 'manual' );
         $block_id = ! empty( $attributes['anchor'] )
@@ -673,6 +876,8 @@ class Rawnaq_Gutenberg_Loader {
             'scheduleJson'     => '{}',
             'offHoursBehavior' => 'offline_badge',
             'offHoursRedirect' => '',
+            'offHoursEmail'    => '',
+            'offHoursFormNote' => '',
             'qrFallback'       => true,
             'desktopAction'    => 'choice',
             'triggerDelay'     => 0,
@@ -761,7 +966,7 @@ class Rawnaq_Gutenberg_Loader {
                     $agents[] = [
                         'name'   => sanitize_text_field( $agent['name'] ?? '' ),
                         'role'   => sanitize_text_field( $agent['role'] ?? '' ),
-                        'number' => sanitize_text_field( $agent['number'] ?? '' ),
+                        'number' => sanitize_text_field( $agent['number'] ?? '' ) ?: ( function_exists( 'rawnaq_get_default_wa_number' ) ? rawnaq_get_default_wa_number() : '' ),
                         'avatar' => ! empty( $agent['avatar'] ) ? esc_url_raw( $agent['avatar'] ) : '',
                         'msg'    => sanitize_textarea_field( $agent['msg'] ?? '' ),
                     ];
@@ -785,6 +990,8 @@ class Rawnaq_Gutenberg_Loader {
                 'schedule'         => $schedule,
                 'offHoursBehavior' => sanitize_key( $a['offHoursBehavior'] ?: 'offline_badge' ),
                 'offHoursRedirect' => esc_url_raw( $a['offHoursRedirect'] ),
+                'offHoursEmail'    => sanitize_email( $a['offHoursEmail'] ?? '' ),
+                'offHoursFormNote' => sanitize_textarea_field( $a['offHoursFormNote'] ?? '' ),
                 'qrFallback'       => ( $a['desktopAction'] ?? 'choice' ) !== 'web',
                 'desktopAction'    => in_array( ( $a['desktopAction'] ?? 'choice' ), [ 'choice', 'web', 'qr' ], true )
                     ? ( $a['desktopAction'] ?? 'choice' )
@@ -864,6 +1071,45 @@ class Rawnaq_Gutenberg_Loader {
         if ( ! in_array( $shape, [ 'rect', 'circle', 'hex' ], true ) ) {
             $shape = 'rect';
         }
+
+        $avatar_shape = sanitize_key( $attributes['avatarShape'] ?? 'rounded' );
+        if ( ! in_array( $avatar_shape, [ 'rounded', 'circle', 'square' ], true ) ) {
+            $avatar_shape = 'rounded';
+        }
+
+        $source = sanitize_key( $attributes['dataSource'] ?? 'manual' );
+        if ( 'wp_users' === $source && function_exists( 'rawnaq_flow_nodes_from_users' ) ) {
+            $nodes = rawnaq_flow_nodes_from_users( [
+                'number' => absint( $attributes['usersNumber'] ?? 20 ),
+                'role'   => sanitize_key( $attributes['usersRole'] ?? '' ),
+            ] );
+            if ( 'freeform' === $mode ) {
+                $mode = 'org';
+            }
+            // DFS cycle break.
+            $by_id = [];
+            foreach ( $nodes as $n ) {
+                $by_id[ $n['id'] ] = $n;
+            }
+            foreach ( $nodes as &$n ) {
+                $parent = $n['parent'] ?? '';
+                if ( '' === $parent || ! isset( $by_id[ $parent ] ) ) {
+                    $n['parent'] = '';
+                    continue;
+                }
+                $walk = [ $n['id'] => true ];
+                $cur  = $parent;
+                while ( '' !== $cur && isset( $by_id[ $cur ] ) ) {
+                    if ( isset( $walk[ $cur ] ) ) {
+                        $n['parent'] = '';
+                        break;
+                    }
+                    $walk[ $cur ] = true;
+                    $cur = $by_id[ $cur ]['parent'] ?? '';
+                }
+            }
+            unset( $n );
+        } else {
         $raw_nodes = json_decode( $attributes['nodesJson'] ?? '[]', true );
         if ( ! is_array( $raw_nodes ) ) {
             $raw_nodes = [];
@@ -894,6 +1140,7 @@ class Rawnaq_Gutenberg_Loader {
                 'title'    => sanitize_text_field( $item['title'] ?? '' ),
                 'role'     => sanitize_text_field( $item['role'] ?? '' ),
                 'icon'     => sanitize_text_field( $item['icon'] ?? '' ),
+                'image'    => ! empty( $item['image'] ) ? esc_url_raw( $item['image'] ) : ( ! empty( $item['imageUrl'] ) ? esc_url_raw( $item['imageUrl'] ) : '' ),
                 'detail'   => sanitize_textarea_field( $item['detail'] ?? '' ),
                 'link'     => ! empty( $item['link'] ) ? esc_url_raw( $item['link'] ) : '',
                 'decision' => ! empty( $item['decision'] ),
@@ -923,18 +1170,49 @@ class Rawnaq_Gutenberg_Loader {
             }
         }
         unset( $n );
+        } // end manual nodes
 
         $cfg = [
-            'mode'      => $mode,
-            'direction' => $dir,
-            'shape'     => $shape,
-            'connector' => $conn,
-            'zoom'      => true,
-            'nodes'     => $nodes,
+            'mode'        => $mode,
+            'direction'   => $dir,
+            'shape'       => $shape,
+            'connector'   => $conn,
+            'avatarShape' => $avatar_shape,
+            'zoom'        => true,
+            'export'      => ! isset( $attributes['showExport'] ) || ! empty( $attributes['showExport'] ),
+            'nodes'       => $nodes,
         ];
+
+        $avatar_size   = max( 24, min( 96, absint( $attributes['avatarSize'] ?? 30 ) ) );
+        $avatar_gap    = max( 0, min( 24, absint( $attributes['avatarGap'] ?? 8 ) ) );
+        $avatar_icon_s = max( 10, min( 48, absint( $attributes['avatarIconSize'] ?? 14 ) ) );
+        $avatar_bw     = max( 0, min( 8, absint( $attributes['avatarBorderWidth'] ?? 0 ) ) );
+        $avatar_fit    = sanitize_key( $attributes['avatarObjectFit'] ?? 'cover' );
+        if ( ! in_array( $avatar_fit, [ 'cover', 'contain', 'fill' ], true ) ) {
+            $avatar_fit = 'cover';
+        }
+        $avatar_bg     = sanitize_hex_color( $attributes['avatarBg'] ?? '' ) ?: '#FEF3C7';
+        $avatar_icon_c = sanitize_hex_color( $attributes['avatarIconColor'] ?? '' ) ?: '#92400E';
+        $avatar_border = sanitize_hex_color( $attributes['avatarBorderColor'] ?? '' ) ?: 'transparent';
+        $has_shadow    = ! empty( $attributes['avatarShadow'] );
+
+        $style = sprintf(
+            '--fc-avatar:%dpx;--fc-avatar-gap:%dpx;--fc-avatar-bg:%s;--fc-avatar-icon:%s;--fc-avatar-icon-size:%dpx;--fc-avatar-border:%s;--fc-avatar-border-w:%dpx;--fc-avatar-fit:%s;',
+            $avatar_size,
+            $avatar_gap,
+            $avatar_bg,
+            $avatar_icon_c,
+            $avatar_icon_s,
+            $avatar_border,
+            $avatar_bw,
+            $avatar_fit
+        );
+
         ob_start();
         ?>
-        <div class="rawnaq-flow-chart" data-flow="<?php echo esc_attr( rawurlencode( wp_json_encode( $cfg ) ) ); ?>">
+        <div class="rawnaq-flow-chart avatar-<?php echo esc_attr( $avatar_shape ); ?><?php echo $has_shadow ? ' has-avatar-shadow' : ''; ?>"
+             style="<?php echo esc_attr( $style ); ?>"
+             data-flow="<?php echo esc_attr( rawurlencode( wp_json_encode( $cfg ) ) ); ?>">
             <div class="rawnaq-flow-viewport">
                 <div class="rawnaq-flow-stage is-responsive"></div>
             </div>
@@ -978,8 +1256,16 @@ class Rawnaq_Gutenberg_Loader {
             'readingTime'    => ! empty( $attributes['readingTime'] ),
             'mobileCollapse' => ! empty( $attributes['mobileCollapse'] ),
             'dockAttach'     => ! empty( $attributes['dockAttach'] ),
+            'syncTimeline'   => sanitize_text_field( $attributes['syncTimeline'] ?? '' ),
             'hideIfShort'    => true,
         ];
+        $ring_size = absint( $attributes['ringSize'] ?? 56 );
+        if ( $ring_size < 40 ) {
+            $ring_size = 40;
+        }
+        if ( $ring_size > 96 ) {
+            $ring_size = 96;
+        }
         if ( ! in_array( $cfg['progress'], [ 'bar', 'ring', 'both', 'none' ], true ) ) {
             $cfg['progress'] = 'both';
         }
@@ -990,11 +1276,12 @@ class Rawnaq_Gutenberg_Loader {
         ob_start();
         ?>
         <div class="rawnaq-spt"
-             style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px;"
+             style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px; --spt-ring-size: <?php echo esc_attr( (string) $ring_size ); ?>px;"
              data-spt="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>">
             <?php if ( 'none' !== $cfg['tocPosition'] ) : ?>
                 <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $cfg['tocPosition'] ); ?>" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
                     <p class="rawnaq-spt-reading" hidden></p>
+                    <p class="rawnaq-spt-chapter" hidden></p>
                     <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
                     <ul class="rawnaq-spt-list"></ul>
                 </nav>
@@ -1004,7 +1291,7 @@ class Rawnaq_Gutenberg_Loader {
         return ob_get_clean();
     }
 
-    public function render_bento_grid_block( $attributes ) {
+    public function render_bento_grid_block( $attributes, $content = '' ) {
         wp_enqueue_style( 'rawnaq-bento-grid' );
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_script( 'rawnaq-bento-grid' );
@@ -1045,11 +1332,6 @@ class Rawnaq_Gutenberg_Loader {
             $cols = 4;
         }
 
-        $cells_raw = json_decode( $a['cellsJson'], true );
-        if ( ! is_array( $cells_raw ) ) {
-            $cells_raw = [];
-        }
-
         $hover = sanitize_key( $a['hoverEffect'] );
         if ( ! in_array( $hover, [ 'lift', 'zoom', 'tint', 'none' ], true ) ) {
             $hover = 'lift';
@@ -1088,6 +1370,28 @@ class Rawnaq_Gutenberg_Loader {
             esc_attr( $a['ctaBg'] ),
             esc_attr( $a['ctaColor'] )
         );
+
+        // InnerBlocks path (saved cell markup).
+        if ( is_string( $content ) && '' !== trim( $content ) ) {
+            $classes[] = 'is-innerblocks';
+            ob_start();
+            ?>
+            <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
+                 style="<?php echo esc_attr( $style ); ?>"
+                 data-cols="<?php echo esc_attr( (string) $cols ); ?>"
+                 data-reveal="<?php echo ! empty( $a['reveal'] ) ? '1' : '0'; ?>"
+                 data-hover="<?php echo esc_attr( $hover ); ?>"
+                 role="list">
+                <?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- block editor HTML ?>
+            </div>
+            <?php
+            return ob_get_clean();
+        }
+
+        $cells_raw = json_decode( $a['cellsJson'], true );
+        if ( ! is_array( $cells_raw ) ) {
+            $cells_raw = [];
+        }
 
         ob_start();
         ?>
@@ -1306,6 +1610,168 @@ class Rawnaq_Gutenberg_Loader {
             <?php endforeach; ?>
         </div>
         <?php
+        return ob_get_clean();
+    }
+
+    public function render_scroll_story_block( $attributes ) {
+        wp_enqueue_style( 'rawnaq-scroll-story' );
+        wp_enqueue_script( 'rawnaq-scroll-story' );
+        wp_enqueue_script( 'rawnaq-bridge' );
+
+        $raw = json_decode( $attributes['chaptersJson'] ?? '[]', true );
+        if ( ! is_array( $raw ) ) {
+            $raw = [];
+        }
+        $chapters = [];
+        foreach ( $raw as $row ) {
+            $chapters[] = [
+                'title'       => sanitize_text_field( $row['title'] ?? '' ),
+                'body'        => sanitize_textarea_field( $row['body'] ?? '' ),
+                'image'       => esc_url_raw( $row['image'] ?? '' ),
+                'caption'     => sanitize_text_field( $row['caption'] ?? '' ),
+                'ctaText'     => sanitize_text_field( $row['ctaText'] ?? '' ),
+                'ctaUrl'      => esc_url_raw( $row['ctaUrl'] ?? '' ),
+                'ctaExt'      => false,
+                'ctaNof'      => false,
+                'projectId'   => sanitize_text_field( $row['projectId'] ?? '' ),
+                'projectSlug' => sanitize_title( $row['projectSlug'] ?? '' ),
+            ];
+        }
+        if ( ! $chapters ) {
+            return '';
+        }
+
+        $side   = ( ( $attributes['mediaSide'] ?? 'left' ) === 'right' ) ? 'right' : 'left';
+        $accent = sanitize_hex_color( $attributes['accent'] ?? '' );
+        if ( ! $accent ) {
+            $accent = '#0f766e';
+        }
+
+        ob_start();
+        echo '<div style="--story-accent: ' . esc_attr( $accent ) . ';">';
+        rawnaq_scroll_story_markup( $chapters, $side );
+        echo '</div>';
+        return ob_get_clean();
+    }
+
+    public function render_smart_form_block( $attributes ) {
+        wp_enqueue_style( 'rawnaq-smart-form' );
+        wp_enqueue_script( 'rawnaq-smart-form' );
+
+        $fields = json_decode( $attributes['fieldsJson'] ?? '[]', true );
+        if ( ! is_array( $fields ) ) {
+            $fields = [];
+        }
+
+        $cfg = [
+            'fields'            => $fields,
+            'deliveryEmail'     => ! empty( $attributes['deliveryEmail'] ),
+            'deliveryWhatsapp'  => ! empty( $attributes['deliveryWhatsapp'] ),
+            'emailTo'           => $attributes['emailTo'] ?? '',
+            'emailSubject'      => $attributes['emailSubject'] ?? '',
+            'waNumber'          => $attributes['waNumber'] ?? '',
+            'waTemplate'        => $attributes['waTemplate'] ?? '',
+            'afterSubmit'       => $attributes['afterSubmit'] ?? 'message',
+            'redirectUrl'       => $attributes['redirectUrl'] ?? '',
+            'submitLabel'       => $attributes['submitLabel'] ?? '',
+            'successMessage'    => $attributes['successMessage'] ?? '',
+            'errorMessage'      => $attributes['errorMessage'] ?? '',
+            'consentEnabled'    => ! empty( $attributes['consentEnabled'] ),
+            'consentText'       => $attributes['consentText'] ?? '',
+            'logSubmissions'    => ! isset( $attributes['logSubmissions'] ) || ! empty( $attributes['logSubmissions'] ),
+            'recaptchaEnabled'  => ! empty( $attributes['recaptchaEnabled'] ),
+            'webhookEnabled'    => ! empty( $attributes['webhookEnabled'] ),
+            'webhookUrl'        => $attributes['webhookUrl'] ?? '',
+            'buttonFullWidth'   => ! empty( $attributes['buttonFullWidth'] ),
+            'labelColor'        => sanitize_hex_color( $attributes['labelColor'] ?? '' ) ?: '',
+            'inputBg'           => sanitize_hex_color( $attributes['inputBg'] ?? '' ) ?: '',
+            'inputBorder'       => sanitize_hex_color( $attributes['inputBorder'] ?? '' ) ?: '',
+            'buttonBg'          => sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '',
+            'buttonText'        => sanitize_hex_color( $attributes['buttonText'] ?? '' ) ?: '',
+        ];
+
+        $accent = sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '#fbbf24';
+        $deep   = sanitize_hex_color( $attributes['accentDeep'] ?? '' ) ?: '#0f766e';
+        $btn    = sanitize_hex_color( $attributes['buttonText'] ?? '' ) ?: '#92400e';
+
+        ob_start();
+        echo '<div style="--sf-accent:' . esc_attr( $accent ) . ';--sf-accent-deep:' . esc_attr( $deep ) . ';--sf-btn-text:' . esc_attr( $btn ) . ';">';
+        rawnaq_smart_form_markup( $cfg, 'gb-' . wp_unique_id() );
+        echo '</div>';
+        return ob_get_clean();
+    }
+
+    public function render_case_study_grid_block( $attributes, $content = '', $block = null ) {
+        wp_enqueue_style( 'rawnaq-case-study-grid' );
+        wp_enqueue_script( 'rawnaq-case-study-grid' );
+        wp_enqueue_script( 'rawnaq-bridge' );
+
+        $source   = sanitize_key( $attributes['source'] ?? 'manual' );
+        $projects = [];
+
+        if ( 'query' !== $source && $block instanceof WP_Block && ! empty( $block->inner_blocks ) ) {
+            foreach ( $block->inner_blocks as $inner ) {
+                if ( 'rawnaq/case-study-card' !== $inner->name ) {
+                    continue;
+                }
+                $a = $inner->attributes;
+                $gallery = json_decode( $a['galleryJson'] ?? '[]', true );
+                $projects[] = [
+                    'id'       => $a['projectId'] ?? '',
+                    'slug'     => $a['projectSlug'] ?? '',
+                    'title'    => $a['title'] ?? '',
+                    'image'    => $a['image'] ?? '',
+                    'gallery'  => is_array( $gallery ) ? $gallery : [],
+                    'sector'   => $a['sector'] ?? '',
+                    'size'     => $a['size'] ?? '',
+                    'budget'   => $a['budget'] ?? '',
+                    'year'     => $a['year'] ?? '',
+                    'client'   => $a['client'] ?? '',
+                    'services' => $a['services'] ?? '',
+                    'excerpt'  => $a['excerpt'] ?? '',
+                    'detail'   => $a['detail'] ?? '',
+                    'link'     => $a['link'] ?? '',
+                    'featured' => ! empty( $a['featured'] ),
+                    'col'      => $a['col'] ?? 1,
+                    'row'      => $a['row'] ?? 1,
+                ];
+            }
+        }
+
+        if ( 'query' !== $source && ! $projects ) {
+            $decoded = json_decode( $attributes['projectsJson'] ?? '[]', true );
+            if ( is_array( $decoded ) ) {
+                $projects = $decoded;
+            }
+        }
+
+        $cfg = [
+            'source'         => $source,
+            'projects'       => $projects,
+            'queryNumber'    => $attributes['queryNumber'] ?? 12,
+            'queryOrderby'   => $attributes['queryOrderby'] ?? 'date',
+            'queryOrder'     => $attributes['queryOrder'] ?? 'DESC',
+            'querySector'    => $attributes['querySector'] ?? '',
+            'layout'         => $attributes['layout'] ?? 'bento',
+            'columns'        => $attributes['columns'] ?? 3,
+            'showFilter'     => ! isset( $attributes['showFilter'] ) || ! empty( $attributes['showFilter'] ),
+            'filterYear'     => ! isset( $attributes['filterYear'] ) || ! empty( $attributes['filterYear'] ),
+            'filterService'  => ! isset( $attributes['filterService'] ) || ! empty( $attributes['filterService'] ),
+            'sort'           => $attributes['sort'] ?? 'custom',
+            'hideBudget'     => ! empty( $attributes['hideBudget'] ),
+            'hideClient'     => ! empty( $attributes['hideClient'] ),
+            'clickAction'    => $attributes['clickAction'] ?? 'modal',
+            'discussTarget'  => $attributes['discussTarget'] ?? 'auto',
+            'initialVisible' => isset( $attributes['initialVisible'] ) ? absint( $attributes['initialVisible'] ) : 0,
+            'loadChunk'      => absint( $attributes['loadChunk'] ?? 6 ),
+            'accent'         => sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '#fbbf24',
+            'cardBg'         => sanitize_hex_color( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
+            'cardBorder'     => sanitize_hex_color( $attributes['cardBorder'] ?? '' ) ?: '#d7e2dc',
+            'radius'         => isset( $attributes['radius'] ) ? absint( $attributes['radius'] ) : 18,
+        ];
+
+        ob_start();
+        rawnaq_case_study_markup( $cfg, 'gb-' . wp_unique_id() );
         return ob_get_clean();
     }
 }

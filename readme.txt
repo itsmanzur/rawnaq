@@ -3,7 +3,7 @@ Contributors: rawnaq
 Tags: elementor, gutenberg, timeline, diagram, performance
 Requires at least: 5.8
 Tested up to: 7.0
-Stable tag: 1.10.0
+Stable tag: 1.17.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,12 +19,18 @@ Key highlights:
 * **Modular Codebase:** Fully ready for developers to extend with new components.
 
 = Included Modules =
-1. **Hub Diagram:** An interactive and fully customizable Hub & Spoke workflow diagram.
-2. **3D Tilt Card:** Interactive tilt cards for Gutenberg and Elementor.
-3. **Scroll Sync Timeline:** Scroll-driven timeline layouts.
-4. **Floating Dock Menu:** macOS-style floating dock navigation.
-5. **Flow Chart:** Org trees and process flows with animated connectors.
-6. **Scroll Progress + TOC:** Reading progress indicator and smart table of contents.
+1. **Hub Diagram:** Interactive Hub & Spoke workflow diagram (PNG/SVG export).
+2. **3D Tilt Card:** Interactive tilt cards (kept ultra-light).
+3. **Scroll Sync Timeline:** CSS scroll-driven timeline with JS fallback.
+4. **Floating Dock Menu:** macOS dock + WhatsApp Contact Mode.
+5. **Flow Chart:** Org/process/freeform + WP Users org + PNG/SVG export.
+6. **Scroll Progress + TOC:** Reading progress + smart TOC.
+7. **Bento Grid:** Marketing bento with Elementor resize + Gutenberg InnerBlocks.
+8. **Scroll Story Chapters:** Scrollytelling with pinned media.
+9. **Smart Form:** Lead form with email + WhatsApp redirect, layouts, uploads, multi-step.
+10. **Case-Study Grid:** CPT/manual portfolio, multi-filter, gallery modal, link-out, load more.
+
+Static marketing showcase (all modules, no WordPress required): open `assets/demo/index.html` in a browser.
 
 == Installation ==
 
@@ -33,6 +39,44 @@ Key highlights:
 3. Drop the widgets into Elementor or search for them in the Gutenberg block inserter.
 
 == Changelog ==
+
+= 1.17.3 =
+* Flow Chart: PNG/SVG export rebuilt as a full native SVG (nodes + connectors), fixing blank/partial downloads from foreignObject.
+
+= 1.17.2 =
+* Flow Chart: more avatar/icon style controls (bg, color, border, fit, shadow); PNG/SVG export captures the full diagram (not a clipped viewport).
+
+= 1.17.1 =
+* Flow Chart: per-node Image upload alongside Icon; avatar shape/size so photos crop cleanly without breaking the node layout. WP Users org source uses avatars.
+
+= 1.17.0 =
+* Case-Study bridge: “Discuss this project” prefills Smart Form or opens Dock WhatsApp; Scroll Story/Timeline chapters highlight matching Case-Study cards via project ID/slug.
+
+= 1.16.0 =
+* Case-Study Grid: CPT + query source, multi-image modal gallery, link-out click modes, sector/year/service filters, Gutenberg InnerBlocks cards, client-side load more.
+
+= 1.15.0 =
+* New: Case-Study Grid (Elementor + Gutenberg) — structured projects, sector filter, bento/uniform/masonry layouts, NDA-safe budget/client hide, detail modal.
+
+= 1.14.0 =
+* Smart Form: shared site WhatsApp number with Floating Dock; {pageTitle}/{url} templates; style depth; layout presets; admin CSV + unread badge; file uploads; multi-step; conditionals; rating/number/url/hidden; optional reCAPTCHA v3; webhook/Slack.
+
+= 1.13.0 =
+* New: Smart Form (Elementor + Gutenberg) — field repeater, email via wp_mail, WhatsApp wa.me redirect delivery, honeypot + time-trap, consent option, admin submission log.
+
+= 1.12.0 =
+* Flow Chart + Hub Diagram: proposal-ready PNG/SVG export toolbar (toggleable).
+* Bento Grid (Gutenberg): InnerBlocks via `rawnaq/bento-cell` — nest core blocks inside cells; cellsJson remains as fallback/migration seed.
+
+= 1.11.0 =
+* New: Scroll Story Chapters (Elementor + Gutenberg) — pinned media scrollytelling, progress dots, reduced-motion fallback.
+* Flow Chart: real WordPress Users org-chart data source (meta `rawnaq_reports_to`).
+* Scroll Progress + TOC: Sync Timeline ID (“Chapter …”), ring size control.
+* Depth polish from 1.10.x: Timeline presets, Dock offline lead form + analytics, Bento Elementor resize handles.
+
+= 1.10.1 =
+* Trust & parity: remove Flow Chart Gutenberg fake data-source controls; Elementor TOC search filter parity; Hub/Flow Elementor Icons pickers; docs/readme list all seven modules and CSS-first Timeline positioning.
+* Scroll Timeline: agency presets (Company Story / Changelog / Case Study), Gutenberg CSS-engine badge parity, JS fallback deactivates items on scroll-out, admin link to CSS vs JS benchmark demo.
 
 = 1.10.0 =
 * Flow Chart: freeform X/Y layout, node shapes (rect/circle/hex), direction + RTL flip, zoom/pan, lazy mount for 20+ nodes, and Gutenberg parent Select with DFS cycle guards.

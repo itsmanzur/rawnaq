@@ -778,7 +778,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
         $this->render_cta( $cell );
     }
 
-    private function render_cell( $cell ) {
+    private function render_cell( $cell, $index = 0 ) {
         $type     = sanitize_key( $cell['cell_type'] ?? 'text' );
         $title    = $cell['title'] ?? '';
         $subtitle = $cell['subtitle'] ?? '';
@@ -856,7 +856,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
             $style .= 'background-color:' . esc_attr( $cell['bg_color'] ) . ';';
         }
 
-        echo '<' . tag_escape( $tag_name ) . ' class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '" role="listitem"';
+        echo '<' . tag_escape( $tag_name ) . ' class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '" role="listitem" data-bento-index="' . esc_attr( (string) $index ) . '"';
         if ( $sync_name ) {
             echo ' data-tl-sync="' . esc_attr( $sync_name ) . '"';
         }
@@ -950,8 +950,8 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
              data-reveal="<?php echo $reveal ? '1' : '0'; ?>"
              data-hover="<?php echo esc_attr( $hover ); ?>"
              role="list">
-            <?php foreach ( $cells as $cell ) : ?>
-                <?php $this->render_cell( $cell ); ?>
+            <?php foreach ( $cells as $index => $cell ) : ?>
+                <?php $this->render_cell( $cell, (int) $index ); ?>
             <?php endforeach; ?>
         </div>
         <?php

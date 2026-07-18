@@ -182,6 +182,7 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             'options' => [
                 'hide'          => esc_html__( 'Hide Dock Completely', 'rawnaq' ),
                 'offline_badge' => esc_html__( 'Show with Offline Badge', 'rawnaq' ),
+                'lead_form'     => esc_html__( 'Offline lead / email form', 'rawnaq' ),
                 'redirect'      => esc_html__( 'Redirect Clicks to URL', 'rawnaq' ),
             ],
             'separator' => 'before',
@@ -193,6 +194,22 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             'type'        => \Elementor\Controls_Manager::TEXT,
             'placeholder' => 'https://example.com/contact',
             'condition'   => [ 'whatsapp_mode' => 'yes', 'off_hours_behavior' => 'redirect' ],
+        ] );
+
+        $this->add_control( 'off_hours_email', [
+            'label'       => esc_html__( 'Offline Lead Email', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => 'hello@example.com',
+            'description' => esc_html__( 'Used by the offline lead form (mailto). Falls back to Secondary Email if empty.', 'rawnaq' ),
+            'condition'   => [ 'whatsapp_mode' => 'yes', 'off_hours_behavior' => 'lead_form' ],
+        ] );
+
+        $this->add_control( 'off_hours_form_note', [
+            'label'       => esc_html__( 'Offline Form Note', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXTAREA,
+            'default'     => 'We are offline right now. Leave a message and we will reply by email.',
+            'rows'        => 2,
+            'condition'   => [ 'whatsapp_mode' => 'yes', 'off_hours_behavior' => 'lead_form' ],
         ] );
 
         $this->add_control( 'desktop_action', [
@@ -655,7 +672,7 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             $out[] = [
                 'name'   => sanitize_text_field( $a['agent_name'] ?? '' ),
                 'role'   => sanitize_text_field( $a['agent_role'] ?? '' ),
-                'number' => sanitize_text_field( $a['agent_number'] ?? '' ),
+                'number' => sanitize_text_field( $a['agent_number'] ?? '' ) ?: ( function_exists( 'rawnaq_get_default_wa_number' ) ? rawnaq_get_default_wa_number() : '' ),
                 'avatar' => ! empty( $a['agent_avatar']['url'] ) ? esc_url_raw( $a['agent_avatar']['url'] ) : '',
                 'msg'    => sanitize_textarea_field( $a['agent_msg'] ?? '' ),
             ];
@@ -717,6 +734,8 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
                 'schedule'         => $this->get_weekly_schedule_payload( $s ),
                 'offHoursBehavior' => sanitize_key( $s['off_hours_behavior'] ?? 'offline_badge' ),
                 'offHoursRedirect' => esc_url_raw( $s['off_hours_redirect_url'] ?? '' ),
+                'offHoursEmail'    => sanitize_email( $s['off_hours_email'] ?? '' ),
+                'offHoursFormNote' => sanitize_textarea_field( $s['off_hours_form_note'] ?? '' ),
                 'qrFallback'       => ( $s['desktop_action'] ?? 'choice' ) !== 'web',
                 'desktopAction'    => in_array( ( $s['desktop_action'] ?? 'choice' ), [ 'choice', 'web', 'qr' ], true )
                     ? ( $s['desktop_action'] ?? 'choice' )
@@ -823,6 +842,8 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
                 schedule: schedule,
                 offHoursBehavior: settings.off_hours_behavior || 'offline_badge',
                 offHoursRedirect: settings.off_hours_redirect_url || '',
+                offHoursEmail: settings.off_hours_email || '',
+                offHoursFormNote: settings.off_hours_form_note || '',
                 qrFallback: (settings.desktop_action || 'choice') !== 'web',
                 desktopAction: settings.desktop_action || 'choice',
                 triggerDelay: parseInt(settings.trigger_delay, 10) || 0,

@@ -72,11 +72,48 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
             'default'      => 'yes',
         ] );
 
+        $this->add_control( 'show_export', [
+            'label'        => esc_html__( 'PNG / SVG Export', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'description'  => esc_html__( 'Show download buttons for proposal-ready PNG or SVG.', 'rawnaq' ),
+        ] );
+
+        $this->add_control( 'data_source', [
+            'label'   => esc_html__( 'Nodes Source', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'manual',
+            'options' => [
+                'manual'   => esc_html__( 'Manual nodes', 'rawnaq' ),
+                'wp_users' => esc_html__( 'WordPress users (org chart)', 'rawnaq' ),
+            ],
+            'description' => esc_html__( 'Users mode builds an org tree. Optional user meta key: rawnaq_reports_to (manager user ID).', 'rawnaq' ),
+        ] );
+
+        $this->add_control( 'users_role', [
+            'label'     => esc_html__( 'Filter by Role', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::TEXT,
+            'default'   => '',
+            'placeholder' => 'administrator, editor…',
+            'condition' => [ 'data_source' => 'wp_users' ],
+        ] );
+
+        $this->add_control( 'users_number', [
+            'label'     => esc_html__( 'Max Users', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::NUMBER,
+            'default'   => 20,
+            'min'       => 1,
+            'max'       => 50,
+            'condition' => [ 'data_source' => 'wp_users' ],
+        ] );
+
         $this->end_controls_section();
 
         $this->start_controls_section( 's_nodes', [
-            'label' => esc_html__( 'Nodes', 'rawnaq' ),
-            'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+            'label'     => esc_html__( 'Nodes', 'rawnaq' ),
+            'tab'       => \Elementor\Controls_Manager::TAB_CONTENT,
+            'condition' => [ 'data_source' => 'manual' ],
         ] );
 
         $r = new \Elementor\Repeater();
@@ -89,10 +126,20 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
         ] );
 
         $r->add_control( 'parent_id', [
-            'label'       => esc_html__( 'Parent Node ID', 'rawnaq' ),
-            'type'        => \Elementor\Controls_Manager::TEXT,
+            'label'       => esc_html__( 'Parent Node', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::SELECT,
             'default'     => '',
-            'description' => esc_html__( 'Leave empty for root / start node. Cycles are auto-cleared.', 'rawnaq' ),
+            'options'     => [
+                ''    => esc_html__( '— Root (no parent) —', 'rawnaq' ),
+                'ceo' => 'ceo — Founder / CEO',
+                'eng' => 'eng — Engineering Head',
+                'ops' => 'ops — Operations Head',
+                'biz' => 'biz — Business Dev',
+                'e1'  => 'e1 — Frontend Team',
+                'e2'  => 'e2 — Backend Team',
+            ],
+            'description' => esc_html__( 'Choose the parent’s Node ID. The dropdown refreshes from current rows when you edit Node IDs (Elementor editor). Cycles are auto-cleared.', 'rawnaq' ),
+            'label_block' => true,
         ] );
 
         $r->add_control( 'title', [
@@ -108,11 +155,26 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
             'default' => '',
         ] );
 
+        $r->add_control( 'selected_icon', [
+            'label'   => esc_html__( 'Icon', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::ICONS,
+            'default' => [
+                'value'   => 'fas fa-circle',
+                'library' => 'fa-solid',
+            ],
+        ] );
+
         $r->add_control( 'icon', [
-            'label'       => esc_html__( 'Icon (emoji or dashicons-*)', 'rawnaq' ),
-            'type'        => \Elementor\Controls_Manager::TEXT,
-            'default'     => '●',
-            'placeholder' => '⚙ or dashicons-admin-users',
+            'label'   => esc_html__( 'Legacy Icon (emoji / dashicons-*)', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::HIDDEN,
+            'default' => '●',
+        ] );
+
+        $r->add_control( 'image', [
+            'label'       => esc_html__( 'Image', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::MEDIA,
+            'default'     => [ 'url' => '' ],
+            'description' => esc_html__( 'Optional photo. When set, it replaces the icon badge and stays cropped to the avatar box.', 'rawnaq' ),
         ] );
 
         $r->add_control( 'detail', [
@@ -159,12 +221,12 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
             'fields'      => $r->get_controls(),
             'title_field' => '{{{ title }}} ({{{ node_id }}})',
             'default'     => [
-                [ 'node_id' => 'ceo', 'parent_id' => '', 'title' => 'Founder / CEO', 'role' => 'Leadership', 'icon' => '★', 'detail' => 'Leads the company and client relationships.', 'is_decision' => '', 'pos_x' => 40, 'pos_y' => 5 ],
-                [ 'node_id' => 'eng', 'parent_id' => 'ceo', 'title' => 'Engineering Head', 'role' => 'Product', 'icon' => '⚙', 'detail' => 'Owns engineering roadmap.', 'is_decision' => '', 'pos_x' => 15, 'pos_y' => 40 ],
-                [ 'node_id' => 'ops', 'parent_id' => 'ceo', 'title' => 'Operations Head', 'role' => 'Delivery', 'icon' => '◆', 'detail' => 'Coordinates project delivery.', 'is_decision' => '', 'pos_x' => 40, 'pos_y' => 40 ],
-                [ 'node_id' => 'biz', 'parent_id' => 'ceo', 'title' => 'Business Dev', 'role' => 'Growth', 'icon' => '▲', 'detail' => 'Client acquisition.', 'is_decision' => '', 'pos_x' => 65, 'pos_y' => 40 ],
-                [ 'node_id' => 'e1', 'parent_id' => 'eng', 'title' => 'Frontend Team', 'role' => 'Team, 4', 'icon' => '▪', 'detail' => 'UI implementation.', 'is_decision' => '', 'pos_x' => 5, 'pos_y' => 75 ],
-                [ 'node_id' => 'e2', 'parent_id' => 'eng', 'title' => 'Backend Team', 'role' => 'Team, 3', 'icon' => '▪', 'detail' => 'API & infrastructure.', 'is_decision' => '', 'pos_x' => 25, 'pos_y' => 75 ],
+                [ 'node_id' => 'ceo', 'parent_id' => '', 'title' => 'Founder / CEO', 'role' => 'Leadership', 'selected_icon' => [ 'value' => 'fas fa-star', 'library' => 'fa-solid' ], 'icon' => '★', 'detail' => 'Leads the company and client relationships.', 'is_decision' => '', 'pos_x' => 40, 'pos_y' => 5 ],
+                [ 'node_id' => 'eng', 'parent_id' => 'ceo', 'title' => 'Engineering Head', 'role' => 'Product', 'selected_icon' => [ 'value' => 'fas fa-cogs', 'library' => 'fa-solid' ], 'icon' => '⚙', 'detail' => 'Owns engineering roadmap.', 'is_decision' => '', 'pos_x' => 15, 'pos_y' => 40 ],
+                [ 'node_id' => 'ops', 'parent_id' => 'ceo', 'title' => 'Operations Head', 'role' => 'Delivery', 'selected_icon' => [ 'value' => 'fas fa-tasks', 'library' => 'fa-solid' ], 'icon' => '◆', 'detail' => 'Coordinates project delivery.', 'is_decision' => '', 'pos_x' => 40, 'pos_y' => 40 ],
+                [ 'node_id' => 'biz', 'parent_id' => 'ceo', 'title' => 'Business Dev', 'role' => 'Growth', 'selected_icon' => [ 'value' => 'fas fa-chart-line', 'library' => 'fa-solid' ], 'icon' => '▲', 'detail' => 'Client acquisition.', 'is_decision' => '', 'pos_x' => 65, 'pos_y' => 40 ],
+                [ 'node_id' => 'e1', 'parent_id' => 'eng', 'title' => 'Frontend Team', 'role' => 'Team, 4', 'selected_icon' => [ 'value' => 'fas fa-laptop-code', 'library' => 'fa-solid' ], 'icon' => '▪', 'detail' => 'UI implementation.', 'is_decision' => '', 'pos_x' => 5, 'pos_y' => 75 ],
+                [ 'node_id' => 'e2', 'parent_id' => 'eng', 'title' => 'Backend Team', 'role' => 'Team, 3', 'selected_icon' => [ 'value' => 'fas fa-server', 'library' => 'fa-solid' ], 'icon' => '▪', 'detail' => 'API & infrastructure.', 'is_decision' => '', 'pos_x' => 25, 'pos_y' => 75 ],
             ],
         ] );
 
@@ -201,6 +263,123 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
             'type'      => \Elementor\Controls_Manager::COLOR,
             'default'   => '#E6E2F0',
             'selectors' => [ '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-line: {{VALUE}};' ],
+        ] );
+
+        $this->add_control( 'avatar_heading', [
+            'label'     => esc_html__( 'Node Avatar (Icon / Image)', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::HEADING,
+            'separator' => 'before',
+        ] );
+
+        $this->add_control( 'avatar_shape', [
+            'label'   => esc_html__( 'Avatar Shape', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'rounded',
+            'options' => [
+                'rounded' => esc_html__( 'Rounded square', 'rawnaq' ),
+                'circle'  => esc_html__( 'Circle', 'rawnaq' ),
+                'square'  => esc_html__( 'Square', 'rawnaq' ),
+            ],
+        ] );
+
+        $this->add_control( 'avatar_size', [
+            'label'      => esc_html__( 'Avatar Size', 'rawnaq' ),
+            'type'       => \Elementor\Controls_Manager::SLIDER,
+            'size_units' => [ 'px' ],
+            'range'      => [
+                'px' => [ 'min' => 24, 'max' => 96, 'step' => 1 ],
+            ],
+            'default'    => [ 'size' => 30, 'unit' => 'px' ],
+            'selectors'  => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar: {{SIZE}}{{UNIT}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_gap', [
+            'label'      => esc_html__( 'Avatar Spacing', 'rawnaq' ),
+            'type'       => \Elementor\Controls_Manager::SLIDER,
+            'size_units' => [ 'px' ],
+            'range'      => [
+                'px' => [ 'min' => 0, 'max' => 24, 'step' => 1 ],
+            ],
+            'default'    => [ 'size' => 8, 'unit' => 'px' ],
+            'selectors'  => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar-gap: {{SIZE}}{{UNIT}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_bg', [
+            'label'     => esc_html__( 'Avatar Background', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'default'   => '#FEF3C7',
+            'selectors' => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar-bg: {{VALUE}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_icon_color', [
+            'label'     => esc_html__( 'Icon Color', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'default'   => '#92400E',
+            'selectors' => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar-icon: {{VALUE}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_icon_size', [
+            'label'      => esc_html__( 'Icon Size', 'rawnaq' ),
+            'type'       => \Elementor\Controls_Manager::SLIDER,
+            'size_units' => [ 'px' ],
+            'range'      => [
+                'px' => [ 'min' => 10, 'max' => 48, 'step' => 1 ],
+            ],
+            'default'    => [ 'size' => 14, 'unit' => 'px' ],
+            'selectors'  => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar-icon-size: {{SIZE}}{{UNIT}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_border_color', [
+            'label'     => esc_html__( 'Avatar Border Color', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar-border: {{VALUE}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_border_width', [
+            'label'      => esc_html__( 'Avatar Border Width', 'rawnaq' ),
+            'type'       => \Elementor\Controls_Manager::SLIDER,
+            'size_units' => [ 'px' ],
+            'range'      => [
+                'px' => [ 'min' => 0, 'max' => 8, 'step' => 1 ],
+            ],
+            'default'    => [ 'size' => 0, 'unit' => 'px' ],
+            'selectors'  => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar-border-w: {{SIZE}}{{UNIT}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_object_fit', [
+            'label'   => esc_html__( 'Image Fit', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'cover',
+            'options' => [
+                'cover'   => esc_html__( 'Cover (crop)', 'rawnaq' ),
+                'contain' => esc_html__( 'Contain (full image)', 'rawnaq' ),
+                'fill'    => esc_html__( 'Fill (stretch)', 'rawnaq' ),
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .rawnaq-flow-chart' => '--fc-avatar-fit: {{VALUE}};',
+            ],
+        ] );
+
+        $this->add_control( 'avatar_shadow', [
+            'label'        => esc_html__( 'Avatar Shadow', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => '',
+            'prefix_class' => 'rawnaq-fc-avatar-shadow-',
         ] );
 
         $this->end_controls_section();
@@ -267,12 +446,28 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
                 $link = esc_url_raw( $item['link']['url'] );
             }
 
+            if ( ! empty( $item['selected_icon']['value'] ) && is_string( $item['selected_icon']['value'] ) && class_exists( '\Elementor\Icons_Manager' ) ) {
+                if ( method_exists( '\Elementor\Icons_Manager', 'enqueue_icon' ) ) {
+                    \Elementor\Icons_Manager::enqueue_icon( $item['selected_icon'] );
+                } elseif ( ! empty( $item['selected_icon']['library'] ) && 'svg' !== $item['selected_icon']['library'] ) {
+                    wp_enqueue_style( 'elementor-icons-' . $item['selected_icon']['library'] );
+                }
+            }
+
+            $image = '';
+            if ( ! empty( $item['image']['url'] ) ) {
+                $image = esc_url_raw( $item['image']['url'] );
+            }
+
             $out[] = [
                 'id'       => $id,
                 'parent'   => $parent,
                 'title'    => $item['title'] ?? '',
                 'role'     => $item['role'] ?? '',
-                'icon'     => $item['icon'] ?? '',
+                'icon'     => function_exists( 'rawnaq_elementor_icon_token' )
+                    ? rawnaq_elementor_icon_token( $item['selected_icon'] ?? [], $item['icon'] ?? '' )
+                    : ( $item['icon'] ?? '' ),
+                'image'    => $image,
                 'detail'   => $item['detail'] ?? '',
                 'link'     => $link,
                 'decision' => ( $item['is_decision'] ?? '' ) === 'yes',
@@ -298,18 +493,36 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
             $shape = 'rect';
         }
         $conn = $s['connector'] ?? 'curved';
-        $nodes = $this->build_nodes_payload( $s['nodes'] ?? [] );
+        $source = sanitize_key( $s['data_source'] ?? 'manual' );
+        if ( 'wp_users' === $source && function_exists( 'rawnaq_flow_nodes_from_users' ) ) {
+            $nodes = rawnaq_flow_nodes_from_users( [
+                'number' => absint( $s['users_number'] ?? 20 ),
+                'role'   => sanitize_key( $s['users_role'] ?? '' ),
+            ] );
+            $nodes = $this->break_parent_cycles( $nodes );
+            if ( 'freeform' === $mode ) {
+                $mode = 'org';
+            }
+        } else {
+            $nodes = $this->build_nodes_payload( $s['nodes'] ?? [] );
+        }
+        $avatar_shape = sanitize_key( $s['avatar_shape'] ?? 'rounded' );
+        if ( ! in_array( $avatar_shape, [ 'rounded', 'circle', 'square' ], true ) ) {
+            $avatar_shape = 'rounded';
+        }
         $cfg = [
-            'mode'      => $mode,
-            'direction' => $dir,
-            'shape'     => $shape,
-            'connector' => $conn,
-            'zoom'      => ( $s['enable_zoom'] ?? 'yes' ) === 'yes',
-            'nodes'     => $nodes,
+            'mode'         => $mode,
+            'direction'    => $dir,
+            'shape'        => $shape,
+            'connector'    => $conn,
+            'avatarShape'  => $avatar_shape,
+            'zoom'         => ( $s['enable_zoom'] ?? 'yes' ) === 'yes',
+            'export'       => ( $s['show_export'] ?? 'yes' ) === 'yes',
+            'nodes'        => $nodes,
         ];
         $flow_attr = rawurlencode( wp_json_encode( $cfg ) );
         ?>
-        <div class="rawnaq-flow-chart"
+        <div class="rawnaq-flow-chart avatar-<?php echo esc_attr( $avatar_shape ); ?>"
              data-flow="<?php echo esc_attr( $flow_attr ); ?>">
             <div class="rawnaq-flow-viewport">
                 <div class="rawnaq-flow-stage is-responsive"></div>
@@ -327,38 +540,51 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
         var shape = settings.shape || 'rect';
         var nodes = [];
         var seen = {};
-        _.each( settings.nodes || [], function( item, index ) {
-            var id = ( item.node_id || ( 'node-' + ( index + 1 ) ) ).toString().replace( /[^a-zA-Z0-9_-]/g, '' );
-            if ( ! id ) { id = 'node-' + ( index + 1 ); }
-            var parent = ( item.parent_id || '' ).toString().replace( /[^a-zA-Z0-9_-]/g, '' );
-            if ( parent === id ) { parent = ''; }
-            var base = id; var n = 2;
-            while ( seen[id] ) { id = base + '-' + n; n++; }
-            seen[id] = true;
-            nodes.push({
-                id: id,
-                parent: parent,
-                title: item.title || '',
-                role: item.role || '',
-                icon: item.icon || '',
-                detail: item.detail || '',
-                link: ( item.link && item.link.url ) ? item.link.url : '',
-                decision: item.is_decision === 'yes',
-                x: Math.max( 0, Math.min( 100, parseFloat( item.pos_x ) || 10 ) ),
-                y: Math.max( 0, Math.min( 100, parseFloat( item.pos_y ) || 10 ) )
+        var source = settings.data_source || 'manual';
+        if ( source === 'wp_users' && typeof rawnaqFlowEditor !== 'undefined' && rawnaqFlowEditor.userNodes && rawnaqFlowEditor.userNodes.length ) {
+            nodes = rawnaqFlowEditor.userNodes.slice();
+            if ( mode === 'freeform' ) { mode = 'org'; }
+        } else {
+            _.each( settings.nodes || [], function( item, index ) {
+                var id = ( item.node_id || ( 'node-' + ( index + 1 ) ) ).toString().replace( /[^a-zA-Z0-9_-]/g, '' );
+                if ( ! id ) { id = 'node-' + ( index + 1 ); }
+                var parent = ( item.parent_id || '' ).toString().replace( /[^a-zA-Z0-9_-]/g, '' );
+                if ( parent === id ) { parent = ''; }
+                var base = id; var n = 2;
+                while ( seen[id] ) { id = base + '-' + n; n++; }
+                seen[id] = true;
+                nodes.push({
+                    id: id,
+                    parent: parent,
+                    title: item.title || '',
+                    role: item.role || '',
+                    icon: ( item.selected_icon && item.selected_icon.value && typeof item.selected_icon.value === 'string' )
+                        ? item.selected_icon.value
+                        : ( item.icon || '' ),
+                    image: ( item.image && item.image.url ) ? item.image.url : '',
+                    detail: item.detail || '',
+                    link: ( item.link && item.link.url ) ? item.link.url : '',
+                    decision: item.is_decision === 'yes',
+                    x: Math.max( 0, Math.min( 100, parseFloat( item.pos_x ) || 10 ) ),
+                    y: Math.max( 0, Math.min( 100, parseFloat( item.pos_y ) || 10 ) )
+                });
             });
-        });
+        }
+        var avatarShape = settings.avatar_shape || 'rounded';
+        if ( avatarShape !== 'circle' && avatarShape !== 'square' && avatarShape !== 'rounded' ) { avatarShape = 'rounded'; }
         var cfg = {
             mode: mode,
             direction: direction,
             shape: shape,
             connector: settings.connector || 'curved',
+            avatarShape: avatarShape,
             zoom: settings.enable_zoom !== '',
+            export: settings.show_export !== '',
             nodes: nodes
         };
         var flowAttr = encodeURIComponent( JSON.stringify( cfg ) );
         #>
-        <div class="rawnaq-flow-chart" data-flow="{{ flowAttr }}">
+        <div class="rawnaq-flow-chart avatar-{{ avatarShape }}" data-flow="{{ flowAttr }}">
             <div class="rawnaq-flow-viewport">
                 <div class="rawnaq-flow-stage is-responsive"></div>
             </div>

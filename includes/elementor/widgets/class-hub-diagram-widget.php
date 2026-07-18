@@ -63,11 +63,18 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
                 'type'    => \Elementor\Controls_Manager::COLOR,
                 'default' => '#1a1a1a',
             ] );
+            $r->add_control( 'selected_icon', [
+                'label'   => esc_html__( 'Icon', 'rawnaq' ),
+                'type'    => \Elementor\Controls_Manager::ICONS,
+                'default' => [
+                    'value'   => 'fas fa-circle',
+                    'library' => 'fa-solid',
+                ],
+            ] );
             $r->add_control( 'icon', [
-                'label'       => esc_html__( 'Dashicon Class', 'rawnaq' ),
-                'type'        => \Elementor\Controls_Manager::TEXT,
-                'placeholder' => 'dashicons-admin-generic',
-                'description' => esc_html__( 'Find names at developer.wordpress.org/resource/dashicons/', 'rawnaq' ),
+                'label'   => esc_html__( 'Legacy Dashicon Class', 'rawnaq' ),
+                'type'    => \Elementor\Controls_Manager::HIDDEN,
+                'default' => '',
             ] );
             $r->add_control( 'link', [
                 'label'       => esc_html__( 'Redirect URL', 'rawnaq' ),
@@ -96,10 +103,30 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
             'type'        => \Elementor\Controls_Manager::REPEATER,
             'fields'      => $setup_repeater()->get_controls(),
             'default'     => [
-                [ 'label' => 'Design',        'bar_color' => '#E8793A', 'icon' => 'dashicons-art' ],
-                [ 'label' => 'P&amp;ID',      'bar_color' => '#D4A92A', 'icon' => 'dashicons-editor-justify' ],
-                [ 'label' => 'Sketch',        'bar_color' => '#26B8B8', 'icon' => 'dashicons-welcome-write-blog' ],
-                [ 'label' => 'Specification', 'bar_color' => '#E8793A', 'icon' => 'dashicons-clipboard' ],
+                [
+                    'label'         => 'Design',
+                    'bar_color'     => '#E8793A',
+                    'selected_icon' => [ 'value' => 'fas fa-pencil-ruler', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-art',
+                ],
+                [
+                    'label'         => 'P&amp;ID',
+                    'bar_color'     => '#D4A92A',
+                    'selected_icon' => [ 'value' => 'fas fa-project-diagram', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-editor-justify',
+                ],
+                [
+                    'label'         => 'Sketch',
+                    'bar_color'     => '#26B8B8',
+                    'selected_icon' => [ 'value' => 'fas fa-pen', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-welcome-write-blog',
+                ],
+                [
+                    'label'         => 'Specification',
+                    'bar_color'     => '#E8793A',
+                    'selected_icon' => [ 'value' => 'fas fa-clipboard-list', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-clipboard',
+                ],
             ],
             'title_field' => '{{{ label }}}',
         ] );
@@ -115,10 +142,30 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
             'type'        => \Elementor\Controls_Manager::REPEATER,
             'fields'      => $setup_repeater()->get_controls(),
             'default'     => [
-                [ 'label' => 'MTO/BOQ',        'bar_color' => '#E8793A', 'icon' => 'dashicons-list-view' ],
-                [ 'label' => '3D CAD Model',   'bar_color' => '#D4A92A', 'icon' => 'dashicons-format-image' ],
-                [ 'label' => 'Drawings',       'bar_color' => '#26B8B8', 'icon' => 'dashicons-portfolio' ],
-                [ 'label' => 'Pipe Isometric',  'bar_color' => '#E8793A', 'icon' => 'dashicons-chart-area' ],
+                [
+                    'label'         => 'MTO/BOQ',
+                    'bar_color'     => '#E8793A',
+                    'selected_icon' => [ 'value' => 'fas fa-list', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-list-view',
+                ],
+                [
+                    'label'         => '3D CAD Model',
+                    'bar_color'     => '#D4A92A',
+                    'selected_icon' => [ 'value' => 'fas fa-cube', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-format-image',
+                ],
+                [
+                    'label'         => 'Drawings',
+                    'bar_color'     => '#26B8B8',
+                    'selected_icon' => [ 'value' => 'fas fa-folder-open', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-portfolio',
+                ],
+                [
+                    'label'         => 'Pipe Isometric',
+                    'bar_color'     => '#E8793A',
+                    'selected_icon' => [ 'value' => 'fas fa-chart-area', 'library' => 'fa-solid' ],
+                    'icon'          => 'dashicons-chart-area',
+                ],
             ],
             'title_field' => '{{{ label }}}',
         ] );
@@ -180,6 +227,13 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
                 'yes' => esc_html__( 'Enable', 'rawnaq' ),
             ],
         ] );
+        $this->add_control( 'show_export', [
+            'label'        => esc_html__( 'PNG / SVG Export', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'description'  => esc_html__( 'Show download buttons for proposal-ready PNG or SVG.', 'rawnaq' ),
+        ] );
         $this->add_control( 'center_style', [
             'label'   => esc_html__( 'Center Circle Ring Style', 'rawnaq' ),
             'type'    => \Elementor\Controls_Manager::SELECT,
@@ -226,13 +280,22 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
         $map = function ( array $nodes ) {
             $out = [];
             foreach ( $nodes as $i => $n ) {
+                if ( ! empty( $n['selected_icon']['value'] ) && is_string( $n['selected_icon']['value'] ) && class_exists( '\Elementor\Icons_Manager' ) ) {
+                    if ( method_exists( '\Elementor\Icons_Manager', 'enqueue_icon' ) ) {
+                        \Elementor\Icons_Manager::enqueue_icon( $n['selected_icon'] );
+                    } elseif ( ! empty( $n['selected_icon']['library'] ) && 'svg' !== $n['selected_icon']['library'] ) {
+                        wp_enqueue_style( 'elementor-icons-' . $n['selected_icon']['library'] );
+                    }
+                }
                 $out[] = [
                     'id'        => 'n' . $i,
                     'label'     => $n['label'] ?? '',
                     'color'     => ( $n['bar_color'] ?: '#E8793A' ),
                     'cardBg'    => $n['card_bg'] ?? '#ffffff',
                     'cardColor' => $n['card_color'] ?? '#1a1a1a',
-                    'icon'      => $n['icon'] ?? '',
+                    'icon'      => function_exists( 'rawnaq_elementor_icon_token' )
+                        ? rawnaq_elementor_icon_token( $n['selected_icon'] ?? [], $n['icon'] ?? '' )
+                        : ( $n['icon'] ?? '' ),
                     'link'      => $n['link'] ?? '',
                     'target'    => $n['target'] ?? '_self',
                 ];
@@ -253,6 +316,7 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
             'centerStyle'    => $s['center_style'] ?? 'conic',
             'layoutFlow'     => $s['layout_flow']  ?? 'horizontal',
             'importJson'     => $s['import_json']  ?? '',
+            'export'         => ( $s['show_export'] ?? 'yes' ) === 'yes',
             'top'            => $map( $s['top_nodes']    ?? [] ),
             'bottom'         => $map( $s['bottom_nodes'] ?? [] ),
         ];
@@ -272,13 +336,19 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
 
         var map = function(nodes, prefix) {
             return nodes.map(function(n, i) {
+                var icon = '';
+                if (n.selected_icon && n.selected_icon.value && typeof n.selected_icon.value === 'string') {
+                    icon = n.selected_icon.value;
+                } else if (n.icon) {
+                    icon = n.icon;
+                }
                 return {
                     id: prefix + i,
                     label: n.label || '',
                     color: n.bar_color || '#E8793A',
                     cardBg: n.card_bg || '#ffffff',
                     cardColor: n.card_color || '#1a1a1a',
-                    icon: n.icon || '',
+                    icon: icon,
                     link: n.link || '',
                     target: n.target || '_self'
                 };
@@ -298,6 +368,7 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
             centerStyle:    settings.center_style || 'conic',
             layoutFlow:     settings.layout_flow  || 'horizontal',
             importJson:     settings.import_json  || '',
+            export:         settings.show_export !== '',
             top:            map(topNodes, 't'),
             bottom:         map(botNodes, 'b')
         };

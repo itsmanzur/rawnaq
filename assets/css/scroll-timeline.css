@@ -325,8 +325,18 @@
 }
 
 .rawnaq-timeline-wrapper.tl-css-driven.is-editor .rawnaq-timeline-engine-badge,
-.elementor-editor-active .rawnaq-timeline-wrapper.tl-css-driven .rawnaq-timeline-engine-badge {
+.elementor-editor-active .rawnaq-timeline-wrapper.tl-css-driven .rawnaq-timeline-engine-badge,
+.block-editor-page .rawnaq-timeline-wrapper.tl-css-driven .rawnaq-timeline-engine-badge,
+.editor-styles-wrapper .rawnaq-timeline-wrapper.tl-css-driven.is-editor .rawnaq-timeline-engine-badge {
     display: inline-block;
+}
+
+.rawnaq-timeline-wrapper.tl-js-driven .rawnaq-timeline-item {
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.rawnaq-timeline-wrapper.tl-js-driven .rawnaq-timeline-item.item-leaving:not(.item-active) {
+    opacity: 0.45;
 }
 
 /* ── Horizontal layout ── */

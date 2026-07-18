@@ -113,6 +113,7 @@
                         $('#dock-stat-chooser').text(String(c.chooser || 0));
                         $('#dock-stat-secondary').text(String(c.secondary || 0));
                         $('#dock-stat-classic').text(String(c.classic || 0));
+                        $('#dock-stat-offline').text(String(c.offline || 0));
                         $status.addClass('success').text('Counters reset.');
                     } else {
                         $status.addClass('error').text('Could not reset counters.');

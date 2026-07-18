@@ -425,7 +425,8 @@
         openLink.focus();
     }
 
-    function openChannel(cfg, agent) {
+    function openChannel(cfg, agent, opts) {
+        opts = opts || {};
         var channel = cfg.primaryChannel || 'whatsapp';
 
         if (channel === 'call') {
@@ -452,6 +453,9 @@
         }
         if (!rawMsg) {
             rawMsg = cfg.defaultMsg || '';
+        }
+        if (opts.message) {
+            rawMsg = opts.message;
         }
         var msg = resolveMessageTemplate(rawMsg, cfg);
         var waLink = buildWhatsAppUrl(num, msg);
@@ -622,7 +626,8 @@
             (!isOnline
                 ? '<p class="rawnaq-wa-offline-note">' + escapeHtml(nextOpenHint(cfg.schedule, cfg.timezone)) + '</p>'
                 : '') +
-            '<div class="rawnaq-wa-agents-list"></div>';
+            '<div class="rawnaq-wa-agents-list"></div>' +
+            '<div class="rawnaq-wa-lead-form" hidden></div>';
         root.appendChild(drawer);
         inst.drawer = drawer;
 
@@ -632,7 +637,51 @@
         });
 
         var listContainer = drawer.querySelector('.rawnaq-wa-agents-list');
-        agents.forEach(function (a) {
+        var leadFormWrap = drawer.querySelector('.rawnaq-wa-lead-form');
+
+        function buildLeadForm() {
+            if (!leadFormWrap) {
+                return;
+            }
+            var note = cfg.offHoursFormNote || 'We are offline right now. Leave a message and we will reply by email.';
+            leadFormWrap.hidden = false;
+            leadFormWrap.innerHTML =
+                '<p class="rawnaq-wa-lead-note">' + escapeHtml(note) + '</p>' +
+                '<label><span>Name</span><input type="text" class="rawnaq-wa-lead-name" autocomplete="name" required /></label>' +
+                '<label><span>Email</span><input type="email" class="rawnaq-wa-lead-email" autocomplete="email" required /></label>' +
+                '<label><span>Message</span><textarea class="rawnaq-wa-lead-msg" rows="3" required></textarea></label>' +
+                '<button type="button" class="rawnaq-wa-lead-submit">Send message</button>' +
+                '<p class="rawnaq-wa-lead-status" hidden></p>';
+            leadFormWrap.querySelector('.rawnaq-wa-lead-submit').addEventListener('click', function () {
+                var name = (leadFormWrap.querySelector('.rawnaq-wa-lead-name').value || '').trim();
+                var email = (leadFormWrap.querySelector('.rawnaq-wa-lead-email').value || '').trim();
+                var msg = (leadFormWrap.querySelector('.rawnaq-wa-lead-msg').value || '').trim();
+                var status = leadFormWrap.querySelector('.rawnaq-wa-lead-status');
+                if (!name || !email || !msg) {
+                    status.hidden = false;
+                    status.textContent = 'Please fill in all fields.';
+                    return;
+                }
+                var to = cfg.offHoursEmail || cfg.secEmail || '';
+                trackClick('offline', cfg);
+                if (to) {
+                    var subject = encodeURIComponent('Website offline lead — ' + name);
+                    var body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\n\n' + msg);
+                    window.location.href = 'mailto:' + encodeURIComponent(to) + '?subject=' + subject + '&body=' + body;
+                }
+                status.hidden = false;
+                status.textContent = to ? 'Opening your email app…' : 'Thanks — we received your details.';
+                leadFormWrap.querySelector('.rawnaq-wa-lead-name').value = '';
+                leadFormWrap.querySelector('.rawnaq-wa-lead-email').value = '';
+                leadFormWrap.querySelector('.rawnaq-wa-lead-msg').value = '';
+            });
+        }
+
+        if (!isOnline && cfg.offHoursBehavior === 'lead_form') {
+            listContainer.hidden = true;
+            buildLeadForm();
+        } else {
+            agents.forEach(function (a) {
             if (!isValidWaNumber(a.number) && (cfg.primaryChannel || 'whatsapp') === 'whatsapp') {
                 return;
             }
@@ -654,6 +703,7 @@
             });
             listContainer.appendChild(agentEl);
         });
+        }
 
         function closePanels() {
             drawer.classList.remove('is-open');
@@ -668,7 +718,8 @@
             if (hasSec) {
                 tray.classList.add('is-open');
             }
-            if (agents.length > 1 && (cfg.primaryChannel || 'whatsapp') === 'whatsapp') {
+            if ((!isOnline && cfg.offHoursBehavior === 'lead_form') ||
+                (agents.length > 1 && (cfg.primaryChannel || 'whatsapp') === 'whatsapp')) {
                 drawer.classList.add('is-open');
             }
             root.classList.add('is-expanded');
@@ -679,7 +730,18 @@
             e.stopPropagation();
             trackClick('fab', cfg);
             if (!isOnline && cfg.offHoursBehavior === 'redirect' && cfg.offHoursRedirect) {
+                trackClick('offline', cfg);
                 window.location.href = cfg.offHoursRedirect;
+                return;
+            }
+
+            if (!isOnline && cfg.offHoursBehavior === 'lead_form') {
+                var panelsOpenLead = drawer.classList.contains('is-open');
+                if (panelsOpenLead) {
+                    closePanels();
+                } else {
+                    openPanels();
+                }
                 return;
             }
 
@@ -859,4 +921,29 @@
     }
 
     window.rawnaqFloatingDockBoot = function () { initAll(true); };
+
+    /**
+     * Open WhatsApp dock with an optional one-shot message override.
+     * @param {{ message?: string }} opts
+     * @returns {boolean}
+     */
+    window.rawnaqDockOpen = function (opts) {
+        opts = opts || {};
+        var root = document.querySelector('.rawnaq-dock-container.rawnaq-whatsapp-dock-mode[data-wa-dock]');
+        if (!root) {
+            root = document.querySelector('[data-wa-dock]');
+        }
+        if (!root) {
+            return false;
+        }
+        var cfg = parseWaCfg(root);
+        if (!cfg || cfg.whatsappMode === false) {
+            return false;
+        }
+        var agents = Array.isArray(cfg.agents) ? cfg.agents.filter(function (a) {
+            return a && a.number;
+        }) : [];
+        openChannel(cfg, agents[0] || null, { message: opts.message || '' });
+        return true;
+    };
 })();

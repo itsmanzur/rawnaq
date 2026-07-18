@@ -10,11 +10,47 @@
     --fc-amber-soft: #fef3c7;
     --fc-radius: 14px;
     --fc-node-w: 150px;
+    --fc-avatar: 30px;
+    --fc-avatar-radius: 9px;
+    --fc-avatar-gap: 8px;
+    --fc-avatar-bg: var(--fc-amber-soft);
+    --fc-avatar-icon: #92400e;
+    --fc-avatar-icon-size: 14px;
+    --fc-avatar-border: transparent;
+    --fc-avatar-border-w: 0px;
+    --fc-avatar-fit: cover;
     position: relative;
     width: 100%;
     max-width: 100%;
     color: var(--fc-ink);
     font-family: inherit;
+}
+
+.rawnaq-flow-chart.avatar-circle {
+    --fc-avatar-radius: 50%;
+}
+
+.rawnaq-flow-chart.avatar-square {
+    --fc-avatar-radius: 4px;
+}
+
+.rawnaq-flow-chart.avatar-rounded {
+    --fc-avatar-radius: 9px;
+}
+
+.rawnaq-flow-chart.is-exporting .rawnaq-flow-viewport {
+    overflow: visible !important;
+}
+
+.rawnaq-flow-chart.is-exporting .rawnaq-flow-node {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+}
+
+.rawnaq-flow-chart.is-exporting .rawnaq-flow-connectors path {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
 }
 
 .rawnaq-flow-viewport {
@@ -222,17 +258,43 @@
 }
 
 .rawnaq-flow-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-    background: var(--fc-amber-soft);
+    width: var(--fc-avatar);
+    height: var(--fc-avatar);
+    min-width: var(--fc-avatar);
+    min-height: var(--fc-avatar);
+    border-radius: var(--fc-avatar-radius);
+    background: var(--fc-avatar-bg, var(--fc-amber-soft));
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #92400e;
+    margin-bottom: var(--fc-avatar-gap, 8px);
+    font-size: var(--fc-avatar-icon-size, 14px);
+    color: var(--fc-avatar-icon, #92400e);
     line-height: 1;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    border: var(--fc-avatar-border-w, 0px) solid var(--fc-avatar-border, transparent);
+}
+
+.rawnaq-fc-avatar-shadow-yes .rawnaq-flow-icon,
+.rawnaq-flow-chart.has-avatar-shadow .rawnaq-flow-icon {
+    box-shadow: 0 4px 12px rgba(30, 27, 46, 0.16);
+}
+
+.rawnaq-flow-icon.has-image {
+    padding: 0;
+    background: #e8e4f0;
+    color: transparent;
+}
+
+.rawnaq-flow-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: var(--fc-avatar-fit, cover);
+    object-position: center;
+    display: block;
+    border-radius: inherit;
 }
 
 .rawnaq-flow-node.is-root .rawnaq-flow-icon {
@@ -240,10 +302,20 @@
     color: #fff;
 }
 
+.rawnaq-flow-node.is-root .rawnaq-flow-icon.has-image {
+    background: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
 .rawnaq-flow-icon .dashicons {
     width: 1em;
     height: 1em;
-    font-size: 16px;
+    font-size: 1.15em;
+    line-height: 1;
+}
+
+.rawnaq-flow-icon i {
+    font-size: 1em;
     line-height: 1;
 }
 
@@ -330,6 +402,19 @@
     border-radius: 50%;
     background: var(--fc-amber);
     flex-shrink: 0;
+}
+
+.rawnaq-flow-mobile-item .rawnaq-flow-icon {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    margin-bottom: 0;
+    font-size: 12px;
+}
+
+.rawnaq-flow-mobile-item.is-root .rawnaq-flow-icon.has-image {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
 }
 
 .rawnaq-flow-mobile-item b {

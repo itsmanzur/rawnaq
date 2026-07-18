@@ -20,8 +20,8 @@ Do these only when asked; not part of the shipped 1.6.x roadmap above.
 
 | # | Feature | Notes |
 |---|---------|--------|
-| A | Canvas drag-resize | Resize/reorder cells visually in editor canvas |
-| B | Gutenberg InnerBlocks | Nest blocks inside bento cells |
+| A | Canvas drag-resize | Resize/reorder cells visually in editor canvas — **shipped (Elementor edit-mode SE handle → col/row span)** |
+| B | Gutenberg InnerBlocks | Nest blocks inside bento cells — **shipped (`rawnaq/bento-cell` + parent InnerBlocks; cellsJson fallback)** |
 | C | Custom HTML cells | Per-cell raw HTML (sanitize carefully) |
 
 ## Related files

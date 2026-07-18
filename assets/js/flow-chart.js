@@ -351,10 +351,227 @@
             .replace(/"/g, '&quot;');
     }
 
+    function escapeXml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    }
+
+    function cssVar(el, name, fallback) {
+        if (!el || !window.getComputedStyle) {
+            return fallback;
+        }
+        var v = window.getComputedStyle(el).getPropertyValue(name);
+        v = (v || '').trim();
+        return v || fallback;
+    }
+
+    function loadImageDataUrl(src) {
+        return new Promise(function (resolve) {
+            if (!src) {
+                resolve('');
+                return;
+            }
+            if (src.indexOf('data:') === 0) {
+                resolve(src);
+                return;
+            }
+            var img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function () {
+                try {
+                    var c = document.createElement('canvas');
+                    c.width = img.naturalWidth || img.width || 1;
+                    c.height = img.naturalHeight || img.height || 1;
+                    c.getContext('2d').drawImage(img, 0, 0);
+                    resolve(c.toDataURL('image/png'));
+                } catch (e) {
+                    resolve(src);
+                }
+            };
+            img.onerror = function () {
+                resolve('');
+            };
+            img.src = src;
+        });
+    }
+
+    /**
+     * Pure SVG snapshot (no foreignObject) so PNG/SVG include nodes + connectors.
+     */
+    function buildFlowExportSvg(root, wrap, width, height, bg) {
+        var pad = 16;
+        var w = Math.ceil(width + pad * 2);
+        var h = Math.ceil(height + pad * 2);
+        var indigo = cssVar(root, '--fc-indigo', '#4338ca');
+        var violet = cssVar(root, '--fc-violet', '#7c3aed');
+        var line = cssVar(root, '--fc-line', '#e6e2f0');
+        var amber = cssVar(root, '--fc-amber', '#fbbf24');
+        var amberSoft = cssVar(root, '--fc-amber-soft', '#fef3c7');
+        var panel = cssVar(root, '--fc-panel', '#ffffff');
+        var ink = cssVar(root, '--fc-ink', '#1e1b2e');
+        var muted = cssVar(root, '--fc-muted', '#6b6478');
+        var radius = parseFloat(cssVar(root, '--fc-radius', '14')) || 14;
+        var avatar = parseFloat(cssVar(root, '--fc-avatar', '30')) || 30;
+        var avatarRadius = cssVar(root, '--fc-avatar-radius', '9px');
+        var avatarBg = cssVar(root, '--fc-avatar-bg', amberSoft);
+        var avatarIcon = cssVar(root, '--fc-avatar-icon', '#92400e');
+        var avatarFit = cssVar(root, '--fc-avatar-fit', 'cover');
+        var fillBg = bg || '#ffffff';
+
+        var nodeEls = Array.prototype.slice.call(wrap.querySelectorAll('.rawnaq-flow-node'));
+        var pathEls = Array.prototype.slice.call(wrap.querySelectorAll('.rawnaq-flow-connectors path'));
+
+        var imageJobs = nodeEls.map(function (el) {
+            var img = el.querySelector('.rawnaq-flow-icon-img');
+            return loadImageDataUrl(img ? (img.currentSrc || img.src) : '');
+        });
+
+        return Promise.all(imageJobs).then(function (imageUrls) {
+            var out = [];
+            out.push('<?xml version="1.0" encoding="UTF-8"?>');
+            out.push(
+                '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="'
+                + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">'
+            );
+            out.push('<rect width="100%" height="100%" fill="' + escapeXml(fillBg) + '"/>');
+            out.push('<defs>');
+            out.push(
+                '<linearGradient id="rqFcRoot" x1="0%" y1="0%" x2="100%" y2="100%">'
+                + '<stop offset="0%" stop-color="' + escapeXml(indigo) + '"/>'
+                + '<stop offset="100%" stop-color="' + escapeXml(violet) + '"/>'
+                + '</linearGradient>'
+            );
+            out.push('</defs>');
+            out.push('<g transform="translate(' + pad + ',' + pad + ')">');
+
+            pathEls.forEach(function (path) {
+                var d = path.getAttribute('d') || '';
+                if (!d) {
+                    return;
+                }
+                var accent = path.classList.contains('accent');
+                out.push(
+                    '<path d="' + escapeXml(d) + '" fill="none" stroke="'
+                    + escapeXml(accent ? amber : line) + '" stroke-width="'
+                    + (accent ? '3' : '2.5') + '" stroke-linecap="round" stroke-linejoin="round"/>'
+                );
+            });
+
+            nodeEls.forEach(function (el, idx) {
+                var x = parseFloat(el.style.left);
+                var y = parseFloat(el.style.top);
+                if (isNaN(x)) {
+                    x = el.offsetLeft || 0;
+                }
+                if (isNaN(y)) {
+                    y = el.offsetTop || 0;
+                }
+                var nw = el.offsetWidth || NODE_W;
+                var nh = el.offsetHeight || NODE_H;
+                var isRoot = el.classList.contains('is-root');
+                var isDecision = el.classList.contains('is-decision');
+                var isCircle = el.classList.contains('shape-circle');
+                var titleEl = el.querySelector('.rawnaq-flow-title');
+                var roleEl = el.querySelector('.rawnaq-flow-role');
+                var iconEl = el.querySelector('.rawnaq-flow-icon');
+                var title = titleEl ? titleEl.textContent : '';
+                var role = roleEl ? roleEl.textContent : '';
+                var rx = isCircle ? nw / 2 : radius;
+                var fill = isRoot ? 'url(#rqFcRoot)' : (isDecision ? amberSoft : panel);
+                var stroke = isRoot ? 'none' : (isDecision ? amber : line);
+                var strokeW = isRoot ? 0 : 1.5;
+                var textColor = isRoot ? '#ffffff' : ink;
+                var roleColor = isRoot ? 'rgba(255,255,255,0.75)' : muted;
+
+                out.push(
+                    '<rect x="' + x + '" y="' + y + '" width="' + nw + '" height="' + nh
+                    + '" rx="' + rx + '" ry="' + rx + '" fill="' + escapeXml(fill)
+                    + '" stroke="' + escapeXml(stroke) + '" stroke-width="' + strokeW + '"/>'
+                );
+
+                var ax = x + 14;
+                var ay = y + 12;
+                var hasImage = !!(imageUrls[idx]);
+                var iconText = '';
+                if (iconEl && !hasImage) {
+                    var fa = iconEl.querySelector('i, .dashicons');
+                    if (!fa) {
+                        iconText = (iconEl.textContent || '').trim();
+                    }
+                }
+
+                var avRx = avatarRadius.indexOf('%') !== -1 ? avatar / 2 : (parseFloat(avatarRadius) || 9);
+                out.push(
+                    '<rect x="' + ax + '" y="' + ay + '" width="' + avatar + '" height="' + avatar
+                    + '" rx="' + avRx + '" ry="' + avRx + '" fill="'
+                    + escapeXml(isRoot && !hasImage ? 'rgba(255,255,255,0.18)' : avatarBg) + '"/>'
+                );
+
+                if (hasImage) {
+                    out.push(
+                        '<clipPath id="rqAv' + idx + '">'
+                        + '<rect x="' + ax + '" y="' + ay + '" width="' + avatar + '" height="' + avatar
+                        + '" rx="' + avRx + '" ry="' + avRx + '"/>'
+                        + '</clipPath>'
+                    );
+                    var href = escapeXml(imageUrls[idx]);
+                    var preserve = avatarFit === 'contain' ? 'xMidYMid meet' : (avatarFit === 'fill' ? 'none' : 'xMidYMid slice');
+                    out.push(
+                        '<image x="' + ax + '" y="' + ay + '" width="' + avatar + '" height="' + avatar
+                        + '" preserveAspectRatio="' + preserve + '" clip-path="url(#rqAv' + idx + ')" href="'
+                        + href + '" xlink:href="' + href + '"/>'
+                    );
+                } else if (iconText) {
+                    out.push(
+                        '<text x="' + (ax + avatar / 2) + '" y="' + (ay + avatar / 2 + 4)
+                        + '" text-anchor="middle" font-size="12" fill="'
+                        + escapeXml(isRoot ? '#ffffff' : avatarIcon) + '">'
+                        + escapeXml(iconText) + '</text>'
+                    );
+                } else {
+                    out.push(
+                        '<circle cx="' + (ax + avatar / 2) + '" cy="' + (ay + avatar / 2)
+                        + '" r="4" fill="' + escapeXml(isRoot ? '#ffffff' : avatarIcon) + '"/>'
+                    );
+                }
+
+                var textX = ax;
+                var textY = ay + avatar + 18;
+                out.push(
+                    '<text x="' + textX + '" y="' + textY
+                    + '" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="'
+                    + escapeXml(textColor) + '">' + escapeXml(title) + '</text>'
+                );
+                if (role) {
+                    out.push(
+                        '<text x="' + textX + '" y="' + (textY + 16)
+                        + '" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="'
+                        + escapeXml(roleColor) + '">' + escapeXml(role) + '</text>'
+                    );
+                }
+            });
+
+            out.push('</g></svg>');
+            return out.join('');
+        });
+    }
+
     function renderIcon(node) {
+        var image = node.image || node.imageUrl || '';
+        if (image) {
+            return '<span class="rawnaq-flow-icon has-image"><img class="rawnaq-flow-icon-img" src="'
+                + escapeHtml(image) + '" alt="" loading="lazy" decoding="async" /></span>';
+        }
         var icon = node.icon || '';
         if (icon.indexOf('dashicons-') === 0) {
             return '<span class="rawnaq-flow-icon"><span class="dashicons ' + escapeHtml(icon) + '" aria-hidden="true"></span></span>';
+        }
+        if (/\bfa[srb]?\b|\beicon-/.test(icon) || (icon.indexOf(' ') !== -1 && icon.indexOf('<') === -1)) {
+            return '<span class="rawnaq-flow-icon"><i class="' + escapeHtml(icon) + '" aria-hidden="true"></i></span>';
         }
         if (icon) {
             return '<span class="rawnaq-flow-icon" aria-hidden="true">' + escapeHtml(icon) + '</span>';
@@ -404,6 +621,13 @@
         }
         var connector = cfg.connector || 'curved';
         var zoomEnabled = cfg.zoom !== false && !isMobile();
+        var exportEnabled = cfg.export !== false;
+        var avatarShape = cfg.avatarShape || 'rounded';
+        if (avatarShape !== 'circle' && avatarShape !== 'square' && avatarShape !== 'rounded') {
+            avatarShape = 'rounded';
+        }
+        root.classList.remove('avatar-rounded', 'avatar-circle', 'avatar-square');
+        root.classList.add('avatar-' + avatarShape);
 
         var nodes = cfg.nodes.map(function (n, i) {
             return {
@@ -412,6 +636,7 @@
                 title: n.title || '',
                 role: n.role || '',
                 icon: n.icon || '',
+                image: n.image || n.imageUrl || '',
                 detail: n.detail || '',
                 link: n.link || '',
                 decision: !!n.decision,
@@ -468,6 +693,8 @@
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('class', 'rawnaq-flow-connectors path-' + (connector === 'dashed' ? 'dashed' : 'solid'));
         svg.setAttribute('viewBox', '0 0 ' + maxX + ' ' + maxY);
+        svg.setAttribute('width', String(maxX));
+        svg.setAttribute('height', String(maxY));
 
         var canvas = document.createElement('div');
         canvas.className = 'rawnaq-flow-canvas';
@@ -497,6 +724,7 @@
             el.className = 'rawnaq-flow-node shape-' + nodeShape
                 + (n.root ? ' is-root' : '')
                 + (n.decision ? ' is-decision' : '')
+                + (n.image ? ' has-image' : '')
                 + (useLazy && idx >= 8 ? ' is-lazy' : '');
             el.style.left = pos.x + 'px';
             el.style.top = pos.y + 'px';
@@ -536,7 +764,8 @@
             if (n.link) {
                 item.href = n.link;
             }
-            item.innerHTML = '<div class="dot"></div><div><b>' + escapeHtml(n.title) + '</b>'
+            item.innerHTML = renderIcon(n)
+                + '<div><b>' + escapeHtml(n.title) + '</b>'
                 + (n.role ? '<span>' + escapeHtml(n.role) + '</span>' : '') + '</div>';
             mobile.appendChild(item);
         });
@@ -624,6 +853,47 @@
             document.addEventListener('pointermove', onPointerMove);
             document.addEventListener('pointerup', onPointerUp);
             viewport.classList.add('has-zoom');
+        }
+
+        if (exportEnabled && window.rawnaqDiagramExport && rawnaqDiagramExport.attachToolbar) {
+            var savedTransform = null;
+            rawnaqDiagramExport.attachToolbar(root, {
+                filenameBase: 'rawnaq-flow-chart',
+                background: '#ffffff',
+                varSource: root,
+                getTarget: function () {
+                    return wrap;
+                },
+                getSize: function () {
+                    return { width: maxX + 32, height: maxY + 32 };
+                },
+                getSvgMarkup: function (width, height, meta) {
+                    return buildFlowExportSvg(root, wrap, maxX, maxY, (meta && meta.background) || '#ffffff');
+                },
+                prepare: function () {
+                    savedTransform = { scale: scale, panX: panX, panY: panY };
+                    applyTransform(wrap, 1, 0, 0);
+                    wrap.style.width = maxX + 'px';
+                    wrap.style.height = maxY + 'px';
+                    wrap.querySelectorAll('.rawnaq-flow-node').forEach(function (el) {
+                        el.classList.add('show');
+                        el.classList.remove('is-lazy');
+                        el.style.opacity = '1';
+                        el.style.transform = 'none';
+                        el.style.visibility = 'visible';
+                    });
+                    return function () {
+                        if (!savedTransform) {
+                            return;
+                        }
+                        applyTransform(wrap, savedTransform.scale, savedTransform.panX, savedTransform.panY);
+                        savedTransform = null;
+                    };
+                },
+                getHide: function () {
+                    return ['.rawnaq-flow-zoom', '.rawnaq-diagram-export', '.rawnaq-flow-detail', '.rawnaq-flow-mobile'];
+                }
+            });
         }
 
         function showDetail(e, node, el) {

@@ -159,6 +159,14 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'condition'    => [ 'toc_position!' => 'none' ],
         ] );
 
+        $this->add_control( 'show_search', [
+            'label'        => esc_html__( 'TOC Search Filter', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => '',
+            'condition'    => [ 'toc_position!' => 'none' ],
+        ] );
+
         $this->add_control( 'mobile_collapse', [
             'label'        => esc_html__( 'Mobile FAB for TOC', 'rawnaq' ),
             'type'         => \Elementor\Controls_Manager::SWITCHER,
@@ -206,6 +214,26 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'selectors'  => [ '{{WRAPPER}} .rawnaq-spt' => '--spt-bar-h: {{SIZE}}{{UNIT}};' ],
         ] );
 
+        $this->add_control( 'ring_size', [
+            'label'      => esc_html__( 'Ring Size', 'rawnaq' ),
+            'type'       => \Elementor\Controls_Manager::SLIDER,
+            'size_units' => [ 'px' ],
+            'range'      => [ 'px' => [ 'min' => 40, 'max' => 96 ] ],
+            'default'    => [ 'size' => 56 ],
+            'selectors'  => [ '{{WRAPPER}} .rawnaq-spt' => '--spt-ring-size: {{SIZE}}{{UNIT}};' ],
+            'condition'  => [ 'progress' => [ 'ring', 'both' ] ],
+            'description'=> esc_html__( 'Applies to the fixed progress ring on the page.', 'rawnaq' ),
+        ] );
+
+        $this->add_control( 'sync_timeline', [
+            'label'       => esc_html__( 'Sync Timeline ID', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => '',
+            'placeholder' => 'rawnaq-tl-hero',
+            'description' => esc_html__( 'Optional. Same Named Timeline ID as Scroll Sync Timeline — shows the active step as “Chapter …” near the TOC.', 'rawnaq' ),
+            'condition'   => [ 'toc_position!' => 'none' ],
+        ] );
+
         $this->end_controls_section();
     }
 
@@ -232,11 +260,13 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'levels'         => array_values( $levels ),
             'manual'         => $manual,
             'collapseSubs'   => ( $s['collapse_subs'] ?? '' ) === 'yes',
+            'showSearch'     => ( $s['show_search'] ?? '' ) === 'yes',
             'smooth'         => ( $s['smooth'] ?? 'yes' ) === 'yes',
             'scrollOffset'   => isset( $s['scroll_offset'] ) ? (int) $s['scroll_offset'] : 80,
             'readingTime'    => ( $s['reading_time'] ?? '' ) === 'yes',
             'mobileCollapse' => ( $s['mobile_collapse'] ?? 'yes' ) === 'yes',
             'dockAttach'     => ( $s['dock_attach'] ?? '' ) === 'yes',
+            'syncTimeline'   => sanitize_text_field( $s['sync_timeline'] ?? '' ),
             'hideIfShort'    => true,
         ];
     }
@@ -245,13 +275,21 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
         $s   = $this->get_settings_for_display();
         $cfg = $this->build_cfg( $s );
         $pos = $cfg['tocPosition'];
+        $ring = isset( $s['ring_size']['size'] ) ? (int) $s['ring_size']['size'] : 56;
+        if ( $ring < 40 ) {
+            $ring = 40;
+        }
+        if ( $ring > 96 ) {
+            $ring = 96;
+        }
         ?>
         <div class="rawnaq-spt"
-             style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px;"
+             style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px; --spt-ring-size: <?php echo esc_attr( (string) $ring ); ?>px;"
              data-spt="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>">
             <?php if ( 'none' !== $pos ) : ?>
                 <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $pos ); ?>" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
                     <p class="rawnaq-spt-reading" hidden></p>
+                    <p class="rawnaq-spt-chapter" hidden></p>
                     <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
                     <ul class="rawnaq-spt-list"></ul>
                 </nav>
