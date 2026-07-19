@@ -104,9 +104,13 @@ Deferred (needs care)
 - [x] Scroll Story rich chapters: rich-text body (`wp_kses_post`), per-chapter video with poster, #anchor deep-linking + hash sync
 - [x] JSON-LD schema pack `includes/rawnaq-schema.php`: `rawnaq_schema_case_studies` (CreativeWork ItemList, wired to CPT grid), `rawnaq_schema_timeline` (wired to query timelines), `rawnaq_schema_reviews` (Review/AggregateRating helper). All behind `rawnaq_enable_schema`.
 
-### Premium follow-ups (need live QA / larger builds)
-- [ ] Case-Study AJAX: verify modal/bridge payloads on appended pages across bento/uniform/masonry; consider filter deep-links
-- [ ] Bento testimonial cells: auto-emit Review schema (needs cell content extraction)
-- [ ] Additional CRMs (HubSpot/native Zapier UI) beyond Mailchimp + webhook + hook
-- [ ] Flow Chart swimlanes: optional lane-aware layout engine (current bands derive from node extents)
+### Premium follow-ups
+- [x] Case-Study AJAX hardening: server `perPage` aligned (12), no page-1 hidden-card conflict, `applyFilters` skipped in AJAX mode, empty-state message + loading states
+- [x] Bento testimonial cells auto-emit Review/AggregateRating schema (Elementor + Gutenberg)
+- [x] HubSpot CRM (Forms API v3: portal ID setting + per-form GUID) alongside Mailchimp + webhook + `rawnaq_smart_form_submission` hook
+- [x] Flow Chart lane-aware layout for process mode (cross-axis banding by lane)
+
+### Still open (needs live QA)
+- [ ] Case-Study AJAX: end-to-end browser test of modal/discuss/masonry on appended pages; optional filter deep-links
+- [ ] Flow Chart lane layout: verify same-lane/same-stage collision handling on dense process diagrams
 

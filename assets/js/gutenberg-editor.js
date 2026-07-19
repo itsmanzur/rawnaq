@@ -3143,14 +3143,21 @@
                             value: attributes.crmProvider || 'none',
                             options: [
                                 { label: 'None', value: 'none' },
-                                { label: 'Mailchimp', value: 'mailchimp' }
+                                { label: 'Mailchimp', value: 'mailchimp' },
+                                { label: 'HubSpot', value: 'hubspot' }
                             ],
-                            help: 'Add the Mailchimp API key in Rawnaq settings. Other CRMs: webhook or rawnaq_smart_form_submission hook.',
+                            help: 'Add Mailchimp API key / HubSpot portal ID in Rawnaq settings. Other CRMs: webhook or rawnaq_smart_form_submission hook.',
                             onChange: function(v) { setAttributes({ crmProvider: v }); }
                         }),
                         (attributes.crmProvider === 'mailchimp') && el(TextControl, {
                             label: 'Mailchimp Audience ID',
                             value: attributes.crmAudience || '',
+                            onChange: function(v) { setAttributes({ crmAudience: v || '' }); }
+                        }),
+                        (attributes.crmProvider === 'hubspot') && el(TextControl, {
+                            label: 'HubSpot Form GUID',
+                            value: attributes.crmAudience || '',
+                            help: 'A HubSpot form GUID in the portal set under Rawnaq settings.',
                             onChange: function(v) { setAttributes({ crmAudience: v || '' }); }
                         })
                     ),

@@ -325,6 +325,7 @@ class Rawnaq_Admin_Dashboard {
                                 $rc_site     = sanitize_text_field( $sf_settings['recaptcha_site_key'] ?? '' );
                                 $rc_secret   = sanitize_text_field( $sf_settings['recaptcha_secret_key'] ?? '' );
                                 $mc_key      = sanitize_text_field( $sf_settings['mailchimp_api_key'] ?? '' );
+                                $hs_portal   = sanitize_text_field( $sf_settings['hubspot_portal_id'] ?? '' );
                                 $max_up      = isset( $sf_settings['sf_max_upload_mb'] ) ? absint( $sf_settings['sf_max_upload_mb'] ) : 5;
                                 if ( $max_up < 1 ) {
                                     $max_up = 5;
@@ -350,6 +351,11 @@ class Rawnaq_Admin_Dashboard {
                                     <label for="rawnaq-mc-key"><strong><?php esc_html_e( 'Mailchimp API key', 'rawnaq' ); ?></strong></label><br />
                                     <input type="password" class="regular-text" id="rawnaq-mc-key" name="mailchimp_api_key" value="<?php echo esc_attr( $mc_key ); ?>" autocomplete="off" placeholder="xxxxxxxx-us21" />
                                     <span class="description"><?php esc_html_e( 'Used by Smart Form CRM = Mailchimp. Set the Audience ID per form.', 'rawnaq' ); ?></span>
+                                </p>
+                                <p>
+                                    <label for="rawnaq-hs-portal"><strong><?php esc_html_e( 'HubSpot Portal ID', 'rawnaq' ); ?></strong></label><br />
+                                    <input type="text" class="regular-text" id="rawnaq-hs-portal" name="hubspot_portal_id" value="<?php echo esc_attr( $hs_portal ); ?>" placeholder="1234567" />
+                                    <span class="description"><?php esc_html_e( 'Used by Smart Form CRM = HubSpot. Set the Form GUID per form.', 'rawnaq' ); ?></span>
                                 </p>
                             </div>
 
@@ -654,6 +660,7 @@ class Rawnaq_Admin_Dashboard {
         $settings['recaptcha_site_key']   = isset( $form_data['recaptcha_site_key'] ) ? sanitize_text_field( $form_data['recaptcha_site_key'] ) : '';
         $settings['recaptcha_secret_key'] = isset( $form_data['recaptcha_secret_key'] ) ? sanitize_text_field( $form_data['recaptcha_secret_key'] ) : '';
         $settings['mailchimp_api_key']    = isset( $form_data['mailchimp_api_key'] ) ? sanitize_text_field( $form_data['mailchimp_api_key'] ) : '';
+        $settings['hubspot_portal_id']    = isset( $form_data['hubspot_portal_id'] ) ? sanitize_text_field( $form_data['hubspot_portal_id'] ) : '';
         $settings['sf_max_upload_mb']     = isset( $form_data['sf_max_upload_mb'] ) ? max( 1, min( 25, absint( $form_data['sf_max_upload_mb'] ) ) ) : 5;
         update_option( 'rawnaq_settings', $settings );
 

@@ -955,6 +955,34 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
             <?php endforeach; ?>
         </div>
         <?php
+        // JSON-LD Review schema from testimonial cells.
+        if ( ! $this->is_editor_preview() && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_reviews' ) ) {
+            $testimonials = [];
+            foreach ( $cells as $cell ) {
+                if ( ( $cell['cell_type'] ?? '' ) === 'testimonial' && ! empty( $cell['subtitle'] ) ) {
+                    $testimonials[] = [
+                        'body'   => $cell['subtitle'],
+                        'author' => $cell['title'] ?? '',
+                        'rating' => max( 0, min( 5, absint( $cell['testimonial_rating'] ?? 0 ) ) ),
+                    ];
+                }
+            }
+            if ( $testimonials ) {
+                rawnaq_schema_print( rawnaq_schema_reviews( $testimonials ), 'review' );
+            }
+        }
+    }
+
+    /**
+     * Whether we are rendering inside the Elementor editor canvas.
+     *
+     * @return bool
+     */
+    private function is_editor_preview() {
+        return class_exists( '\Elementor\Plugin' )
+            && \Elementor\Plugin::$instance
+            && isset( \Elementor\Plugin::$instance->editor )
+            && \Elementor\Plugin::$instance->editor->is_edit_mode();
     }
 
     protected function content_template() {

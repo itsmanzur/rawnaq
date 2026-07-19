@@ -576,6 +576,60 @@ function rawnaq_smart_form_mailchimp_subscribe( $email, $audience_id, $merge = [
 }
 
 /**
+ * HubSpot portal ID from site settings.
+ *
+ * @return string
+ */
+function rawnaq_smart_form_hubspot_portal() {
+	$settings = get_option( 'rawnaq_settings', [] );
+	if ( ! is_array( $settings ) ) {
+		$settings = [];
+	}
+	return sanitize_text_field( $settings['hubspot_portal_id'] ?? '' );
+}
+
+/**
+ * Submit a lead to a HubSpot form (Forms API v3 — no API key needed, uses
+ * the public portal + form GUID pair).
+ *
+ * @param string $email     Contact email.
+ * @param string $form_guid HubSpot form GUID.
+ * @param array  $values    Raw submitted values (name/phone/message…).
+ * @return bool
+ */
+function rawnaq_smart_form_hubspot_submit( $email, $form_guid, $values ) {
+	$portal = rawnaq_smart_form_hubspot_portal();
+	if ( ! $portal || ! $form_guid || ! is_email( $email ) ) {
+		return false;
+	}
+	$fields = [ [ 'name' => 'email', 'value' => $email ] ];
+	if ( ! empty( $values['name'] ) ) {
+		$parts = preg_split( '/\s+/', trim( (string) $values['name'] ), 2 );
+		$fields[] = [ 'name' => 'firstname', 'value' => $parts[0] ?? '' ];
+		if ( ! empty( $parts[1] ) ) {
+			$fields[] = [ 'name' => 'lastname', 'value' => $parts[1] ];
+		}
+	}
+	if ( ! empty( $values['phone'] ) ) {
+		$fields[] = [ 'name' => 'phone', 'value' => (string) $values['phone'] ];
+	}
+	if ( ! empty( $values['message'] ) ) {
+		$fields[] = [ 'name' => 'message', 'value' => (string) $values['message'] ];
+	}
+	$url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
+		. rawurlencode( $portal ) . '/' . rawurlencode( $form_guid );
+	$res = wp_remote_post(
+		$url,
+		[
+			'timeout' => 8,
+			'headers' => [ 'Content-Type' => 'application/json' ],
+			'body'    => wp_json_encode( [ 'fields' => $fields ] ),
+		]
+	);
+	return ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) < 400;
+}
+
+/**
  * Dispatch a submission to configured CRM/ESP integrations + fire the
  * generic extension hook so third-party code (Zapier, custom) can react.
  *
@@ -594,7 +648,8 @@ function rawnaq_smart_form_dispatch_crm( $values, $tpl_vals, $cfg, $form_id ) {
 		}
 	}
 
-	if ( 'mailchimp' === ( $cfg['crmProvider'] ?? '' ) && ! empty( $cfg['crmAudience'] ) && $email ) {
+	$provider = $cfg['crmProvider'] ?? '';
+	if ( 'mailchimp' === $provider && ! empty( $cfg['crmAudience'] ) && $email ) {
 		$merge = [];
 		if ( ! empty( $values['name'] ) ) {
 			$parts          = preg_split( '/\s+/', trim( (string) $values['name'] ), 2 );
@@ -602,6 +657,8 @@ function rawnaq_smart_form_dispatch_crm( $values, $tpl_vals, $cfg, $form_id ) {
 			$merge['LNAME'] = $parts[1] ?? '';
 		}
 		rawnaq_smart_form_mailchimp_subscribe( $email, $cfg['crmAudience'], $merge );
+	} elseif ( 'hubspot' === $provider && ! empty( $cfg['crmAudience'] ) && $email ) {
+		rawnaq_smart_form_hubspot_submit( $email, $cfg['crmAudience'], $values );
 	}
 
 	/**

@@ -723,7 +723,7 @@ function rawnaq_case_study_ajax_query() {
 	$year    = isset( $_POST['year'] ) ? sanitize_text_field( wp_unslash( $_POST['year'] ) ) : '';
 	$service = isset( $_POST['service'] ) ? sanitize_text_field( wp_unslash( $_POST['service'] ) ) : '';
 
-	$per_page = max( 1, absint( $ctx['perPage'] ?? 9 ) );
+	$per_page = max( 1, absint( $ctx['perPage'] ?? 12 ) );
 	$result   = rawnaq_case_study_query_projects( [
 		'posts_per_page' => $per_page,
 		'orderby'        => $ctx['orderby'] ?? 'date',
@@ -834,6 +834,7 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		rawnaq_schema_print( rawnaq_schema_case_studies( $projects ), 'case-study' );
 	}
 	$cs_nonce = '';
+	$cs_per_page = max( 1, absint( $cfg['queryNumber'] ?? 12 ) );
 	if ( $cs_ajax ) {
 		$cs_nonce = wp_create_nonce( 'rawnaq_cs_query' );
 		rawnaq_case_study_store_ctx( $uid, [
@@ -842,7 +843,7 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 			'hideBudget'  => $hide_budget,
 			'hideClient'  => $hide_client,
 			'showDiscuss' => $show_discuss,
-			'perPage'     => max( 1, absint( $cfg['queryNumber'] ?? 9 ) ),
+			'perPage'     => $cs_per_page,
 			'orderby'     => sanitize_key( $cfg['queryOrderby'] ?? 'date' ),
 			'order'       => ( 'ASC' === strtoupper( (string) ( $cfg['queryOrder'] ?? 'DESC' ) ) ) ? 'ASC' : 'DESC',
 		] );
@@ -862,9 +863,15 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		$style .= '--cs-radius:' . esc_attr( absint( $cfg['radius'] ) ) . 'px;';
 	}
 
-	$grid_class    = 'rawnaq-cs-grid is-' . $layout;
-	$total         = count( $projects );
-	$has_load_more = $initial_visible > 0 && $initial_visible < $total;
+	$grid_class = 'rawnaq-cs-grid is-' . $layout;
+	$total      = count( $projects );
+	if ( $cs_ajax ) {
+		// Server pagination: page 1 shows all fetched cards; more pages likely
+		// when this page came back full. The AJAX response corrects hasMore.
+		$has_load_more = ( $total >= $cs_per_page );
+	} else {
+		$has_load_more = $initial_visible > 0 && $initial_visible < $total;
+	}
 	?>
 	<div class="rawnaq-case-study" id="<?php echo esc_attr( $uid ); ?>"
 		data-cs="<?php echo esc_attr( wp_json_encode( $cfg_out ) ); ?>"
@@ -872,6 +879,7 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		data-cs-ajax="1"
 		data-cs-uid="<?php echo esc_attr( $uid ); ?>"
 		data-cs-nonce="<?php echo esc_attr( $cs_nonce ); ?>"
+		data-cs-empty="<?php esc_attr_e( 'No matching projects.', 'rawnaq' ); ?>"
 		<?php endif; ?>
 		style="<?php echo esc_attr( $style . '--cs-cols:' . $columns ); ?>">
 
@@ -905,7 +913,8 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		<div class="<?php echo esc_attr( $grid_class ); ?>">
 			<?php
 			foreach ( $projects as $i => $project ) :
-				$load_hidden = $has_load_more && $i >= $initial_visible;
+				// In AJAX mode every fetched card is visible (paging is server-side).
+				$load_hidden = ! $cs_ajax && $has_load_more && $i >= $initial_visible;
 				rawnaq_case_study_render_card( $project, $layout, $hide_budget, $hide_client, $click_action, $load_hidden, $show_discuss );
 			endforeach;
 			?>

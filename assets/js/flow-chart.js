@@ -276,6 +276,50 @@
         return positions;
     }
 
+    /**
+     * Lane-aware repositioning for process diagrams. Each distinct `lane`
+     * gets its own band on the cross axis (rows for lr/rl, columns for tb),
+     * keeping the main-axis (stage/depth) position from the base layout.
+     */
+    function applyLaneLayout(positions, nodes, direction) {
+        var order = [];
+        var index = {};
+        nodes.forEach(function (n) {
+            if (n.lane && !(n.lane in index)) {
+                index[n.lane] = order.length;
+                order.push(n.lane);
+            }
+        });
+        if (order.length < 2) {
+            return positions;
+        }
+        var horizontal = direction === 'lr' || direction === 'rl';
+        nodes.forEach(function (n) {
+            var pos = positions[n.id];
+            if (!pos || !n.lane) {
+                return;
+            }
+            var lane = index[n.lane];
+            if (horizontal) {
+                pos.y = lane * (NODE_H + GAP_Y);
+            } else {
+                pos.x = lane * (NODE_W + GAP_X);
+            }
+        });
+        // Renormalize to origin after re-banding.
+        var minX = Infinity;
+        var minY = Infinity;
+        Object.keys(positions).forEach(function (id) {
+            minX = Math.min(minX, positions[id].x);
+            minY = Math.min(minY, positions[id].y);
+        });
+        Object.keys(positions).forEach(function (id) {
+            positions[id].x -= minX;
+            positions[id].y -= minY;
+        });
+        return positions;
+    }
+
     function layoutFreeform(nodes) {
         var positions = {};
         nodes.forEach(function (n) {
@@ -764,6 +808,8 @@
             positions = layoutFreeform(nodes);
         } else if (mode === 'process') {
             positions = layoutProcess(nodes, direction);
+            // True swimlanes: band nodes by lane on the cross axis.
+            positions = applyLaneLayout(positions, nodes, direction);
         } else {
             positions = layoutOrg(nodes, direction);
         }

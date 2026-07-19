@@ -354,10 +354,13 @@
             if (!res || !res.success) {
                 return;
             }
+            var html = res.data.html || '';
             if (opts.reset) {
-                grid.innerHTML = res.data.html || '';
+                grid.innerHTML = html || ('<p class="rawnaq-cs-empty">'
+                    + (root.getAttribute('data-cs-empty') || 'No matching projects.')
+                    + '</p>');
             } else {
-                grid.insertAdjacentHTML('beforeend', res.data.html || '');
+                grid.insertAdjacentHTML('beforeend', html);
             }
             root._csPage = res.data.page || page;
             root._csHasMore = !!res.data.hasMore;
@@ -579,7 +582,11 @@
         bindModal(root);
         bindDiscuss(root);
 
-        applyFilters(root);
+        // In AJAX mode the server rendered page 1 and set the load-more state;
+        // client-side filtering/hiding would wrongly collapse it.
+        if (!isAjaxGrid(root)) {
+            applyFilters(root);
+        }
         setMasonrySpans(root);
         if (window.ResizeObserver) {
             var ro = new ResizeObserver(function () {

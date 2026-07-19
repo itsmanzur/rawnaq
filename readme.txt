@@ -79,4 +79,7 @@ See `assets/js/qrcode.js` in the plugin (unminified). Minified build: `assets/js
 * Smart Form: branded HTML email receipts and CRM/ESP delivery — built-in Mailchimp subscribe plus a `rawnaq_smart_form_submission` hook for Zapier/HubSpot/custom.
 * Case-Study Grid: server-filtered AJAX pagination for the CPT source (sector/year/service + paging on the server).
 * Scroll Story: rich-text chapters, per-chapter video, and #anchor deep-linking with active-chapter hash sync.
-* SEO: JSON-LD schema pack — CreativeWork ItemList for CPT case studies and ItemList for query-based timelines (filterable; Review/AggregateRating helper included).
+* SEO: JSON-LD schema pack — CreativeWork ItemList for CPT case studies, ItemList for query-based timelines, and auto Review/AggregateRating from Bento testimonial cells (all filterable).
+* Smart Form: HubSpot CRM delivery (portal ID + per-form GUID) alongside Mailchimp and the generic hook.
+* Flow Chart: true swimlanes in process mode — nodes are banded by lane on the cross axis.
+* Case-Study: hardened AJAX pagination (server perPage aligned, no hidden-card conflict, empty-state message).

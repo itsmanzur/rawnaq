@@ -1494,6 +1494,8 @@ class Rawnaq_Gutenberg_Loader {
             $cells_raw = [];
         }
 
+        $testimonials = [];
+
         ob_start();
         ?>
         <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
@@ -1527,6 +1529,13 @@ class Rawnaq_Gutenberg_Loader {
                 $role   = sanitize_text_field( $cell['role'] ?? '' );
                 $avatar = ! empty( $cell['avatar'] ) ? esc_url( $cell['avatar'] ) : '';
                 $rating = max( 0, min( 5, absint( $cell['rating'] ?? 0 ) ) );
+                if ( 'testimonial' === $type && '' !== $subtitle ) {
+                    $testimonials[] = [
+                        'body'   => $subtitle,
+                        'author' => $title,
+                        'rating' => $rating,
+                    ];
+                }
 
                 $layout = function_exists( 'rawnaq_bento_cell_layout' )
                     ? rawnaq_bento_cell_layout( [
@@ -1711,6 +1720,9 @@ class Rawnaq_Gutenberg_Loader {
             <?php endforeach; ?>
         </div>
         <?php
+        if ( $testimonials && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_reviews' ) ) {
+            rawnaq_schema_print( rawnaq_schema_reviews( $testimonials ), 'review' );
+        }
         return ob_get_clean();
     }
 

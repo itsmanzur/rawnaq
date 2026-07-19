@@ -331,8 +331,9 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'options' => [
 				'none'      => esc_html__( 'None', 'rawnaq' ),
 				'mailchimp' => esc_html__( 'Mailchimp', 'rawnaq' ),
+				'hubspot'   => esc_html__( 'HubSpot', 'rawnaq' ),
 			],
-			'description' => esc_html__( 'Add the Mailchimp API key under Rawnaq → settings. Other CRMs: use the webhook or the rawnaq_smart_form_submission hook.', 'rawnaq' ),
+			'description' => esc_html__( 'Add Mailchimp API key / HubSpot portal ID under Rawnaq → settings. Other CRMs: use the webhook or the rawnaq_smart_form_submission hook.', 'rawnaq' ),
 		] );
 		$this->add_control( 'crm_audience', [
 			'label'       => esc_html__( 'Mailchimp Audience ID', 'rawnaq' ),
@@ -340,6 +341,14 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'default'     => '',
 			'condition'   => [ 'crm_provider' => 'mailchimp' ],
 			'label_block' => true,
+		] );
+		$this->add_control( 'crm_audience_hs', [
+			'label'       => esc_html__( 'HubSpot Form GUID', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => '',
+			'condition'   => [ 'crm_provider' => 'hubspot' ],
+			'label_block' => true,
+			'description' => esc_html__( 'The GUID of a HubSpot form in the same portal.', 'rawnaq' ),
 		] );
 
 		$this->end_controls_section();
@@ -465,7 +474,9 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'webhookUrl'        => $s['webhook_url'] ?? '',
 			'emailHtml'         => ( $s['email_html'] ?? 'yes' ) === 'yes',
 			'crmProvider'       => $s['crm_provider'] ?? 'none',
-			'crmAudience'       => $s['crm_audience'] ?? '',
+			'crmAudience'       => ( ( $s['crm_provider'] ?? 'none' ) === 'hubspot' )
+				? ( $s['crm_audience_hs'] ?? '' )
+				: ( $s['crm_audience'] ?? '' ),
 			'buttonFullWidth'   => ( $s['button_full_width'] ?? '' ) === 'yes',
 			'inputSize'         => $size,
 			'labelColor'        => $s['label_color'] ?? '',
