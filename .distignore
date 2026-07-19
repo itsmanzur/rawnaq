@@ -1,0 +1,31 @@
+# Files / folders excluded from WordPress.org release packages
+# (wp dist-archive / manual zip). Keep these in git for development.
+
+.git
+.github
+.gitignore
+.distignore
+.cursor
+*.md
+docs
+bin
+rawnaq-*-mockup.html
+rawnaq-smartform-aec-research.md
+assets/demo
+composer.json
+composer.lock
+package.json
+package-lock.json
+node_modules
+phpcs.xml
+phpcs.xml.dist
+.phpcs.xml
+.phpunit.result.cache
+tests
+.editorconfig
+.eslintrc
+.eslintrc.js
+.prettierrc
+tsconfig.json
+webpack.config.js
+dist

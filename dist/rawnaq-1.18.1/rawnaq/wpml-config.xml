@@ -1,0 +1,23 @@
+<wpml-config>
+	<gutenberg-blocks>
+		<gutenberg-block type="rawnaq/scroll-timeline" translate="1">
+			<xpath>//*[contains(@class, 'rawnaq-timeline-meta')]</xpath>
+			<xpath>//*[contains(@class, 'rawnaq-timeline-card')]/h4</xpath>
+			<xpath>//*[contains(@class, 'rawnaq-timeline-card')]/p</xpath>
+			<xpath>//*[contains(@class, 'rawnaq-timeline-cta')]</xpath>
+			<key name="stepsJson" />
+			<key name="loadMoreText" />
+			<key name="timelineName" />
+		</gutenberg-block>
+		<gutenberg-block type="rawnaq/bento-grid" translate="1">
+			<xpath>//*[contains(@class, 'rawnaq-bento-title')]</xpath>
+			<xpath>//*[contains(@class, 'rawnaq-bento-sub')]</xpath>
+			<xpath>//*[contains(@class, 'rawnaq-bento-tag')]</xpath>
+			<xpath>//*[contains(@class, 'rawnaq-bento-cta')]</xpath>
+			<key name="cellsJson" />
+		</gutenberg-block>
+	</gutenberg-blocks>
+	<admin-texts>
+		<key name="rawnaq_settings" />
+	</admin-texts>
+</wpml-config>

@@ -3,7 +3,7 @@
  * Plugin Name:  Rawnaq
  * Plugin URI:   https://github.com/Rawnaq/rawnaq
  * Description:  A highly optimized, lightweight, and modular addon pack for Elementor, Gutenberg, and other page builders. Designed for maximum speed and clean output.
- * Version:      1.0.0
+ * Version:      1.18.1
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author:       Rawnaq
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define core constants.
-define( 'RAWNAQ_VERSION', '1.0.0' );
+define( 'RAWNAQ_VERSION', '1.18.1' );
 define( 'RAWNAQ_PATH', plugin_dir_path( __FILE__ ) );
 define( 'RAWNAQ_URL', plugin_dir_url( __FILE__ ) );
 
