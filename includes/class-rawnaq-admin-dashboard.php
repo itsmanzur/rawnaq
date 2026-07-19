@@ -324,6 +324,7 @@ class Rawnaq_Admin_Dashboard {
                                 $default_wa  = sanitize_text_field( $sf_settings['default_wa_number'] ?? '' );
                                 $rc_site     = sanitize_text_field( $sf_settings['recaptcha_site_key'] ?? '' );
                                 $rc_secret   = sanitize_text_field( $sf_settings['recaptcha_secret_key'] ?? '' );
+                                $mc_key      = sanitize_text_field( $sf_settings['mailchimp_api_key'] ?? '' );
                                 $max_up      = isset( $sf_settings['sf_max_upload_mb'] ) ? absint( $sf_settings['sf_max_upload_mb'] ) : 5;
                                 if ( $max_up < 1 ) {
                                     $max_up = 5;
@@ -344,6 +345,11 @@ class Rawnaq_Admin_Dashboard {
                                 <p>
                                     <label for="rawnaq-rc-secret"><strong><?php esc_html_e( 'reCAPTCHA v3 secret key', 'rawnaq' ); ?></strong></label><br />
                                     <input type="password" class="regular-text" id="rawnaq-rc-secret" name="recaptcha_secret_key" value="<?php echo esc_attr( $rc_secret ); ?>" autocomplete="off" />
+                                </p>
+                                <p>
+                                    <label for="rawnaq-mc-key"><strong><?php esc_html_e( 'Mailchimp API key', 'rawnaq' ); ?></strong></label><br />
+                                    <input type="password" class="regular-text" id="rawnaq-mc-key" name="mailchimp_api_key" value="<?php echo esc_attr( $mc_key ); ?>" autocomplete="off" placeholder="xxxxxxxx-us21" />
+                                    <span class="description"><?php esc_html_e( 'Used by Smart Form CRM = Mailchimp. Set the Audience ID per form.', 'rawnaq' ); ?></span>
                                 </p>
                             </div>
 
@@ -647,6 +653,7 @@ class Rawnaq_Admin_Dashboard {
         $settings['default_wa_number']    = isset( $form_data['default_wa_number'] ) ? sanitize_text_field( $form_data['default_wa_number'] ) : '';
         $settings['recaptcha_site_key']   = isset( $form_data['recaptcha_site_key'] ) ? sanitize_text_field( $form_data['recaptcha_site_key'] ) : '';
         $settings['recaptcha_secret_key'] = isset( $form_data['recaptcha_secret_key'] ) ? sanitize_text_field( $form_data['recaptcha_secret_key'] ) : '';
+        $settings['mailchimp_api_key']    = isset( $form_data['mailchimp_api_key'] ) ? sanitize_text_field( $form_data['mailchimp_api_key'] ) : '';
         $settings['sf_max_upload_mb']     = isset( $form_data['sf_max_upload_mb'] ) ? max( 1, min( 25, absint( $form_data['sf_max_upload_mb'] ) ) ) : 5;
         update_option( 'rawnaq_settings', $settings );
 

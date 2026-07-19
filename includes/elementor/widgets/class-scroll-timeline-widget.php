@@ -607,6 +607,10 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
         $show_load  = $bundle['use_ajax']
             ? $bundle['has_more']
             : ( $initial_visible > 0 && count( $steps ) > $initial_visible );
+
+        if ( 'query' === $source && ! $this->is_elementor_edit_mode() && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_timeline' ) ) {
+            rawnaq_schema_print( rawnaq_schema_timeline( $steps ), 'timeline' );
+        }
         ?>
         <div
             class="<?php echo esc_attr( $wrap_class ); ?>"

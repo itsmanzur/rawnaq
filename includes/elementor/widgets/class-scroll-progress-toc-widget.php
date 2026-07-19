@@ -151,6 +151,23 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'condition' => [ 'toc_position!' => 'none' ],
         ] );
 
+        $this->add_control( 'content_selector', [
+            'label'       => esc_html__( 'Content Container (CSS selector)', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => '',
+            'placeholder' => 'main, .entry-content, article',
+            'description' => esc_html__( 'Where headings are scanned in Auto mode. Leave blank for smart auto-detect. Set this for FSE/block themes with custom wrappers.', 'rawnaq' ),
+            'condition'   => [ 'source' => 'auto' ],
+        ] );
+
+        $this->add_control( 'hide_if_short', [
+            'label'        => esc_html__( 'Hide on Short Pages', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'description'  => esc_html__( 'Hide the progress/TOC when the page is barely taller than the viewport.', 'rawnaq' ),
+        ] );
+
         $this->add_control( 'reading_time', [
             'label'        => esc_html__( 'Show Reading Time', 'rawnaq' ),
             'type'         => \Elementor\Controls_Manager::SWITCHER,
@@ -267,7 +284,8 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'mobileCollapse' => ( $s['mobile_collapse'] ?? 'yes' ) === 'yes',
             'dockAttach'     => ( $s['dock_attach'] ?? '' ) === 'yes',
             'syncTimeline'   => sanitize_text_field( $s['sync_timeline'] ?? '' ),
-            'hideIfShort'    => true,
+            'scope'          => sanitize_text_field( $s['content_selector'] ?? '' ),
+            'hideIfShort'    => ( $s['hide_if_short'] ?? 'yes' ) === 'yes',
         ];
     }
 

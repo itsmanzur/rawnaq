@@ -20,9 +20,42 @@
         return isNaN(n) ? fallback : n;
     }
 
+    function bindFlip(card) {
+        // Click-to-flip trigger with keyboard support.
+        if (!card.classList.contains('flip-click')) {
+            return;
+        }
+        function toggle() {
+            var flipped = card.classList.toggle('is-flipped');
+            card.setAttribute('aria-pressed', flipped ? 'true' : 'false');
+        }
+        card.addEventListener('click', function (e) {
+            // Let real links inside the card work without toggling.
+            if (e.target.closest('a')) {
+                return;
+            }
+            toggle();
+        });
+        card.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                if (e.target.closest('a')) {
+                    return;
+                }
+                e.preventDefault();
+                toggle();
+            }
+        });
+    }
+
     function bindCard(card) {
         if (!card || (bound && bound.has(card))) return;
         if (bound) bound.add(card);
+
+        // Flip cards manage their own interaction; skip 3D pointer tilt.
+        if (card.classList.contains('is-flip')) {
+            bindFlip(card);
+            return;
+        }
 
         if (prefersReducedMotion() || isCoarsePointer()) {
             card.classList.add('no-tilt');

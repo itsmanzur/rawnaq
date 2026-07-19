@@ -96,6 +96,65 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
 
         $this->end_controls_section();
 
+        // ── Content: Back Face (Flip) ──
+        $this->start_controls_section( 's_flip', [
+            'label' => esc_html__( 'Flip / Back Face', 'rawnaq' ),
+            'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+        ] );
+
+        $this->add_control( 'enable_flip', [
+            'label'        => esc_html__( 'Enable Flip', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => '',
+            'description'  => esc_html__( 'Reveal a back face on hover or click. 3D tilt is paused while flip is on.', 'rawnaq' ),
+        ] );
+
+        $this->add_control( 'flip_trigger', [
+            'label'     => esc_html__( 'Flip Trigger', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::SELECT,
+            'default'   => 'hover',
+            'options'   => [
+                'hover' => esc_html__( 'Hover', 'rawnaq' ),
+                'click' => esc_html__( 'Click / Tap', 'rawnaq' ),
+            ],
+            'condition' => [ 'enable_flip' => 'yes' ],
+        ] );
+
+        $this->add_control( 'back_title', [
+            'label'       => esc_html__( 'Back Title', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => esc_html__( 'Why choose us', 'rawnaq' ),
+            'label_block' => true,
+            'condition'   => [ 'enable_flip' => 'yes' ],
+        ] );
+
+        $this->add_control( 'back_desc', [
+            'label'     => esc_html__( 'Back Description', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::TEXTAREA,
+            'default'   => esc_html__( 'Add the extra detail, specs, or a persuasive reason that lives on the reverse side.', 'rawnaq' ),
+            'rows'      => 4,
+            'condition' => [ 'enable_flip' => 'yes' ],
+        ] );
+
+        $this->add_control( 'back_cta_text', [
+            'label'       => esc_html__( 'Back CTA Text', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => esc_html__( 'Get started', 'rawnaq' ),
+            'label_block' => true,
+            'condition'   => [ 'enable_flip' => 'yes' ],
+        ] );
+
+        $this->add_control( 'back_cta_link', [
+            'label'       => esc_html__( 'Back CTA Link', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::URL,
+            'placeholder' => 'https://example.com',
+            'default'     => [ 'url' => '', 'is_external' => false, 'nofollow' => false ],
+            'condition'   => [ 'enable_flip' => 'yes' ],
+        ] );
+
+        $this->end_controls_section();
+
         // ── Style: Layout & Motion ──
         $this->start_controls_section( 's_layout', [
             'label' => esc_html__( 'Layout & Motion', 'rawnaq' ),
@@ -280,6 +339,29 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
             'selectors'  => [ '{{WRAPPER}} .rawnaq-tilt-btn' => 'border-radius: {{SIZE}}{{UNIT}};' ],
         ] );
 
+        $this->add_control( 'back_heading', [
+            'label'     => esc_html__( 'Back Face', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::HEADING,
+            'separator' => 'before',
+            'condition' => [ 'enable_flip' => 'yes' ],
+        ] );
+
+        $this->add_control( 'back_bg', [
+            'label'     => esc_html__( 'Back Background', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'default'   => '#4338ca',
+            'selectors' => [ '{{WRAPPER}} .rawnaq-tilt-back' => '--tilt-back-bg: {{VALUE}};' ],
+            'condition' => [ 'enable_flip' => 'yes' ],
+        ] );
+
+        $this->add_control( 'back_color', [
+            'label'     => esc_html__( 'Back Text Color', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'default'   => '#ffffff',
+            'selectors' => [ '{{WRAPPER}} .rawnaq-tilt-back' => '--tilt-back-color: {{VALUE}};' ],
+            'condition' => [ 'enable_flip' => 'yes' ],
+        ] );
+
         $this->end_controls_section();
     }
 
@@ -348,9 +430,16 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
             $cta_link = $card_link;
         }
 
+        $enable_flip = ( $s['enable_flip'] ?? '' ) === 'yes';
+        $flip_trigger = ( $s['flip_trigger'] ?? 'hover' ) === 'click' ? 'click' : 'hover';
+
         $classes = [ 'rawnaq-tilt-card', 'align-' . sanitize_html_class( $align ) ];
         if ( $has_image ) {
             $classes[] = 'has-image';
+        }
+        if ( $enable_flip ) {
+            $classes[] = 'is-flip';
+            $classes[] = 'flip-' . $flip_trigger;
         }
 
         $style = sprintf(
@@ -359,51 +448,91 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
             esc_attr( $glare ),
             esc_attr( $hover_scale )
         );
+
+        $card_attrs = '';
+        if ( $enable_flip && 'click' === $flip_trigger ) {
+            $card_attrs = ' tabindex="0" role="button" aria-pressed="false" aria-label="' . esc_attr( $s['title'] ?: __( 'Flip card', 'rawnaq' ) ) . '"';
+        }
         ?>
         <div class="rawnaq-tilt-container">
             <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
                  style="<?php echo esc_attr( $style ); ?>"
                  data-tilt-max="<?php echo esc_attr( $max_tilt ); ?>"
                  data-hover-scale="<?php echo esc_attr( $hover_scale ); ?>"
-                 data-glare="<?php echo esc_attr( $glare ); ?>">
-
-                <?php if ( $has_image ) : ?>
-                    <img class="rawnaq-tilt-image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="lazy" />
-                    <span class="rawnaq-tilt-overlay" aria-hidden="true"></span>
-                <?php endif; ?>
-
-                <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
-
-                <?php if ( ! empty( $s['badge'] ) ) : ?>
-                    <span class="rawnaq-tilt-badge"><?php echo esc_html( $s['badge'] ); ?></span>
-                <?php endif; ?>
-
-                <?php $this->render_icon( $s ); ?>
-
-                <div class="rawnaq-tilt-content">
-                    <?php if ( ! empty( $s['title'] ) ) : ?>
-                        <h3 class="rawnaq-tilt-title"><?php echo esc_html( $s['title'] ); ?></h3>
+                 data-glare="<?php echo esc_attr( $glare ); ?>"<?php
+					echo $card_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr above.
+				?>>
+                <?php if ( $enable_flip ) : ?>
+                    <div class="rawnaq-tilt-flip">
+                        <div class="rawnaq-tilt-face rawnaq-tilt-front">
+                            <?php $this->render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link ); ?>
+                        </div>
+                        <div class="rawnaq-tilt-back">
+                            <div class="rawnaq-tilt-back-inner">
+                                <?php if ( ! empty( $s['back_title'] ) ) : ?>
+                                    <h3 class="rawnaq-tilt-back-title"><?php echo esc_html( $s['back_title'] ); ?></h3>
+                                <?php endif; ?>
+                                <?php if ( ! empty( $s['back_desc'] ) ) : ?>
+                                    <p class="rawnaq-tilt-back-desc"><?php echo esc_html( $s['back_desc'] ); ?></p>
+                                <?php endif; ?>
+                                <?php
+                                $back_cta_text = trim( (string) ( $s['back_cta_text'] ?? '' ) );
+                                if ( $back_cta_text && ! empty( $s['back_cta_link']['url'] ) ) :
+                                    ?>
+                                    <a class="rawnaq-tilt-btn rawnaq-tilt-back-btn"<?php
+										echo $this->url_attrs( $s['back_cta_link'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									?>><?php echo esc_html( $back_cta_text ); ?></a>
+                                <?php elseif ( $back_cta_text ) : ?>
+                                    <span class="rawnaq-tilt-btn is-static"><?php echo esc_html( $back_cta_text ); ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <?php $this->render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link ); ?>
+                    <?php if ( ! empty( $card_link['url'] ) ) : ?>
+                        <a class="rawnaq-tilt-stretch-link"<?php
+							echo $this->url_attrs( $card_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						?> aria-label="<?php echo esc_attr( $s['title'] ?: __( 'Open link', 'rawnaq' ) ); ?>"></a>
                     <?php endif; ?>
-                    <?php if ( ! empty( $s['desc'] ) ) : ?>
-                        <p class="rawnaq-tilt-desc"><?php echo esc_html( $s['desc'] ); ?></p>
-                    <?php endif; ?>
-                    <?php if ( $cta_text && ! empty( $cta_link['url'] ) ) : ?>
-                        <a class="rawnaq-tilt-btn"<?php
-							// Already escaped inside url_attrs().
-							echo $this->url_attrs( $cta_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						?>><?php echo esc_html( $cta_text ); ?></a>
-                    <?php elseif ( $cta_text ) : ?>
-                        <span class="rawnaq-tilt-btn is-static"><?php echo esc_html( $cta_text ); ?></span>
-                    <?php endif; ?>
-                </div>
-
-                <?php if ( ! empty( $card_link['url'] ) ) : ?>
-                    <a class="rawnaq-tilt-stretch-link"<?php
-						// Already escaped inside url_attrs().
-						echo $this->url_attrs( $card_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					?> aria-label="<?php echo esc_attr( $s['title'] ?: __( 'Open link', 'rawnaq' ) ); ?>"></a>
                 <?php endif; ?>
             </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Shared front-face children (image, overlay, glare, badge, icon, content).
+     */
+    private function render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link ) {
+        ?>
+        <?php if ( $has_image ) : ?>
+            <img class="rawnaq-tilt-image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="lazy" />
+            <span class="rawnaq-tilt-overlay" aria-hidden="true"></span>
+        <?php endif; ?>
+
+        <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
+
+        <?php if ( ! empty( $s['badge'] ) ) : ?>
+            <span class="rawnaq-tilt-badge"><?php echo esc_html( $s['badge'] ); ?></span>
+        <?php endif; ?>
+
+        <?php $this->render_icon( $s ); ?>
+
+        <div class="rawnaq-tilt-content">
+            <?php if ( ! empty( $s['title'] ) ) : ?>
+                <h3 class="rawnaq-tilt-title"><?php echo esc_html( $s['title'] ); ?></h3>
+            <?php endif; ?>
+            <?php if ( ! empty( $s['desc'] ) ) : ?>
+                <p class="rawnaq-tilt-desc"><?php echo esc_html( $s['desc'] ); ?></p>
+            <?php endif; ?>
+            <?php if ( $cta_text && ! empty( $cta_link['url'] ) ) : ?>
+                <a class="rawnaq-tilt-btn"<?php
+					echo $this->url_attrs( $cta_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>><?php echo esc_html( $cta_text ); ?></a>
+            <?php elseif ( $cta_text ) : ?>
+                <span class="rawnaq-tilt-btn is-static"><?php echo esc_html( $cta_text ); ?></span>
+            <?php endif; ?>
         </div>
         <?php
     }
@@ -424,6 +553,11 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
         var ctaText = settings.cta_text || '';
         var ctaUrl = ( settings.cta_link && settings.cta_link.url ) ? settings.cta_link.url : cardUrl;
         var iconHTML = elementor.helpers.renderIcon( view, settings.selected_icon, { 'aria-hidden': true }, 'i', 'object' );
+        var enableFlip = settings.enable_flip === 'yes';
+        var flipTrigger = settings.flip_trigger === 'click' ? 'click' : 'hover';
+        if ( enableFlip ) { cardClass += ' is-flip flip-' + flipTrigger; }
+        var backCtaText = settings.back_cta_text || '';
+        var backCtaUrl = ( settings.back_cta_link && settings.back_cta_link.url ) ? settings.back_cta_link.url : '';
         #>
         <div class="rawnaq-tilt-container">
             <div class="{{ cardClass }}"
@@ -431,6 +565,10 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
                  data-tilt-max="{{ maxTilt }}"
                  data-hover-scale="{{ hoverScale }}"
                  data-glare="{{ glare }}">
+                <# if ( enableFlip ) { #>
+                <div class="rawnaq-tilt-flip">
+                    <div class="rawnaq-tilt-face rawnaq-tilt-front">
+                <# } #>
                 <# if ( hasImage ) { #>
                     <img class="rawnaq-tilt-image" src="{{ imageUrl }}" alt="{{ imageAlt }}" />
                     <span class="rawnaq-tilt-overlay"></span>
@@ -457,7 +595,25 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
                         <span class="rawnaq-tilt-btn is-static">{{{ ctaText }}}</span>
                     <# } #>
                 </div>
-                <# if ( cardUrl ) { #>
+                <# if ( enableFlip ) { #>
+                    </div>
+                    <div class="rawnaq-tilt-back">
+                        <div class="rawnaq-tilt-back-inner">
+                            <# if ( settings.back_title ) { #>
+                                <h3 class="rawnaq-tilt-back-title">{{{ settings.back_title }}}</h3>
+                            <# } #>
+                            <# if ( settings.back_desc ) { #>
+                                <p class="rawnaq-tilt-back-desc">{{{ settings.back_desc }}}</p>
+                            <# } #>
+                            <# if ( backCtaText && backCtaUrl ) { #>
+                                <a class="rawnaq-tilt-btn rawnaq-tilt-back-btn" href="{{ backCtaUrl }}">{{{ backCtaText }}}</a>
+                            <# } else if ( backCtaText ) { #>
+                                <span class="rawnaq-tilt-btn is-static">{{{ backCtaText }}}</span>
+                            <# } #>
+                        </div>
+                    </div>
+                </div>
+                <# } else if ( cardUrl ) { #>
                     <a class="rawnaq-tilt-stretch-link" href="{{ cardUrl }}"></a>
                 <# } #>
             </div>

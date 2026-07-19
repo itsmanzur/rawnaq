@@ -170,8 +170,46 @@
 
     function getOffsetTime(timezoneStr) {
         var now = new Date();
+        var tz = String(timezoneStr || '');
+
+        // Preferred: real IANA zone (DST-aware) via Intl, e.g. "Asia/Dhaka".
+        if (tz.indexOf('/') !== -1 && typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
+            try {
+                var fmt = new Intl.DateTimeFormat('en-US', {
+                    timeZone: tz,
+                    hourCycle: 'h23',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                var parts = {};
+                fmt.formatToParts(now).forEach(function (p) {
+                    if (p.type !== 'literal') {
+                        parts[p.type] = p.value;
+                    }
+                });
+                var hh = parseInt(parts.hour, 10);
+                if (hh === 24) {
+                    hh = 0;
+                }
+                return new Date(
+                    parseInt(parts.year, 10),
+                    parseInt(parts.month, 10) - 1,
+                    parseInt(parts.day, 10),
+                    hh,
+                    parseInt(parts.minute, 10),
+                    0
+                );
+            } catch (e) {
+                /* fall through to offset parsing */
+            }
+        }
+
+        // Legacy fallback: fixed UTC offset string, e.g. "UTC+6" / "UTC+5.5".
         var offset = 6;
-        var match = String(timezoneStr || '').match(/UTC([+-]\d+(\.\d+)?)/);
+        var match = tz.match(/UTC([+-]\d+(\.\d+)?)/);
         if (match && match[1]) {
             offset = parseFloat(match[1]);
         }

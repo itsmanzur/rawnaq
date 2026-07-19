@@ -161,6 +161,52 @@
     z-index: 2;
 }
 
+.rawnaq-flow-edge-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    background: var(--fc-panel);
+    border: 1px solid var(--fc-line);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--fc-ink);
+    white-space: nowrap;
+    pointer-events: none;
+    line-height: 1.4;
+}
+
+.rawnaq-flow-lane {
+    position: absolute;
+    z-index: 0;
+    border: 1px dashed var(--fc-line);
+    border-radius: 12px;
+    background: rgba(99, 102, 241, 0.03);
+    pointer-events: none;
+}
+
+.rawnaq-flow-lane.is-alt {
+    background: rgba(99, 102, 241, 0.06);
+}
+
+.rawnaq-flow-lane-label {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fc-muted);
+}
+
+.rawnaq-flow-lane.is-vertical .rawnaq-flow-lane-label {
+    writing-mode: vertical-rl;
+    top: 12px;
+    left: 8px;
+}
+
 .rawnaq-flow-node {
     position: absolute;
     width: var(--fc-node-w);

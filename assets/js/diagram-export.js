@@ -335,8 +335,12 @@
     }
 
     function attachToolbar(host, config) {
-        if (!host || host.querySelector('.rawnaq-diagram-export')) {
+        if (!host) {
             return null;
+        }
+        var existing = host.querySelector('.rawnaq-diagram-export');
+        if (existing) {
+            existing.remove();
         }
         config = config || {};
         var bar = document.createElement('div');

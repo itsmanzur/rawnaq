@@ -125,6 +125,7 @@
             glowLines:      { type: 'string', default: 'no' },
             centerStyle:    { type: 'string', default: 'conic' },
             layoutFlow:     { type: 'string', default: 'horizontal' },
+            showExport:     { type: 'boolean', default: true },
             importJson:     { type: 'string', default: '' },
             height:         { type: 'number', default: 540 },
             topNodesJson:   { type: 'string', default: '[{"label":"Design","color":"#E8793A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-art","link":"","target":"_self"},{"label":"P&ID","color":"#D4A92A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-editor-justify","link":"","target":"_self"},{"label":"Sketch","color":"#26B8B8","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-welcome-write-blog","link":"","target":"_self"},{"label":"Specification","color":"#E8793A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-clipboard","link":"","target":"_self"}]' },
@@ -227,6 +228,7 @@
                     glowLines: attributes.glowLines,
                     centerStyle: attributes.centerStyle,
                     layoutFlow: attributes.layoutFlow,
+                    export: attributes.showExport !== false,
                     importJson: attributes.importJson,
                     top: map(topNodes),
                     bottom: map(botNodes)
@@ -246,6 +248,7 @@
                 attributes.glowLines,
                 attributes.centerStyle,
                 attributes.layoutFlow,
+                attributes.showExport,
                 attributes.importJson,
                 attributes.topNodesJson,
                 attributes.botNodesJson,
@@ -282,6 +285,11 @@
                             label: 'Glow Flow Line Animation', value: attributes.glowLines,
                             options: [ { label: 'Disable', value: 'no' }, { label: 'Enable', value: 'yes' } ],
                             onChange: function(newVal) { setAttributes({ glowLines: newVal }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show PNG / SVG export',
+                            checked: attributes.showExport !== false,
+                            onChange: function(v) { setAttributes({ showExport: !!v }); }
                         }),
                         el(SelectControl, {
                             label: 'Center Circle Ring Style', value: attributes.centerStyle,
@@ -337,13 +345,23 @@
             descColor:     { type: 'string', default: '' },
             iconColor:     { type: 'string', default: '' },
             btnBg:         { type: 'string', default: '#6366f1' },
-            btnColor:      { type: 'string', default: '#ffffff' }
+            btnColor:      { type: 'string', default: '#ffffff' },
+            enableFlip:    { type: 'boolean', default: false },
+            flipTrigger:   { type: 'string', default: 'hover' },
+            backTitle:     { type: 'string', default: 'Why choose us' },
+            backDesc:      { type: 'string', default: 'Add the extra detail or a persuasive reason on the reverse side.' },
+            backCtaText:   { type: 'string', default: 'Get started' },
+            backCtaLink:   { type: 'string', default: '' },
+            backBg:        { type: 'string', default: '#4338ca' },
+            backColor:     { type: 'string', default: '#ffffff' }
         },
         edit: function(props) {
             var attributes = props.attributes;
             var setAttributes = props.setAttributes;
             var hasImage = !!attributes.imageUrl;
             var ctaUrl = attributes.ctaLink || attributes.link;
+            var enableFlip = !!attributes.enableFlip;
+            var flipTrigger = attributes.flipTrigger === 'click' ? 'click' : 'hover';
             var cardStyle = {
                 border: '1px dashed #ccc',
                 borderRadius: attributes.radius + 'px',
@@ -469,34 +487,86 @@
                             onChange: function(val) { setAttributes({ hoverScale: (val || 100) / 100 }); },
                             min: 100, max: 108
                         })
+                    ),
+                    el(PanelBody, { title: 'Flip / Back Face', initialOpen: false },
+                        el(ToggleControl, {
+                            label: 'Enable flip',
+                            checked: enableFlip,
+                            help: '3D tilt pauses while flip is on.',
+                            onChange: function(v) { setAttributes({ enableFlip: !!v }); }
+                        }),
+                        enableFlip ? el(SelectControl, {
+                            label: 'Flip trigger',
+                            value: flipTrigger,
+                            options: [ { label: 'Hover', value: 'hover' }, { label: 'Click / Tap', value: 'click' } ],
+                            onChange: function(v) { setAttributes({ flipTrigger: v }); }
+                        }) : null,
+                        enableFlip ? el(TextControl, { label: 'Back title', value: attributes.backTitle, onChange: function(v) { setAttributes({ backTitle: v }); } }) : null,
+                        enableFlip ? el(TextareaControl, { label: 'Back description', value: attributes.backDesc, onChange: function(v) { setAttributes({ backDesc: v }); } }) : null,
+                        enableFlip ? el(TextControl, { label: 'Back CTA text', value: attributes.backCtaText, onChange: function(v) { setAttributes({ backCtaText: v }); } }) : null,
+                        enableFlip ? el(TextControl, { label: 'Back CTA link', value: attributes.backCtaLink, onChange: function(v) { setAttributes({ backCtaLink: v }); } }) : null,
+                        enableFlip ? el(TextControl, { label: 'Back background (Hex)', value: attributes.backBg || '#4338ca', onChange: function(v) { setAttributes({ backBg: v }); } }) : null,
+                        enableFlip ? el(TextControl, { label: 'Back text (Hex)', value: attributes.backColor || '#ffffff', onChange: function(v) { setAttributes({ backColor: v }); } }) : null
                     )
                 ),
-                el('div', { className: 'rawnaq-tilt-container' },
-                    el('div', {
-                        className: 'rawnaq-tilt-card align-' + attributes.contentAlign + (hasImage ? ' has-image' : ''),
-                        style: cardStyle,
-                        'data-tilt-max': attributes.maxTilt,
-                        'data-hover-scale': attributes.hoverScale,
-                        'data-glare': attributes.glare
-                    },
+                (function() {
+                    var frontChildren = [
                         hasImage ? el('img', {
+                            key: 'img',
                             className: 'rawnaq-tilt-image',
                             src: attributes.imageUrl,
                             alt: attributes.imageAlt || attributes.title || ''
                         }) : null,
-                        hasImage ? el('span', { className: 'rawnaq-tilt-overlay' }) : null,
-                        el('span', { className: 'rawnaq-tilt-glare' }),
-                        attributes.badge ? el('span', { className: 'rawnaq-tilt-badge' }, attributes.badge) : null,
-                        attributes.icon ? el('span', { className: 'rawnaq-tilt-icon dashicons ' + attributes.icon }) : null,
-                        el('div', { className: 'rawnaq-tilt-content' },
+                        hasImage ? el('span', { key: 'ov', className: 'rawnaq-tilt-overlay' }) : null,
+                        el('span', { key: 'gl', className: 'rawnaq-tilt-glare' }),
+                        attributes.badge ? el('span', { key: 'bd', className: 'rawnaq-tilt-badge' }, attributes.badge) : null,
+                        attributes.icon ? el('span', { key: 'ic', className: 'rawnaq-tilt-icon dashicons ' + attributes.icon }) : null,
+                        el('div', { key: 'ct', className: 'rawnaq-tilt-content' },
                             attributes.title ? el('h3', { className: 'rawnaq-tilt-title' }, attributes.title) : null,
                             attributes.desc ? el('p', { className: 'rawnaq-tilt-desc' }, attributes.desc) : null,
                             attributes.ctaText && ctaUrl
                                 ? el('a', { className: 'rawnaq-tilt-btn', href: ctaUrl }, attributes.ctaText)
                                 : (attributes.ctaText ? el('span', { className: 'rawnaq-tilt-btn is-static' }, attributes.ctaText) : null)
                         )
-                    )
-                )
+                    ];
+
+                    var cardClass = 'rawnaq-tilt-card align-' + attributes.contentAlign + (hasImage ? ' has-image' : '');
+                    if (enableFlip) { cardClass += ' is-flip flip-' + flipTrigger; }
+
+                    var cardChildren;
+                    if (enableFlip) {
+                        var backCta = attributes.backCtaText || '';
+                        cardChildren = [
+                            el('div', { key: 'flip', className: 'rawnaq-tilt-flip' },
+                                el('div', { className: 'rawnaq-tilt-face rawnaq-tilt-front' }, frontChildren),
+                                el('div', {
+                                    className: 'rawnaq-tilt-back',
+                                    style: { '--tilt-back-bg': attributes.backBg || '#4338ca', '--tilt-back-color': attributes.backColor || '#ffffff' }
+                                },
+                                    el('div', { className: 'rawnaq-tilt-back-inner' },
+                                        attributes.backTitle ? el('h3', { className: 'rawnaq-tilt-back-title' }, attributes.backTitle) : null,
+                                        attributes.backDesc ? el('p', { className: 'rawnaq-tilt-back-desc' }, attributes.backDesc) : null,
+                                        backCta && attributes.backCtaLink
+                                            ? el('a', { className: 'rawnaq-tilt-btn rawnaq-tilt-back-btn', href: attributes.backCtaLink }, backCta)
+                                            : (backCta ? el('span', { className: 'rawnaq-tilt-btn is-static' }, backCta) : null)
+                                    )
+                                )
+                            )
+                        ];
+                    } else {
+                        cardChildren = frontChildren;
+                    }
+
+                    return el('div', { className: 'rawnaq-tilt-container' },
+                        el('div', {
+                            className: cardClass,
+                            style: cardStyle,
+                            'data-tilt-max': attributes.maxTilt,
+                            'data-hover-scale': attributes.hoverScale,
+                            'data-glare': attributes.glare
+                        }, cardChildren)
+                    );
+                })()
             );
         },
         save: function() { return null; }
@@ -1001,7 +1071,7 @@
             secMessenger: { type: 'string', default: '' },
             secEmail: { type: 'string', default: '' },
             secTelegram: { type: 'string', default: '' },
-            timezone: { type: 'string', default: 'UTC+6' },
+            timezone: { type: 'string', default: 'Asia/Dhaka' },
             scheduleJson: { type: 'string', default: defaultWaSchedule },
             offHoursBehavior: { type: 'string', default: 'offline_badge' },
             offHoursRedirect: { type: 'string', default: '' },
@@ -1313,10 +1383,31 @@
                         el(TextControl, { label: 'Telegram Username', value: attributes.secTelegram || '', onChange: function(val) { setAttributes({ secTelegram: val }); } })
                     ) : null,
                     isWaMode ? el(PanelBody, { title: 'Business Hours', initialOpen: false },
-                        el(TextControl, {
-                            label: 'Timezone offset',
-                            value: attributes.timezone || 'UTC+6',
-                            help: 'e.g. UTC+6 for Bangladesh',
+                        el(SelectControl, {
+                            label: 'Business Timezone',
+                            value: attributes.timezone || 'Asia/Dhaka',
+                            help: 'DST-aware IANA zones. Legacy UTC offsets still work.',
+                            options: [
+                                { label: 'UTC (GMT)', value: 'UTC' },
+                                { label: 'New York (Eastern)', value: 'America/New_York' },
+                                { label: 'Chicago (Central)', value: 'America/Chicago' },
+                                { label: 'Los Angeles (Pacific)', value: 'America/Los_Angeles' },
+                                { label: 'São Paulo', value: 'America/Sao_Paulo' },
+                                { label: 'London', value: 'Europe/London' },
+                                { label: 'Paris / Berlin', value: 'Europe/Paris' },
+                                { label: 'Istanbul', value: 'Europe/Istanbul' },
+                                { label: 'Cairo', value: 'Africa/Cairo' },
+                                { label: 'Dubai', value: 'Asia/Dubai' },
+                                { label: 'Riyadh', value: 'Asia/Riyadh' },
+                                { label: 'Karachi', value: 'Asia/Karachi' },
+                                { label: 'India (Kolkata)', value: 'Asia/Kolkata' },
+                                { label: 'Bangladesh (Dhaka)', value: 'Asia/Dhaka' },
+                                { label: 'Jakarta', value: 'Asia/Jakarta' },
+                                { label: 'Singapore', value: 'Asia/Singapore' },
+                                { label: 'China (Shanghai)', value: 'Asia/Shanghai' },
+                                { label: 'Tokyo', value: 'Asia/Tokyo' },
+                                { label: 'Sydney', value: 'Australia/Sydney' }
+                            ],
                             onChange: function(val) { setAttributes({ timezone: val }); }
                         }),
                         scheduleFields,
@@ -1501,6 +1592,8 @@
             avatarBorderWidth: { type: 'number', default: 0 },
             avatarObjectFit: { type: 'string', default: 'cover' },
             avatarShadow: { type: 'boolean', default: false },
+            showExport: { type: 'boolean', default: true },
+            enableZoom: { type: 'boolean', default: true },
             nodesJson: {
                 type: 'string',
                 default: '[{"id":"ceo","parent":"","title":"Founder / CEO","role":"Leadership","icon":"★","image":"","detail":"Leads the company.","link":"","decision":false,"x_pos":0,"y_pos":0,"badge":"","status":"default"}]'
@@ -1549,7 +1642,7 @@
                 direction: attributes.direction || 'tb',
                 shape: shapeVal,
                 avatarShape: avatarShape,
-                zoom: true,
+                zoom: attributes.enableZoom !== false,
                 export: attributes.showExport !== false
             };
             var flowAttr = encodeURIComponent(JSON.stringify(cfg));
@@ -1564,7 +1657,7 @@
                     }
                 }, 80);
                 return function() { clearTimeout(t); };
-            }, [attributes.nodesJson, attributes.mode, attributes.connector, attributes.direction, attributes.shape, attributes.avatarShape, attributes.avatarSize, attributes.avatarGap, attributes.avatarBg, attributes.avatarIconColor, attributes.avatarIconSize, attributes.avatarBorderColor, attributes.avatarBorderWidth, attributes.avatarObjectFit, attributes.avatarShadow, attributes.accentColor, attributes.rootColorFrom, attributes.rootColorTo, attributes.lineColor, attributes.nodeBg, attributes.nodeRadius, flowAttr]);
+            }, [attributes.nodesJson, attributes.mode, attributes.connector, attributes.direction, attributes.shape, attributes.avatarShape, attributes.avatarSize, attributes.avatarGap, attributes.avatarBg, attributes.avatarIconColor, attributes.avatarIconSize, attributes.avatarBorderColor, attributes.avatarBorderWidth, attributes.avatarObjectFit, attributes.avatarShadow, attributes.showExport, attributes.enableZoom, attributes.accentColor, attributes.rootColorFrom, attributes.rootColorTo, attributes.lineColor, attributes.nodeBg, attributes.nodeRadius, flowAttr]);
 
             var fields = nodes.map(function(node, idx) {
                 var parentOptions = [{ label: '— Root (no parent) —', value: '' }].concat(
@@ -1583,6 +1676,8 @@
                     }),
                     el(TextControl, { label: 'Title', value: node.title || '', onChange: function(v) { patchNode(idx, { title: v }); } }),
                     el(TextControl, { label: 'Role / Subtitle', value: node.role || '', onChange: function(v) { patchNode(idx, { role: v }); } }),
+                    el(TextControl, { label: 'Connector Label', value: node.edgeLabel || '', help: 'Text on the line from the parent (e.g. Yes / No).', onChange: function(v) { patchNode(idx, { edgeLabel: v }); } }),
+                    el(TextControl, { label: 'Swimlane', value: node.lane || '', help: 'Same lane name groups nodes into a labelled band.', onChange: function(v) { patchNode(idx, { lane: v }); } }),
                     el(SelectControl, {
                         label: 'Select Icon',
                         value: node.icon || '●',
@@ -1758,6 +1853,16 @@
                                 { label: 'Dashed', value: 'dashed' }
                             ],
                             onChange: function(v) { setAttributes({ connector: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show PNG / SVG export',
+                            checked: attributes.showExport !== false,
+                            onChange: function(v) { setAttributes({ showExport: !!v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Enable zoom / pan',
+                            checked: attributes.enableZoom !== false,
+                            onChange: function(v) { setAttributes({ enableZoom: !!v }); }
                         })
                     ),
                     el(PanelBody, { title: 'Avatar (Icon / Image)', initialOpen: false },
@@ -1931,6 +2036,8 @@
             tocTitle: { type: 'string', default: 'Contents' },
             source: { type: 'string', default: 'auto' },
             levels: { type: 'string', default: 'h2,h3' },
+            contentSelector: { type: 'string', default: '' },
+            hideIfShort: { type: 'boolean', default: true },
             scrollOffset: { type: 'number', default: 80 },
             smooth: { type: 'boolean', default: true },
             readingTime: { type: 'boolean', default: true },
@@ -2050,11 +2157,22 @@
                             help: 'e.g. h2,h3,h4',
                             onChange: function(v) { setAttributes({ levels: v }); }
                         }),
+                        (attributes.source || 'auto') === 'auto' ? el(TextControl, {
+                            label: 'Content container (CSS selector)',
+                            value: attributes.contentSelector || '',
+                            help: 'Blank = smart auto-detect. Set for FSE/block themes, e.g. .wp-block-post-content',
+                            onChange: function(v) { setAttributes({ contentSelector: v }); }
+                        }) : null,
                         el(RangeControl, {
                             label: 'Scroll offset',
                             value: attributes.scrollOffset || 80,
                             onChange: function(v) { setAttributes({ scrollOffset: v }); },
                             min: 0, max: 200
+                        }),
+                        el(ToggleControl, {
+                            label: 'Hide on short pages',
+                            checked: attributes.hideIfShort !== false,
+                            onChange: function(v) { setAttributes({ hideIfShort: !!v }); }
                         }),
                         el(ToggleControl, {
                             label: 'Smooth scroll',
@@ -2544,6 +2662,7 @@
         attributes: {
             mediaSide: { type: 'string', default: 'left' },
             accent: { type: 'string', default: '#0f766e' },
+            pinTop: { type: 'number', default: 96 },
             chaptersJson: {
                 type: 'string',
                 default: '[{"title":"The challenge","body":"Set the scene. What problem or opportunity opens the story?","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The approach","body":"Explain the turning point — method, insight, or decision.","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The outcome","body":"Close with the result readers should remember.","image":"","caption":"","ctaText":"","ctaUrl":""}]'
@@ -2577,7 +2696,20 @@
                     el(TextareaControl, {
                         label: 'Body',
                         value: ch.body || '',
+                        help: 'Rich text allowed: <a>, <strong>, <em>, <ul>/<ol>/<li>.',
                         onChange: function(v) { patchChapter(idx, { body: v }); }
+                    }),
+                    el(TextControl, {
+                        label: 'Anchor / deep-link ID',
+                        value: ch.anchor || '',
+                        help: 'Optional #anchor. Defaults to a slug of the title.',
+                        onChange: function(v) { patchChapter(idx, { anchor: v }); }
+                    }),
+                    el(TextControl, {
+                        label: 'Video URL (MP4)',
+                        value: ch.video || '',
+                        help: 'Optional. Autoplays muted while active; image = poster.',
+                        onChange: function(v) { patchChapter(idx, { video: v }); }
                     }),
                     el(TextControl, {
                         label: 'Caption',
@@ -2643,6 +2775,13 @@
                                 { label: 'Right', value: 'right' }
                             ],
                             onChange: function(v) { setAttributes({ mediaSide: v }); }
+                        }),
+                        el(RangeControl, {
+                            label: 'Pin offset (px)',
+                            value: typeof attributes.pinTop === 'number' ? attributes.pinTop : 96,
+                            min: 40, max: 180,
+                            help: 'Sticky top offset for the pinned media.',
+                            onChange: function(v) { setAttributes({ pinTop: v || 96 }); }
                         }),
                         el('div', { style: { marginBottom: '12px' } },
                             el('label', { style: { display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '600' } }, 'Accent'),
@@ -2714,6 +2853,9 @@
             recaptchaEnabled: { type: 'boolean', default: false },
             webhookEnabled: { type: 'boolean', default: false },
             webhookUrl: { type: 'string', default: '' },
+            emailHtml: { type: 'boolean', default: true },
+            crmProvider: { type: 'string', default: 'none' },
+            crmAudience: { type: 'string', default: '' },
             buttonFullWidth: { type: 'boolean', default: false },
             accent: { type: 'string', default: '#fbbf24' },
             accentDeep: { type: 'string', default: '#0f766e' },
@@ -2922,6 +3064,11 @@
                             help: '{name}, {pageTitle}, {url}…',
                             onChange: function(v) { setAttributes({ emailSubject: v }); }
                         }),
+                        attributes.deliveryEmail !== false && el(ToggleControl, {
+                            label: 'Branded HTML email',
+                            checked: attributes.emailHtml !== false,
+                            onChange: function(v) { setAttributes({ emailHtml: !!v }); }
+                        }),
                         el(ToggleControl, {
                             label: 'WhatsApp delivery (wa.me redirect)',
                             checked: attributes.deliveryWhatsapp !== false,
@@ -2990,6 +3137,21 @@
                             label: 'Webhook URL',
                             value: attributes.webhookUrl || '',
                             onChange: function(v) { setAttributes({ webhookUrl: v || '' }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'CRM / ESP',
+                            value: attributes.crmProvider || 'none',
+                            options: [
+                                { label: 'None', value: 'none' },
+                                { label: 'Mailchimp', value: 'mailchimp' }
+                            ],
+                            help: 'Add the Mailchimp API key in Rawnaq settings. Other CRMs: webhook or rawnaq_smart_form_submission hook.',
+                            onChange: function(v) { setAttributes({ crmProvider: v }); }
+                        }),
+                        (attributes.crmProvider === 'mailchimp') && el(TextControl, {
+                            label: 'Mailchimp Audience ID',
+                            value: attributes.crmAudience || '',
+                            onChange: function(v) { setAttributes({ crmAudience: v || '' }); }
                         })
                     ),
                     el(PanelBody, { title: 'Style', initialOpen: false },

@@ -160,6 +160,26 @@
     color: var(--story-ink);
 }
 
+.rawnaq-story-body {
+    max-width: 38rem;
+}
+
+.rawnaq-story-body > :first-child { margin-top: 0; }
+.rawnaq-story-body > :last-child { margin-bottom: 0; }
+
+.rawnaq-story-body p,
+.rawnaq-story-body ul,
+.rawnaq-story-body ol {
+    margin: 0 0 0.8em;
+    font-size: 1.05rem;
+    line-height: 1.65;
+}
+
+.rawnaq-story-body a {
+    color: var(--story-accent, #0f766e);
+    text-decoration: underline;
+}
+
 .rawnaq-story-chapter p {
     margin: 0;
     max-width: 38rem;

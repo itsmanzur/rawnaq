@@ -70,3 +70,13 @@ See `assets/js/qrcode.js` in the plugin (unminified). Minified build: `assets/js
 * Initial public release on WordPress.org.
 * Modular Elementor + Gutenberg library: Hub Diagram, 3D Tilt Card, Scroll Sync Timeline, Floating Dock (WhatsApp mode), Flow Chart, Scroll Progress + TOC, Bento Grid, Scroll Story Chapters, Smart Form, Case-Study Grid.
 * On-demand assets, vanilla JS frontend, Elements Manager, WPML config, and documented optional third-party services (Fonts, reCAPTCHA, WhatsApp, webhooks).
+* Floating Dock: DST-aware IANA business timezones (legacy fixed UTC offsets still supported).
+* Editor parity: Gutenberg now exposes Hub Diagram export toggle, Flow Chart zoom/pan toggle, Scroll Story pin offset, and Scroll Progress content-selector + hide-on-short-page controls to match Elementor.
+* Accessibility: Case-Study modal focus trap, focus return, and aria-modal; arrow-key gallery navigation; Scroll Story progress dots support arrow/Home/End keys; safer link handling on Flow Chart nodes.
+* Polish: corrected mis-encoded characters in Scroll Timeline presets and shared strings.
+* 3D Tilt Card: optional flip / back-face with hover or click trigger, back title/description/CTA, and back styling.
+* Flow Chart: per-node connector (edge) labels and swimlane bands, included in PNG/SVG export.
+* Smart Form: branded HTML email receipts and CRM/ESP delivery — built-in Mailchimp subscribe plus a `rawnaq_smart_form_submission` hook for Zapier/HubSpot/custom.
+* Case-Study Grid: server-filtered AJAX pagination for the CPT source (sector/year/service + paging on the server).
+* Scroll Story: rich-text chapters, per-chapter video, and #anchor deep-linking with active-chapter hash sync.
+* SEO: JSON-LD schema pack — CreativeWork ItemList for CPT case studies and ItemList for query-based timelines (filterable; Review/AggregateRating helper included).

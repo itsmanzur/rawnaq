@@ -217,6 +217,14 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'condition'   => [ 'delivery_email' => 'yes' ],
 			'description' => esc_html__( 'Supports {name}, {pageTitle}, {url}, etc.', 'rawnaq' ),
 		] );
+		$this->add_control( 'email_html', [
+			'label'        => esc_html__( 'Branded HTML email', 'rawnaq' ),
+			'type'         => \Elementor\Controls_Manager::SWITCHER,
+			'return_value' => 'yes',
+			'default'      => 'yes',
+			'description'  => esc_html__( 'Send a styled HTML receipt instead of plain text.', 'rawnaq' ),
+			'condition'    => [ 'delivery_email' => 'yes' ],
+		] );
 
 		$default_wa = function_exists( 'rawnaq_get_default_wa_number' ) ? rawnaq_get_default_wa_number() : '';
 		$this->add_control( 'delivery_whatsapp', [
@@ -314,6 +322,24 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'condition'   => [ 'webhook_enabled' => 'yes' ],
 			'label_block' => true,
 			'description' => esc_html__( 'Any HTTPS endpoint or Slack Incoming Webhook.', 'rawnaq' ),
+		] );
+
+		$this->add_control( 'crm_provider', [
+			'label'   => esc_html__( 'CRM / ESP', 'rawnaq' ),
+			'type'    => \Elementor\Controls_Manager::SELECT,
+			'default' => 'none',
+			'options' => [
+				'none'      => esc_html__( 'None', 'rawnaq' ),
+				'mailchimp' => esc_html__( 'Mailchimp', 'rawnaq' ),
+			],
+			'description' => esc_html__( 'Add the Mailchimp API key under Rawnaq → settings. Other CRMs: use the webhook or the rawnaq_smart_form_submission hook.', 'rawnaq' ),
+		] );
+		$this->add_control( 'crm_audience', [
+			'label'       => esc_html__( 'Mailchimp Audience ID', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => '',
+			'condition'   => [ 'crm_provider' => 'mailchimp' ],
+			'label_block' => true,
 		] );
 
 		$this->end_controls_section();
@@ -437,6 +463,9 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'recaptchaEnabled'  => ( $s['recaptcha_enabled'] ?? '' ) === 'yes',
 			'webhookEnabled'    => ( $s['webhook_enabled'] ?? '' ) === 'yes',
 			'webhookUrl'        => $s['webhook_url'] ?? '',
+			'emailHtml'         => ( $s['email_html'] ?? 'yes' ) === 'yes',
+			'crmProvider'       => $s['crm_provider'] ?? 'none',
+			'crmAudience'       => $s['crm_audience'] ?? '',
 			'buttonFullWidth'   => ( $s['button_full_width'] ?? '' ) === 'yes',
 			'inputSize'         => $size,
 			'labelColor'        => $s['label_color'] ?? '',

@@ -25,12 +25,31 @@
             ch.classList.toggle('is-active', idx === i);
         });
         inst.medias.forEach(function (m, idx) {
-            m.classList.toggle('is-active', idx === i);
+            var on = idx === i;
+            m.classList.toggle('is-active', on);
+            // Play the active chapter's video, pause the rest.
+            var vid = m.querySelector('video.rawnaq-story-video');
+            if (vid) {
+                if (on && !reduceMotion) {
+                    var p = vid.play();
+                    if (p && p.catch) { p.catch(function () {}); }
+                } else {
+                    vid.pause();
+                }
+            }
         });
         inst.dots.forEach(function (d, idx) {
             d.classList.toggle('is-active', idx === i);
             d.setAttribute('aria-current', idx === i ? 'true' : 'false');
         });
+
+        // Reflect the active chapter in the URL hash for deep-linking (no scroll jump).
+        var activeCh = inst.chapters[i];
+        if (activeCh && activeCh.id && window.history && history.replaceState) {
+            try {
+                history.replaceState(null, '', '#' + activeCh.id);
+            } catch (e) { /* ignore */ }
+        }
 
         var caption = inst.captionEl;
         if (caption) {
@@ -90,22 +109,59 @@
             observer: null
         };
 
+        function goToChapter(idx) {
+            var target = chapters[idx];
+            if (!target) {
+                return;
+            }
+            var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+            window.scrollTo({
+                top: top,
+                behavior: reduceMotion ? 'auto' : 'smooth'
+            });
+            setActive(inst, idx);
+        }
+
         dots.forEach(function (dot, idx) {
             dot.addEventListener('click', function () {
-                var target = chapters[idx];
-                if (!target) {
+                goToChapter(idx);
+            });
+            // Keyboard: arrow keys move between chapters, Home/End jump to ends.
+            dot.addEventListener('keydown', function (e) {
+                var next = null;
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    next = Math.min(dots.length - 1, idx + 1);
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    next = Math.max(0, idx - 1);
+                } else if (e.key === 'Home') {
+                    next = 0;
+                } else if (e.key === 'End') {
+                    next = dots.length - 1;
+                } else {
                     return;
                 }
-                var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
-                window.scrollTo({
-                    top: top,
-                    behavior: reduceMotion ? 'auto' : 'smooth'
-                });
-                setActive(inst, idx);
+                e.preventDefault();
+                if (dots[next]) {
+                    dots[next].focus();
+                }
+                goToChapter(next);
             });
         });
 
         setActive(inst, 0);
+
+        // Deep-link: if the URL hash targets a chapter in this story, jump to it.
+        if (window.location.hash && window.location.hash.length > 1) {
+            var hashId = window.location.hash.slice(1);
+            for (var hi = 0; hi < chapters.length; hi++) {
+                if (chapters[hi].id === hashId) {
+                    window.setTimeout((function (targetIdx) {
+                        return function () { goToChapter(targetIdx); };
+                    })(hi), 60);
+                    break;
+                }
+            }
+        }
 
         if (typeof IntersectionObserver === 'undefined') {
             instances.push(inst);

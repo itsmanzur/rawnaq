@@ -80,6 +80,7 @@ class Rawnaq_Gutenberg_Loader {
                     'glowLines'      => [ 'type' => 'string', 'default' => 'no' ],
                     'centerStyle'    => [ 'type' => 'string', 'default' => 'conic' ],
                     'layoutFlow'     => [ 'type' => 'string', 'default' => 'horizontal' ],
+                    'showExport'     => [ 'type' => 'boolean', 'default' => true ],
                     'importJson'     => [ 'type' => 'string', 'default' => '' ],
                     'height'         => [ 'type' => 'number', 'default' => 540 ],
                     'topNodesJson'   => [ 'type' => 'string', 'default' => '[{"label":"Design","color":"#E8793A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-art","link":"","target":"_self"},{"label":"P&ID","color":"#D4A92A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-editor-justify","link":"","target":"_self"},{"label":"Sketch","color":"#26B8B8","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-welcome-write-blog","link":"","target":"_self"},{"label":"Specification","color":"#E8793A","cardBg":"#ffffff","cardColor":"#1a1a1a","icon":"dashicons-clipboard","link":"","target":"_self"}]' ],
@@ -122,6 +123,14 @@ class Rawnaq_Gutenberg_Loader {
                     'iconColor'    => [ 'type' => 'string', 'default' => '' ],
                     'btnBg'        => [ 'type' => 'string', 'default' => '#6366f1' ],
                     'btnColor'     => [ 'type' => 'string', 'default' => '#ffffff' ],
+                    'enableFlip'   => [ 'type' => 'boolean', 'default' => false ],
+                    'flipTrigger'  => [ 'type' => 'string', 'default' => 'hover' ],
+                    'backTitle'    => [ 'type' => 'string', 'default' => 'Why choose us' ],
+                    'backDesc'     => [ 'type' => 'string', 'default' => 'Add the extra detail or a persuasive reason on the reverse side.' ],
+                    'backCtaText'  => [ 'type' => 'string', 'default' => 'Get started' ],
+                    'backCtaLink'  => [ 'type' => 'string', 'default' => '' ],
+                    'backBg'       => [ 'type' => 'string', 'default' => '#4338ca' ],
+                    'backColor'    => [ 'type' => 'string', 'default' => '#ffffff' ],
                 ]
             ] );
         }
@@ -216,7 +225,7 @@ class Rawnaq_Gutenberg_Loader {
                     'secMessenger'      => [ 'type' => 'string', 'default' => '' ],
                     'secEmail'          => [ 'type' => 'string', 'default' => '' ],
                     'secTelegram'       => [ 'type' => 'string', 'default' => '' ],
-                    'timezone'          => [ 'type' => 'string', 'default' => 'UTC+6' ],
+                    'timezone'          => [ 'type' => 'string', 'default' => 'Asia/Dhaka' ],
                     'scheduleJson'      => [
                         'type'    => 'string',
                         'default' => '{"mon":{"enabled":true,"open":"09:00","close":"18:00"},"tue":{"enabled":true,"open":"09:00","close":"18:00"},"wed":{"enabled":true,"open":"09:00","close":"18:00"},"thu":{"enabled":true,"open":"09:00","close":"18:00"},"fri":{"enabled":true,"open":"09:00","close":"18:00"},"sat":{"enabled":false,"open":"09:00","close":"18:00"},"sun":{"enabled":false,"open":"09:00","close":"18:00"}}',
@@ -263,6 +272,14 @@ class Rawnaq_Gutenberg_Loader {
                     'avatarBorderWidth' => [ 'type' => 'number', 'default' => 0 ],
                     'avatarObjectFit' => [ 'type' => 'string', 'default' => 'cover' ],
                     'avatarShadow' => [ 'type' => 'boolean', 'default' => false ],
+                    'showExport' => [ 'type' => 'boolean', 'default' => true ],
+                    'enableZoom' => [ 'type' => 'boolean', 'default' => true ],
+                    'accentColor' => [ 'type' => 'string', 'default' => '#FBBF24' ],
+                    'rootColorFrom' => [ 'type' => 'string', 'default' => '#4338CA' ],
+                    'rootColorTo' => [ 'type' => 'string', 'default' => '#7C3AED' ],
+                    'lineColor' => [ 'type' => 'string', 'default' => '#E6E2F0' ],
+                    'nodeBg' => [ 'type' => 'string', 'default' => '#ffffff' ],
+                    'nodeRadius' => [ 'type' => 'number', 'default' => 14 ],
                     'dataSource'=> [ 'type' => 'string', 'default' => 'manual' ],
                     'usersRole' => [ 'type' => 'string', 'default' => '' ],
                     'usersNumber'=> [ 'type' => 'number', 'default' => 20 ],
@@ -288,6 +305,8 @@ class Rawnaq_Gutenberg_Loader {
                     'tocTitle'       => [ 'type' => 'string', 'default' => 'Contents' ],
                     'source'         => [ 'type' => 'string', 'default' => 'auto' ],
                     'levels'         => [ 'type' => 'string', 'default' => 'h2,h3' ],
+                    'contentSelector'=> [ 'type' => 'string', 'default' => '' ],
+                    'hideIfShort'    => [ 'type' => 'boolean', 'default' => true ],
                     'scrollOffset'   => [ 'type' => 'number', 'default' => 80 ],
                     'smooth'         => [ 'type' => 'boolean', 'default' => true ],
                     'readingTime'    => [ 'type' => 'boolean', 'default' => true ],
@@ -376,6 +395,7 @@ class Rawnaq_Gutenberg_Loader {
                 'attributes'      => [
                     'mediaSide'    => [ 'type' => 'string', 'default' => 'left' ],
                     'accent'       => [ 'type' => 'string', 'default' => '#0f766e' ],
+                    'pinTop'       => [ 'type' => 'number', 'default' => 96 ],
                     'chaptersJson' => [
                         'type'    => 'string',
                         'default' => '[{"title":"The challenge","body":"Set the scene. What problem or opportunity opens the story?","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The approach","body":"Explain the turning point — method, insight, or decision.","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The outcome","body":"Close with the result readers should remember.","image":"","caption":"","ctaText":"","ctaUrl":""}]',
@@ -413,6 +433,9 @@ class Rawnaq_Gutenberg_Loader {
                     'recaptchaEnabled'   => [ 'type' => 'boolean', 'default' => false ],
                     'webhookEnabled'     => [ 'type' => 'boolean', 'default' => false ],
                     'webhookUrl'         => [ 'type' => 'string', 'default' => '' ],
+                    'emailHtml'          => [ 'type' => 'boolean', 'default' => true ],
+                    'crmProvider'        => [ 'type' => 'string', 'default' => 'none' ],
+                    'crmAudience'        => [ 'type' => 'string', 'default' => '' ],
                     'buttonFullWidth'    => [ 'type' => 'boolean', 'default' => false ],
                     'accent'             => [ 'type' => 'string', 'default' => '#fbbf24' ],
                     'accentDeep'         => [ 'type' => 'string', 'default' => '#0f766e' ],
@@ -625,13 +648,27 @@ class Rawnaq_Gutenberg_Loader {
             'iconColor'    => '',
             'btnBg'        => '#6366f1',
             'btnColor'     => '#ffffff',
+            'enableFlip'   => false,
+            'flipTrigger'  => 'hover',
+            'backTitle'    => '',
+            'backDesc'     => '',
+            'backCtaText'  => '',
+            'backCtaLink'  => '',
+            'backBg'       => '#4338ca',
+            'backColor'    => '#ffffff',
         ] );
 
-        $has_image = ! empty( $a['imageUrl'] );
-        $align     = sanitize_html_class( $a['contentAlign'] ?: 'bottom' );
-        $classes   = [ 'rawnaq-tilt-card', 'align-' . $align ];
+        $has_image    = ! empty( $a['imageUrl'] );
+        $align        = sanitize_html_class( $a['contentAlign'] ?: 'bottom' );
+        $enable_flip  = ! empty( $a['enableFlip'] );
+        $flip_trigger = ( $a['flipTrigger'] === 'click' ) ? 'click' : 'hover';
+        $classes      = [ 'rawnaq-tilt-card', 'align-' . $align ];
         if ( $has_image ) {
             $classes[] = 'has-image';
+        }
+        if ( $enable_flip ) {
+            $classes[] = 'is-flip';
+            $classes[] = 'flip-' . $flip_trigger;
         }
 
         $cta_url   = ! empty( $a['ctaLink'] ) ? $a['ctaLink'] : $a['link'];
@@ -659,6 +696,48 @@ class Rawnaq_Gutenberg_Loader {
         }
         $style = implode( ';', $style_parts ) . ';';
 
+        // Front-face children (shared by flip + non-flip).
+        ob_start();
+        if ( $has_image ) :
+            ?>
+            <img class="rawnaq-tilt-image" src="<?php echo esc_url( $a['imageUrl'] ); ?>" alt="<?php echo esc_attr( $a['imageAlt'] ?: $a['title'] ); ?>" loading="lazy" />
+            <span class="rawnaq-tilt-overlay" aria-hidden="true"></span>
+            <?php
+        endif;
+        ?>
+        <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
+        <?php if ( ! empty( $a['badge'] ) ) : ?>
+            <span class="rawnaq-tilt-badge"><?php echo esc_html( $a['badge'] ); ?></span>
+        <?php endif; ?>
+        <?php if ( ! empty( $a['icon'] ) ) : ?>
+            <span class="rawnaq-tilt-icon dashicons <?php echo esc_attr( $a['icon'] ); ?>"></span>
+        <?php endif; ?>
+        <div class="rawnaq-tilt-content">
+            <?php if ( $a['title'] ) : ?>
+                <h3 class="rawnaq-tilt-title"><?php echo esc_html( $a['title'] ); ?></h3>
+            <?php endif; ?>
+            <?php if ( $a['desc'] ) : ?>
+                <p class="rawnaq-tilt-desc"><?php echo esc_html( $a['desc'] ); ?></p>
+            <?php endif; ?>
+            <?php if ( $cta_text && $cta_url ) : ?>
+                <a class="rawnaq-tilt-btn" href="<?php echo esc_url( $cta_url ); ?>" target="<?php echo esc_attr( $target ); ?>"<?php if ( $rel_value ) : ?> rel="<?php echo esc_attr( $rel_value ); ?>"<?php endif; ?>><?php echo esc_html( $cta_text ); ?></a>
+            <?php elseif ( $cta_text ) : ?>
+                <span class="rawnaq-tilt-btn is-static"><?php echo esc_html( $cta_text ); ?></span>
+            <?php endif; ?>
+        </div>
+        <?php
+        $front_html = ob_get_clean();
+
+        $back_bg    = sanitize_hex_color( $a['backBg'] ) ?: '#4338ca';
+        $back_color = sanitize_hex_color( $a['backColor'] ) ?: '#ffffff';
+        $back_style = '--tilt-back-bg:' . $back_bg . ';--tilt-back-color:' . $back_color . ';';
+        $back_cta   = trim( (string) $a['backCtaText'] );
+
+        $card_attrs = '';
+        if ( $enable_flip && 'click' === $flip_trigger ) {
+            $card_attrs = ' tabindex="0" role="button" aria-pressed="false" aria-label="' . esc_attr( $a['title'] ?: __( 'Flip card', 'rawnaq' ) ) . '"';
+        }
+
         ob_start();
         ?>
         <div class="rawnaq-tilt-container">
@@ -666,33 +745,35 @@ class Rawnaq_Gutenberg_Loader {
                  style="<?php echo esc_attr( $style ); ?>"
                  data-tilt-max="<?php echo esc_attr( $a['maxTilt'] ); ?>"
                  data-hover-scale="<?php echo esc_attr( $a['hoverScale'] ); ?>"
-                 data-glare="<?php echo esc_attr( $a['glare'] ); ?>">
-                <?php if ( $has_image ) : ?>
-                    <img class="rawnaq-tilt-image" src="<?php echo esc_url( $a['imageUrl'] ); ?>" alt="<?php echo esc_attr( $a['imageAlt'] ?: $a['title'] ); ?>" loading="lazy" />
-                    <span class="rawnaq-tilt-overlay" aria-hidden="true"></span>
-                <?php endif; ?>
-                <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
-                <?php if ( ! empty( $a['badge'] ) ) : ?>
-                    <span class="rawnaq-tilt-badge"><?php echo esc_html( $a['badge'] ); ?></span>
-                <?php endif; ?>
-                <?php if ( ! empty( $a['icon'] ) ) : ?>
-                    <span class="rawnaq-tilt-icon dashicons <?php echo esc_attr( $a['icon'] ); ?>"></span>
-                <?php endif; ?>
-                <div class="rawnaq-tilt-content">
-                    <?php if ( $a['title'] ) : ?>
-                        <h3 class="rawnaq-tilt-title"><?php echo esc_html( $a['title'] ); ?></h3>
+                 data-glare="<?php echo esc_attr( $a['glare'] ); ?>"<?php
+					echo $card_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped above.
+				?>>
+                <?php if ( $enable_flip ) : ?>
+                    <div class="rawnaq-tilt-flip">
+                        <div class="rawnaq-tilt-face rawnaq-tilt-front">
+                            <?php echo $front_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts above. ?>
+                        </div>
+                        <div class="rawnaq-tilt-back" style="<?php echo esc_attr( $back_style ); ?>">
+                            <div class="rawnaq-tilt-back-inner">
+                                <?php if ( ! empty( $a['backTitle'] ) ) : ?>
+                                    <h3 class="rawnaq-tilt-back-title"><?php echo esc_html( $a['backTitle'] ); ?></h3>
+                                <?php endif; ?>
+                                <?php if ( ! empty( $a['backDesc'] ) ) : ?>
+                                    <p class="rawnaq-tilt-back-desc"><?php echo esc_html( $a['backDesc'] ); ?></p>
+                                <?php endif; ?>
+                                <?php if ( $back_cta && ! empty( $a['backCtaLink'] ) ) : ?>
+                                    <a class="rawnaq-tilt-btn rawnaq-tilt-back-btn" href="<?php echo esc_url( $a['backCtaLink'] ); ?>"><?php echo esc_html( $back_cta ); ?></a>
+                                <?php elseif ( $back_cta ) : ?>
+                                    <span class="rawnaq-tilt-btn is-static"><?php echo esc_html( $back_cta ); ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <?php echo $front_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts above. ?>
+                    <?php if ( ! empty( $a['link'] ) ) : ?>
+                        <a class="rawnaq-tilt-stretch-link" href="<?php echo esc_url( $a['link'] ); ?>" target="<?php echo esc_attr( $target ); ?>"<?php if ( $rel_value ) : ?> rel="<?php echo esc_attr( $rel_value ); ?>"<?php endif; ?> aria-label="<?php echo esc_attr( $a['title'] ?: __( 'Open link', 'rawnaq' ) ); ?>"></a>
                     <?php endif; ?>
-                    <?php if ( $a['desc'] ) : ?>
-                        <p class="rawnaq-tilt-desc"><?php echo esc_html( $a['desc'] ); ?></p>
-                    <?php endif; ?>
-                    <?php if ( $cta_text && $cta_url ) : ?>
-                        <a class="rawnaq-tilt-btn" href="<?php echo esc_url( $cta_url ); ?>" target="<?php echo esc_attr( $target ); ?>"<?php if ( $rel_value ) : ?> rel="<?php echo esc_attr( $rel_value ); ?>"<?php endif; ?>><?php echo esc_html( $cta_text ); ?></a>
-                    <?php elseif ( $cta_text ) : ?>
-                        <span class="rawnaq-tilt-btn is-static"><?php echo esc_html( $cta_text ); ?></span>
-                    <?php endif; ?>
-                </div>
-                <?php if ( ! empty( $a['link'] ) ) : ?>
-                    <a class="rawnaq-tilt-stretch-link" href="<?php echo esc_url( $a['link'] ); ?>" target="<?php echo esc_attr( $target ); ?>"<?php if ( $rel_value ) : ?> rel="<?php echo esc_attr( $rel_value ); ?>"<?php endif; ?> aria-label="<?php echo esc_attr( $a['title'] ?: __( 'Open link', 'rawnaq' ) ); ?>"></a>
                 <?php endif; ?>
             </div>
         </div>
@@ -806,6 +887,10 @@ class Rawnaq_Gutenberg_Loader {
             ? $has_more
             : ( $initial_visible > 0 && count( $steps ) > $initial_visible );
 
+        if ( 'query' === $source && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_timeline' ) ) {
+            rawnaq_schema_print( rawnaq_schema_timeline( $steps ), 'timeline' );
+        }
+
         ob_start();
         ?>
         <div
@@ -872,7 +957,7 @@ class Rawnaq_Gutenberg_Loader {
             'secMessenger'     => '',
             'secEmail'         => '',
             'secTelegram'      => '',
-            'timezone'         => 'UTC+6',
+            'timezone'         => 'Asia/Dhaka',
             'scheduleJson'     => '{}',
             'offHoursBehavior' => 'offline_badge',
             'offHoursRedirect' => '',
@@ -986,7 +1071,7 @@ class Rawnaq_Gutenberg_Loader {
                 'secMessenger'     => sanitize_text_field( $a['secMessenger'] ),
                 'secEmail'         => sanitize_email( $a['secEmail'] ),
                 'secTelegram'      => sanitize_text_field( $a['secTelegram'] ),
-                'timezone'         => sanitize_text_field( $a['timezone'] ?: 'UTC+6' ),
+                'timezone'         => sanitize_text_field( $a['timezone'] ?: 'Asia/Dhaka' ),
                 'schedule'         => $schedule,
                 'offHoursBehavior' => sanitize_key( $a['offHoursBehavior'] ?: 'offline_badge' ),
                 'offHoursRedirect' => esc_url_raw( $a['offHoursRedirect'] ),
@@ -1141,6 +1226,8 @@ class Rawnaq_Gutenberg_Loader {
                 'role'     => sanitize_text_field( $item['role'] ?? '' ),
                 'icon'     => sanitize_text_field( $item['icon'] ?? '' ),
                 'image'    => ! empty( $item['image'] ) ? esc_url_raw( $item['image'] ) : ( ! empty( $item['imageUrl'] ) ? esc_url_raw( $item['imageUrl'] ) : '' ),
+                'edgeLabel' => sanitize_text_field( $item['edgeLabel'] ?? '' ),
+                'lane'     => sanitize_text_field( $item['lane'] ?? '' ),
                 'detail'   => sanitize_textarea_field( $item['detail'] ?? '' ),
                 'link'     => ! empty( $item['link'] ) ? esc_url_raw( $item['link'] ) : '',
                 'decision' => ! empty( $item['decision'] ),
@@ -1178,7 +1265,7 @@ class Rawnaq_Gutenberg_Loader {
             'shape'       => $shape,
             'connector'   => $conn,
             'avatarShape' => $avatar_shape,
-            'zoom'        => true,
+            'zoom'        => ! isset( $attributes['enableZoom'] ) || ! empty( $attributes['enableZoom'] ),
             'export'      => ! isset( $attributes['showExport'] ) || ! empty( $attributes['showExport'] ),
             'nodes'       => $nodes,
         ];
@@ -1196,8 +1283,21 @@ class Rawnaq_Gutenberg_Loader {
         $avatar_border = sanitize_hex_color( $attributes['avatarBorderColor'] ?? '' ) ?: 'transparent';
         $has_shadow    = ! empty( $attributes['avatarShadow'] );
 
+        $accent     = sanitize_hex_color( $attributes['accentColor'] ?? '' ) ?: '#FBBF24';
+        $root_from  = sanitize_hex_color( $attributes['rootColorFrom'] ?? '' ) ?: '#4338CA';
+        $root_to    = sanitize_hex_color( $attributes['rootColorTo'] ?? '' ) ?: '#7C3AED';
+        $line_color = sanitize_hex_color( $attributes['lineColor'] ?? '' ) ?: '#E6E2F0';
+        $node_bg    = sanitize_hex_color( $attributes['nodeBg'] ?? '' ) ?: '#ffffff';
+        $node_radius = max( 0, min( 40, absint( $attributes['nodeRadius'] ?? 14 ) ) );
+
         $style = sprintf(
-            '--fc-avatar:%dpx;--fc-avatar-gap:%dpx;--fc-avatar-bg:%s;--fc-avatar-icon:%s;--fc-avatar-icon-size:%dpx;--fc-avatar-border:%s;--fc-avatar-border-w:%dpx;--fc-avatar-fit:%s;',
+            '--fc-amber:%1$s;--fc-indigo:%2$s;--fc-violet:%3$s;--fc-line:%4$s;--fc-panel:%5$s;--fc-radius:%6$dpx;--fc-avatar:%7$dpx;--fc-avatar-gap:%8$dpx;--fc-avatar-bg:%9$s;--fc-avatar-icon:%10$s;--fc-avatar-icon-size:%11$dpx;--fc-avatar-border:%12$s;--fc-avatar-border-w:%13$dpx;--fc-avatar-fit:%14$s;',
+            $accent,
+            $root_from,
+            $root_to,
+            $line_color,
+            $node_bg,
+            $node_radius,
             $avatar_size,
             $avatar_gap,
             $avatar_bg,
@@ -1257,7 +1357,8 @@ class Rawnaq_Gutenberg_Loader {
             'mobileCollapse' => ! empty( $attributes['mobileCollapse'] ),
             'dockAttach'     => ! empty( $attributes['dockAttach'] ),
             'syncTimeline'   => sanitize_text_field( $attributes['syncTimeline'] ?? '' ),
-            'hideIfShort'    => true,
+            'scope'          => sanitize_text_field( $attributes['contentSelector'] ?? '' ),
+            'hideIfShort'    => ! isset( $attributes['hideIfShort'] ) || ! empty( $attributes['hideIfShort'] ),
         ];
         $ring_size = absint( $attributes['ringSize'] ?? 56 );
         if ( $ring_size < 40 ) {
@@ -1626,8 +1727,11 @@ class Rawnaq_Gutenberg_Loader {
         foreach ( $raw as $row ) {
             $chapters[] = [
                 'title'       => sanitize_text_field( $row['title'] ?? '' ),
-                'body'        => sanitize_textarea_field( $row['body'] ?? '' ),
+                'body'        => wp_kses_post( $row['body'] ?? '' ),
                 'image'       => esc_url_raw( $row['image'] ?? '' ),
+                'imageAlt'    => sanitize_text_field( $row['imageAlt'] ?? '' ),
+                'video'       => esc_url_raw( $row['video'] ?? '' ),
+                'anchor'      => sanitize_title( $row['anchor'] ?? '' ),
                 'caption'     => sanitize_text_field( $row['caption'] ?? '' ),
                 'ctaText'     => sanitize_text_field( $row['ctaText'] ?? '' ),
                 'ctaUrl'      => esc_url_raw( $row['ctaUrl'] ?? '' ),
@@ -1646,9 +1750,15 @@ class Rawnaq_Gutenberg_Loader {
         if ( ! $accent ) {
             $accent = '#0f766e';
         }
+        $pin_top = absint( $attributes['pinTop'] ?? 96 );
+        $pin_top = max( 40, min( 180, $pin_top ) );
 
         ob_start();
-        echo '<div style="--story-accent: ' . esc_attr( $accent ) . ';">';
+        printf(
+            '<div style="--story-accent: %1$s; --story-pin-top: %2$dpx;">',
+            esc_attr( $accent ),
+            $pin_top
+        );
         rawnaq_scroll_story_markup( $chapters, $side );
         echo '</div>';
         return ob_get_clean();
@@ -1682,6 +1792,9 @@ class Rawnaq_Gutenberg_Loader {
             'recaptchaEnabled'  => ! empty( $attributes['recaptchaEnabled'] ),
             'webhookEnabled'    => ! empty( $attributes['webhookEnabled'] ),
             'webhookUrl'        => $attributes['webhookUrl'] ?? '',
+            'emailHtml'         => ! isset( $attributes['emailHtml'] ) || ! empty( $attributes['emailHtml'] ),
+            'crmProvider'       => sanitize_key( $attributes['crmProvider'] ?? 'none' ),
+            'crmAudience'       => sanitize_text_field( $attributes['crmAudience'] ?? '' ),
             'buttonFullWidth'   => ! empty( $attributes['buttonFullWidth'] ),
             'labelColor'        => sanitize_hex_color( $attributes['labelColor'] ?? '' ) ?: '',
             'inputBg'           => sanitize_hex_color( $attributes['inputBg'] ?? '' ) ?: '',

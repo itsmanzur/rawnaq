@@ -55,15 +55,30 @@ class Rawnaq_Scroll_Story_Widget extends \Elementor\Widget_Base {
 		] );
 
 		$repeater->add_control( 'body', [
-			'label'   => esc_html__( 'Body', 'rawnaq' ),
-			'type'    => \Elementor\Controls_Manager::TEXTAREA,
-			'default' => esc_html__( 'Tell this chapter of the story as the reader scrolls.', 'rawnaq' ),
-			'rows'    => 4,
+			'label'       => esc_html__( 'Body', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::WYSIWYG,
+			'default'     => esc_html__( 'Tell this chapter of the story as the reader scrolls.', 'rawnaq' ),
+			'description' => esc_html__( 'Rich text — links, emphasis, and lists are allowed.', 'rawnaq' ),
 		] );
 
 		$repeater->add_control( 'image', [
 			'label' => esc_html__( 'Pinned Image', 'rawnaq' ),
 			'type'  => \Elementor\Controls_Manager::MEDIA,
+		] );
+
+		$repeater->add_control( 'video', [
+			'label'       => esc_html__( 'Pinned Video (MP4)', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::MEDIA,
+			'media_types' => [ 'video' ],
+			'description' => esc_html__( 'Optional. Autoplays muted while the chapter is active; image is used as the poster.', 'rawnaq' ),
+		] );
+
+		$repeater->add_control( 'anchor', [
+			'label'       => esc_html__( 'Anchor / Deep-link ID', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => '',
+			'placeholder' => 'the-challenge',
+			'description' => esc_html__( 'Optional. Enables #anchor deep-linking. Defaults to a slug of the title.', 'rawnaq' ),
 		] );
 
 		$repeater->add_control( 'caption', [
@@ -163,6 +178,10 @@ class Rawnaq_Scroll_Story_Widget extends \Elementor\Widget_Base {
 			if ( ! empty( $row['image']['url'] ) ) {
 				$img = esc_url( $row['image']['url'] );
 			}
+			$video = '';
+			if ( ! empty( $row['video']['url'] ) ) {
+				$video = esc_url( $row['video']['url'] );
+			}
 			$cta_url = '';
 			if ( ! empty( $row['cta_link']['url'] ) ) {
 				$cta_url = esc_url( $row['cta_link']['url'] );
@@ -171,6 +190,9 @@ class Rawnaq_Scroll_Story_Widget extends \Elementor\Widget_Base {
 				'title'       => (string) ( $row['title'] ?? '' ),
 				'body'        => (string) ( $row['body'] ?? '' ),
 				'image'       => $img,
+				'imageAlt'    => (string) ( $row['image']['alt'] ?? '' ),
+				'video'       => $video,
+				'anchor'      => (string) ( $row['anchor'] ?? '' ),
 				'caption'     => (string) ( $row['caption'] ?? '' ),
 				'ctaText'     => (string) ( $row['cta_text'] ?? '' ),
 				'ctaUrl'      => $cta_url,

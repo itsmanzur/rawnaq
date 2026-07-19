@@ -1,0 +1,17 @@
+# Local / tooling
+.DS_Store
+Thumbs.db
+node_modules/
+vendor/
+.phpunit.result.cache
+*.log
+
+# Release build artifacts (keep out of git; rebuild via bin/)
+dist/
+*.zip
+
+# Editor / agent noise
+.cursor/
+.idea/
+*.swp
+*~

@@ -42,7 +42,7 @@ Critical blockers for WordPress.org were addressed in **1.17.4**. This plan cove
 | D2 | Shared “site settings” panel for reCAPTCHA keys + default WA (if not already clear in UI) | Agency UX |
 | D3 | E2E checklist doc: each widget in Elementor + Gutenberg, mobile, reduced-motion | Fewer regressions |
 | D4 | Optional: PHPUnit / Playwright smoke for Smart Form submit + nonce path | CI confidence |
-| D5 | Accessibility pass: focus traps on modals, TOC keyboard, form errors linked via `aria-describedby` | Directory reputation + real users |
+| D5 | Accessibility pass: focus traps on modals, TOC keyboard, form errors linked via `aria-describedby` | Directory reputation + real users | *(partly done — see 1.0.0 polish below; Smart Form `aria-describedby` still open)* |
 
 ## Phase E — Growth (after .org listing is live)
 
@@ -77,4 +77,36 @@ Critical blockers for WordPress.org were addressed in **1.17.4**. This plan cove
 - [x] Durable SF config option `rawnaq_sf_configs`
 - [x] SF admin capability checks on mark-read / bulk export
 - [x] Release zip: `dist/rawnaq-1.18.0.zip` via `php bin/build-release-zip.php`
+
+## Done in 1.0.0 polish pass (richness + parity + a11y)
+
+Correctness & parity
+- [x] Fixed mis-encoded characters (mojibake) in Scroll Timeline presets + shared strings
+- [x] Floating Dock: DST-aware IANA timezones via `Intl` (legacy UTC offsets still parse)
+- [x] Scroll Progress + TOC: configurable content-container selector (FSE/block themes) + `hideIfShort` toggle exposed
+- [x] Gutenberg ↔ Elementor parity: Hub `showExport`, Flow Chart `enableZoom`, Scroll Story `pinTop`, TOC selector/short-page — registered as real block attributes with editor controls
+
+Accessibility
+- [x] Case-Study modal: `role="dialog"` + `aria-modal`, focus trap, focus return to trigger, arrow-key gallery nav
+- [x] Scroll Story dots: Arrow / Home / End keyboard navigation
+- [x] Flow Chart nodes: client-side link allowlist before assigning `href`
+
+Deferred (needs care)
+- [ ] Bento InnerBlock cell `syncTimeline` attribute — requires a block `deprecated` entry to avoid invalidating existing saved cells
+- [ ] Smart Form field errors linked via `aria-describedby` (remainder of D5)
+
+## Done in 1.0.0 premium pass
+
+- [x] 3D Tilt Card flip / back-face (hover + click, keyboard, back CTA & styling) — Elementor + GB + JS + CSS
+- [x] Flow Chart edge labels + swimlane bands (live DOM + native SVG export)
+- [x] Smart Form branded HTML email + CRM/ESP: built-in Mailchimp subscribe (site API key + per-form audience) and `rawnaq_smart_form_submission` action hook
+- [x] Case-Study server-filtered AJAX pagination for CPT source (secure transient render-context; NDA flags never client-trusted)
+- [x] Scroll Story rich chapters: rich-text body (`wp_kses_post`), per-chapter video with poster, #anchor deep-linking + hash sync
+- [x] JSON-LD schema pack `includes/rawnaq-schema.php`: `rawnaq_schema_case_studies` (CreativeWork ItemList, wired to CPT grid), `rawnaq_schema_timeline` (wired to query timelines), `rawnaq_schema_reviews` (Review/AggregateRating helper). All behind `rawnaq_enable_schema`.
+
+### Premium follow-ups (need live QA / larger builds)
+- [ ] Case-Study AJAX: verify modal/bridge payloads on appended pages across bento/uniform/masonry; consider filter deep-links
+- [ ] Bento testimonial cells: auto-emit Review schema (needs cell content extraction)
+- [ ] Additional CRMs (HubSpot/native Zapier UI) beyond Mailchimp + webhook + hook
+- [ ] Flow Chart swimlanes: optional lane-aware layout engine (current bands derive from node extents)
 

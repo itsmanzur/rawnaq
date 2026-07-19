@@ -79,7 +79,7 @@
             inst.lazyObs.disconnect();
         }
         if (inst.root) {
-            inst.root.classList.remove('fc-bound');
+            inst.root.classList.remove('fc-bound', 'is-exporting');
             var stage = inst.root.querySelector('.rawnaq-flow-stage');
             if (stage) {
                 stage.innerHTML = '';
@@ -87,6 +87,10 @@
             var chrome = inst.root.querySelector('.rawnaq-flow-zoom');
             if (chrome) {
                 chrome.remove();
+            }
+            var exportBar = inst.root.querySelector('.rawnaq-diagram-export');
+            if (exportBar) {
+                exportBar.remove();
             }
         }
     }
@@ -389,7 +393,7 @@
                     c.getContext('2d').drawImage(img, 0, 0);
                     resolve(c.toDataURL('image/png'));
                 } catch (e) {
-                    resolve(src);
+                    resolve('');
                 }
             };
             img.onerror = function () {
@@ -397,6 +401,33 @@
             };
             img.src = src;
         });
+    }
+
+    function hexPoints(x, y, w, h) {
+        var x0 = x + w * 0.25;
+        var x1 = x + w * 0.75;
+        var x2 = x + w;
+        var ym = y + h * 0.5;
+        var y1 = y + h;
+        return [
+            x0 + ',' + y,
+            x1 + ',' + y,
+            x2 + ',' + ym,
+            x1 + ',' + y1,
+            x0 + ',' + y1,
+            x + ',' + ym
+        ].join(' ');
+    }
+
+    function safeNodeHref(url) {
+        var u = String(url || '').trim();
+        if (!u) {
+            return '';
+        }
+        if (/^(https?:|mailto:|#|\/)/i.test(u)) {
+            return u;
+        }
+        return '';
     }
 
     /**
@@ -432,12 +463,40 @@
 
         return Promise.all(imageJobs).then(function (imageUrls) {
             var out = [];
+            var clipDefs = [];
             out.push('<?xml version="1.0" encoding="UTF-8"?>');
             out.push(
                 '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="'
                 + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">'
             );
             out.push('<rect width="100%" height="100%" fill="' + escapeXml(fillBg) + '"/>');
+
+            nodeEls.forEach(function (el, idx) {
+                if (!imageUrls[idx]) {
+                    return;
+                }
+                var x = parseFloat(el.style.left);
+                var y = parseFloat(el.style.top);
+                if (isNaN(x)) {
+                    x = el.offsetLeft || 0;
+                }
+                if (isNaN(y)) {
+                    y = el.offsetTop || 0;
+                }
+                var nw = el.offsetWidth || NODE_W;
+                var isCircle = el.classList.contains('shape-circle');
+                var isHex = el.classList.contains('shape-hex') || el.classList.contains('shape-hexagon');
+                var ax = x + (isCircle || isHex ? (nw - avatar) / 2 : 14);
+                var ay = y + (isCircle || isHex ? 14 : 12);
+                var avRx = avatarRadius.indexOf('%') !== -1 ? avatar / 2 : (parseFloat(avatarRadius) || 9);
+                clipDefs.push(
+                    '<clipPath id="rqAv' + idx + '">'
+                    + '<rect x="' + ax + '" y="' + ay + '" width="' + avatar + '" height="' + avatar
+                    + '" rx="' + avRx + '" ry="' + avRx + '"/>'
+                    + '</clipPath>'
+                );
+            });
+
             out.push('<defs>');
             out.push(
                 '<linearGradient id="rqFcRoot" x1="0%" y1="0%" x2="100%" y2="100%">'
@@ -445,8 +504,31 @@
                 + '<stop offset="100%" stop-color="' + escapeXml(violet) + '"/>'
                 + '</linearGradient>'
             );
+            out.push(clipDefs.join(''));
             out.push('</defs>');
             out.push('<g transform="translate(' + pad + ',' + pad + ')">');
+
+            // Swimlane bands (behind everything).
+            Array.prototype.forEach.call(wrap.querySelectorAll('.rawnaq-flow-lane'), function (band) {
+                var lx = parseFloat(band.style.left) || 0;
+                var ly = parseFloat(band.style.top) || 0;
+                var lw = parseFloat(band.style.width) || 0;
+                var lh = parseFloat(band.style.height) || 0;
+                var alt = band.classList.contains('is-alt');
+                out.push(
+                    '<rect x="' + lx + '" y="' + ly + '" width="' + lw + '" height="' + lh
+                    + '" fill="' + (alt ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)')
+                    + '" stroke="' + escapeXml(line) + '" stroke-width="1" stroke-dasharray="4 4"/>'
+                );
+                var lblEl = band.querySelector('.rawnaq-flow-lane-label');
+                if (lblEl) {
+                    out.push(
+                        '<text x="' + (lx + 10) + '" y="' + (ly + 18)
+                        + '" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="'
+                        + escapeXml(muted) + '">' + escapeXml(lblEl.textContent) + '</text>'
+                    );
+                }
+            });
 
             pathEls.forEach(function (path) {
                 var d = path.getAttribute('d') || '';
@@ -475,26 +557,34 @@
                 var isRoot = el.classList.contains('is-root');
                 var isDecision = el.classList.contains('is-decision');
                 var isCircle = el.classList.contains('shape-circle');
+                var isHex = el.classList.contains('shape-hex') || el.classList.contains('shape-hexagon');
                 var titleEl = el.querySelector('.rawnaq-flow-title');
                 var roleEl = el.querySelector('.rawnaq-flow-role');
                 var iconEl = el.querySelector('.rawnaq-flow-icon');
                 var title = titleEl ? titleEl.textContent : '';
                 var role = roleEl ? roleEl.textContent : '';
-                var rx = isCircle ? nw / 2 : radius;
                 var fill = isRoot ? 'url(#rqFcRoot)' : (isDecision ? amberSoft : panel);
                 var stroke = isRoot ? 'none' : (isDecision ? amber : line);
                 var strokeW = isRoot ? 0 : 1.5;
                 var textColor = isRoot ? '#ffffff' : ink;
                 var roleColor = isRoot ? 'rgba(255,255,255,0.75)' : muted;
 
-                out.push(
-                    '<rect x="' + x + '" y="' + y + '" width="' + nw + '" height="' + nh
-                    + '" rx="' + rx + '" ry="' + rx + '" fill="' + escapeXml(fill)
-                    + '" stroke="' + escapeXml(stroke) + '" stroke-width="' + strokeW + '"/>'
-                );
+                if (isHex) {
+                    out.push(
+                        '<polygon points="' + hexPoints(x, y, nw, nh) + '" fill="' + escapeXml(fill)
+                        + '" stroke="' + escapeXml(stroke) + '" stroke-width="' + strokeW + '"/>'
+                    );
+                } else {
+                    var rx = isCircle ? Math.min(nw, nh) / 2 : radius;
+                    out.push(
+                        '<rect x="' + x + '" y="' + y + '" width="' + nw + '" height="' + nh
+                        + '" rx="' + rx + '" ry="' + rx + '" fill="' + escapeXml(fill)
+                        + '" stroke="' + escapeXml(stroke) + '" stroke-width="' + strokeW + '"/>'
+                    );
+                }
 
-                var ax = x + 14;
-                var ay = y + 12;
+                var ax = x + (isCircle || isHex ? (nw - avatar) / 2 : 14);
+                var ay = y + (isCircle || isHex ? 14 : 12);
                 var hasImage = !!(imageUrls[idx]);
                 var iconText = '';
                 if (iconEl && !hasImage) {
@@ -512,12 +602,6 @@
                 );
 
                 if (hasImage) {
-                    out.push(
-                        '<clipPath id="rqAv' + idx + '">'
-                        + '<rect x="' + ax + '" y="' + ay + '" width="' + avatar + '" height="' + avatar
-                        + '" rx="' + avRx + '" ry="' + avRx + '"/>'
-                        + '</clipPath>'
-                    );
                     var href = escapeXml(imageUrls[idx]);
                     var preserve = avatarFit === 'contain' ? 'xMidYMid meet' : (avatarFit === 'fill' ? 'none' : 'xMidYMid slice');
                     out.push(
@@ -539,20 +623,40 @@
                     );
                 }
 
-                var textX = ax;
+                var textX = isCircle || isHex ? (x + nw / 2) : ax;
+                var textAnchor = isCircle || isHex ? 'middle' : 'start';
                 var textY = ay + avatar + 18;
                 out.push(
                     '<text x="' + textX + '" y="' + textY
+                    + '" text-anchor="' + textAnchor
                     + '" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="700" fill="'
                     + escapeXml(textColor) + '">' + escapeXml(title) + '</text>'
                 );
                 if (role) {
                     out.push(
                         '<text x="' + textX + '" y="' + (textY + 16)
+                        + '" text-anchor="' + textAnchor
                         + '" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="'
                         + escapeXml(roleColor) + '">' + escapeXml(role) + '</text>'
                     );
                 }
+            });
+
+            // Edge labels on connectors.
+            Array.prototype.forEach.call(wrap.querySelectorAll('.rawnaq-flow-edge-label'), function (lbl) {
+                var ex = parseFloat(lbl.style.left) || 0;
+                var ey = parseFloat(lbl.style.top) || 0;
+                var txt = lbl.textContent || '';
+                var w = Math.max(20, txt.length * 6.4 + 12);
+                out.push(
+                    '<rect x="' + (ex - w / 2) + '" y="' + (ey - 10) + '" width="' + w + '" height="20" rx="6" ry="6" fill="'
+                    + escapeXml(panel) + '" stroke="' + escapeXml(line) + '" stroke-width="1"/>'
+                );
+                out.push(
+                    '<text x="' + ex + '" y="' + (ey + 4) + '" text-anchor="middle" '
+                    + 'font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="'
+                    + escapeXml(ink) + '">' + escapeXml(txt) + '</text>'
+                );
             });
 
             out.push('</g></svg>');
@@ -639,6 +743,8 @@
                 image: n.image || n.imageUrl || '',
                 detail: n.detail || '',
                 link: n.link || '',
+                edgeLabel: n.edgeLabel || n.edge_label || '',
+                lane: n.lane || '',
                 decision: !!n.decision,
                 x: typeof n.x === 'number' ? n.x : parseFloat(n.x) || 10,
                 y: typeof n.y === 'number' ? n.y : parseFloat(n.y) || 10,
@@ -707,15 +813,67 @@
         var useLazy = nodes.length >= LAZY_THRESHOLD;
         var axis = edgeAxis(direction, mode);
 
+        // Swimlane bands — grouped by node `lane`, drawn behind nodes.
+        var laneOrder = [];
+        var laneGroups = {};
+        nodes.forEach(function (n) {
+            if (!n.lane || !positions[n.id]) {
+                return;
+            }
+            if (!laneGroups[n.lane]) {
+                laneGroups[n.lane] = [];
+                laneOrder.push(n.lane);
+            }
+            laneGroups[n.lane].push(positions[n.id]);
+        });
+        if (laneOrder.length) {
+            var vertical = direction === 'lr' || direction === 'rl';
+            var lanePad = 16;
+            laneOrder.forEach(function (laneName, li) {
+                var ps = laneGroups[laneName];
+                var minA = Infinity;
+                var maxA = -Infinity;
+                ps.forEach(function (p) {
+                    if (vertical) {
+                        minA = Math.min(minA, p.x);
+                        maxA = Math.max(maxA, p.x + NODE_W);
+                    } else {
+                        minA = Math.min(minA, p.y);
+                        maxA = Math.max(maxA, p.y + NODE_H);
+                    }
+                });
+                var band = document.createElement('div');
+                band.className = 'rawnaq-flow-lane' + (li % 2 ? ' is-alt' : '');
+                if (vertical) {
+                    band.style.left = Math.max(0, minA - lanePad) + 'px';
+                    band.style.top = '0px';
+                    band.style.width = (maxA - minA + lanePad * 2) + 'px';
+                    band.style.height = maxY + 'px';
+                    band.classList.add('is-vertical');
+                } else {
+                    band.style.left = '0px';
+                    band.style.top = Math.max(0, minA - lanePad) + 'px';
+                    band.style.width = maxX + 'px';
+                    band.style.height = (maxA - minA + lanePad * 2) + 'px';
+                }
+                var lbl = document.createElement('span');
+                lbl.className = 'rawnaq-flow-lane-label';
+                lbl.textContent = laneName;
+                band.appendChild(lbl);
+                canvas.appendChild(band);
+            });
+        }
+
         nodes.forEach(function (n, idx) {
             var pos = positions[n.id];
             if (!pos) {
                 return;
             }
             var el;
-            if (n.link) {
+            var href = safeNodeHref(n.link);
+            if (href) {
                 el = document.createElement('a');
-                el.href = n.link;
+                el.href = href;
             } else {
                 el = document.createElement('button');
                 el.type = 'button';
@@ -747,6 +905,20 @@
                 path.classList.add('accent');
             }
             svg.appendChild(path);
+
+            // Edge label at the midpoint between parent and child centers.
+            if (n.edgeLabel) {
+                var pp = positions[n.parent];
+                var pc = positions[n.id];
+                var midX = (pp.x + pc.x) / 2 + NODE_W / 2;
+                var midY = (pp.y + pc.y) / 2 + NODE_H / 2;
+                var label = document.createElement('span');
+                label.className = 'rawnaq-flow-edge-label';
+                label.textContent = n.edgeLabel;
+                label.style.left = midX + 'px';
+                label.style.top = midY + 'px';
+                canvas.appendChild(label);
+            }
         });
 
         var detail = document.createElement('div');
@@ -757,12 +929,13 @@
         mobile.className = 'rawnaq-flow-mobile';
         nodes.forEach(function (n) {
             var depth = positions[n.id] ? positions[n.id].depth || 0 : 0;
-            var item = document.createElement(n.link ? 'a' : 'div');
+            var mobileHref = safeNodeHref(n.link);
+            var item = document.createElement(mobileHref ? 'a' : 'div');
             item.className = 'rawnaq-flow-mobile-item'
                 + (n.root ? ' is-root' : '')
                 + (depth > 0 ? ' indent-' + Math.min(depth, 3) : '');
-            if (n.link) {
-                item.href = n.link;
+            if (mobileHref) {
+                item.href = mobileHref;
             }
             item.innerHTML = renderIcon(n)
                 + '<div><b>' + escapeHtml(n.title) + '</b>'

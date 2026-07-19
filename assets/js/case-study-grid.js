@@ -284,13 +284,24 @@
             }
         }
 
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
         modal.hidden = false;
         document.body.classList.add('rawnaq-cs-modal-open');
         root._csActiveProject = project;
+        // Remember what to return focus to when the modal closes.
+        root._csReturnFocus = document.activeElement;
         var closeBtn = modal.querySelector('.rawnaq-cs-modal-close');
         if (closeBtn) {
             closeBtn.focus();
         }
+    }
+
+    function getFocusable(modal) {
+        var sel = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        return Array.prototype.filter.call(modal.querySelectorAll(sel), function (el) {
+            return el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement;
+        });
     }
 
     function closeModal(root) {
@@ -300,9 +311,79 @@
         }
         modal.hidden = true;
         document.body.classList.remove('rawnaq-cs-modal-open');
+        // Return focus to the trigger for keyboard/screen-reader users.
+        var back = root._csReturnFocus;
+        if (back && typeof back.focus === 'function') {
+            back.focus();
+        }
+        root._csReturnFocus = null;
+    }
+
+    function isAjaxGrid(root) {
+        return root.getAttribute('data-cs-ajax') === '1'
+            && window.rawnaqCaseStudy && rawnaqCaseStudy.ajaxUrl;
+    }
+
+    function csAjaxFetch(root, opts) {
+        opts = opts || {};
+        var grid = root.querySelector('.rawnaq-cs-grid');
+        if (!grid) {
+            return;
+        }
+        var filters = currentFilters(root);
+        var page = opts.reset ? 1 : ((root._csPage || 1) + 1);
+        var body = new URLSearchParams();
+        body.set('action', 'rawnaq_cs_query');
+        body.set('nonce', root.getAttribute('data-cs-nonce') || '');
+        body.set('uid', root.getAttribute('data-cs-uid') || '');
+        body.set('paged', String(page));
+        body.set('sector', filters.sector || '');
+        body.set('year', filters.year || '');
+        body.set('service', filters.service || '');
+
+        var btn = root.querySelector('.rawnaq-cs-load-more');
+        if (btn) { btn.classList.add('is-loading'); }
+        root.classList.add('is-cs-loading');
+
+        fetch(rawnaqCaseStudy.ajaxUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        }).then(function (r) { return r.json(); }).then(function (res) {
+            if (!res || !res.success) {
+                return;
+            }
+            if (opts.reset) {
+                grid.innerHTML = res.data.html || '';
+            } else {
+                grid.insertAdjacentHTML('beforeend', res.data.html || '');
+            }
+            root._csPage = res.data.page || page;
+            root._csHasMore = !!res.data.hasMore;
+
+            var cfg = cfgOf(root);
+            bindCards(root, cfg);
+            bindDiscuss(root);
+
+            var wrap = root.querySelector('.rawnaq-cs-load-more-wrap');
+            if (btn) {
+                btn.hidden = !root._csHasMore;
+            }
+            if (wrap) {
+                wrap.classList.toggle('is-hidden', !root._csHasMore);
+            }
+            window.setTimeout(function () { setMasonrySpans(root); }, 60);
+        }).catch(function () {
+            /* silent */
+        }).then(function () {
+            if (btn) { btn.classList.remove('is-loading'); }
+            root.classList.remove('is-cs-loading');
+        });
     }
 
     function bindFilters(root) {
+        var ajax = isAjaxGrid(root);
         root.querySelectorAll('.rawnaq-cs-filters[data-filter]').forEach(function (row) {
             row.querySelectorAll('.rawnaq-cs-chip').forEach(function (chip) {
                 chip.addEventListener('click', function () {
@@ -311,7 +392,11 @@
                         c.classList.toggle('is-active', active);
                         c.setAttribute('aria-selected', active ? 'true' : 'false');
                     });
-                    applyFilters(root);
+                    if (ajax) {
+                        csAjaxFetch(root, { reset: true });
+                    } else {
+                        applyFilters(root);
+                    }
                 });
             });
         });
@@ -320,6 +405,12 @@
     function bindLoadMore(root) {
         var btn = root.querySelector('.rawnaq-cs-load-more');
         if (!btn) {
+            return;
+        }
+        if (isAjaxGrid(root)) {
+            btn.addEventListener('click', function () {
+                csAjaxFetch(root, { reset: false });
+            });
             return;
         }
         btn.addEventListener('click', function () {
@@ -349,6 +440,10 @@
             if (card.tagName.toLowerCase() === 'a') {
                 return;
             }
+            if (card._csCardBound) {
+                return;
+            }
+            card._csCardBound = true;
 
             function handle(e) {
                 if (e && e.target && e.target.closest && e.target.closest('[data-cs-discuss]')) {
@@ -394,6 +489,10 @@
 
     function bindDiscuss(root) {
         root.querySelectorAll('[data-cs-discuss]').forEach(function (btn) {
+            if (btn._csDiscussBound) {
+                return;
+            }
+            btn._csDiscussBound = true;
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -431,8 +530,37 @@
         }
 
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && !modal.hidden) {
+            if (modal.hidden) {
+                return;
+            }
+            if (e.key === 'Escape') {
                 closeModal(root);
+                return;
+            }
+            if (e.key === 'ArrowLeft') {
+                goToSlide(modal, (modal._csIndex || 0) - 1);
+                return;
+            }
+            if (e.key === 'ArrowRight') {
+                goToSlide(modal, (modal._csIndex || 0) + 1);
+                return;
+            }
+            if (e.key === 'Tab') {
+                // Focus trap: keep Tab cycling inside the dialog.
+                var focusable = getFocusable(modal);
+                if (!focusable.length) {
+                    return;
+                }
+                var first = focusable[0];
+                var last = focusable[focusable.length - 1];
+                var active = document.activeElement;
+                if (e.shiftKey && (active === first || !modal.contains(active))) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && active === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
             }
         });
     }

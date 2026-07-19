@@ -64,6 +64,10 @@ class Rawnaq_Elements {
         add_action( 'wp_ajax_nopriv_rawnaq_timeline_load_more', [ $this, 'ajax_timeline_load_more' ] );
         add_action( 'wp_ajax_rawnaq_smart_form_submit', [ $this, 'ajax_smart_form_submit' ] );
         add_action( 'wp_ajax_nopriv_rawnaq_smart_form_submit', [ $this, 'ajax_smart_form_submit' ] );
+        if ( function_exists( 'rawnaq_case_study_ajax_query' ) ) {
+            add_action( 'wp_ajax_rawnaq_cs_query', 'rawnaq_case_study_ajax_query' );
+            add_action( 'wp_ajax_nopriv_rawnaq_cs_query', 'rawnaq_case_study_ajax_query' );
+        }
         add_action( 'init', [ $this, 'maybe_register_smart_form_cpt' ] );
     }
 
@@ -230,15 +234,22 @@ class Rawnaq_Elements {
             if ( function_exists( 'rawnaq_smart_form_fill_template' ) ) {
                 $subject = rawnaq_smart_form_fill_template( $subject, $tpl_vals );
             }
-            $body_lines = [];
-            foreach ( $values as $k => $v ) {
-                $body_lines[] = $k . ': ' . $v;
+            $use_html = ( ! isset( $cfg['emailHtml'] ) || ! empty( $cfg['emailHtml'] ) )
+                && function_exists( 'rawnaq_smart_form_email_html' );
+            if ( $use_html ) {
+                $body    = rawnaq_smart_form_email_html( $values, $tpl_vals, $cfg );
+                $headers = [ 'Content-Type: text/html; charset=UTF-8' ];
+            } else {
+                $body_lines = [];
+                foreach ( $values as $k => $v ) {
+                    $body_lines[] = $k . ': ' . $v;
+                }
+                $body_lines[] = '';
+                $body_lines[] = 'Page: ' . ( $tpl_vals['pageTitle'] ?? '' );
+                $body_lines[] = 'URL: ' . ( $tpl_vals['url'] ?? '' );
+                $body    = implode( "\n", $body_lines );
+                $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
             }
-            $body_lines[] = '';
-            $body_lines[] = 'Page: ' . ( $tpl_vals['pageTitle'] ?? '' );
-            $body_lines[] = 'URL: ' . ( $tpl_vals['url'] ?? '' );
-            $body    = implode( "\n", $body_lines );
-            $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
             if ( ! empty( $values['email'] ) && is_email( $values['email'] ) ) {
                 $headers[] = 'Reply-To: ' . $values['email'];
             }
@@ -247,6 +258,10 @@ class Rawnaq_Elements {
 
         if ( ! empty( $cfg['logSubmissions'] ) && function_exists( 'rawnaq_smart_form_log_submission' ) ) {
             rawnaq_smart_form_log_submission( $form_id, $values, $cfg );
+        }
+
+        if ( function_exists( 'rawnaq_smart_form_dispatch_crm' ) ) {
+            rawnaq_smart_form_dispatch_crm( $values, $tpl_vals, $cfg, $form_id );
         }
 
         if ( ! empty( $cfg['webhookEnabled'] ) && ! empty( $cfg['webhookUrl'] ) && function_exists( 'rawnaq_smart_form_send_webhook' ) ) {
@@ -582,6 +597,13 @@ class Rawnaq_Elements {
             [],
             RAWNAQ_VERSION,
             true
+        );
+        wp_localize_script(
+            'rawnaq-case-study-grid',
+            'rawnaqCaseStudy',
+            [
+                'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+            ]
         );
 
         // Cross-module bridge (Case-Study discuss + scroll highlight)

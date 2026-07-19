@@ -452,6 +452,171 @@ function rawnaq_smart_form_send_webhook( $url, $payload ) {
 }
 
 /**
+ * Build a branded HTML email body for a submission.
+ *
+ * @param array<string,string> $values   Submitted field values.
+ * @param array<string,mixed>  $tpl_vals Template values (pageTitle, url, …).
+ * @param array<string,mixed>  $cfg      Stored form config.
+ * @return string HTML email.
+ */
+function rawnaq_smart_form_email_html( $values, $tpl_vals, $cfg ) {
+	$site_name = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
+	$accent    = '#4338ca';
+	$heading   = ! empty( $cfg['emailSubject'] ) ? $cfg['emailSubject'] : __( 'New website inquiry', 'rawnaq' );
+
+	$rows = '';
+	foreach ( $values as $k => $v ) {
+		if ( 'consent' === $k ) {
+			continue;
+		}
+		$label = ucwords( str_replace( [ '_', '-' ], ' ', (string) $k ) );
+		$val   = nl2br( esc_html( (string) $v ) );
+		$rows .= '<tr>'
+			. '<td style="padding:10px 14px;border-bottom:1px solid #ececf5;font-weight:600;color:#1e1b2e;vertical-align:top;width:34%;">' . esc_html( $label ) . '</td>'
+			. '<td style="padding:10px 14px;border-bottom:1px solid #ececf5;color:#444;">' . $val . '</td>'
+			. '</tr>';
+	}
+
+	$page_title = esc_html( (string) ( $tpl_vals['pageTitle'] ?? '' ) );
+	$page_url   = esc_url( (string) ( $tpl_vals['url'] ?? '' ) );
+
+	ob_start();
+	?>
+	<div style="background:#f4f4f9;padding:24px 0;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+		<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #ececf5;">
+			<div style="background:<?php echo esc_attr( $accent ); ?>;padding:20px 24px;">
+				<div style="color:#ffffff;font-size:18px;font-weight:700;"><?php echo esc_html( $heading ); ?></div>
+				<div style="color:rgba(255,255,255,.8);font-size:12px;margin-top:4px;"><?php echo esc_html( $site_name ); ?></div>
+			</div>
+			<div style="padding:8px 10px 4px;">
+				<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:14px;">
+					<?php echo $rows; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rows built with esc_html above. ?>
+				</table>
+			</div>
+			<div style="padding:14px 24px 22px;color:#8a8698;font-size:12px;border-top:1px solid #ececf5;">
+				<?php if ( $page_title || $page_url ) : ?>
+					<div><?php esc_html_e( 'Submitted from:', 'rawnaq' ); ?>
+						<?php if ( $page_url ) : ?>
+							<a href="<?php echo esc_url( $page_url ); ?>" style="color:<?php echo esc_attr( $accent ); ?>;"><?php echo $page_title ? esc_html( $page_title ) : esc_html( $page_url ); ?></a>
+						<?php else : ?>
+							<?php echo esc_html( $page_title ); ?>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
+				<div style="margin-top:4px;"><?php echo esc_html( sprintf( /* translators: %s: site name */ __( 'Sent by %s via Rawnaq Smart Form', 'rawnaq' ), $site_name ) ); ?></div>
+			</div>
+		</div>
+	</div>
+	<?php
+	$html = ob_get_clean();
+
+	/**
+	 * Filter the Smart Form HTML email body.
+	 *
+	 * @param string $html     Rendered HTML.
+	 * @param array  $values   Submitted values.
+	 * @param array  $tpl_vals Template values.
+	 * @param array  $cfg      Form config.
+	 */
+	return apply_filters( 'rawnaq_smart_form_email_html', $html, $values, $tpl_vals, $cfg );
+}
+
+/**
+ * Mailchimp API key from site settings.
+ *
+ * @return string
+ */
+function rawnaq_smart_form_mailchimp_key() {
+	$settings = get_option( 'rawnaq_settings', [] );
+	if ( ! is_array( $settings ) ) {
+		$settings = [];
+	}
+	return sanitize_text_field( $settings['mailchimp_api_key'] ?? '' );
+}
+
+/**
+ * Subscribe an email to a Mailchimp audience (list).
+ *
+ * Uses the datacenter suffix embedded in the API key (…-usX).
+ *
+ * @param string $email       Subscriber email.
+ * @param string $audience_id Mailchimp audience/list ID.
+ * @param array  $merge       Optional merge fields (e.g. FNAME).
+ * @return bool
+ */
+function rawnaq_smart_form_mailchimp_subscribe( $email, $audience_id, $merge = [] ) {
+	$key = rawnaq_smart_form_mailchimp_key();
+	if ( ! $key || ! $audience_id || ! is_email( $email ) ) {
+		return false;
+	}
+	$parts = explode( '-', $key );
+	$dc    = end( $parts );
+	if ( ! $dc || $dc === $key ) {
+		return false;
+	}
+	$hash = md5( strtolower( $email ) );
+	$url  = 'https://' . rawurlencode( $dc ) . '.api.mailchimp.com/3.0/lists/' . rawurlencode( $audience_id ) . '/members/' . $hash;
+	$res  = wp_remote_request(
+		$url,
+		[
+			'method'  => 'PUT',
+			'timeout' => 8,
+			'headers' => [
+				'Content-Type'  => 'application/json',
+				'Authorization' => 'apikey ' . $key,
+			],
+			'body'    => wp_json_encode( [
+				'email_address' => $email,
+				'status_if_new' => 'subscribed',
+				'merge_fields'  => (object) array_map( 'strval', $merge ),
+			] ),
+		]
+	);
+	return ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) < 400;
+}
+
+/**
+ * Dispatch a submission to configured CRM/ESP integrations + fire the
+ * generic extension hook so third-party code (Zapier, custom) can react.
+ *
+ * @param array<string,string> $values   Submitted values.
+ * @param array<string,mixed>  $tpl_vals Template values.
+ * @param array<string,mixed>  $cfg      Form config.
+ * @param string               $form_id  Form ID.
+ * @return void
+ */
+function rawnaq_smart_form_dispatch_crm( $values, $tpl_vals, $cfg, $form_id ) {
+	$email = '';
+	foreach ( $values as $k => $v ) {
+		if ( is_email( $v ) ) {
+			$email = $v;
+			break;
+		}
+	}
+
+	if ( 'mailchimp' === ( $cfg['crmProvider'] ?? '' ) && ! empty( $cfg['crmAudience'] ) && $email ) {
+		$merge = [];
+		if ( ! empty( $values['name'] ) ) {
+			$parts          = preg_split( '/\s+/', trim( (string) $values['name'] ), 2 );
+			$merge['FNAME'] = $parts[0] ?? '';
+			$merge['LNAME'] = $parts[1] ?? '';
+		}
+		rawnaq_smart_form_mailchimp_subscribe( $email, $cfg['crmAudience'], $merge );
+	}
+
+	/**
+	 * Fires after a Smart Form submission is processed — extension point for
+	 * CRM/ESP integrations (HubSpot, Zapier bridges, custom sync, etc.).
+	 *
+	 * @param array  $values   Submitted values.
+	 * @param array  $tpl_vals Template values (pageTitle, url).
+	 * @param array  $cfg      Form config.
+	 * @param string $form_id  Form ID.
+	 */
+	do_action( 'rawnaq_smart_form_submission', $values, $tpl_vals, $cfg, $form_id );
+}
+
+/**
  * Handle uploaded files for file-type fields.
  *
  * Nonce must already be verified by the AJAX caller (ajax_smart_form_submit).
@@ -759,6 +924,9 @@ function rawnaq_smart_form_markup( $cfg, $form_id = '' ) {
 		'webhookUrl'        => ( ! empty( $cfg['webhookUrl'] ) && rawnaq_smart_form_is_safe_webhook_url( $cfg['webhookUrl'] ) )
 			? esc_url_raw( $cfg['webhookUrl'] )
 			: '',
+		'emailHtml'         => ! isset( $cfg['emailHtml'] ) || ! empty( $cfg['emailHtml'] ),
+		'crmProvider'       => sanitize_key( $cfg['crmProvider'] ?? 'none' ),
+		'crmAudience'       => sanitize_text_field( $cfg['crmAudience'] ?? '' ),
 		'buttonFullWidth'   => ! empty( $cfg['buttonFullWidth'] ),
 		'multiStep'         => $multi_step,
 		'fields'            => $fields,

@@ -517,6 +517,7 @@ function rawnaq_case_study_query_projects( $args = [] ) {
 		$orderby = 'date';
 	}
 	$order = ( 'ASC' === strtoupper( (string) ( $args['order'] ?? 'DESC' ) ) ) ? 'ASC' : 'DESC';
+	$paged = isset( $args['paged'] ) ? max( 1, (int) $args['paged'] ) : 1;
 
 	$query_args = [
 		'post_type'           => 'rawnaq_case_study',
@@ -527,6 +528,9 @@ function rawnaq_case_study_query_projects( $args = [] ) {
 		'ignore_sticky_posts' => true,
 		'no_found_rows'       => false,
 	];
+	if ( $per_page > 0 ) {
+		$query_args['paged'] = $paged;
+	}
 
 	$sector = sanitize_title( (string) ( $args['sector'] ?? '' ) );
 	if ( $sector && taxonomy_exists( 'rawnaq_cs_sector' ) ) {
@@ -538,6 +542,29 @@ function rawnaq_case_study_query_projects( $args = [] ) {
 				'terms'    => $sector,
 			],
 		];
+	}
+
+	// Optional server-side year (exact meta) + service (LIKE meta) filters.
+	$meta_query = [];
+	$year       = sanitize_text_field( (string) ( $args['year'] ?? '' ) );
+	if ( '' !== $year ) {
+		$meta_query[] = [
+			'key'     => '_rawnaq_cs_year',
+			'value'   => $year,
+			'compare' => '=',
+		];
+	}
+	$service = sanitize_text_field( (string) ( $args['service'] ?? '' ) );
+	if ( '' !== $service ) {
+		$meta_query[] = [
+			'key'     => '_rawnaq_cs_services',
+			'value'   => $service,
+			'compare' => 'LIKE',
+		];
+	}
+	if ( $meta_query ) {
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- optional facet filters for a bounded CPT query.
+		$query_args['meta_query'] = $meta_query;
 	}
 
 	$q        = new WP_Query( $query_args );
@@ -553,8 +580,10 @@ function rawnaq_case_study_query_projects( $args = [] ) {
 	wp_reset_postdata();
 
 	return [
-		'projects' => $projects,
-		'found'    => (int) $q->found_posts,
+		'projects'    => $projects,
+		'found'       => (int) $q->found_posts,
+		'maxPages'    => (int) $q->max_num_pages,
+		'page'        => $paged,
 	];
 }
 
@@ -664,6 +693,74 @@ function rawnaq_case_study_resolve_projects( $cfg ) {
 }
 
 /**
+ * Store the server-render context for a grid so AJAX pagination can reuse
+ * NDA/layout settings without trusting the client.
+ *
+ * @param string $uid Instance id.
+ * @param array  $ctx Context (layout, click, nda flags, query args).
+ * @return void
+ */
+function rawnaq_case_study_store_ctx( $uid, $ctx ) {
+	set_transient( 'rawnaq_cs_ctx_' . $uid, $ctx, 12 * HOUR_IN_SECONDS );
+}
+
+/**
+ * AJAX: filtered + paginated case-study cards (CPT source).
+ *
+ * @return void
+ */
+function rawnaq_case_study_ajax_query() {
+	check_ajax_referer( 'rawnaq_cs_query', 'nonce' );
+
+	$uid = isset( $_POST['uid'] ) ? sanitize_html_class( wp_unslash( $_POST['uid'] ) ) : '';
+	$ctx = $uid ? get_transient( 'rawnaq_cs_ctx_' . $uid ) : false;
+	if ( ! is_array( $ctx ) ) {
+		wp_send_json_error( [ 'message' => __( 'Grid context expired. Please reload.', 'rawnaq' ) ], 400 );
+	}
+
+	$paged   = isset( $_POST['paged'] ) ? max( 1, absint( $_POST['paged'] ) ) : 1;
+	$sector  = isset( $_POST['sector'] ) ? sanitize_text_field( wp_unslash( $_POST['sector'] ) ) : '';
+	$year    = isset( $_POST['year'] ) ? sanitize_text_field( wp_unslash( $_POST['year'] ) ) : '';
+	$service = isset( $_POST['service'] ) ? sanitize_text_field( wp_unslash( $_POST['service'] ) ) : '';
+
+	$per_page = max( 1, absint( $ctx['perPage'] ?? 9 ) );
+	$result   = rawnaq_case_study_query_projects( [
+		'posts_per_page' => $per_page,
+		'orderby'        => $ctx['orderby'] ?? 'date',
+		'order'          => $ctx['order'] ?? 'DESC',
+		'sector'         => $sector,
+		'year'           => $year,
+		'service'        => $service,
+		'paged'          => $paged,
+	] );
+
+	$projects = rawnaq_case_study_normalize_projects( $result['projects'] );
+	$layout   = $ctx['layout'] ?? 'bento';
+
+	ob_start();
+	foreach ( $projects as $project ) {
+		rawnaq_case_study_render_card(
+			$project,
+			$layout,
+			! empty( $ctx['hideBudget'] ),
+			! empty( $ctx['hideClient'] ),
+			$ctx['clickAction'] ?? 'modal',
+			false,
+			! empty( $ctx['showDiscuss'] )
+		);
+	}
+	$html = ob_get_clean();
+
+	wp_send_json_success( [
+		'html'     => $html,
+		'page'     => $paged,
+		'maxPages' => (int) $result['maxPages'],
+		'hasMore'  => $paged < (int) $result['maxPages'],
+		'found'    => (int) $result['found'],
+	] );
+}
+
+/**
  * Render Case-Study Grid markup.
  *
  * @param array  $cfg Config.
@@ -728,6 +825,29 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		'loadChunk'      => $load_chunk,
 	];
 
+	// Server-side pagination is available for the CPT (query) source.
+	$source   = sanitize_key( $cfg['source'] ?? 'manual' );
+	$cs_ajax  = ( 'query' === $source );
+
+	// JSON-LD (CreativeWork ItemList) for real CPT-backed portfolios.
+	if ( 'query' === $source && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_case_studies' ) ) {
+		rawnaq_schema_print( rawnaq_schema_case_studies( $projects ), 'case-study' );
+	}
+	$cs_nonce = '';
+	if ( $cs_ajax ) {
+		$cs_nonce = wp_create_nonce( 'rawnaq_cs_query' );
+		rawnaq_case_study_store_ctx( $uid, [
+			'layout'      => $layout,
+			'clickAction' => $click_action,
+			'hideBudget'  => $hide_budget,
+			'hideClient'  => $hide_client,
+			'showDiscuss' => $show_discuss,
+			'perPage'     => max( 1, absint( $cfg['queryNumber'] ?? 9 ) ),
+			'orderby'     => sanitize_key( $cfg['queryOrderby'] ?? 'date' ),
+			'order'       => ( 'ASC' === strtoupper( (string) ( $cfg['queryOrder'] ?? 'DESC' ) ) ) ? 'ASC' : 'DESC',
+		] );
+	}
+
 	$style = '';
 	if ( ! empty( $cfg['accent'] ) ) {
 		$style .= '--cs-accent:' . esc_attr( $cfg['accent'] ) . ';';
@@ -748,6 +868,11 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 	?>
 	<div class="rawnaq-case-study" id="<?php echo esc_attr( $uid ); ?>"
 		data-cs="<?php echo esc_attr( wp_json_encode( $cfg_out ) ); ?>"
+		<?php if ( $cs_ajax ) : ?>
+		data-cs-ajax="1"
+		data-cs-uid="<?php echo esc_attr( $uid ); ?>"
+		data-cs-nonce="<?php echo esc_attr( $cs_nonce ); ?>"
+		<?php endif; ?>
 		style="<?php echo esc_attr( $style . '--cs-cols:' . $columns ); ?>">
 
 		<?php if ( $show_filter && $sectors ) : ?>

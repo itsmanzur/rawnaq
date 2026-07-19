@@ -202,11 +202,120 @@
     box-shadow: 0 22px 46px rgba(0, 0, 0, 0.18);
 }
 
+/* ── Flip / back face ── */
+.rawnaq-tilt-card.is-flip {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    overflow: visible;
+}
+
+.rawnaq-tilt-flip {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.rawnaq-tilt-card.flip-hover:hover .rawnaq-tilt-flip,
+.rawnaq-tilt-card.flip-hover:focus-within .rawnaq-tilt-flip,
+.rawnaq-tilt-card.is-flipped .rawnaq-tilt-flip {
+    transform: rotateY(180deg);
+}
+
+.rawnaq-tilt-face,
+.rawnaq-tilt-back {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.rawnaq-tilt-face.rawnaq-tilt-front {
+    background: var(--tilt-card-bg);
+    border: 1px solid #eef2f6;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.rawnaq-tilt-card.align-top .rawnaq-tilt-front { justify-content: flex-start; }
+.rawnaq-tilt-card.align-center .rawnaq-tilt-front { justify-content: center; }
+
+.rawnaq-tilt-back {
+    --tilt-back-bg: #4338ca;
+    --tilt-back-color: #ffffff;
+    background: var(--tilt-back-bg);
+    color: var(--tilt-back-color);
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.rawnaq-tilt-back-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.rawnaq-tilt-back-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.3;
+    color: var(--tilt-back-color);
+}
+
+.rawnaq-tilt-back-desc {
+    font-size: 13.5px;
+    margin: 0;
+    line-height: 1.55;
+    opacity: 0.92;
+    color: var(--tilt-back-color);
+}
+
+.rawnaq-tilt-back-btn {
+    margin-top: 6px;
+}
+
+.rawnaq-tilt-card.flip-click {
+    cursor: pointer;
+}
+
+.rawnaq-tilt-card.flip-click:focus-visible {
+    outline: 2px solid var(--tilt-btn-bg, #6366f1);
+    outline-offset: 3px;
+}
+
 @media (max-width: 480px) {
     .rawnaq-tilt-card {
         max-width: 100%;
         height: auto;
         min-height: 320px;
+    }
+    .rawnaq-tilt-card.is-flip {
+        min-height: 0;
+        height: 360px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rawnaq-tilt-flip {
+        transition: none !important;
     }
 }
 

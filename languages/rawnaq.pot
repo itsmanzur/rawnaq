@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Rawnaq plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Rawnaq 1.17.5\n"
+"Project-Id-Version: Rawnaq 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Rawnaq/rawnaq/issues\n"
 "POT-Creation-Date: 2026-07-19 02:26+0000\n"
 "MIME-Version: 1.0\n"

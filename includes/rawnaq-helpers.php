@@ -40,8 +40,12 @@ function rawnaq_scroll_story_markup( $chapters, $side = 'left' ) {
 				<div class="rawnaq-story-media-stack">
 					<?php foreach ( $chapters as $i => $ch ) : ?>
 						<div class="rawnaq-story-media<?php echo 0 === $i ? ' is-active' : ''; ?>" data-index="<?php echo esc_attr( (string) $i ); ?>">
-							<?php if ( ! empty( $ch['image'] ) ) : ?>
-								<img src="<?php echo esc_url( $ch['image'] ); ?>" alt="" loading="<?php echo 0 === $i ? 'eager' : 'lazy'; ?>" />
+							<?php if ( ! empty( $ch['video'] ) ) : ?>
+								<video class="rawnaq-story-video" src="<?php echo esc_url( $ch['video'] ); ?>"
+									muted loop playsinline preload="metadata"
+									<?php echo ! empty( $ch['image'] ) ? 'poster="' . esc_url( $ch['image'] ) . '"' : ''; ?>></video>
+							<?php elseif ( ! empty( $ch['image'] ) ) : ?>
+								<img src="<?php echo esc_url( $ch['image'] ); ?>" alt="<?php echo esc_attr( $ch['imageAlt'] ?? '' ); ?>" loading="<?php echo 0 === $i ? 'eager' : 'lazy'; ?>" />
 							<?php else : ?>
 								<div class="rawnaq-story-media-fallback"><?php echo esc_html( $ch['title'] ?: ( 'Chapter ' . ( $i + 1 ) ) ); ?></div>
 							<?php endif; ?>
@@ -62,8 +66,13 @@ function rawnaq_scroll_story_markup( $chapters, $side = 'left' ) {
 			</aside>
 			<div class="rawnaq-story-chapters">
 				<?php foreach ( $chapters as $i => $ch ) : ?>
+					<?php
+					$anchor = ! empty( $ch['anchor'] ) ? sanitize_title( $ch['anchor'] ) : ( ! empty( $ch['title'] ) ? sanitize_title( $ch['title'] ) : 'chapter-' . ( $i + 1 ) );
+					?>
 					<section class="rawnaq-story-chapter<?php echo 0 === $i ? ' is-active' : ''; ?>"
+						id="<?php echo esc_attr( $anchor ); ?>"
 						data-index="<?php echo esc_attr( (string) $i ); ?>"
+						data-anchor="<?php echo esc_attr( $anchor ); ?>"
 						data-caption="<?php echo esc_attr( $ch['caption'] ?? '' ); ?>"
 						<?php if ( ! empty( $ch['projectId'] ) ) : ?>
 							data-project-id="<?php echo esc_attr( (string) $ch['projectId'] ); ?>"
@@ -76,7 +85,16 @@ function rawnaq_scroll_story_markup( $chapters, $side = 'left' ) {
 							<h3><?php echo esc_html( $ch['title'] ); ?></h3>
 						<?php endif; ?>
 						<?php if ( ! empty( $ch['body'] ) ) : ?>
-							<p><?php echo esc_html( $ch['body'] ); ?></p>
+							<?php
+							// Allow safe rich HTML (links, emphasis, lists) in chapter body.
+							$body_html = $ch['body'];
+							if ( false === strpos( $body_html, '<' ) ) {
+								$body_html = wpautop( esc_html( $body_html ) );
+							} else {
+								$body_html = wp_kses_post( $body_html );
+							}
+							echo '<div class="rawnaq-story-body">' . $body_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via wp_kses_post / esc_html above.
+							?>
 						<?php endif; ?>
 						<?php if ( ! empty( $ch['ctaText'] ) && ! empty( $ch['ctaUrl'] ) ) : ?>
 							<?php
@@ -157,14 +175,19 @@ function rawnaq_flow_nodes_from_users( $args = [] ) {
 			$parent = '';
 		}
 
+		$avatar = '';
+		if ( function_exists( 'get_avatar_url' ) ) {
+			$avatar = esc_url_raw( (string) get_avatar_url( $uid, [ 'size' => 96 ] ) );
+		}
+
 		$nodes[] = [
 			'id'       => $id,
 			'parent'   => $parent,
 			'title'    => $user->display_name ? $user->display_name : $user->user_login,
 			'role'     => $role,
 			'icon'     => 'fas fa-user',
-			'image'    => get_avatar_url( $uid, [ 'size' => 96 ] ) ?: '',
-			'detail'   => $user->user_email,
+			'image'    => $avatar,
+			'detail'   => '',
 			'link'     => get_author_posts_url( $uid ),
 			'decision' => false,
 			'x'        => 10,
@@ -511,24 +534,24 @@ function rawnaq_timeline_presets() {
 			'label' => __( 'Case Study Journey', 'rawnaq' ),
 			'steps' => [
 				[
-					'meta'  => __( '01 Â· Challenge', 'rawnaq' ),
+					'meta'  => __( '01 · Challenge', 'rawnaq' ),
 					'title' => __( 'The Problem', 'rawnaq' ),
 					'desc'  => __( 'Clarify the business goal, constraints, and what success looks like.', 'rawnaq' ),
 				],
 				[
-					'meta'  => __( '02 Â· Approach', 'rawnaq' ),
+					'meta'  => __( '02 · Approach', 'rawnaq' ),
 					'title' => __( 'How We Worked', 'rawnaq' ),
 					'desc'  => __( 'Research, prototypes, and a phased plan aligned with stakeholders.', 'rawnaq' ),
 				],
 				[
-					'meta'  => __( '03 Â· Launch', 'rawnaq' ),
+					'meta'  => __( '03 · Launch', 'rawnaq' ),
 					'title' => __( 'Go Live', 'rawnaq' ),
 					'desc'  => __( 'Ship, train the team, and monitor the first weeks of real traffic.', 'rawnaq' ),
 				],
 				[
-					'meta'  => __( '04 Â· Results', 'rawnaq' ),
+					'meta'  => __( '04 · Results', 'rawnaq' ),
 					'title' => __( 'Outcomes', 'rawnaq' ),
-					'desc'  => __( 'Measurable impact â€” conversions, speed, or engagement â€” with room to iterate.', 'rawnaq' ),
+					'desc'  => __( 'Measurable impact — conversions, speed, or engagement — with room to iterate.', 'rawnaq' ),
 				],
 			],
 		],
@@ -1077,7 +1100,7 @@ function rawnaq_i18n_strings() {
 	return [
 		'load_more'     => 'Load more',
 		'read_more'     => 'Read more',
-		'engine_badge'  => 'Native CSS scroll animations â€” no motion JS in this browser.',
+		'engine_badge'  => 'Native CSS scroll animations — no motion JS in this browser.',
 		'query_mode'    => 'Query mode',
 		'posts_frontend'=> 'Posts load on the frontend',
 		'posts_preview' => 'Save and preview the page to see live CPT / post results.',
@@ -1157,7 +1180,7 @@ function rawnaq_timeline_resolve_post_id( $id, $post_type = 'post' ) {
  * Filter timeline steps (manual or query) for WPML/tools.
  *
  * @param array $steps   Step arrays.
- * @param array $context Context (source, widget_id, â€¦).
+ * @param array $context Context (source, widget_id, …).
  * @return array
  */
 function rawnaq_timeline_filter_steps( $steps, $context = [] ) {
@@ -1479,3 +1502,4 @@ function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $sh
 
 require_once RAWNAQ_PATH . 'includes/rawnaq-smart-form.php';
 require_once RAWNAQ_PATH . 'includes/rawnaq-case-study.php';
+require_once RAWNAQ_PATH . 'includes/rawnaq-schema.php';

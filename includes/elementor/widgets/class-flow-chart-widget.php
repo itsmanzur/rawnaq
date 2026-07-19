@@ -155,6 +155,22 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
             'default' => '',
         ] );
 
+        $r->add_control( 'edge_label', [
+            'label'       => esc_html__( 'Connector Label', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => '',
+            'placeholder' => esc_html__( 'e.g. Yes / No / Approved', 'rawnaq' ),
+            'description' => esc_html__( 'Text shown on the line coming from this node’s parent.', 'rawnaq' ),
+        ] );
+
+        $r->add_control( 'lane', [
+            'label'       => esc_html__( 'Swimlane', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => '',
+            'placeholder' => esc_html__( 'e.g. Sales / Ops', 'rawnaq' ),
+            'description' => esc_html__( 'Group nodes into a labelled band. Nodes with the same lane name share a band.', 'rawnaq' ),
+        ] );
+
         $r->add_control( 'selected_icon', [
             'label'   => esc_html__( 'Icon', 'rawnaq' ),
             'type'    => \Elementor\Controls_Manager::ICONS,
@@ -468,6 +484,8 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
                     ? rawnaq_elementor_icon_token( $item['selected_icon'] ?? [], $item['icon'] ?? '' )
                     : ( $item['icon'] ?? '' ),
                 'image'    => $image,
+                'edgeLabel' => $item['edge_label'] ?? '',
+                'lane'     => $item['lane'] ?? '',
                 'detail'   => $item['detail'] ?? '',
                 'link'     => $link,
                 'decision' => ( $item['is_decision'] ?? '' ) === 'yes',
@@ -562,6 +580,8 @@ class Rawnaq_Flow_Chart_Widget extends \Elementor\Widget_Base {
                         ? item.selected_icon.value
                         : ( item.icon || '' ),
                     image: ( item.image && item.image.url ) ? item.image.url : '',
+                    edgeLabel: item.edge_label || '',
+                    lane: item.lane || '',
                     detail: item.detail || '',
                     link: ( item.link && item.link.url ) ? item.link.url : '',
                     decision: item.is_decision === 'yes',
