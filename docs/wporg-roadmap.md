@@ -110,7 +110,20 @@ Deferred (needs care)
 - [x] HubSpot CRM (Forms API v3: portal ID setting + per-form GUID) alongside Mailchimp + webhook + `rawnaq_smart_form_submission` hook
 - [x] Flow Chart lane-aware layout for process mode (cross-axis banding by lane)
 
+### Done in 1.0.0 submission-prep pass
+- [x] GDPR: Smart Form personal-data exporter + eraser (Tools → Export/Erase Personal Data) matched by email
+- [x] readme Privacy section + data-retention FAQ
+- [x] "Settings" action link on the Plugins list row
+- [x] readme Screenshots section with captions (upload PNGs to SVN /assets post-approval)
+- [x] Author/Contributors/URI reconciled to github.com/itsmanzur/rawnaq
+- [x] phpcs (WPCS) pass: substantive sniffs clean (security/globals/base64 annotated); remaining are cosmetic tabs/spacing
+
 ### Still open (needs live QA)
 - [ ] Case-Study AJAX: end-to-end browser test of modal/discuss/masonry on appended pages; optional filter deep-links
 - [ ] Flow Chart lane layout: verify same-lane/same-stage collision handling on dense process diagrams
+
+### Larger follow-ups (deferred — not required for submission)
+- [ ] Minify CSS/JS to `.min` + SCRIPT_DEBUG-aware enqueue (needs a build/minify step; partial would break asset paths)
+- [ ] Refactor duplicated Elementor/Gutenberg render logic into shared helpers
+- [ ] Migrate block registration to `block.json` (WP core direction; not required today)
 

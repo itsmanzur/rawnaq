@@ -53,6 +53,7 @@ class Rawnaq_Admin_Dashboard {
             }
         }
         if ( $dash ) {
+            // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- intentional reorder of our own admin submenu so Dashboard sits first.
             $submenu['rawnaq'] = array_merge( [ $dash ], $rest );
         }
     }
@@ -139,7 +140,7 @@ class Rawnaq_Admin_Dashboard {
                     </nav>
                     <div class="sidebar-footer">
                         <p><?php esc_html_e( 'Need help?', 'rawnaq' ); ?></p>
-                        <a href="https://github.com/Rawnaq/rawnaq/issues" target="_blank" rel="noopener noreferrer" class="doc-btn"><?php esc_html_e( 'Open Support Ticket', 'rawnaq' ); ?></a>
+                        <a href="https://github.com/itsmanzur/rawnaq/issues" target="_blank" rel="noopener noreferrer" class="doc-btn"><?php esc_html_e( 'Open Support Ticket', 'rawnaq' ); ?></a>
                     </div>
                 </aside>
 

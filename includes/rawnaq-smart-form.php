@@ -842,6 +842,140 @@ function rawnaq_smart_form_unread_count() {
 }
 
 /**
+ * Whether a stored entry's values contain the given email (case-insensitive).
+ *
+ * @param array  $values Field values.
+ * @param string $email  Email to match.
+ * @return bool
+ */
+function rawnaq_smart_form_entry_has_email( $values, $email ) {
+	if ( ! is_array( $values ) ) {
+		return false;
+	}
+	$email = strtolower( trim( $email ) );
+	foreach ( $values as $v ) {
+		if ( is_string( $v ) && is_email( $v ) && strtolower( $v ) === $email ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Register the Smart Form personal-data exporter (WP privacy tools).
+ *
+ * @param array $exporters Registered exporters.
+ * @return array
+ */
+function rawnaq_smart_form_register_exporter( $exporters ) {
+	$exporters['rawnaq-smart-form'] = [
+		'exporter_friendly_name' => __( 'Rawnaq Smart Form submissions', 'rawnaq' ),
+		'callback'               => 'rawnaq_smart_form_privacy_exporter',
+	];
+	return $exporters;
+}
+add_filter( 'wp_privacy_personal_data_exporters', 'rawnaq_smart_form_register_exporter' );
+
+/**
+ * Export Smart Form submissions tied to an email for WP's data-export tool.
+ *
+ * @param string $email_address Requested email.
+ * @param int    $page          1-based page.
+ * @return array{data:array,done:bool}
+ */
+function rawnaq_smart_form_privacy_exporter( $email_address, $page = 1 ) {
+	$page = max( 1, (int) $page );
+	$q    = new WP_Query( [
+		'post_type'      => 'rawnaq_sf_entry',
+		'post_status'    => 'any',
+		'posts_per_page' => 20,
+		'paged'          => $page,
+		'fields'         => 'ids',
+		'no_found_rows'  => false,
+	] );
+
+	$export = [];
+	foreach ( $q->posts as $pid ) {
+		$values = get_post_meta( $pid, '_rawnaq_sf_values', true );
+		if ( ! rawnaq_smart_form_entry_has_email( $values, $email_address ) ) {
+			continue;
+		}
+		$data = [];
+		foreach ( $values as $k => $v ) {
+			$data[] = [
+				'name'  => ucwords( str_replace( [ '_', '-' ], ' ', (string) $k ) ),
+				'value' => is_scalar( $v ) ? (string) $v : wp_json_encode( $v ),
+			];
+		}
+		$data[] = [
+			'name'  => __( 'Submitted on', 'rawnaq' ),
+			'value' => get_the_date( '', $pid ) . ' ' . get_the_time( '', $pid ),
+		];
+		$export[] = [
+			'group_id'    => 'rawnaq_sf',
+			'group_label' => __( 'Rawnaq Smart Form submissions', 'rawnaq' ),
+			'item_id'     => 'rawnaq-sf-' . $pid,
+			'data'        => $data,
+		];
+	}
+
+	return [
+		'data' => $export,
+		'done' => $page >= (int) $q->max_num_pages,
+	];
+}
+
+/**
+ * Register the Smart Form personal-data eraser (WP privacy tools).
+ *
+ * @param array $erasers Registered erasers.
+ * @return array
+ */
+function rawnaq_smart_form_register_eraser( $erasers ) {
+	$erasers['rawnaq-smart-form'] = [
+		'eraser_friendly_name' => __( 'Rawnaq Smart Form submissions', 'rawnaq' ),
+		'callback'             => 'rawnaq_smart_form_privacy_eraser',
+	];
+	return $erasers;
+}
+add_filter( 'wp_privacy_personal_data_erasers', 'rawnaq_smart_form_register_eraser' );
+
+/**
+ * Erase Smart Form submissions tied to an email for WP's data-erasure tool.
+ *
+ * @param string $email_address Requested email.
+ * @param int    $page          1-based page.
+ * @return array{items_removed:bool,items_retained:bool,messages:array,done:bool}
+ */
+function rawnaq_smart_form_privacy_eraser( $email_address, $page = 1 ) {
+	$page    = max( 1, (int) $page );
+	$q       = new WP_Query( [
+		'post_type'      => 'rawnaq_sf_entry',
+		'post_status'    => 'any',
+		'posts_per_page' => 20,
+		'paged'          => $page,
+		'fields'         => 'ids',
+		'no_found_rows'  => false,
+	] );
+	$removed = false;
+	foreach ( $q->posts as $pid ) {
+		$values = get_post_meta( $pid, '_rawnaq_sf_values', true );
+		if ( ! rawnaq_smart_form_entry_has_email( $values, $email_address ) ) {
+			continue;
+		}
+		wp_delete_post( $pid, true );
+		$removed = true;
+	}
+
+	return [
+		'items_removed'  => $removed,
+		'items_retained' => false,
+		'messages'       => [],
+		'done'           => $page >= (int) $q->max_num_pages,
+	];
+}
+
+/**
  * Option key for durable Smart Form configs (survives object-cache / transient flush).
  */
 function rawnaq_smart_form_configs_option_key() {

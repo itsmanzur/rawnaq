@@ -64,6 +64,27 @@ No. Email uses WordPress `wp_mail`. Optional webhooks go only to the URL you con
 
 See `assets/js/qrcode.js` in the plugin (unminified). Minified build: `assets/js/qrcode.min.js`.
 
+= How long are Smart Form submissions kept, and can users delete them? =
+
+Submissions saved by the optional "Log submissions" setting are stored as private entries in your own WordPress database and are kept until you delete them (Rawnaq → Form Submissions). Rawnaq integrates with WordPress' built-in **Tools → Export Personal Data** and **Tools → Erase Personal Data**, so a visitor's stored entries can be exported or erased by email address.
+
+== Privacy ==
+
+Rawnaq does not phone home. Any personal data stays in your WordPress site or goes only to services you explicitly configure.
+
+* **Smart Form submissions** — When "Log submissions" is enabled, form entries (which may include name, email, phone, message, and uploaded files) are stored as private `rawnaq_sf_entry` posts in your database. They are retained until you delete them under Rawnaq → Form Submissions.
+* **Data export / erase** — Rawnaq registers exporter and eraser callbacks with WordPress core, so entries are included in **Tools → Export Personal Data** and removed via **Tools → Erase Personal Data** when requested by email.
+* **Delivery services** — Email uses your site's `wp_mail`. Optional integrations only contact the endpoints you configure: WhatsApp (wa.me link in the visitor's browser), Google reCAPTCHA (spam scoring), a webhook/Slack URL, or a CRM/ESP (Mailchimp / HubSpot) when you enable and configure it.
+* **Floating Dock analytics** — Optional click counts are stored locally in the `rawnaq_dock_clicks` option; no personal data is recorded.
+
+== Screenshots ==
+
+1. Elements Manager — toggle each module on/off and set global options (default WhatsApp number, reCAPTCHA, CRM keys).
+2. Flow Chart with node images, connector labels, and swimlanes; one-click PNG/SVG export.
+3. 3D Tilt Card with flip / back-face interaction.
+4. Smart Form builder — multi-step fields, conditionals, and delivery (email / WhatsApp / CRM).
+5. Case-Study Grid with multi-filter chips and the gallery lightbox.
+
 == Changelog ==
 
 = 1.0.0 =
@@ -83,3 +104,5 @@ See `assets/js/qrcode.js` in the plugin (unminified). Minified build: `assets/js
 * Smart Form: HubSpot CRM delivery (portal ID + per-form GUID) alongside Mailchimp and the generic hook.
 * Flow Chart: true swimlanes in process mode — nodes are banded by lane on the cross axis.
 * Case-Study: hardened AJAX pagination (server perPage aligned, no hidden-card conflict, empty-state message).
+* Privacy: Smart Form entries now integrate with WordPress Export/Erase Personal Data tools; added a Privacy section to this readme.
+* Admin: "Settings" link on the Plugins list row.

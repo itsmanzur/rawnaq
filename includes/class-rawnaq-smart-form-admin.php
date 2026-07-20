@@ -132,6 +132,7 @@ class Rawnaq_Smart_Form_Admin {
 		}
 		foreach ( $menu as $i => $item ) {
 			if ( isset( $item[2] ) && 'edit.php?post_type=rawnaq_sf_entry' === $item[2] ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- standard unread-count bubble on our own admin menu item (same pattern as Comments/Updates).
 				$menu[ $i ][0] .= ' <span class="awaiting-mod">' . esc_html( (string) $count ) . '</span>';
 				break;
 			}

@@ -52,7 +52,7 @@ $out  = '# Copyright (C) ' . gmdate( 'Y' ) . " Rawnaq\n";
 $out .= "# This file is distributed under the same license as the Rawnaq plugin.\n";
 $out .= "msgid \"\"\nmsgstr \"\"\n";
 $out .= "\"Project-Id-Version: Rawnaq 1.17.5\\n\"\n";
-$out .= "\"Report-Msgid-Bugs-To: https://github.com/Rawnaq/rawnaq/issues\\n\"\n";
+$out .= "\"Report-Msgid-Bugs-To: https://github.com/itsmanzur/rawnaq/issues\\n\"\n";
 $out .= '"POT-Creation-Date: ' . gmdate( 'Y-m-d H:iO' ) . "\\n\"\n";
 $out .= "\"MIME-Version: 1.0\\n\"\n";
 $out .= "\"Content-Type: text/plain; charset=UTF-8\\n\"\n";

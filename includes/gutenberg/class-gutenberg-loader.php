@@ -831,6 +831,7 @@ class Rawnaq_Gutenberg_Loader {
             $ajax_offset = count( $steps );
             $found       = (int) $result['found_posts'];
             $has_more    = $use_ajax && $ajax_offset < $max && $ajax_offset < $found;
+            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- packing sanitized query args for a data attribute, not obfuscation.
             $query_b64   = base64_encode( wp_json_encode( rawnaq_timeline_sanitize_query_args( $payload ) ) );
         } else {
             $steps = json_decode( $attributes['stepsJson'] ?? '[]', true ) ?: [];
@@ -1769,7 +1770,7 @@ class Rawnaq_Gutenberg_Loader {
         printf(
             '<div style="--story-accent: %1$s; --story-pin-top: %2$dpx;">',
             esc_attr( $accent ),
-            $pin_top
+            (int) $pin_top // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer cast + %d format is inherently safe.
         );
         rawnaq_scroll_story_markup( $chapters, $side );
         echo '</div>';

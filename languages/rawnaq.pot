@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rawnaq 1.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/Rawnaq/rawnaq/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/itsmanzur/rawnaq/issues\n"
 "POT-Creation-Date: 2026-07-19 02:26+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"

@@ -554,6 +554,7 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             $bundle['offset']    = count( $result['steps'] );
             $bundle['use_ajax']  = $use_ajax;
             $bundle['has_more']  = $use_ajax && $bundle['offset'] < $max && $bundle['offset'] < $bundle['found'];
+            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- packing sanitized query args for a data attribute, not obfuscation.
             $bundle['query_b64'] = base64_encode( wp_json_encode( rawnaq_timeline_sanitize_query_args( $payload ) ) );
             return $bundle;
         }

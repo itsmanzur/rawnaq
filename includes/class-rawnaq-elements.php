@@ -350,6 +350,7 @@ class Rawnaq_Elements {
             $raw_query = sanitize_text_field( wp_unslash( $_POST['query'] ) );
         }
         if ( is_string( $raw_query ) && '' !== $raw_query ) {
+            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- decoding our own base64-packed timeline query args, not obfuscated code.
             $decoded = json_decode( base64_decode( $raw_query ), true );
             if ( ! is_array( $decoded ) ) {
                 $decoded = json_decode( $raw_query, true );
