@@ -23,7 +23,7 @@ class Rawnaq_Gutenberg_Loader {
 
         wp_register_script(
             'rawnaq-gutenberg-editor',
-            RAWNAQ_URL . 'assets/js/gutenberg-editor.js',
+            rawnaq_asset_url( 'js/gutenberg-editor.js' ),
             [
                 'wp-blocks',
                 'wp-element',

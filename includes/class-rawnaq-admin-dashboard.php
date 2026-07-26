@@ -65,14 +65,14 @@ class Rawnaq_Admin_Dashboard {
 
         wp_enqueue_style(
             'rawnaq-admin-css',
-            RAWNAQ_URL . 'assets/css/admin.css',
+            rawnaq_asset_url( 'css/admin.css' ),
             [],
             RAWNAQ_VERSION
         );
 
         wp_enqueue_script(
             'rawnaq-admin-js',
-            RAWNAQ_URL . 'assets/js/admin.js',
+            rawnaq_asset_url( 'js/admin.js' ),
             [ 'jquery' ],
             RAWNAQ_VERSION,
             true

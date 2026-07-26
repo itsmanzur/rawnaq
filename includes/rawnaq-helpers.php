@@ -6,6 +6,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Shared helpers for Rawnaq modules / settings.
  */
+
+/**
+ * Build a URL for a plugin asset, swapping in the minified build unless
+ * SCRIPT_DEBUG is on. Falls back to the unminified file if no .min build
+ * exists on disk, so this is always safe to call.
+ *
+ * @param string $relative_path Path relative to the plugin's assets/ folder,
+ *                               e.g. 'css/bento-grid.css' or 'js/bento-grid.js'.
+ * @return string Fully qualified asset URL.
+ */
+function rawnaq_asset_url( $relative_path ) {
+	$relative_path = ltrim( str_replace( '\\', '/', $relative_path ), '/' );
+	$is_debug      = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+
+	if ( ! $is_debug && ! preg_match( '/\.min\.(css|js)$/', $relative_path ) ) {
+		$min_relative = preg_replace( '/\.(css|js)$/', '.min.$1', $relative_path );
+		if ( $min_relative && file_exists( RAWNAQ_PATH . 'assets/' . $min_relative ) ) {
+			$relative_path = $min_relative;
+		}
+	}
+
+	return RAWNAQ_URL . 'assets/' . $relative_path;
+}
+
 function rawnaq_default_modules() {
 	return [
 		'hub-diagram'         => '1',

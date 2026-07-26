@@ -415,13 +415,13 @@ class Rawnaq_Elements {
         // 1. Hub Diagram Assets
         wp_register_style(
             'rawnaq-hub-diagram',
-            RAWNAQ_URL . 'assets/css/hub-diagram.css',
+            rawnaq_asset_url( 'css/hub-diagram.css' ),
             [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-hub-diagram',
-            RAWNAQ_URL . 'assets/js/hub-diagram.js',
+            rawnaq_asset_url( 'js/hub-diagram.js' ),
             [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION,
             true
@@ -430,13 +430,13 @@ class Rawnaq_Elements {
         // 2. 3D Tilt Card Assets
         wp_register_style(
             'rawnaq-tilt-card',
-            RAWNAQ_URL . 'assets/css/tilt-card.css',
+            rawnaq_asset_url( 'css/tilt-card.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-tilt-card',
-            RAWNAQ_URL . 'assets/js/tilt-card.js',
+            rawnaq_asset_url( 'js/tilt-card.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -445,13 +445,13 @@ class Rawnaq_Elements {
         // Diagram PNG/SVG export (shared by Flow + Hub)
         wp_register_style(
             'rawnaq-diagram-export',
-            RAWNAQ_URL . 'assets/css/diagram-export.css',
+            rawnaq_asset_url( 'css/diagram-export.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-diagram-export',
-            RAWNAQ_URL . 'assets/js/diagram-export.js',
+            rawnaq_asset_url( 'js/diagram-export.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -460,13 +460,13 @@ class Rawnaq_Elements {
         // 3. Scroll-Sync Timeline Assets
         wp_register_style(
             'rawnaq-scroll-timeline',
-            RAWNAQ_URL . 'assets/css/scroll-timeline.css',
+            rawnaq_asset_url( 'css/scroll-timeline.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-scroll-timeline',
-            RAWNAQ_URL . 'assets/js/scroll-timeline.js',
+            rawnaq_asset_url( 'js/scroll-timeline.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -489,13 +489,13 @@ class Rawnaq_Elements {
         );
         wp_register_style(
             'rawnaq-floating-dock',
-            RAWNAQ_URL . 'assets/css/floating-dock.css',
+            rawnaq_asset_url( 'css/floating-dock.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-floating-dock',
-            RAWNAQ_URL . 'assets/js/floating-dock.js',
+            rawnaq_asset_url( 'js/floating-dock.js' ),
             [ 'rawnaq-qrcode' ],
             RAWNAQ_VERSION,
             true
@@ -508,13 +508,13 @@ class Rawnaq_Elements {
         // 5. Flow Chart
         wp_register_style(
             'rawnaq-flow-chart',
-            RAWNAQ_URL . 'assets/css/flow-chart.css',
+            rawnaq_asset_url( 'css/flow-chart.css' ),
             [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-flow-chart',
-            RAWNAQ_URL . 'assets/js/flow-chart.js',
+            rawnaq_asset_url( 'js/flow-chart.js' ),
             [ 'rawnaq-diagram-export' ],
             RAWNAQ_VERSION,
             true
@@ -523,13 +523,13 @@ class Rawnaq_Elements {
         // 6. Scroll Progress + TOC
         wp_register_style(
             'rawnaq-scroll-progress-toc',
-            RAWNAQ_URL . 'assets/css/scroll-progress-toc.css',
+            rawnaq_asset_url( 'css/scroll-progress-toc.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-scroll-progress-toc',
-            RAWNAQ_URL . 'assets/js/scroll-progress-toc.js',
+            rawnaq_asset_url( 'js/scroll-progress-toc.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -538,13 +538,13 @@ class Rawnaq_Elements {
         // 7. Bento Grid
         wp_register_style(
             'rawnaq-bento-grid',
-            RAWNAQ_URL . 'assets/css/bento-grid.css',
+            rawnaq_asset_url( 'css/bento-grid.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-bento-grid',
-            RAWNAQ_URL . 'assets/js/bento-grid.js',
+            rawnaq_asset_url( 'js/bento-grid.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -553,13 +553,13 @@ class Rawnaq_Elements {
         // 8. Scroll Story / Scrollytelling
         wp_register_style(
             'rawnaq-scroll-story',
-            RAWNAQ_URL . 'assets/css/scroll-story.css',
+            rawnaq_asset_url( 'css/scroll-story.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-scroll-story',
-            RAWNAQ_URL . 'assets/js/scroll-story.js',
+            rawnaq_asset_url( 'js/scroll-story.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -568,13 +568,13 @@ class Rawnaq_Elements {
         // 9. Smart Form
         wp_register_style(
             'rawnaq-smart-form',
-            RAWNAQ_URL . 'assets/css/smart-form.css',
+            rawnaq_asset_url( 'css/smart-form.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-smart-form',
-            RAWNAQ_URL . 'assets/js/smart-form.js',
+            rawnaq_asset_url( 'js/smart-form.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -588,13 +588,13 @@ class Rawnaq_Elements {
         // 10. Case-Study Grid
         wp_register_style(
             'rawnaq-case-study-grid',
-            RAWNAQ_URL . 'assets/css/case-study-grid.css',
+            rawnaq_asset_url( 'css/case-study-grid.css' ),
             [],
             RAWNAQ_VERSION
         );
         wp_register_script(
             'rawnaq-case-study-grid',
-            RAWNAQ_URL . 'assets/js/case-study-grid.js',
+            rawnaq_asset_url( 'js/case-study-grid.js' ),
             [],
             RAWNAQ_VERSION,
             true
@@ -610,7 +610,7 @@ class Rawnaq_Elements {
         // Cross-module bridge (Case-Study discuss + scroll highlight)
         wp_register_script(
             'rawnaq-bridge',
-            RAWNAQ_URL . 'assets/js/rawnaq-bridge.js',
+            rawnaq_asset_url( 'js/rawnaq-bridge.js' ),
             [],
             RAWNAQ_VERSION,
             true

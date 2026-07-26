@@ -98,6 +98,9 @@ Rawnaq does not phone home. Any personal data stays in your WordPress site or go
 * 3D Tilt Card: optional flip / back-face with hover or click trigger, back title/description/CTA, and back styling.
 * Flow Chart: per-node connector (edge) labels and swimlane bands, included in PNG/SVG export.
 * Smart Form: branded HTML email receipts and CRM/ESP delivery — built-in Mailchimp subscribe plus a `rawnaq_smart_form_submission` hook for Zapier/HubSpot/custom.
+* Performance: every module's CSS/JS now ships a minified `.min` build alongside the readable source; production requests load the minified file automatically, falling back to the unminified source whenever `SCRIPT_DEBUG` is enabled.
+* Privacy: Smart Form submissions are now wired into WordPress's built-in Export/Erase Personal Data tools (`wp_privacy_personal_data_exporters`/`erasers`).
+* Added a "Settings" quick link on the Plugins list page.
 * Case-Study Grid: server-filtered AJAX pagination for the CPT source (sector/year/service + paging on the server).
 * Scroll Story: rich-text chapters, per-chapter video, and #anchor deep-linking with active-chapter hash sync.
 * SEO: JSON-LD schema pack — CreativeWork ItemList for CPT case studies, ItemList for query-based timelines, and auto Review/AggregateRating from Bento testimonial cells (all filterable).

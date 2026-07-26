@@ -19,7 +19,7 @@ class Rawnaq_Elementor_Loader {
         if ( rawnaq_is_module_enabled( 'bento-grid' ) ) {
             wp_enqueue_script(
                 'rawnaq-bento-grid-editor',
-                RAWNAQ_URL . 'assets/js/bento-grid-editor.js',
+                rawnaq_asset_url( 'js/bento-grid-editor.js' ),
                 [ 'jquery', 'elementor-editor' ],
                 RAWNAQ_VERSION,
                 true
@@ -45,7 +45,7 @@ class Rawnaq_Elementor_Loader {
         if ( rawnaq_is_module_enabled( 'scroll-timeline' ) && function_exists( 'rawnaq_timeline_presets' ) ) {
             wp_enqueue_script(
                 'rawnaq-scroll-timeline-editor',
-                RAWNAQ_URL . 'assets/js/scroll-timeline-editor.js',
+                rawnaq_asset_url( 'js/scroll-timeline-editor.js' ),
                 [ 'jquery', 'elementor-editor' ],
                 RAWNAQ_VERSION,
                 true
@@ -71,7 +71,7 @@ class Rawnaq_Elementor_Loader {
         if ( rawnaq_is_module_enabled( 'smart-form' ) && function_exists( 'rawnaq_smart_form_preset_for_elementor' ) ) {
             wp_enqueue_script(
                 'rawnaq-smart-form-editor',
-                RAWNAQ_URL . 'assets/js/smart-form-editor.js',
+                rawnaq_asset_url( 'js/smart-form-editor.js' ),
                 [ 'jquery', 'elementor-editor' ],
                 RAWNAQ_VERSION,
                 true
@@ -95,7 +95,7 @@ class Rawnaq_Elementor_Loader {
         if ( rawnaq_is_module_enabled( 'flow-chart' ) ) {
             wp_enqueue_script(
                 'rawnaq-flow-chart-editor',
-                RAWNAQ_URL . 'assets/js/flow-chart-editor.js',
+                rawnaq_asset_url( 'js/flow-chart-editor.js' ),
                 [ 'jquery', 'elementor-editor' ],
                 RAWNAQ_VERSION,
                 true
