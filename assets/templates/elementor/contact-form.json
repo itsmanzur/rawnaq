@@ -1,0 +1,78 @@
+{
+  "_title": "Contact Section",
+  "_rawnaq_version": "1.0.0",
+  "elements": [
+    {
+      "id": "rk-contact-section",
+      "elType": "section",
+      "settings": {
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_color": "#0a0a0a",
+        "padding": { "unit": "px", "top": "100", "right": "60", "bottom": "100", "left": "60", "isLinked": false }
+      },
+      "elements": [
+        {
+          "id": "rk-contact-col",
+          "elType": "column",
+          "settings": { "_column_size": 100 },
+          "elements": [
+            {
+              "id": "rk-contact-kicker",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Get in Touch",
+                "header_size": "h6",
+                "align": "center",
+                "title_color": "#10b981",
+                "typography_font_size": { "unit": "px", "size": 13 },
+                "typography_letter_spacing": { "unit": "em", "size": 0.25 },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "rk-contact-heading",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Let's Start a Conversation",
+                "header_size": "h2",
+                "align": "center",
+                "title_color": "#ffffff",
+                "typography_font_size": { "unit": "px", "size": 42 },
+                "typography_font_weight": "700",
+                "margin": { "unit": "px", "top": "12", "bottom": "12", "isLinked": false }
+              }
+            },
+            {
+              "id": "rk-contact-desc",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p style=\"text-align:center;color:#a1a1aa;\">We'd love to hear about your project. Fill in the form and we'll get back within 24 hours.</p>",
+                "align": "center",
+                "margin": { "unit": "px", "bottom": "48", "isLinked": false }
+              }
+            },
+            {
+              "id": "rk-contact-form",
+              "elType": "widget",
+              "widgetType": "rawnaq-smart-form",
+              "settings": {
+                "form_id": "contact-starter",
+                "show_name": true,
+                "show_email": true,
+                "show_phone": false,
+                "show_message": true,
+                "submit_label": "Send Message",
+                "delivery": "email",
+                "accent_color": "#10b981"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

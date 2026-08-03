@@ -1,0 +1,68 @@
+{
+  "_title": "About / Story Timeline",
+  "_rawnaq_version": "1.0.0",
+  "elements": [
+    {
+      "id": "rk-tl-section",
+      "elType": "section",
+      "settings": {
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_color": "#07090f",
+        "padding": { "unit": "px", "top": "100", "right": "60", "bottom": "100", "left": "60", "isLinked": false }
+      },
+      "elements": [
+        {
+          "id": "rk-tl-col",
+          "elType": "column",
+          "settings": { "_column_size": 100 },
+          "elements": [
+            {
+              "id": "rk-tl-kicker",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Our Journey",
+                "header_size": "h6",
+                "align": "center",
+                "title_color": "#22d3ee",
+                "typography_font_size": { "unit": "px", "size": 13 },
+                "typography_letter_spacing": { "unit": "em", "size": 0.25 },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "rk-tl-heading",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "How We Got Here",
+                "header_size": "h2",
+                "align": "center",
+                "title_color": "#ffffff",
+                "typography_font_size": { "unit": "px", "size": 42 },
+                "typography_font_weight": "700",
+                "margin": { "unit": "px", "top": "12", "bottom": "56", "isLinked": false }
+              }
+            },
+            {
+              "id": "rk-tl-widget",
+              "elType": "widget",
+              "widgetType": "rawnaq-scroll-timeline",
+              "settings": {
+                "line_color": "#22d3ee",
+                "steps": [
+                  { "year": "2018", "title": "Founded", "desc": "Started as a two-person studio with a mission to make great design accessible." },
+                  { "year": "2019", "title": "First 10 Clients", "desc": "Grew quickly by focusing on performance and measurable results." },
+                  { "year": "2021", "title": "Team of 15", "desc": "Expanded into development, SEO, and brand strategy services." },
+                  { "year": "2023", "title": "Global Reach", "desc": "Now serving clients across 20+ countries with a fully remote team." },
+                  { "year": "2025", "title": "Rawnaq Launch", "desc": "Released our open-source plugin library to give back to the WordPress community." }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

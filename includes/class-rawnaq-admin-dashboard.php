@@ -128,6 +128,9 @@ class Rawnaq_Admin_Dashboard {
                         <a href="#modules" class="nav-item" data-tab="modules">
                             <span class="nav-icon" aria-hidden="true">&#x9881;</span> <?php esc_html_e( 'Elements Manager', 'rawnaq' ); ?>
                         </a>
+                        <a href="#starter-sections" class="nav-item" data-tab="starter-sections">
+                            <span class="nav-icon" aria-hidden="true">&#x2728;</span> <?php esc_html_e( 'Starter Sections', 'rawnaq' ); ?>
+                        </a>
                         <a href="#docs" class="nav-item" data-tab="docs">
                             <span class="nav-icon" aria-hidden="true">&#x1F4D6;</span> <?php esc_html_e( 'Documentation', 'rawnaq' ); ?>
                         </a>
@@ -156,7 +159,7 @@ class Rawnaq_Admin_Dashboard {
                         <div class="grid-2">
                             <div class="rawnaq-card">
                                 <h3><?php esc_html_e( 'Quick Start', 'rawnaq' ); ?></h3>
-                                <p><?php esc_html_e( 'To use our widgets, search for any active element in Elementor or Gutenberg: Hub Diagram, 3D Tilt Card, Scroll Sync Timeline, Floating Dock, Flow Chart, Scroll Progress + TOC, Bento Grid, Scroll Story Chapters, Smart Form, or Case-Study Grid.', 'rawnaq' ); ?></p>
+                                <p><?php esc_html_e( 'To use our widgets, search for any active element in Elementor or Gutenberg: Hub Diagram, 3D Tilt Card, Scroll Sync Timeline, Floating Dock, Flow Chart, Scroll Progress + TOC, Bento Grid, Scroll Story Chapters, Smart Form, Case-Study Grid, or insert a full section from Starter Sections.', 'rawnaq' ); ?></p>
                                 <a href="#modules" class="btn btn-primary trigger-tab-change" data-target="modules"><?php esc_html_e( 'Manage Elements', 'rawnaq' ); ?></a>
                             </div>
                             <div class="rawnaq-card">
@@ -264,6 +267,14 @@ class Rawnaq_Admin_Dashboard {
                                         'desc'        => __( 'CPT/manual portfolio with Discuss CTA (Form/Dock) and Story/Timeline highlight sync.', 'rawnaq' ),
                                         'icon'        => 'cases',
                                     ],
+                                    [
+                                        'key'         => 'template-kit',
+                                        'badge'       => __( 'Templates', 'rawnaq' ),
+                                        'tone'        => 'tone-diagram',
+                                        'title'       => __( 'Starter Sections', 'rawnaq' ),
+                                        'desc'        => __( 'Pre-designed sections for Elementor and Gutenberg — insert with one click.', 'rawnaq' ),
+                                        'icon'        => 'template',
+                                    ],
                                 ];
 
                                 foreach ( $module_defs as $mod ) :
@@ -290,6 +301,8 @@ class Rawnaq_Admin_Dashboard {
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
                                                 <?php elseif ( 'cases' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="10" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="16" width="8" height="4" rx="1.5"/></svg>
+                                                <?php elseif ( 'template' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="5" rx="1.5"/><rect x="3" y="10" width="8" height="11" rx="1.5"/><rect x="13" y="10" width="8" height="5" rx="1.5"/><rect x="13" y="17" width="8" height="4" rx="1.5"/></svg>
                                                 <?php else : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="14" width="18" height="6" rx="3"/><rect x="5" y="16" width="3.2" height="3.2" rx="0.8"/><rect x="10.4" y="15.2" width="4" height="4" rx="1"/><rect x="16.2" y="16" width="3.2" height="3.2" rx="0.8"/></svg>
                                                 <?php endif; ?>
@@ -367,7 +380,48 @@ class Rawnaq_Admin_Dashboard {
                         </form>
                     </div>
 
-                    <!-- TAB 3: DOCUMENTATION -->
+                    <!-- TAB 3: STARTER SECTIONS -->
+                    <div id="tab-starter-sections" class="tab-panel">
+                        <div class="modules-hero">
+                            <div class="modules-hero-copy">
+                                <p class="modules-kicker"><?php esc_html_e( 'One-click layouts', 'rawnaq' ); ?></p>
+                                <h2><?php esc_html_e( 'Starter Sections', 'rawnaq' ); ?></h2>
+                                <p class="section-desc"><?php esc_html_e( 'Pre-built sections powered by Rawnaq widgets. In Elementor, click "Starter Sections" in the Add Section panel. In Gutenberg, open the Block Inserter → Patterns → Rawnaq Starter Sections.', 'rawnaq' ); ?></p>
+                            </div>
+                        </div>
+
+                        <?php
+                        if ( rawnaq_is_module_enabled( 'template-kit' ) && class_exists( 'Rawnaq_Template_Kit' ) ) {
+                            $tpls = Rawnaq_Template_Kit::get_registry_with_status();
+                            echo '<div class="modules-grid">';
+                            foreach ( $tpls as $tpl ) {
+                                $has_issues = ! empty( $tpl['missing_modules'] );
+                                echo '<div class="rawnaq-card" style="position:relative;">';
+                                if ( $tpl['thumbnail_url'] ) {
+                                    echo '<img src="' . esc_url( $tpl['thumbnail_url'] ) . '" alt="" style="width:100%;border-radius:8px 8px 0 0;aspect-ratio:16/9;object-fit:cover;" />';
+                                }
+                                echo '<div style="padding:16px 20px 20px;">';
+                                echo '<strong>' . esc_html( $tpl['title'] ) . '</strong>';
+                                if ( $has_issues ) {
+                                    echo '<p style="margin:8px 0 0;font-size:12px;color:#f59e0b;">';
+                                    /* translators: %s: comma-separated list of module slugs */
+                                    echo esc_html( sprintf(
+                                        __( 'Enable first: %s', 'rawnaq' ),
+                                        implode( ', ', $tpl['missing_modules'] )
+                                    ) );
+                                    echo '</p>';
+                                }
+                                echo '</div>';
+                                echo '</div>';
+                            }
+                            echo '</div>';
+                        } else {
+                            echo '<p>' . esc_html__( 'Enable the "Starter Sections" module to browse templates.', 'rawnaq' ) . '</p>';
+                        }
+                        ?>
+                    </div>
+
+                    <!-- TAB 4: DOCUMENTATION -->
                     <div id="tab-docs" class="tab-panel">
                         <h2><?php esc_html_e( 'Documentation & Usage Guide', 'rawnaq' ); ?></h2>
                         <p class="section-desc"><?php esc_html_e( 'Detailed usage guides on how to configure and deploy the active widgets.', 'rawnaq' ); ?></p>
@@ -520,6 +574,54 @@ class Rawnaq_Admin_Dashboard {
                             </ul>
                             <h4><?php esc_html_e( 'Static demo', 'rawnaq' ); ?></h4>
                             <p><?php esc_html_e( 'Marketing showcase of all modules (no WordPress): open assets/demo/index.html in a browser.', 'rawnaq' ); ?></p>
+                        </div>
+
+                        <div class="rawnaq-doc-card">
+                            <h3>11. <?php esc_html_e( 'Starter Sections', 'rawnaq' ); ?></h3>
+                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'Starter Sections is a built-in template library of pre-designed page sections. Each section is powered by one or more Rawnaq widgets and is available in both Elementor and Gutenberg. Think of it as a one-click way to add a polished, on-brand section without starting from a blank canvas.', 'rawnaq' ); ?></p>
+
+                            <h4><?php esc_html_e( 'Bundled templates', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong><?php esc_html_e( 'Agency Hero', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Full-viewport dark hero with headline, description, and CTA button. No Rawnaq widget dependency — works standalone.', 'rawnaq' ); ?></li>
+                                <li><strong><?php esc_html_e( 'Services Hub', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Radial Hub Diagram showcasing up to 6 service spokes. Requires: Hub Diagram module.', 'rawnaq' ); ?></li>
+                                <li><strong><?php esc_html_e( 'Portfolio Bento', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Apple-style asymmetric Bento Grid for case-study / project cards. Requires: Bento Grid module.', 'rawnaq' ); ?></li>
+                                <li><strong><?php esc_html_e( 'About / Story Timeline', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Vertical milestone timeline for company history. Requires: Scroll Sync Timeline module.', 'rawnaq' ); ?></li>
+                                <li><strong><?php esc_html_e( 'Contact Section', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Full contact area with Smart Form (email + WhatsApp). Requires: Smart Form module.', 'rawnaq' ); ?></li>
+                                <li><strong><?php esc_html_e( 'Process Flow', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Step-by-step process tree built with Flow Chart. Requires: Flow Chart module.', 'rawnaq' ); ?></li>
+                            </ul>
+
+                            <h4><?php esc_html_e( 'How to use — Elementor', 'rawnaq' ); ?></h4>
+                            <ol>
+                                <li><?php esc_html_e( 'Make sure the "Starter Sections" module is enabled (Elements Manager tab).', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'Open any page / template in the Elementor editor.', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'Click the blue ⊕ (Add Section) button → look for the "✦ Rawnaq Starter Sections" button at the bottom of the panel.', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'Browse, filter by category, and click "Insert Section" on the desired card.', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'The section is inserted above the current section. Edit text, colors, and content as needed.', 'rawnaq' ); ?></li>
+                            </ol>
+
+                            <h4><?php esc_html_e( 'How to use — Gutenberg', 'rawnaq' ); ?></h4>
+                            <ol>
+                                <li><?php esc_html_e( 'Make sure the "Starter Sections" module is enabled.', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'Open any page / post in the block editor.', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'Click the ⊞ Block Inserter (top-left) → switch to the "Patterns" tab → select "Rawnaq Starter Sections" from the category dropdown.', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'Click any pattern card to insert it at the cursor position.', 'rawnaq' ); ?></li>
+                                <li><?php esc_html_e( 'Edit the blocks normally — all text, colors, and widget settings are fully customizable.', 'rawnaq' ); ?></li>
+                            </ol>
+
+                            <h4><?php esc_html_e( 'Missing module warning', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'If a template\'s required module is disabled, the Elementor popup shows a warning and disables the "Insert Section" button. The Gutenberg pattern is still registered but the Rawnaq widget block inside it will render an empty placeholder. Enable the required module first via Elements Manager.', 'rawnaq' ); ?></p>
+
+                            <h4><?php esc_html_e( 'Preview all templates', 'rawnaq' ); ?></h4>
+                            <p>
+                                <?php
+                                /* translators: %s: admin URL to starter sections tab */
+                                printf(
+                                    esc_html__( 'Go to the %s tab to see thumbnail previews of all bundled sections and check which modules each one needs.', 'rawnaq' ),
+                                    '<a href="#starter-sections" class="trigger-tab-change" data-target="starter-sections">' . esc_html__( 'Starter Sections', 'rawnaq' ) . '</a>'
+                                );
+                                ?>
+                            </p>
                         </div>
                     </div>
 
