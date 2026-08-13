@@ -8,7 +8,7 @@
       "settings": {
         "layout": "full_width",
         "background_background": "classic",
-        "background_color": "#0a0a0a",
+        "background_color": "{{COLOR_DARK}}",
         "padding": { "unit": "px", "top": "100", "right": "60", "bottom": "100", "left": "60", "isLinked": false }
       },
       "elements": [
@@ -25,7 +25,7 @@
                 "title": "Get in Touch",
                 "header_size": "h6",
                 "align": "center",
-                "title_color": "#10b981",
+                "title_color": "{{COLOR_SUCCESS}}",
                 "typography_font_size": { "unit": "px", "size": 13 },
                 "typography_letter_spacing": { "unit": "em", "size": 0.25 },
                 "typography_text_transform": "uppercase"
@@ -39,7 +39,7 @@
                 "title": "Let's Start a Conversation",
                 "header_size": "h2",
                 "align": "center",
-                "title_color": "#ffffff",
+                "title_color": "{{COLOR_LIGHT}}",
                 "typography_font_size": { "unit": "px", "size": 42 },
                 "typography_font_weight": "700",
                 "margin": { "unit": "px", "top": "12", "bottom": "12", "isLinked": false }
@@ -50,7 +50,7 @@
               "elType": "widget",
               "widgetType": "text-editor",
               "settings": {
-                "editor": "<p style=\"text-align:center;color:#a1a1aa;\">We'd love to hear about your project. Fill in the form and we'll get back within 24 hours.</p>",
+                "editor": "<p style=\"text-align:center;color:{{COLOR_MUTED}};\">We'd love to hear about your project. Fill in the form and we'll get back within 24 hours.</p>",
                 "align": "center",
                 "margin": { "unit": "px", "bottom": "48", "isLinked": false }
               }
@@ -67,7 +67,7 @@
                 "show_message": true,
                 "submit_label": "Send Message",
                 "delivery": "email",
-                "accent_color": "#10b981"
+                "accent_color": "{{COLOR_SUCCESS}}"
               }
             }
           ]

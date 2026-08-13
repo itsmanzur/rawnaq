@@ -3,7 +3,7 @@
  * Starter Sections — Elementor integration.
  *
  * Adds a "Starter Sections" button to the Elementor editor panel, enqueues
- * the popup UI script, and localises the nonce + template list so the JS
+ * the popup UI script and styles, and localises the nonce + template list so the JS
  * popup can render template cards without an extra AJAX round-trip.
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,12 +13,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Rawnaq_Template_Kit_Elementor {
 
 	public function __construct() {
-		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_popup_script' ] );
-		add_action( 'elementor/editor/footer',                [ $this, 'render_popup_markup' ] );
+		add_action( 'elementor/editor/after_enqueue_styles',  [ $this, 'enqueue_popup_styles' ] );
+		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_popup_scripts' ] );
+		add_action( 'elementor/editor/footer',               [ $this, 'render_popup_markup' ] );
+	}
+
+	/** Enqueue popup CSS in Elementor editor context. */
+	public function enqueue_popup_styles(): void {
+		wp_enqueue_style(
+			'rawnaq-admin',
+			rawnaq_asset_url( 'css/admin.css' ),
+			[],
+			RAWNAQ_VERSION
+		);
 	}
 
 	/** Enqueue the popup JS + localize data. */
-	public function enqueue_popup_script(): void {
+	public function enqueue_popup_scripts(): void {
 		wp_enqueue_script(
 			'rawnaq-template-kit-popup',
 			rawnaq_asset_url( 'js/template-kit-popup.js' ),
@@ -34,6 +45,7 @@ class Rawnaq_Template_Kit_Elementor {
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
 				'nonce'     => wp_create_nonce( 'rawnaq_template_kit' ),
 				'templates' => Rawnaq_Template_Kit::get_registry_with_status(),
+				'page_kits' => Rawnaq_Template_Kit::get_page_kit_registry_with_status(),
 				'i18n'      => [
 					'title'          => __( 'Rawnaq Starter Sections', 'rawnaq' ),
 					'insert'         => __( 'Insert Section', 'rawnaq' ),

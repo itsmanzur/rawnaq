@@ -6,52 +6,74 @@ This document tracks all planned features and architectural enhancements for the
 
 ## 📋 Feature Checklist
 
-### Phase 1: Smart UX & Interactivity (Completed ✅)
+### Phase 1: Smart UX & Interactivity ✅
 - [x] **Smart Module Auto-Activation**
-  - [x] Update `rawnaq_template_kit_import` AJAX handler to support `auto_enable=1`.
-  - [x] Automatically activate missing Rawnaq modules in `rawnaq_settings` on-the-fly during template import.
-  - [x] Replace disabled card state with a "⚡ Enable & Insert" action button in the template picker popup.
+  - [x] `auto_enable=1` AJAX support in `ajax_import()`
+  - [x] Auto-activate missing modules in `rawnaq_settings` on-the-fly
+  - [x] `⚡ Enable & Insert` CTA replaces disabled card state
 - [x] **Live Interactive Preview Lightbox**
-  - [x] Add "👁️ Live Preview" buttons to template cards in Elementor & Gutenberg editor popups.
-  - [x] Build a modal overlay lightbox with responsive device viewport toggles (Desktop 100%, Tablet 768px, Mobile 375px).
-  - [x] Include a direct "Insert Section" CTA inside the preview header bar.
+  - [x] `👁️ Live Preview` hover button on template cards
+  - [x] Fullscreen glassmorphism modal overlay
+  - [x] Device viewport toggles: Desktop / Tablet 768px / Mobile 375px
+  - [x] Direct `Insert Section` CTA inside Lightbox header
 
 ---
 
-### Phase 2: Design Systems & Content Expansion (Planned)
-- [ ] **Dynamic Color Palette & Typography Alignment**
-  - [ ] Auto-map template JSON colors to active theme/Elementor Global Swatches (`Primary`, `Secondary`, `Accent`).
-  - [ ] Inherit site typography tokens dynamically upon import.
-- [ ] **Complete Niche Page Kits**
-  - [ ] Multi-section Full Page Kits (e.g., SaaS Landing Page, Agency Showcase, Medical Clinic, E-commerce Product Page).
-  - [ ] Single-click full page bundle import mechanism.
+### Phase 2: Design Systems & Content Expansion ✅
+- [x] **Dynamic Color Palette & Typography Alignment**
+  - [x] `{{COLOR_*}}` token system in all 12 template files (6 Elementor + 6 Gutenberg)
+  - [x] `ajax_get_site_palette()` endpoint — reads WordPress `theme.json` + Elementor Kit Global Colors
+  - [x] `resolve_color_tokens()` PHP method — replaces tokens before import
+  - [x] Color Customizer Panel (slide-in sidebar) — pre-fills site palette, lets user override
+  - [x] `color_overrides` sent to both `ajax_import` and `ajax_import_page_kit`
+  - [x] `🎨` button on each section card + Lightbox header
+- [x] **Complete Niche Page Kits**
+  - [x] `get_page_kit_registry()` — 4 page kits defined (SaaS Landing, Agency Showcase, Portfolio Pro, Business Classic)
+  - [x] `get_page_kit_registry_with_status()` — enriched with missing modules + section badges
+  - [x] `ajax_import_page_kit()` endpoint — combines multiple sections into one payload
+  - [x] `🗂️ Page Kits` tab in Template Kit popup
+  - [x] Page Kit cards with section badge list, tag pills, description
+  - [x] `🗂️ Import Full Page` action button
+  - [x] Color Customizer works for Page Kits too
 
 ---
 
 ### Phase 3: Cloud & Advanced Utilities (Planned)
 - [ ] **Cloud Sync & Dynamic Template API Server**
-  - [ ] Connect template registry to a remote Rawnaq API endpoint.
-  - [ ] Instant background sync for newly released templates without requiring plugin updates (with 5-day transient cache).
+  - [ ] Remote Rawnaq API endpoint for template registry
+  - [ ] 5-day transient cache for remote templates
+  - [ ] Background sync without plugin updates
 - [ ] **Micro-Filters & Instant Search Engine**
-  - [ ] Real-time keyword search bar in template selection modal.
-  - [ ] Design style filters (`Glassmorphism`, `Minimalist`, `Dark Glow`, `Neumorphic`).
+  - [ ] Real-time keyword search bar in popup
+  - [ ] Design style filters (Glassmorphism, Minimalist, Dark Glow, Neumorphic)
 - [ ] **User Presets & Export/Import Manager ("My Presets")**
-  - [ ] "Save as Rawnaq Preset" action for custom built sections.
-  - [ ] Local storage and JSON export/import tool for user-created templates across sites.
+  - [ ] "Save as Rawnaq Preset" action for custom sections
+  - [ ] Local JSON export/import tool for cross-site use
 
 ---
 
-## 🛠️ Module Dependencies Matrix
+## 🛠️ Color Token Reference
 
-| Template ID | Category | Required Module | Live Demo Target |
-|---|---|---|---|
-| `agency-hero` | Hero | `floating-dock` | Agency Landing Hero |
-| `services-hub` | Services | `hub-diagram` | Interactive Services Radial Hub |
-| `portfolio-bento` | Portfolio | `bento-grid` | Modern Portfolio Grid |
-| `timeline-about` | About | `scroll-timeline` | Interactive Story Timeline |
-| `contact-form` | Contact | `smart-form` | Multi-step Lead Capture |
-| `flow-process` | Process | `flow-chart` | Step-by-step Process Tree |
+| Token | Default | Used in |
+|---|---|---|
+| `{{COLOR_PRIMARY}}` | `#6366f1` | Agency Hero, Services Hub |
+| `{{COLOR_SECONDARY}}` | `#a855f7` | Portfolio Bento |
+| `{{COLOR_ACCENT}}` | `#22d3ee` | Timeline About |
+| `{{COLOR_DARK}}` | `#0a0a0a` | All templates (bg) |
+| `{{COLOR_LIGHT}}` | `#ffffff` | All templates (text) |
+| `{{COLOR_MUTED}}` | `#a1a1aa` | Subtitles |
+| `{{COLOR_SUCCESS}}` | `#10b981` | Contact Section |
+| `{{COLOR_WARNING}}` | `#f59e0b` | Flow Process |
+
+## 🗂️ Page Kit Registry
+
+| Kit ID | Sections | Target Niche |
+|---|---|---|
+| `saas-landing` | Hero + Services Hub + Process Flow + Contact | SaaS / App |
+| `agency-showcase` | Hero + Portfolio Bento + Timeline + Contact | Creative Agency |
+| `portfolio-pro` | Hero + Portfolio Bento + Timeline | Freelancer / Designer |
+| `business-classic` | Hero + Services Hub + Contact | Small Business |
 
 ---
 
-*Last Updated: 2026-08-02*
+*Last Updated: 2026-08-13*
