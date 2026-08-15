@@ -45,12 +45,6 @@ class Rawnaq_Elements {
         // Load Gutenberg Loader
         require_once RAWNAQ_PATH . 'includes/gutenberg/class-gutenberg-loader.php';
 
-        // Load Template Kit module
-        if ( rawnaq_is_module_enabled( 'template-kit' ) ) {
-            require_once RAWNAQ_PATH . 'includes/class-rawnaq-template-kit.php';
-            new Rawnaq_Template_Kit();
-        }
-
         // Load Admin Dashboard
         if ( is_admin() ) {
             require_once RAWNAQ_PATH . 'includes/class-rawnaq-admin-dashboard.php';

@@ -42,7 +42,6 @@ function rawnaq_default_modules() {
 		'scroll-story'        => '1',
 		'smart-form'          => '1',
 		'case-study-grid'     => '1',
-		'template-kit'        => '1',
 	];
 }
 
