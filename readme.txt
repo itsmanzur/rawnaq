@@ -77,6 +77,12 @@ Rawnaq does not phone home. Any personal data stays in your WordPress site or go
 * **Delivery services** — Email uses your site's `wp_mail`. Optional integrations only contact the endpoints you configure: WhatsApp (wa.me link in the visitor's browser), Google reCAPTCHA (spam scoring), a webhook/Slack URL, or a CRM/ESP (Mailchimp / HubSpot) when you enable and configure it.
 * **Floating Dock analytics** — Optional click counts are stored locally in the `rawnaq_dock_clicks` option; no personal data is recorded.
 
+== Credits ==
+
+Rawnaq is developed and maintained by itsmanzur. All code, design, and assets in this plugin are original work created specifically for Rawnaq.
+
+Source code: https://github.com/itsmanzur/rawnaq
+
 == Screenshots ==
 
 1. Elements Manager — toggle each module on/off and set global options (default WhatsApp number, reCAPTCHA, CRM keys).

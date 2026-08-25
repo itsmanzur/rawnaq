@@ -7,7 +7,7 @@
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author:       itsmanzur
- * Author URI:   https://github.com/itsmanzur
+ * Author URI:   https://profiles.wordpress.org/itsmanzur/
  * License:      GPL v2 or later
  * License URI:  https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:  rawnaq

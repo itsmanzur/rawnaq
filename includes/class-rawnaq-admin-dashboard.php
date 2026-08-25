@@ -128,9 +128,6 @@ class Rawnaq_Admin_Dashboard {
                         <a href="#modules" class="nav-item" data-tab="modules">
                             <span class="nav-icon" aria-hidden="true">&#x9881;</span> <?php esc_html_e( 'Elements Manager', 'rawnaq' ); ?>
                         </a>
-                        <a href="#starter-sections" class="nav-item" data-tab="starter-sections">
-                            <span class="nav-icon" aria-hidden="true">&#x2728;</span> <?php esc_html_e( 'Starter Sections', 'rawnaq' ); ?>
-                        </a>
                         <a href="#docs" class="nav-item" data-tab="docs">
                             <span class="nav-icon" aria-hidden="true">&#x1F4D6;</span> <?php esc_html_e( 'Documentation', 'rawnaq' ); ?>
                         </a>
@@ -159,7 +156,7 @@ class Rawnaq_Admin_Dashboard {
                         <div class="grid-2">
                             <div class="rawnaq-card">
                                 <h3><?php esc_html_e( 'Quick Start', 'rawnaq' ); ?></h3>
-                                <p><?php esc_html_e( 'To use our widgets, search for any active element in Elementor or Gutenberg: Hub Diagram, 3D Tilt Card, Scroll Sync Timeline, Floating Dock, Flow Chart, Scroll Progress + TOC, Bento Grid, Scroll Story Chapters, Smart Form, Case-Study Grid, or insert a full section from Starter Sections.', 'rawnaq' ); ?></p>
+                                <p><?php esc_html_e( 'To use our widgets, search for any active element in Elementor or Gutenberg: Hub Diagram, 3D Tilt Card, Scroll Sync Timeline, Floating Dock, Flow Chart, Scroll Progress + TOC, Bento Grid, Scroll Story Chapters, Smart Form, or Case-Study Grid.', 'rawnaq' ); ?></p>
                                 <a href="#modules" class="btn btn-primary trigger-tab-change" data-target="modules"><?php esc_html_e( 'Manage Elements', 'rawnaq' ); ?></a>
                             </div>
                             <div class="rawnaq-card">
@@ -295,8 +292,6 @@ class Rawnaq_Admin_Dashboard {
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
                                                 <?php elseif ( 'cases' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="10" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="16" width="8" height="4" rx="1.5"/></svg>
-                                                <?php elseif ( 'template' === $mod['icon'] ) : ?>
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="5" rx="1.5"/><rect x="3" y="10" width="8" height="11" rx="1.5"/><rect x="13" y="10" width="8" height="5" rx="1.5"/><rect x="13" y="17" width="8" height="4" rx="1.5"/></svg>
                                                 <?php else : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="14" width="18" height="6" rx="3"/><rect x="5" y="16" width="3.2" height="3.2" rx="0.8"/><rect x="10.4" y="15.2" width="4" height="4" rx="1"/><rect x="16.2" y="16" width="3.2" height="3.2" rx="0.8"/></svg>
                                                 <?php endif; ?>
@@ -322,32 +317,6 @@ class Rawnaq_Admin_Dashboard {
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
-
-                                <?php // Pro-only Starter Sections card ?>
-                                <div class="module-card tone-diagram <?php echo defined( 'RAWNAQ_PRO_ACTIVE' ) ? 'is-on' : ''; ?>" style="position:relative;">
-                                    <div class="module-card-top">
-                                        <div class="module-icon" aria-hidden="true">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="5" rx="1.5"/><rect x="3" y="10" width="8" height="11" rx="1.5"/><rect x="13" y="10" width="8" height="5" rx="1.5"/><rect x="13" y="17" width="8" height="4" rx="1.5"/></svg>
-                                        </div>
-                                        <?php if ( defined( 'RAWNAQ_PRO_ACTIVE' ) ) : ?>
-                                            <span class="module-badge" style="background:#10b981;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;"><?php esc_html_e( 'Pro Active', 'rawnaq' ); ?></span>
-                                        <?php else : ?>
-                                            <span class="module-badge" style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;"><?php esc_html_e( 'PRO', 'rawnaq' ); ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="module-info">
-                                        <span class="module-badge"><?php esc_html_e( 'Templates', 'rawnaq' ); ?></span>
-                                        <h4><?php esc_html_e( 'Starter Sections', 'rawnaq' ); ?></h4>
-                                        <p><?php esc_html_e( 'Pre-designed sections for Elementor and Gutenberg — insert with one click.', 'rawnaq' ); ?></p>
-                                        <div class="module-meta">
-                                            <span><?php esc_html_e( 'Elementor', 'rawnaq' ); ?></span>
-                                            <span><?php esc_html_e( 'Gutenberg', 'rawnaq' ); ?></span>
-                                        </div>
-                                    </div>
-                                    <?php if ( ! defined( 'RAWNAQ_PRO_ACTIVE' ) ) : ?>
-                                        <div style="position:absolute;inset:0;background:rgba(255,255,255,0.06);border-radius:16px;cursor:pointer;" onclick="document.querySelector('[data-tab=starter-sections]').click();"></div>
-                                    <?php endif; ?>
-                                </div>
                             </div>
 
                             <div class="rawnaq-card" style="margin: 24px 0;">
@@ -400,77 +369,7 @@ class Rawnaq_Admin_Dashboard {
                         </form>
                     </div>
 
-                    <!-- TAB 3: STARTER SECTIONS -->
-                    <div id="tab-starter-sections" class="tab-panel">
-                        <div class="modules-hero">
-                            <div class="modules-hero-copy">
-                                <p class="modules-kicker"><?php esc_html_e( 'One-click layouts', 'rawnaq' ); ?></p>
-                                <h2><?php esc_html_e( 'Starter Sections', 'rawnaq' ); ?></h2>
-                                <p class="section-desc"><?php esc_html_e( 'Pre-built sections powered by Rawnaq widgets. In Elementor, click "Starter Sections" in the Add Section panel. In Gutenberg, open the Block Inserter → Patterns → Rawnaq Starter Sections.', 'rawnaq' ); ?></p>
-                            </div>
-                        </div>
-
-                        <?php if ( defined( 'RAWNAQ_PRO_ACTIVE' ) && has_action( 'rawnaq_pro_starter_sections_tab' ) ) : ?>
-                            <?php do_action( 'rawnaq_pro_starter_sections_tab' ); ?>
-                        <?php else : ?>
-                            <!-- Pro Upsell -->
-                            <div class="rawnaq-pro-upsell" style="text-align:center;padding:40px 20px;">
-                                <div style="max-width:640px;margin:0 auto;">
-                                    <div style="font-size:56px;margin-bottom:16px;">✨</div>
-                                    <h3 style="font-size:24px;font-weight:700;margin:0 0 12px;color:#1a1a1a;"><?php esc_html_e( 'Unlock Starter Sections with Rawnaq Pro', 'rawnaq' ); ?></h3>
-                                    <p style="color:#64748b;font-size:15px;line-height:1.6;margin:0 0 32px;"><?php esc_html_e( 'Get beautifully designed, one-click page sections for Elementor and Gutenberg. Save hours building hero areas, service grids, portfolio showcases, timelines, contact forms, and process flows — all powered by Rawnaq widgets.', 'rawnaq' ); ?></p>
-
-                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left;margin-bottom:36px;">
-                                        <div class="rawnaq-card" style="padding:20px;">
-                                            <h4 style="margin:0 0 10px;font-size:14px;font-weight:600;">🎨 <?php esc_html_e( '6 Starter Sections', 'rawnaq' ); ?></h4>
-                                            <p style="margin:0;font-size:13px;color:#64748b;"><?php esc_html_e( 'Agency Hero, Services Hub, Portfolio Bento, Story Timeline, Contact Form, Process Flow', 'rawnaq' ); ?></p>
-                                        </div>
-                                        <div class="rawnaq-card" style="padding:20px;">
-                                            <h4 style="margin:0 0 10px;font-size:14px;font-weight:600;">🗂️ <?php esc_html_e( '4 Full Page Kits', 'rawnaq' ); ?></h4>
-                                            <p style="margin:0;font-size:13px;color:#64748b;"><?php esc_html_e( 'SaaS Landing, Agency Showcase, Portfolio Pro, Business Classic — complete pages in one click', 'rawnaq' ); ?></p>
-                                        </div>
-                                        <div class="rawnaq-card" style="padding:20px;">
-                                            <h4 style="margin:0 0 10px;font-size:14px;font-weight:600;">🎯 <?php esc_html_e( 'Color Token System', 'rawnaq' ); ?></h4>
-                                            <p style="margin:0;font-size:13px;color:#64748b;"><?php esc_html_e( 'Templates auto-match your site palette from theme.json or Elementor global colors', 'rawnaq' ); ?></p>
-                                        </div>
-                                        <div class="rawnaq-card" style="padding:20px;">
-                                            <h4 style="margin:0 0 10px;font-size:14px;font-weight:600;">⚡ <?php esc_html_e( 'Smart Module Activation', 'rawnaq' ); ?></h4>
-                                            <p style="margin:0;font-size:13px;color:#64748b;"><?php esc_html_e( 'One click enables missing widgets and inserts the section — no manual setup needed', 'rawnaq' ); ?></p>
-                                        </div>
-                                    </div>
-
-                                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px;">
-                                        <?php
-                                        $preview_sections = [
-                                            [ 'title' => __( 'Agency Hero', 'rawnaq' ), 'color' => '#6366f1' ],
-                                            [ 'title' => __( 'Services Hub', 'rawnaq' ), 'color' => '#a855f7' ],
-                                            [ 'title' => __( 'Portfolio Bento', 'rawnaq' ), 'color' => '#22d3ee' ],
-                                            [ 'title' => __( 'Story Timeline', 'rawnaq' ), 'color' => '#10b981' ],
-                                            [ 'title' => __( 'Contact Section', 'rawnaq' ), 'color' => '#f59e0b' ],
-                                            [ 'title' => __( 'Process Flow', 'rawnaq' ), 'color' => '#ef4444' ],
-                                        ];
-                                        foreach ( $preview_sections as $ps ) :
-                                        ?>
-                                        <div class="rawnaq-card" style="position:relative;overflow:hidden;padding:0;">
-                                            <div style="height:100px;background:<?php echo esc_attr( $ps['color'] ); ?>;opacity:0.12;"></div>
-                                            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-                                                <span style="display:inline-block;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:6px;letter-spacing:0.5px;"><?php esc_html_e( 'PRO', 'rawnaq' ); ?></span>
-                                                <strong style="font-size:12px;color:#1a1a1a;"><?php echo esc_html( $ps['title'] ); ?></strong>
-                                            </div>
-                                        </div>
-                                        <?php endforeach; ?>
-                                    </div>
-
-                                    <a href="https://github.com/itsmanzur/rawnaq" target="_blank" rel="noopener noreferrer" class="btn btn-save" style="display:inline-flex;align-items:center;gap:8px;padding:14px 32px;font-size:15px;font-weight:600;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:12px;color:#fff;text-decoration:none;box-shadow:0 4px 14px rgba(99,102,241,.35);transition:transform .15s,box-shadow .15s;">
-                                        <span>🚀</span> <?php esc_html_e( 'Get Rawnaq Pro', 'rawnaq' ); ?>
-                                    </a>
-                                    <p style="margin:16px 0 0;font-size:12px;color:#94a3b8;"><?php esc_html_e( 'Works seamlessly with all 10 free Rawnaq modules', 'rawnaq' ); ?></p>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- TAB 4: DOCUMENTATION -->
+                    <!-- TAB 3: DOCUMENTATION -->
                     <div id="tab-docs" class="tab-panel">
                         <h2><?php esc_html_e( 'Documentation & Usage Guide', 'rawnaq' ); ?></h2>
                         <p class="section-desc"><?php esc_html_e( 'Detailed usage guides on how to configure and deploy the active widgets.', 'rawnaq' ); ?></p>
@@ -625,51 +524,6 @@ class Rawnaq_Admin_Dashboard {
                             <p><?php esc_html_e( 'Marketing showcase of all modules (no WordPress): open assets/demo/index.html in a browser.', 'rawnaq' ); ?></p>
                         </div>
 
-                        <div class="rawnaq-doc-card">
-                            <h3>11. <?php esc_html_e( 'Starter Sections', 'rawnaq' ); ?> <span style="display:inline-block;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;vertical-align:middle;margin-left:8px;"><?php esc_html_e( 'PRO', 'rawnaq' ); ?></span></h3>
-                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
-                            <p><?php esc_html_e( 'Starter Sections is a premium template library available with Rawnaq Pro. It provides pre-designed page sections powered by Rawnaq widgets, available in both Elementor and Gutenberg. One-click insert a polished, on-brand section without starting from a blank canvas.', 'rawnaq' ); ?></p>
-
-                            <h4><?php esc_html_e( 'Included in Rawnaq Pro', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li><strong><?php esc_html_e( 'Agency Hero', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Full-viewport dark hero with headline, description, and CTA button.', 'rawnaq' ); ?></li>
-                                <li><strong><?php esc_html_e( 'Services Hub', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Radial Hub Diagram showcasing up to 6 service spokes.', 'rawnaq' ); ?></li>
-                                <li><strong><?php esc_html_e( 'Portfolio Bento', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Apple-style asymmetric Bento Grid for case-study / project cards.', 'rawnaq' ); ?></li>
-                                <li><strong><?php esc_html_e( 'About / Story Timeline', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Vertical milestone timeline for company history.', 'rawnaq' ); ?></li>
-                                <li><strong><?php esc_html_e( 'Contact Section', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Full contact area with Smart Form (email + WhatsApp).', 'rawnaq' ); ?></li>
-                                <li><strong><?php esc_html_e( 'Process Flow', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Step-by-step process tree built with Flow Chart.', 'rawnaq' ); ?></li>
-                                <li><strong><?php esc_html_e( '4 Full Page Kits', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'SaaS Landing, Agency Showcase, Portfolio Pro, Business Classic.', 'rawnaq' ); ?></li>
-                                <li><strong><?php esc_html_e( 'Color Token System', 'rawnaq' ); ?></strong> — <?php esc_html_e( 'Auto-match your site palette from theme.json or Elementor global colors.', 'rawnaq' ); ?></li>
-                            </ul>
-
-                            <?php if ( defined( 'RAWNAQ_PRO_ACTIVE' ) ) : ?>
-                                <h4><?php esc_html_e( 'How to use — Elementor', 'rawnaq' ); ?></h4>
-                                <ol>
-                                    <li><?php esc_html_e( 'Open any page / template in the Elementor editor.', 'rawnaq' ); ?></li>
-                                    <li><?php esc_html_e( 'Click the blue ⊕ (Add Section) button → look for the "✦ Rawnaq Starter Sections" button at the bottom of the panel.', 'rawnaq' ); ?></li>
-                                    <li><?php esc_html_e( 'Browse, filter by category, and click "Insert Section" on the desired card.', 'rawnaq' ); ?></li>
-                                    <li><?php esc_html_e( 'The section is inserted above the current section. Edit text, colors, and content as needed.', 'rawnaq' ); ?></li>
-                                </ol>
-
-                                <h4><?php esc_html_e( 'How to use — Gutenberg', 'rawnaq' ); ?></h4>
-                                <ol>
-                                    <li><?php esc_html_e( 'Open any page / post in the block editor.', 'rawnaq' ); ?></li>
-                                    <li><?php esc_html_e( 'Click the ⊞ Block Inserter (top-left) → switch to the "Patterns" tab → select "Rawnaq Starter Sections" from the category dropdown.', 'rawnaq' ); ?></li>
-                                    <li><?php esc_html_e( 'Click any pattern card to insert it at the cursor position.', 'rawnaq' ); ?></li>
-                                    <li><?php esc_html_e( 'Edit the blocks normally — all text, colors, and widget settings are fully customizable.', 'rawnaq' ); ?></li>
-                                </ol>
-                            <?php else : ?>
-                                <p>
-                                    <?php
-                                    printf(
-                                        /* translators: %s: link to Starter Sections tab */
-                                        esc_html__( 'Visit the %s tab to learn more and upgrade.', 'rawnaq' ),
-                                        '<a href="#starter-sections" class="trigger-tab-change" data-target="starter-sections">' . esc_html__( 'Starter Sections', 'rawnaq' ) . '</a>'
-                                    );
-                                    ?>
-                                </p>
-                            <?php endif; ?>
-                        </div>
                     </div>
 
                     <!-- TAB: DOCK STATS -->
