@@ -726,7 +726,7 @@
             var agentEl = document.createElement('button');
             agentEl.type = 'button';
             agentEl.className = 'rawnaq-wa-agent-row';
-            var avatar = a.avatar || 'https://secure.gravatar.com/avatar/?s=80&d=mp';
+            var avatar = a.avatar || (typeof rawnaqDock !== 'undefined' && rawnaqDock.defaultAvatarUrl ? rawnaqDock.defaultAvatarUrl : '');
             agentEl.innerHTML =
                 '<img class="agent-avatar" src="' + escapeHtml(avatar) + '" alt="" width="40" height="40" loading="lazy" />' +
                 '<div class="agent-info">' +

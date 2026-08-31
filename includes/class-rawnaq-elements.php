@@ -404,14 +404,6 @@ class Rawnaq_Elements {
      * WordPress will only actually LOAD them on demand.
      */
     public function register_shared_assets() {
-        // Fonts
-        wp_register_style(
-            'rawnaq-fonts',
-            'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap',
-            [],
-            RAWNAQ_VERSION
-        );
-
         // 1. Hub Diagram Assets
         wp_register_style(
             'rawnaq-hub-diagram',
@@ -501,8 +493,9 @@ class Rawnaq_Elements {
             true
         );
         wp_localize_script( 'rawnaq-floating-dock', 'rawnaqDock', [
-            'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-            'nonce'   => wp_create_nonce( 'rawnaq_dock_click' ),
+            'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+            'nonce'            => wp_create_nonce( 'rawnaq_dock_click' ),
+            'defaultAvatarUrl' => rawnaq_asset_url( 'img/default-avatar.svg' ),
         ] );
 
         // 5. Flow Chart

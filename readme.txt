@@ -35,9 +35,10 @@ Key highlights:
 
 Rawnaq may call the following third-party services when you enable related features. No data is sent unless you configure the feature.
 
-* **Google Fonts** — Optional remote font CSS for some UI surfaces. [Google Fonts](https://fonts.google.com/) · [Privacy Policy](https://policies.google.com/privacy)
 * **Google reCAPTCHA v3** — Optional spam protection on Smart Form. Site/secret keys are set in plugin settings. Form tokens are verified via Google’s siteverify API. [reCAPTCHA](https://www.google.com/recaptcha/) · [Privacy Policy](https://policies.google.com/privacy)
 * **WhatsApp (wa.me)** — Optional. Opens a WhatsApp chat URL with a prefilled message when Floating Dock or Smart Form WhatsApp delivery is enabled. [WhatsApp](https://www.whatsapp.com/) · [Privacy Policy](https://www.whatsapp.com/legal/privacy-policy)
+* **Mailchimp** — Optional. When Smart Form's CRM delivery is set to Mailchimp, the submitted email address (and any mapped merge fields) is sent to Mailchimp's API to subscribe the contact to the audience/list you configure. Requires your own Mailchimp API key. [Mailchimp](https://mailchimp.com/) · [Terms](https://mailchimp.com/legal/terms/) · [Privacy Policy](https://mailchimp.com/legal/privacy/)
+* **HubSpot** — Optional. When Smart Form's CRM delivery is set to HubSpot, the submitted form field values are sent to HubSpot's Forms API using the portal ID and form GUID you configure. [HubSpot](https://www.hubspot.com/) · [Terms](https://legal.hubspot.com/terms-of-service) · [Privacy Policy](https://legal.hubspot.com/privacy-policy)
 * **Custom webhook / Slack incoming URL** — Optional. Smart Form can POST submission JSON to a URL you provide (e.g. Slack Incoming Webhooks). Only the endpoint you configure is contacted.
 
 = Third-party libraries =

@@ -14,6 +14,7 @@ class Rawnaq_Smart_Form_Admin {
 		add_action( 'manage_rawnaq_sf_entry_posts_custom_column', [ $this, 'column_content' ], 10, 2 );
 		add_action( 'add_meta_boxes', [ $this, 'meta_box' ] );
 		add_action( 'load-post.php', [ $this, 'mark_read_on_edit' ] );
+		add_action( 'wp_ajax_rawnaq_sf_mark_read', [ $this, 'ajax_mark_read' ] );
 		add_action( 'admin_menu', [ $this, 'menu_badge' ], 999 );
 		add_filter( 'bulk_actions-edit-rawnaq_sf_entry', [ $this, 'bulk_actions' ] );
 		add_filter( 'handle_bulk_actions-edit-rawnaq_sf_entry', [ $this, 'handle_bulk' ], 10, 3 );
@@ -118,7 +119,38 @@ class Rawnaq_Smart_Form_Admin {
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
+		if ( '1' !== get_post_meta( $post_id, '_rawnaq_sf_unread', true ) ) {
+			return; // Already read, nothing to do.
+		}
+
+		$nonce = wp_create_nonce( 'rawnaq_sf_mark_read_' . $post_id );
+		add_action( 'admin_footer', function () use ( $post_id, $nonce ) {
+			?>
+			<script>
+			( function () {
+				var body = new URLSearchParams();
+				body.append( 'action', 'rawnaq_sf_mark_read' );
+				body.append( 'post_id', '<?php echo esc_js( $post_id ); ?>' );
+				body.append( 'nonce', '<?php echo esc_js( $nonce ); ?>' );
+				fetch( ajaxurl, { method: 'POST', credentials: 'same-origin', body: body } );
+			} )();
+			</script>
+			<?php
+		} );
+	}
+
+	public function ajax_mark_read() {
+		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+		check_ajax_referer( 'rawnaq_sf_mark_read_' . $post_id, 'nonce' );
+
+		if ( ! $post_id || 'rawnaq_sf_entry' !== get_post_type( $post_id ) ) {
+			wp_send_json_error();
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_send_json_error();
+		}
 		update_post_meta( $post_id, '_rawnaq_sf_unread', '0' );
+		wp_send_json_success();
 	}
 
 	public function menu_badge() {

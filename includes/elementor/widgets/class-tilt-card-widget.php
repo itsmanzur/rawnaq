@@ -10,7 +10,7 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
     public function get_icon()       { return 'eicon-parallax'; }
     public function get_categories() { return [ 'rawnaq' ]; }
 
-    public function get_style_depends()  { return [ 'rawnaq-tilt-card', 'rawnaq-fonts', 'dashicons' ]; }
+    public function get_style_depends()  { return [ 'rawnaq-tilt-card', 'dashicons' ]; }
     public function get_script_depends() { return [ 'rawnaq-tilt-card' ]; }
 
     protected function register_controls() {

@@ -10,7 +10,7 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
     public function get_icon()       { return 'eicon-time-line'; }
     public function get_categories() { return [ 'rawnaq' ]; }
 
-    public function get_style_depends()  { return [ 'rawnaq-scroll-timeline', 'rawnaq-fonts', 'dashicons' ]; }
+    public function get_style_depends()  { return [ 'rawnaq-scroll-timeline', 'dashicons' ]; }
     public function get_script_depends() { return [ 'rawnaq-scroll-timeline', 'rawnaq-bridge' ]; }
 
     protected function register_controls() {

@@ -538,7 +538,6 @@ class Rawnaq_Gutenberg_Loader {
         }
 
         wp_enqueue_style( 'dashicons' );
-        wp_enqueue_style( 'rawnaq-fonts' );
         wp_enqueue_style( 'rawnaq-hub-diagram' );
         wp_enqueue_style( 'rawnaq-tilt-card' );
         wp_enqueue_style( 'rawnaq-scroll-timeline' );
@@ -561,7 +560,6 @@ class Rawnaq_Gutenberg_Loader {
     // ── Render Callbacks ──
 
     public function render_hub_diagram_block( $attributes ) {
-        wp_enqueue_style( 'rawnaq-fonts' );
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'rawnaq-hub-diagram' );
         wp_enqueue_script( 'rawnaq-hub-diagram' );
@@ -617,7 +615,6 @@ class Rawnaq_Gutenberg_Loader {
     }
 
     public function render_tilt_card_block( $attributes ) {
-        wp_enqueue_style( 'rawnaq-fonts' );
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'rawnaq-tilt-card' );
         wp_enqueue_script( 'rawnaq-tilt-card' );
@@ -1484,7 +1481,7 @@ class Rawnaq_Gutenberg_Loader {
                  data-reveal="<?php echo ! empty( $a['reveal'] ) ? '1' : '0'; ?>"
                  data-hover="<?php echo esc_attr( $hover ); ?>"
                  role="list">
-                <?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- block editor HTML ?>
+                <?php echo wp_kses_post( $content ); ?>
             </div>
             <?php
             return ob_get_clean();

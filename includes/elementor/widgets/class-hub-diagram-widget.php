@@ -10,7 +10,7 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
     public function get_icon()       { return 'eicon-flow'; }
     public function get_categories() { return [ 'rawnaq' ]; }
 
-    public function get_style_depends()  { return [ 'rawnaq-hub-diagram', 'rawnaq-fonts', 'dashicons' ]; }
+    public function get_style_depends()  { return [ 'rawnaq-hub-diagram', 'dashicons' ]; }
     public function get_script_depends() { return [ 'rawnaq-hub-diagram' ]; }
 
     protected function register_controls() {
