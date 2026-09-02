@@ -317,6 +317,39 @@ class Rawnaq_Admin_Dashboard {
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
+
+                                <?php
+                                $is_pro_active = (bool) apply_filters( 'rawnaq_pro_active', false );
+                                ?>
+                                <div class="module-card tone-pro <?php echo $is_pro_active ? 'is-pro-active' : 'is-pro-locked'; ?>" style="<?php echo ! $is_pro_active ? 'background:linear-gradient(135deg, #1e1b4b05 0%, #312e8110 100%);border:1.5px dashed #6366f150;' : ''; ?>">
+                                    <div class="module-card-top">
+                                        <div class="module-icon" aria-hidden="true" style="<?php echo ! $is_pro_active ? 'background:#e0e7ff;color:#4f46e5;' : ''; ?>">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                        </div>
+                                        <?php if ( $is_pro_active ) : ?>
+                                            <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;"><?php esc_html_e( 'PRO ACTIVE', 'rawnaq' ); ?></span>
+                                        <?php else : ?>
+                                            <span style="background:#e0e7ff;color:#4338ca;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;display:flex;align-items:center;gap:4px;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                                <?php esc_html_e( 'LOCKED', 'rawnaq' ); ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="module-info">
+                                        <span class="module-badge" style="background:#4f46e5;color:#fff;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
+                                        <h4><?php esc_html_e( 'Get Quote Lead Engine', 'rawnaq' ); ?></h4>
+                                        <p><?php esc_html_e( 'Multi-step interactive cost estimator, room-by-room breakdown, quality tiers, branded PDF quotes, and instant WhatsApp lead sync.', 'rawnaq' ); ?></p>
+                                        <div class="module-meta">
+                                            <?php if ( $is_pro_active ) : ?>
+                                                <span style="color:#16a34a;font-weight:600;">✓ <?php esc_html_e( 'Loaded via Rawnaq Pro', 'rawnaq' ); ?></span>
+                                            <?php else : ?>
+                                                <a href="https://rawnaq.pro" target="_blank" rel="noopener noreferrer" style="color:#4f46e5;font-weight:700;text-decoration:none;font-size:12px;">
+                                                    <?php esc_html_e( 'Unlock with Rawnaq Pro →', 'rawnaq' ); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="rawnaq-card" style="margin: 24px 0;">
