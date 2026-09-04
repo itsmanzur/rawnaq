@@ -338,7 +338,37 @@ class Rawnaq_Admin_Dashboard {
                                     <div class="module-info">
                                         <span class="module-badge" style="background:#4f46e5;color:#fff;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
                                         <h4><?php esc_html_e( 'Get Quote Lead Engine', 'rawnaq' ); ?></h4>
-                                        <p><?php esc_html_e( 'Multi-step interactive cost estimator, room-by-room breakdown, quality tiers, branded PDF quotes, and instant WhatsApp lead sync.', 'rawnaq' ); ?></p>
+                                        <p><?php esc_html_e( 'Multi-step interactive cost estimator, room-by-room breakdown, quality tiers, magic link portal, digital e-signatures, and A4 PDF contracts.', 'rawnaq' ); ?></p>
+                                        <div class="module-meta">
+                                            <?php if ( $is_pro_active ) : ?>
+                                                <span style="color:#16a34a;font-weight:600;">✓ <?php esc_html_e( 'Loaded via Rawnaq Pro', 'rawnaq' ); ?></span>
+                                            <?php else : ?>
+                                                <a href="https://rawnaq.pro" target="_blank" rel="noopener noreferrer" style="color:#4f46e5;font-weight:700;text-decoration:none;font-size:12px;">
+                                                    <?php esc_html_e( 'Unlock with Rawnaq Pro →', 'rawnaq' ); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="module-card tone-pro <?php echo $is_pro_active ? 'is-pro-active' : 'is-pro-locked'; ?>" style="<?php echo ! $is_pro_active ? 'background:linear-gradient(135deg, #1e1b4b05 0%, #312e8110 100%);border:1.5px dashed #6366f150;' : ''; ?>">
+                                    <div class="module-card-top">
+                                        <div class="module-icon" aria-hidden="true" style="background:#fef3c7;color:#d97706;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h12"/></svg>
+                                        </div>
+                                        <?php if ( $is_pro_active ) : ?>
+                                            <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;"><?php esc_html_e( 'PRO ACTIVE', 'rawnaq' ); ?></span>
+                                        <?php else : ?>
+                                            <span style="background:#e0e7ff;color:#4338ca;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;display:flex;align-items:center;gap:4px;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                                <?php esc_html_e( 'LOCKED', 'rawnaq' ); ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="module-info">
+                                        <span class="module-badge" style="background:#d97706;color:#fff;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
+                                        <h4><?php esc_html_e( 'Services & Pricing Calculator', 'rawnaq' ); ?></h4>
+                                        <p><?php esc_html_e( 'Live dynamic area slider, 3-tier comparative matrix, real-time scope allocation breakdown bars, and seamless Get Quote bridge.', 'rawnaq' ); ?></p>
                                         <div class="module-meta">
                                             <?php if ( $is_pro_active ) : ?>
                                                 <span style="color:#16a34a;font-weight:600;">✓ <?php esc_html_e( 'Loaded via Rawnaq Pro', 'rawnaq' ); ?></span>
@@ -555,6 +585,47 @@ class Rawnaq_Admin_Dashboard {
                             </ul>
                             <h4><?php esc_html_e( 'Static demo', 'rawnaq' ); ?></h4>
                             <p><?php esc_html_e( 'Marketing showcase of all modules (no WordPress): open assets/demo/index.html in a browser.', 'rawnaq' ); ?></p>
+                        </div>
+
+                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;border-left:4px solid #4f46e5;">
+                            <span class="module-badge" style="background:#4f46e5;color:#fff;margin-bottom:8px;display:inline-block;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
+                            <h3>11. <?php esc_html_e( 'Get Quote Lead Engine (Pro)', 'rawnaq' ); ?></h3>
+                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'An enterprise quotation CRM and multi-step lead discovery engine built specifically for architecture, interior design, and turnkey fitout studios. Features instant lead scoring, temperature classification, WhatsApp quick actions, client self-service portal, HTML5 digital e-signatures, and 1-click A4 PDF contract generation.', 'rawnaq' ); ?></p>
+                            <h4><?php esc_html_e( 'Key Features & Capabilities', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>5-Step Interactive Wizard:</strong> Service discipline, 3-tier finish quality packages (Essential, Premium, Luxe), room-by-room breakdown, dual budget sliders, and on-site consultation booking.</li>
+                                <li><strong>Lead Scoring Algorithm:</strong> Automatically calculates a 0–100 lead score and assigns Hot 🔥, Warm 🟡, or Cold ❄️ temperature badges.</li>
+                                <li><strong>Client Magic Portal & E-Signature:</strong> Generates secure cryptographic links (<code>?rawnaq_quote=TOKEN</code>) where clients customize upgrades and digitally sign agreements with touch/mouse canvas.</li>
+                                <li><strong>Branded A4 PDF Generator:</strong> Formal print-ready proposal with corporate letterhead, payment milestones (30%/40%/30%), 12-month defect warranty, and client signature seal.</li>
+                                <li><strong>Data Export & Bulk Actions:</strong> Full-data UTF-8 BOM CSV export and bulk status changes (Mark as Won, Contacted, Quoted).</li>
+                            </ul>
+                            <h4><?php esc_html_e( 'How to Use', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>Elementor:</strong> Search for <em>Get Quote Form (Pro)</em>, drag onto any page. Configure form mode (Wizard vs Single-step), finish packages, and colors.</li>
+                                <li><strong>Shortcode:</strong> Use <code>[rawnaq_get_quote]</code> with attributes (e.g. <code>layout="inline|modal|floating"</code>).</li>
+                                <li><strong>Admin CRM:</strong> Navigate to <em>Rawnaq → Get Quote</em> to inspect leads, view analytics charts, dispatch proposals, and manage settings.</li>
+                            </ul>
+                        </div>
+
+                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;border-left:4px solid #d97706;">
+                            <span class="module-badge" style="background:#d97706;color:#fff;margin-bottom:8px;display:inline-block;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
+                            <h3>12. <?php esc_html_e( 'Services & Interactive Pricing Calculator (Pro)', 'rawnaq' ); ?></h3>
+                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'A high-converting interactive pricing calculator and comparative service matrix. Allows visitors to slide their spatial area, choose quality tiers, toggle optional add-ons (3D VR, Smart Home, Custom Millwork), and view real-time budget allocation breakdowns.', 'rawnaq' ); ?></p>
+                            <h4><?php esc_html_e( 'Key Features & Capabilities', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>Dual-Sync Area Footprint Controls:</strong> Range slider (300 to 10,000+ sqft / sqm) coupled in real-time with numeric input.</li>
+                                <li><strong>3-Tier Quality Specification:</strong> Essential Architecture ($12/sqft), Premium Turnkey Suite ($28/sqft), and Luxe Royal Bespoke ($55/sqft).</li>
+                                <li><strong>Dynamic Scope Breakdown:</strong> Live allocation bars for Architectural Design, Materials & Millwork, and Engineering Supervision.</li>
+                                <li><strong>1-Click Get Quote Bridge:</strong> "Proceed with this Quotation" button automatically forwards chosen parameters into the Get Quote wizard without retyping.</li>
+                                <li><strong>4-Phase Delivery Blueprint:</strong> Spatial Discovery ➔ 3D VR ➔ Fabrication ➔ Turnkey Handover.</li>
+                            </ul>
+                            <h4><?php esc_html_e( 'How to Use', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>Elementor:</strong> Search for <em>Services & Pricing Calculator (Pro)</em> under the Rawnaq category. Customize area defaults, base rates, unit, and branding colors.</li>
+                                <li><strong>Shortcode:</strong> Place <code>[rawnaq_pricing_calculator]</code> or <code>[rawnaq_services_pricing]</code> on any service or pricing landing page.</li>
+                            </ul>
                         </div>
 
                     </div>
