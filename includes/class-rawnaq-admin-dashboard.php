@@ -266,7 +266,15 @@ class Rawnaq_Admin_Dashboard {
                                     ],
                                 ];
 
-                                // Pro-only card will be rendered after the loop.
+								/**
+								 * Filter the cards shown in Elements Manager.
+								 *
+								 * Companion plugins should also add the matching slug through
+								 * the rawnaq_default_modules filter so the toggle is persisted.
+								 *
+								 * @param array<int, array<string, string>> $module_defs Module card definitions.
+								 */
+								$module_defs = apply_filters( 'rawnaq_module_definitions', $module_defs );
 
                                 foreach ( $module_defs as $mod ) :
                                     $checked = isset( $modules[ $mod['key'] ] ) && $modules[ $mod['key'] ] === '1';
@@ -292,6 +300,8 @@ class Rawnaq_Admin_Dashboard {
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
                                                 <?php elseif ( 'cases' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="10" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="16" width="8" height="4" rx="1.5"/></svg>
+												<?php elseif ( 'actions' === $mod['icon'] ) : ?>
+													<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9.5 14.5 14.5 9"/><path d="M7.2 17.8 5.8 19.2a3.5 3.5 0 0 1-5-5l3-3a3.5 3.5 0 0 1 5 0" transform="translate(2 -2)"/><path d="m16.8 6.2 1.4-1.4a3.5 3.5 0 0 1 5 5l-3 3a3.5 3.5 0 0 1-5 0" transform="translate(-2 2)"/><path d="M17 14v5M14.5 16.5h5"/></svg>
                                                 <?php else : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="14" width="18" height="6" rx="3"/><rect x="5" y="16" width="3.2" height="3.2" rx="0.8"/><rect x="10.4" y="15.2" width="4" height="4" rx="1"/><rect x="16.2" y="16" width="3.2" height="3.2" rx="0.8"/></svg>
                                                 <?php endif; ?>
