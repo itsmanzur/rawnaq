@@ -123,19 +123,23 @@ class Rawnaq_Smart_Form_Admin {
 			return; // Already read, nothing to do.
 		}
 
-		$nonce = wp_create_nonce( 'rawnaq_sf_mark_read_' . $post_id );
-		add_action( 'admin_footer', function () use ( $post_id, $nonce ) {
-			?>
-			<script>
-			( function () {
-				var body = new URLSearchParams();
-				body.append( 'action', 'rawnaq_sf_mark_read' );
-				body.append( 'post_id', '<?php echo esc_js( $post_id ); ?>' );
-				body.append( 'nonce', '<?php echo esc_js( $nonce ); ?>' );
-				fetch( ajaxurl, { method: 'POST', credentials: 'same-origin', body: body } );
-			} )();
-			</script>
-			<?php
+		add_action( 'admin_enqueue_scripts', function () use ( $post_id ) {
+			wp_register_script( 'rawnaq-sf-mark-read', '', [], RAWNAQ_VERSION, true );
+			wp_enqueue_script( 'rawnaq-sf-mark-read' );
+
+			$data = [
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'postId'  => $post_id,
+				'nonce'   => wp_create_nonce( 'rawnaq_sf_mark_read_' . $post_id ),
+			];
+
+			wp_add_inline_script(
+				'rawnaq-sf-mark-read',
+				'window.rawnaqSfMarkRead = ' . wp_json_encode( $data ) . ';' .
+				'(function(){var d=window.rawnaqSfMarkRead;var body=new URLSearchParams();' .
+				'body.append("action","rawnaq_sf_mark_read");body.append("post_id",d.postId);body.append("nonce",d.nonce);' .
+				'fetch(d.ajaxUrl,{method:"POST",credentials:"same-origin",body:body});})();'
+			);
 		} );
 	}
 
