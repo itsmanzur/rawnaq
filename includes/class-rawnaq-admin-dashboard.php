@@ -580,6 +580,7 @@ class Rawnaq_Admin_Dashboard {
                                     <li><strong>WhatsApp Direct Routing:</strong> Notify sales agents instantly or redirect the client with a prefilled WhatsApp message containing their quote summary.</li>
                                     <li><strong>Interactive Digital Proposal Portal:</strong> Generates a shareable URL (<code>/rawnaq-proposal/?quote_id=...</code>) where clients can review scope, pricing, and approve proposals interactively.</li>
                                     <li><strong>Instant PDF Download:</strong> Built-in vector PDF generator creates branded proposals and invoices with agency logo, quote breakdown, and terms.</li>
+                                    <li><strong>WooCommerce "Request a Quote" Integration:</strong> Embeds instant quote buttons on single product pages, variable product selectors, and shop cards with live quantity prefilling and B2B catalog mode.</li>
                                 </ul>
 
                                 <div class="rawnaq-doc-tip">
