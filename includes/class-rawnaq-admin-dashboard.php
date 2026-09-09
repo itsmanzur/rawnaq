@@ -404,13 +404,13 @@ class Rawnaq_Admin_Dashboard {
 
                         <div class="rawnaq-docs-filter-pills">
                             <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">9</span></button>
-                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?></button>
-                            <button type="button" class="docs-filter-btn" data-filter="snippets">📋 <?php esc_html_e( 'Quick Cheat Sheet', 'rawnaq' ); ?></button>
-                            <button type="button" class="docs-filter-btn" data-filter="free">🧩 <?php esc_html_e( 'Core Widgets', 'rawnaq' ); ?></button>
+                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">2</span></button>
+                            <button type="button" class="docs-filter-btn" data-filter="snippets">📋 <?php esc_html_e( 'Quick Cheat Sheet', 'rawnaq' ); ?> <span class="filter-count">1</span></button>
+                            <button type="button" class="docs-filter-btn" data-filter="free">🧩 <?php esc_html_e( 'Core Widgets', 'rawnaq' ); ?> <span class="filter-count">6</span></button>
                         </div>
 
                         <!-- CHEAT SHEET & DYNAMIC HOOKS -->
-                        <div class="rawnaq-doc-card is-pro is-expanded" data-category="pro snippets">
+                        <div class="rawnaq-doc-card is-pro is-expanded" data-category="snippets">
                             <div class="rawnaq-doc-card-header">
                                 <div class="header-left">
                                     <div class="doc-icon-box" style="background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff;">
