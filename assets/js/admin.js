@@ -125,6 +125,102 @@
                 }
             });
         });
+
+        /* ── Documentation & Usage Guide Search / Filter / Copy Engine ── */
+        var $docCards = $('.rawnaq-doc-card');
+        var $docsSearch = $('#rawnaq-docs-search');
+        var $docsClear = $('#rawnaq-docs-search-clear');
+        var $filterBtns = $('.docs-filter-btn');
+        var $noResults = $('#rawnaq-docs-no-results');
+
+        function filterDocs() {
+            var query = ($docsSearch.val() || '').toLowerCase().trim();
+            var activeFilter = $('.docs-filter-btn.active').data('filter') || 'all';
+            var visibleCount = 0;
+
+            $docsClear.toggle(query.length > 0);
+
+            $docCards.each(function() {
+                var $card = $(this);
+                var category = $card.data('category') || '';
+                var categories = category.split(' ');
+                var cardText = $card.text().toLowerCase();
+
+                var matchesCategory = (activeFilter === 'all') || (categories.indexOf(activeFilter) !== -1);
+                var matchesQuery = !query || (cardText.indexOf(query) !== -1);
+
+                if (matchesCategory && matchesQuery) {
+                    $card.show();
+                    visibleCount++;
+                } else {
+                    $card.hide();
+                }
+            });
+
+            if ($noResults.length) {
+                if (visibleCount === 0) {
+                    $noResults.show();
+                } else {
+                    $noResults.hide();
+                }
+            }
+        }
+
+        // Live search typing
+        $docsSearch.on('input keyup', function() {
+            filterDocs();
+        });
+
+        // Clear search
+        $docsClear.on('click', function() {
+            $docsSearch.val('').trigger('input').focus();
+        });
+
+        // Category pills click
+        $filterBtns.on('click', function(e) {
+            e.preventDefault();
+            $filterBtns.removeClass('active');
+            $(this).addClass('active');
+            filterDocs();
+        });
+
+        // Update counts
+        var totalGuides = $docCards.length;
+        $('.docs-filter-btn[data-filter="all"] .filter-count').text(totalGuides);
+
+        // Copy to clipboard with toast
+        function showCopyToast(text) {
+            $('.rawnaq-copy-toast').remove();
+            var $toast = $('<div class="rawnaq-copy-toast"><span class="dashicons dashicons-yes-alt" style="color:#34d399;"></span> Copied to clipboard: <strong>' + $('<div>').text(text).html() + '</strong></div>');
+            $('body').append($toast);
+            setTimeout(function() {
+                $toast.fadeOut(250, function() {
+                    $(this).remove();
+                });
+            }, 2500);
+        }
+
+        $(document).on('click', '.rawnaq-copy-badge, .copyable', function(e) {
+            e.preventDefault();
+            var textToCopy = $(this).data('copy') || $(this).text().trim();
+            // remove any leading icon symbols if copied from text
+            textToCopy = textToCopy.replace(/^📋\s*/, '').replace(/\s*📋$/, '');
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    showCopyToast(textToCopy);
+                });
+            } else {
+                // fallback
+                var $temp = $('<textarea>');
+                $('body').append($temp);
+                $temp.val(textToCopy).select();
+                document.execCommand('copy');
+                $temp.remove();
+                showCopyToast(textToCopy);
+            }
+        });
     });
 
 })(jQuery);
+

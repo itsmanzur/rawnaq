@@ -381,157 +381,305 @@ class Rawnaq_Admin_Dashboard {
 
                     <!-- TAB 3: DOCUMENTATION -->
                     <div id="tab-docs" class="tab-panel">
-                        <h2><?php esc_html_e( 'Documentation & Usage Guide', 'rawnaq' ); ?></h2>
-                        <p class="section-desc"><?php esc_html_e( 'Detailed usage guides on how to configure and deploy the active widgets.', 'rawnaq' ); ?></p>
+                        <div class="rawnaq-docs-header-bar">
+                            <div class="rawnaq-docs-intro">
+                                <h2><?php esc_html_e( 'Documentation & Usage Guide', 'rawnaq' ); ?></h2>
+                                <p class="section-desc"><?php esc_html_e( 'Complete guides, interactive cheat sheets, dynamic post triggers, and shortcodes for all Rawnaq modules.', 'rawnaq' ); ?></p>
+                            </div>
+                            <div class="rawnaq-docs-search-wrap">
+                                <span class="dashicons dashicons-search rawnaq-docs-search-icon"></span>
+                                <input type="text" id="rawnaq-docs-search" class="rawnaq-docs-search-input" placeholder="<?php esc_attr_e( 'Search guides, shortcodes, attributes, or presets...', 'rawnaq' ); ?>" autocomplete="off">
+                                <button type="button" id="rawnaq-docs-search-clear" class="rawnaq-docs-search-clear" title="Clear search">&times;</button>
+                            </div>
+                        </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>1. Hub Diagram</h3>
-                            <p>A highly performant radial workflow diagram connecting spokes to a center circle. Features responsive auto-timeline columns on mobile and animated glow particle flows. Pick icons with the Elementor Icons control (Font Awesome / Dashicons). Frontend <strong>PNG / SVG export</strong> for proposals.</p>
-                            <h4>Usage:</h4>
+                        <div class="rawnaq-docs-filter-pills">
+                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count"></span></button>
+                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?></button>
+                            <button type="button" class="docs-filter-btn" data-filter="snippets">📋 <?php esc_html_e( 'Quick Cheat Sheet', 'rawnaq' ); ?></button>
+                            <button type="button" class="docs-filter-btn" data-filter="free">🧩 <?php esc_html_e( 'Core Widgets', 'rawnaq' ); ?></button>
+                        </div>
+
+                        <!-- CHEAT SHEET & DYNAMIC HOOKS -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro snippets">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-editor-code" style="color:#6366f1;"></span> <?php esc_html_e( 'Quick Cheat Sheet & Dynamic Triggers', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-cheat"><?php esc_html_e( 'Cheat Sheet', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'Quick reference for shortcodes, modal trigger anchors, and dynamic context prefill attributes. Click on any code badge to copy it instantly!', 'rawnaq' ); ?></p>
+
+                            <h4><?php esc_html_e( '1. Dynamic Post & External Button Triggers for Get Quote Modal', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'You can open the Get Quote modal from ANY button, menu item, or link on your site (including Elementor Loop Grids, Archive Cards, and Single Post templates):', 'rawnaq' ); ?></p>
+                            <table class="rawnaq-snippet-table">
+                                <thead>
+                                    <tr>
+                                        <th><?php esc_html_e( 'Trigger Method', 'rawnaq' ); ?></th>
+                                        <th><?php esc_html_e( 'Code / Snippet (Click to Copy)', 'rawnaq' ); ?></th>
+                                        <th><?php esc_html_e( 'How to Use', 'rawnaq' ); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Anchor Link (URL)</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy="#rawnaq-get-quote">#rawnaq-get-quote <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Set as the link/URL of any button, menu item, or card.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CSS Class</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy="rawnaq-gq-open-modal">rawnaq-gq-open-modal <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Add this CSS class to any Elementor button or HTML element.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Data Attribute</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-rawnaq-open-quote="1"'>data-rawnaq-open-quote="1" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Add custom HTML attribute to any interactive tag.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4><?php esc_html_e( '2. Dynamic Context Prefilling Attributes (For Posts, Portfolios & Services)', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'Attach these data attributes to your trigger button or card to auto-select services, fill project names, and preset quantities inside the modal:', 'rawnaq' ); ?></p>
+                            <table class="rawnaq-snippet-table">
+                                <thead>
+                                    <tr>
+                                        <th><?php esc_html_e( 'Attribute', 'rawnaq' ); ?></th>
+                                        <th><?php esc_html_e( 'Example Code', 'rawnaq' ); ?></th>
+                                        <th><?php esc_html_e( 'Prefill Action in Modal', 'rawnaq' ); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Project / Post Title</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-gq-project="{post_title}"'>data-gq-project="Luxury Villa Palm" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Pre-fills project/case-study name in client inquiry.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Service Category</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-gq-service="Interior Design"'>data-gq-service="Interior Design" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Automatically selects this service in the dropdown/step.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Property / Space Type</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-gq-property="Commercial Office"'>data-gq-property="Commercial Office" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Auto-selects property/space type in dropdown.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Estimated Area / Scope</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-gq-area="3500"'>data-gq-area="3500" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Sets the area/scope range slider or input value.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Budget Level</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-gq-budget="Premium"'>data-gq-budget="Premium" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Auto-selects budget option (Standard / Premium / Luxury).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Quantity / Units</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-gq-quantity="4"'>data-gq-quantity="4" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Sets room/unit quantity stepper count.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Custom Requirements / Notes</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='data-gq-notes="Inquiry from Portfolio page"'>data-gq-notes="Custom note" <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Pre-populates the additional notes / requirements textarea.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4><?php esc_html_e( '3. Ready-to-Use Shortcodes', 'rawnaq' ); ?></h4>
+                            <table class="rawnaq-snippet-table">
+                                <thead>
+                                    <tr>
+                                        <th><?php esc_html_e( 'Feature / Module', 'rawnaq' ); ?></th>
+                                        <th><?php esc_html_e( 'Shortcode (Click to Copy)', 'rawnaq' ); ?></th>
+                                        <th><?php esc_html_e( 'Description', 'rawnaq' ); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Pricing Calculator (Default)</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_pricing_calculator]">[rawnaq_pricing_calculator] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Embeds interactive pricing calculator with auto-calculation.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pricing Calculator (Interior)</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='[rawnaq_pricing_calculator preset="interior_design"]'>[rawnaq_pricing_calculator preset="interior_design"] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Embeds calculator pre-configured for Interior Design.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pricing Calculator (Software)</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='[rawnaq_pricing_calculator preset="software_dev"]'>[rawnaq_pricing_calculator preset="software_dev"] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Embeds calculator pre-configured for Software & Web.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pricing Calculator (Marketing)</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy='[rawnaq_pricing_calculator preset="marketing_seo"]'>[rawnaq_pricing_calculator preset="marketing_seo"] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Embeds calculator pre-configured for Marketing & SEO.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Get Quote Modal / Form</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_get_quote]">[rawnaq_get_quote] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Embeds Get Quote wizard or trigger button anywhere.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Smart Form</strong></td>
+                                        <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_smart_form]">[rawnaq_smart_form] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                        <td>Embeds lightweight Smart Form lead capture.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PRO MODULE 1: GET QUOTE ENTERPRISE ENGINE -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-clipboard" style="color:var(--rq-accent);"></span> <?php esc_html_e( '1. Get Quote Enterprise Engine (Pro)', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Pro Enterprise', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'The Get Quote Enterprise Engine is a high-converting, multi-step quotation system designed for agencies, studios, and high-ticket service businesses. It supports custom dynamic steps, real-time validations, Google Sheet auto-sync, CRM webhooks, WhatsApp routing, digital interactive proposals, and instant PDF invoice downloads.', 'rawnaq' ); ?></p>
+
+                            <h4><?php esc_html_e( 'Key Capabilities & Modes:', 'rawnaq' ); ?></h4>
                             <ul>
-                                <li><strong>Elementor:</strong> Search for "Hub Diagram" widget, drag and edit text details. In the Style tab, check the Layout option to switch from horizontal rows to 360° Radial mode, or enable Glow Flow lines.</li>
-                                <li><strong>Gutenberg:</strong> In insert bar search "Hub Diagram (Rawnaq)", insert block, and use sidebar settings controls.</li>
+                                <li><strong>Form Layout Modes:</strong> Choose between a <em>Multi-Step Animated Wizard</em> (guided step-by-step experience) or a streamlined <em>Single-Step Compact Form</em> in the Elementor settings.</li>
+                                <li><strong>100% Customizable Elements:</strong> Customize step titles, step subtitles, step badge numbers/icons, progress bars, and navigation button text ("Next", "Previous", "Submit").</li>
+                                <li><strong>Dynamic Scope & Area Inputs:</strong> Allow clients to input square footage, square meters, or unit dimensions with customizable units and range slider steps.</li>
+                                <li><strong>Preferred Communication Mode & Time Slots:</strong> Client can choose their preferred contact method (WhatsApp, Phone, Email, Video Consultation) along with custom time windows (Morning, Afternoon, Evening).</li>
+                                <li><strong>File & Floor Plan Attachments:</strong> Secure drag-and-drop file uploader with extension validation and file size limits.</li>
+                            </ul>
+
+                            <h4><?php esc_html_e( 'Enterprise Integrations & Automations:', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>Google Sheets 1-Click Sync:</strong> Automatically append every quote submission as a new row in your connected Google Sheet in real time.</li>
+                                <li><strong>CRM Webhook Dispatcher:</strong> Send JSON webhooks on every submission directly to Zapier, Make, HubSpot, Slack, or custom CRM webhooks.</li>
+                                <li><strong>WhatsApp Direct Routing:</strong> Notify sales agents instantly or redirect the client with a prefilled WhatsApp message containing their quote summary.</li>
+                                <li><strong>Interactive Digital Proposal Portal:</strong> Generates a shareable URL (<code>/rawnaq-proposal/?quote_id=...</code>) where clients can review scope, pricing, and approve proposals interactively.</li>
+                                <li><strong>Instant PDF Download:</strong> Built-in vector PDF generator creates branded proposals and invoices with agency logo, quote breakdown, and terms.</li>
+                            </ul>
+
+                            <div class="rawnaq-doc-tip">
+                                <strong>💡 Pro Tip:</strong> To trigger the Get Quote modal from an Elementor Loop Grid or Portfolio card, simply set the button link to <span class="rawnaq-copy-badge" data-copy="#rawnaq-get-quote">#rawnaq-get-quote</span> and add custom attributes like <span class="rawnaq-copy-badge" data-copy='data-gq-project="Villa 101"'>data-gq-project="Villa 101"</span>.
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 2: SERVICES & PRICING CALCULATOR -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-calculator" style="color:var(--rq-accent);"></span> <?php esc_html_e( '2. Services & Interactive Pricing Calculator (Pro)', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Pro Enterprise', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'The Services & Pricing Calculator allows your clients to build custom project estimates in real time, choose service tiers, toggle add-on options, apply promo codes, switch currencies, and seamlessly bridge their calculation into the Get Quote system.', 'rawnaq' ); ?></p>
+
+                            <h4><?php esc_html_e( '7 Ready-to-Use Industry Presets:', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>1. Interior Design & Architecture:</strong> Calculates area (sq ft / sq m), residential vs commercial packages, 3D visualization add-ons, and site supervision.</li>
+                                <li><strong>2. Software & Web Development:</strong> Calculates app pages/screens, MVP vs Enterprise tiers, API integrations, and ongoing maintenance.</li>
+                                <li><strong>3. Marketing & SEO:</strong> Calculates monthly budget, organic search optimization, PPC management, and content creation add-ons.</li>
+                                <li><strong>4. Photography & Video Production:</strong> Calculates shooting hours, commercial licensing, drone footage, and rush color grading.</li>
+                                <li><strong>5. Construction & Renovation:</strong> Calculates floor area, structural tier levels, premium material add-ons, and permits.</li>
+                                <li><strong>6. Event & Wedding Planning:</strong> Calculates guest count, decor tier, catering coordination, and audiovisual staging.</li>
+                                <li><strong>7. Custom / General Agency:</strong> Fully customizable blank canvas for any subscription, service, or product package.</li>
+                            </ul>
+
+                            <h4><?php esc_html_e( 'Dynamic Calculation Features:', 'rawnaq' ); ?></h4>
+                            <ul>
+                                <li><strong>Dynamic Scope Slider:</strong> Live slider with custom minimum, maximum, step, base price, and unit rate (Formula: <code>Total = Base + (Metric Value × Rate)</code>).</li>
+                                <li><strong>Tier Radio Cards & Add-on Repeaters:</strong> Unlimited tiers (Standard, Pro, Enterprise) and checkbox add-ons with fixed or percentage pricing.</li>
+                                <li><strong>Quantity Stepper:</strong> Incremental counter for rooms, pages, or units with instant multiplier calculation.</li>
+                                <li><strong>Urgency Speed Multiplier:</strong> Offers Standard (1.0x), Express (1.25x), and Rush (1.5x) project turnaround speeds.</li>
+                                <li><strong>Promo Code Engine:</strong> Validates coupons (e.g. <code>SAVE20</code>, <code>FLAT50</code>) with percentage or flat discounts, minimum spend rules, and expiry dates.</li>
+                                <li><strong>Multi-Currency Switcher:</strong> Real-time conversion between USD, EUR, GBP, SAR, AED, BDT, and custom currencies.</li>
+                                <li><strong>1-Click Get Quote Bridge:</strong> Clients can click "Get Official Quote" to open the quote modal with their exact calculated breakdown, tier, and total price pre-populated!</li>
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>2. 3D Tilt Card</h3>
-                            <p>A lightweight taste card: mouse tilt / glare with reduced-motion and coarse-pointer respect. Kept intentionally small — not a deep media-card suite.</p>
-                            <h4>Usage:</h4>
+                        <!-- FREE MODULE 1: SMART FORM -->
+                        <div class="rawnaq-doc-card" data-category="free">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-feedback" style="color:var(--rq-accent-deep);"></span> <?php esc_html_e( '3. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'Smart Form is Rawnaq’s lightweight lead capture form for agency and SMB sites. Submissions are delivered via email (wp_mail) and/or open WhatsApp with a prefilled message template.', 'rawnaq' ); ?></p>
+                            <h4><?php esc_html_e( 'What you can configure:', 'rawnaq' ); ?></h4>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "3D Tilt Card" widget, choose an icon from the Icons picker, write title text, select redirect URL, and adjust the Max Tilt Intensity slider in settings.</li>
-                                <li><strong>Gutenberg:</strong> Search and insert "3D Tilt Card" block. Settings sidebar contains title, description, link options, and tilt intensity controls.</li>
+                                <li><strong>Field Types:</strong> Text, Email, Phone, Textarea, Select dropdown, Checkboxes, Date, Number, URL, Rating, and File uploads with multi-step grouping and "Show if" conditionals.</li>
+                                <li><strong>Spam Protection:</strong> Built-in silent honeypot + time trap prevents automated bot spam without irritating CAPTCHAs.</li>
+                                <li><strong>Template Placeholders:</strong> Use <code>{field_id}</code>, <code>{pageTitle}</code>, <code>{url}</code>, <code>{date}</code>, and <code>{time}</code> in your Email and WhatsApp message templates.</li>
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>3. Scroll Sync Timeline</h3>
-                            <p><strong>Flagship motion module.</strong> On modern browsers the line fill and step reveals use native CSS <code>animation-timeline</code> / <code>view()</code> (compositor-thread, near zero JS). Older browsers get a lightweight vanilla JS fallback. Supports horizontal and vertical layouts, RTL, media embeds, CPT query source, Load More / AJAX, Named Timeline Sync with Bento, agency presets (Company Story / Changelog / Case Study), and WPML/Polylang readiness.</p>
-                            <p>
-                                <a class="doc-btn" href="<?php echo esc_url( RAWNAQ_URL . 'assets/demo/scroll-timeline-benchmark.html' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open CSS vs JS benchmark demo', 'rawnaq' ); ?></a>
-                            </p>
-                            <h4>Usage:</h4>
+                        <!-- FREE MODULE 2: FLOATING DOCK MENU -->
+                        <div class="rawnaq-doc-card" data-category="free">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-format-chat" style="color:var(--rq-accent-deep);"></span> <?php esc_html_e( '4. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'Combines a macOS-style icon magnification dock with WhatsApp Contact Mode for business websites.', 'rawnaq' ); ?></p>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Scroll Sync Timeline" widget. Add steps in the repeater or switch to Query mode. Look for the CSS-driven badge in the editor when supported.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Scroll Sync Timeline" block. Configure milestones, layout, and query options in the inspector.</li>
+                                <li><strong>Multi-Agent Routing:</strong> Route inquiries to different team members (e.g. Sales, Support, Consultation) based on topic or schedule.</li>
+                                <li><strong>Business Hours & Timezone:</strong> Automatically display online status or off-hours message based on your company timezone.</li>
+                                <li><strong>Desktop QR Chooser:</strong> Visitors on desktop can scan a live QR code on their mobile phone or launch WhatsApp Web instantly.</li>
+                                <li><strong>Click Analytics:</strong> Built-in click counter tracks visitor interactions across all contact channels.</li>
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>4. Floating Dock Menu (WhatsApp Contact Mode)</h3>
-                            <p>Two products in one: a classic macOS-style magnify dock, and <strong>WhatsApp Contact Mode</strong> (recommended for SMB/agency sites) with multi-agent routing, business hours / timezone, offline behaviors, desktop QR + Web chooser, page-aware message placeholders, and optional click stats.</p>
-                            <h4>Usage:</h4>
+                        <!-- FREE MODULE 3: SCROLL SYNC TIMELINE -->
+                        <div class="rawnaq-doc-card" data-category="free">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-backup" style="color:var(--rq-accent-deep);"></span> <?php esc_html_e( '5. Scroll Sync Timeline', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'Flagship motion module. Uses native CSS animation-timeline: view() for compositor-thread 60fps animations with lightweight vanilla JS fallback.', 'rawnaq' ); ?></p>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Floating Dock Menu". Enable WhatsApp mode for agents and schedules, or stay in classic mode for icon links. Set position and visibility rules.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Floating Dock Menu" block. Configure agents/schedule JSON and position in the sidebar.</li>
+                                <li>Supports horizontal & vertical layouts, RTL, media embeds, and CPT Query sources.</li>
+                                <li>Supports Named Timeline Sync with Bento Grid to highlight related cards as visitors scroll.</li>
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>5. Flow Chart</h3>
-                            <p>Interactive tree and process workflow charts. Supports Org tree, Process flow, and Freeform (manual X/Y %) modes; node shapes (rect / circle / hex); direction TB/LR/RL with RTL flip; zoom/pan on desktop; lazy mount for 20+ nodes. Parent cycles are auto-cleared (DFS). Optional <strong>WordPress Users</strong> data source builds an org chart from users (parent via user meta <code>rawnaq_reports_to</code>, else nest under first admin). Frontend <strong>PNG / SVG export</strong> for proposals.</p>
-                            <h4>Usage:</h4>
+                        <!-- FREE MODULE 4: FLOW CHART & HUB DIAGRAM -->
+                        <div class="rawnaq-doc-card" data-category="free">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-networking" style="color:var(--rq-accent-deep);"></span> <?php esc_html_e( '6. Flow Chart & Hub Diagram', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'Interactive tree structures, organizational charts, and radial process diagrams.', 'rawnaq' ); ?></p>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Flow Chart". Choose Manual or WP Users source, map parent Node IDs in the repeater when manual, pick icons from the Icons control, choose shape and direction.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Flow Chart (Rawnaq)". Switch Nodes Source to WP Users for live org, or use the Parent dropdown for manual trees; freeform mode exposes X/Y ranges.</li>
+                                <li><strong>Flow Chart:</strong> Supports Org Trees, Process Flows, and Freeform nodes. Can dynamically build company org charts directly from WordPress Users. Includes high-res PNG / SVG export.</li>
+                                <li><strong>Hub Diagram:</strong> Radial workflow diagram connecting spokes to a center circle with responsive auto-timeline on mobile and glowing animated particle lines.</li>
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>6. Scroll Progress + TOC</h3>
-                            <p>Page scroll progress (bar / ring / both) plus a smart Table of Contents: auto H2–H4 or manual entries, collapse subs, optional search filter, reading time, mobile FAB, optional <strong>Attach to Floating Dock</strong>, ring size control, and optional <strong>Sync Timeline ID</strong> to show the active Scroll Sync Timeline step as “Chapter …” near the TOC.</p>
-                            <h4>Usage:</h4>
+                        <!-- FREE MODULE 5: BENTO GRID & SCROLL STORY -->
+                        <div class="rawnaq-doc-card" data-category="free">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-grid-view" style="color:var(--rq-accent-deep);"></span> <?php esc_html_e( '7. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'Advanced layout and interactive storytelling components.', 'rawnaq' ); ?></p>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Scroll Progress + TOC". Enable TOC Search Filter, Dock Attach, Sync Timeline ID, and Ring Size under content/style when needed.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Scroll Progress + TOC (Rawnaq)". Toggle search, dock attach, ring size, and Sync Timeline ID in the inspector.</li>
+                                <li><strong>Bento Grid:</strong> Modern CSS Grid marketing layouts with Elementor canvas drag-resize handles and Gutenberg InnerBlocks.</li>
+                                <li><strong>Scroll Story Chapters:</strong> Scrollytelling layout with sticky pinned media that swaps dynamically as each chapter enters view.</li>
+                                <li><strong>Scroll Progress + TOC:</strong> Live reading progress bar/ring with automatic H2–H4 heading index, search filter, and mobile floating action button.</li>
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>7. Bento Grid</h3>
-                            <p>CSS Grid marketing layouts with Apply Preset, cell types (featured, image, video, stat, text, testimonial), tablet/mobile span overrides, CTAs, Elementor canvas resize handles, and optional Sync Timeline ID to pair with Scroll Sync Timeline. In <strong>Gutenberg</strong>, cells are InnerBlocks (`Bento Cell`) so you can nest core headings, images, and buttons.</p>
-                            <h4>Usage:</h4>
+                        <!-- FREE MODULE 6: CASE STUDY GRID -->
+                        <div class="rawnaq-doc-card" data-category="free">
+                            <div class="rawnaq-doc-card-header">
+                                <h3><span class="dashicons dashicons-portfolio" style="color:var(--rq-accent-deep);"></span> <?php esc_html_e( '8. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?></h3>
+                                <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span>
+                            </div>
+                            <p><?php esc_html_e( 'Structured portfolio showcase for AEC firms, agencies, and studios. Source projects from the built-in Case Studies CPT or manual repeaters.', 'rawnaq' ); ?></p>
                             <ul>
-                                <li><strong>Elementor:</strong> Drag "Bento Grid". Pick a preset to replace cells, then refine per-cell content and responsive spans. In the editor, drag the SE handle on a cell to change col/row span.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Bento Grid (Rawnaq)". Edit nested Bento Cell blocks on the canvas; Apply Preset reseeds cells. Legacy cellsJson still renders if no InnerBlocks content is saved.</li>
+                                <li>Supports multi-image lightbox sliders, sector & service filters, and client-side AJAX load more.</li>
+                                <li>NDA confidentiality toggles allow hiding sensitive budgets and client names on cards while keeping metadata in editor.</li>
+                                <li>Integrated "Discuss This Project" button that prefills project name and details directly into Get Quote modal or Smart Form.</li>
                             </ul>
                         </div>
 
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;">
-                            <h3>8. Scroll Story Chapters</h3>
-                            <p>Scrollytelling MVP: sticky pinned media that swaps as each chapter scrolls into view, progress dots, captions, optional CTAs, reduced-motion fallback. Dual Elementor + Gutenberg; assets load only when used.</p>
-                            <h4>Usage:</h4>
-                            <ul>
-                                <li><strong>Elementor:</strong> Drag "Scroll Story Chapters". Add chapter repeater rows (title, body, image, caption, CTA). Choose media left/right and accent color.</li>
-                                <li><strong>Gutenberg:</strong> Insert "Scroll Story Chapters (Rawnaq)". Edit chapters in the sidebar; preview lists chapter titles in the editor canvas.</li>
-                            </ul>
-                        </div>
-
-                        <div class="rawnaq-doc-card">
-                            <h3>9. Smart Form (Phase 1)</h3>
-
-                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
-                            <p><strong>Smart Form</strong> is Rawnaq’s lightweight lead / contact form for agency and SMB sites. Visitors fill a customizable set of fields; submissions go out by <strong>email</strong> (WordPress <code>wp_mail</code>) and/or open <strong>WhatsApp</strong> with a prefilled message via <code>wa.me</code>. No third-party form SaaS and no WhatsApp Business API in Phase 1 — keep the stack simple and the frontend vanilla JS.</p>
-                            <p>It ships on both <strong>Elementor</strong> and <strong>Gutenberg</strong>, loads CSS/JS only when the form is on the page, and includes built-in spam guards (honeypot + time trap), optional GDPR-style consent, loading / double-submit protection, and an optional admin submission log.</p>
-                            <p><em>Phase 1 note:</em> WhatsApp delivery means a browser redirect to WhatsApp Web / the app with your template text already filled in. Official Business API, CRM webhooks, and multi-step forms are out of scope for this release.</p>
-
-                            <h4><?php esc_html_e( 'What you can configure', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li><strong>Fields:</strong> Text, Email, Phone, Textarea, Select, Checkbox, Date, Number, URL, Hidden, Rating, File — each with ID, label, width, optional <strong>step</strong> (multi-step), and <strong>Show if</strong> conditionals.</li>
-                                <li><strong>Layout presets:</strong> Name+Email side by side, Compact lead, Full contact, Multi-step project inquiry — one-click Apply Preset.</li>
-                                <li><strong>Email / WhatsApp:</strong> Templates support <code>{field_id}</code> plus <code>{pageTitle}</code>, <code>{url}</code>, <code>{siteTitle}</code>, <code>{date}</code>, <code>{time}</code>. Blank WA number uses the shared site default (Modules tab).</li>
-                                <li><strong>After submit:</strong> Thank-you, redirect, or open WhatsApp.</li>
-                                <li><strong>Extras:</strong> Consent, admin log + CSV/unread, file attach (size limit), optional reCAPTCHA v3, webhook/Slack.</li>
-                                <li><strong>Style:</strong> Label/input/button colors, input size, radius, full-width button.</li>
-                            </ul>
-
-                            <h4><?php esc_html_e( 'How to use', 'rawnaq' ); ?></h4>
-                            <ol>
-                                <li>Enable the <strong>Smart Form</strong> module on the Rawnaq Modules tab (if it is not already on).</li>
-                                <li><strong>Elementor:</strong> Search for <em>Smart Form</em>, drag it onto the page. Use the Fields repeater, Delivery panel, and Style tab.</li>
-                                <li><strong>Gutenberg:</strong> Insert <em>Smart Form (Rawnaq)</em>. Edit fields and delivery in the block inspector; the canvas preview lists field labels.</li>
-                                <li>Set at least one delivery channel (email and/or WhatsApp). For WhatsApp, enter a full international number and customize the template.</li>
-                                <li>Choose <em>After submit</em>: message (default), redirect (set URL), or open WhatsApp (requires WhatsApp delivery + number).</li>
-                                <li>Publish and test once as a visitor — confirm email arrives and/or WhatsApp opens with the expected text.</li>
-                            </ol>
-
-                            <h4><?php esc_html_e( 'Tips', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li>Field <strong>IDs</strong> must match placeholders in the WhatsApp template: a field with ID <code>phone</code> becomes <code>{phone}</code>.</li>
-                                <li>Keep Field IDs short, lowercase, and unique (letters, numbers, underscores).</li>
-                                <li><strong>Layout:</strong> set consecutive fields to 50% for a two-column row, or 33% for three columns. Below ~640px all fields stack full-width.</li>
-                                <li>Spam: bots that fill the hidden honeypot or submit in under ~2 seconds are rejected silently on the server.</li>
-                                <li>For reliable email on local / shared hosts, pair WordPress with an SMTP plugin; Smart Form uses core <code>wp_mail</code>.</li>
-                                <li>Logged submissions are private (admin-only CPT) — turn logging off if you do not want stored lead copies.</li>
-                            </ul>
-                        </div>
-
-                        <div class="rawnaq-doc-card">
-                            <h3>10. Case-Study Grid</h3>
-                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
-                            <p><strong>Case-Study Grid</strong> is a structured project portfolio for AEC firms and agencies. Source projects from the <em>Case Studies</em> CPT (under Rawnaq) or enter them manually. Cards support multi-image galleries, sector / year / service filters, modal or link-out, and client-side load more for large portfolios.</p>
-                            <h4><?php esc_html_e( 'How to use', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li><strong>CPT:</strong> Add posts under <em>Rawnaq → Case Studies</em> (sector taxonomy + meta for budget, year, gallery URLs, services). Set the widget/block source to <em>Query</em> — no repeater needed.</li>
-                                <li><strong>Elementor:</strong> Drag <em>Case-Study Grid</em>. Choose Manual or Query, layouts (Bento / Uniform / Masonry), multi-filters, click action (modal / URL / both), and load-more chunk.</li>
-                                <li><strong>Gutenberg:</strong> Insert <em>Case-Study Grid</em>. Manual mode uses one <em>Case-Study Card</em> InnerBlock per project (cover + gallery + link). Query mode pulls from the CPT.</li>
-                                <li>Modal gallery is a multi-image slider when more than one URL is set. With click = link or both, cards open the case-study page URL.</li>
-                                <li>NDA toggles hide budget and/or client on cards and in the modal while keeping the data in the editor.</li>
-                            </ul>
-                            <h4><?php esc_html_e( 'Discuss this project', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li>Modal (and link-only cards) show a <em>Discuss this project</em> button. Target: Auto (Smart Form → Dock WA), Form only, Dock only, or Off.</li>
-                                <li>Form mode prefills <code>sf_message</code> (and <code>sf_project</code> / <code>sf_project_id</code> if those fields exist) then scrolls to the form. Include <code>{message}</code> in the Smart Form WhatsApp template so WA delivery keeps the context.</li>
-                                <li>Dock mode calls <code>rawnaqDockOpen({ message })</code> with a one-shot message — agent templates are not permanently changed.</li>
-                            </ul>
-                            <h4><?php esc_html_e( 'Scroll Story / Timeline sync', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li>On each Story chapter or Timeline step, set <em>Case-Study project ID</em> (e.g. <code>post-123</code> for CPT posts) or slug.</li>
-                                <li>As the chapter becomes active, the matching Case-Study card gets <code>.is-related</code> and scrolls into view if needed.</li>
-                                <li>Query-driven Timeline steps auto-set <code>data-project-id="post-{ID}"</code> from the post ID.</li>
-                            </ul>
-                            <h4><?php esc_html_e( 'Static demo', 'rawnaq' ); ?></h4>
-                            <p><?php esc_html_e( 'Marketing showcase of all modules (no WordPress): open assets/demo/index.html in a browser.', 'rawnaq' ); ?></p>
+                        <!-- NO RESULTS EMPTY STATE -->
+                        <div id="rawnaq-docs-no-results" class="rawnaq-no-results">
+                            <h4><?php esc_html_e( 'No matching documentation found', 'rawnaq' ); ?></h4>
+                            <p><?php esc_html_e( 'Try searching with different keywords like "calculator", "quote", "shortcode", or clear your filter.', 'rawnaq' ); ?></p>
                         </div>
 
                     </div>
