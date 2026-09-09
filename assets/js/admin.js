@@ -126,12 +126,36 @@
             });
         });
 
-        /* ── Documentation & Usage Guide Search / Filter / Copy Engine ── */
+        /* ── Documentation & Usage Guide Search / Filter / Copy / Accordion Engine ── */
         var $docCards = $('.rawnaq-doc-card');
         var $docsSearch = $('#rawnaq-docs-search');
         var $docsClear = $('#rawnaq-docs-search-clear');
         var $filterBtns = $('.docs-filter-btn');
         var $noResults = $('#rawnaq-docs-no-results');
+        var $btnToggleAll = $('#btn-toggle-all-docs');
+
+        // Accordion click toggle
+        $(document).on('click', '.rawnaq-doc-card-header', function(e) {
+            // If user clicked inside a copy badge or button, don't toggle accordion
+            if ($(e.target).closest('.rawnaq-copy-badge, button, a').length) {
+                return;
+            }
+            var $card = $(this).closest('.rawnaq-doc-card');
+            $card.toggleClass('is-expanded');
+        });
+
+        // Expand All / Collapse All Toggle
+        $btnToggleAll.on('click', function(e) {
+            e.preventDefault();
+            var areAnyCollapsed = $docCards.filter(':visible:not(.is-expanded)').length > 0;
+            if (areAnyCollapsed) {
+                $docCards.filter(':visible').addClass('is-expanded');
+                $btnToggleAll.find('.toggle-text').text('Collapse All');
+            } else {
+                $docCards.filter(':visible').removeClass('is-expanded');
+                $btnToggleAll.find('.toggle-text').text('Expand All');
+            }
+        });
 
         function filterDocs() {
             var query = ($docsSearch.val() || '').toLowerCase().trim();
@@ -151,6 +175,10 @@
 
                 if (matchesCategory && matchesQuery) {
                     $card.show();
+                    // If searching with query, auto-expand matching cards
+                    if (query.length > 0) {
+                        $card.addClass('is-expanded');
+                    }
                     visibleCount++;
                 } else {
                     $card.hide();
@@ -223,4 +251,5 @@
     });
 
 })(jQuery);
+
 
