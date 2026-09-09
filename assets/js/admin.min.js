@@ -127,16 +127,8 @@
         });
 
         /* ── Documentation & Usage Guide Search / Filter / Copy / Accordion Engine ── */
-        var $docCards = $('.rawnaq-doc-card');
-        var $docsSearch = $('#rawnaq-docs-search');
-        var $docsClear = $('#rawnaq-docs-search-clear');
-        var $filterBtns = $('.docs-filter-btn');
-        var $noResults = $('#rawnaq-docs-no-results');
-        var $btnToggleAll = $('#btn-toggle-all-docs');
-
-        // Accordion click toggle
+        // Accordion click toggle (delegated)
         $(document).on('click', '.rawnaq-doc-card-header', function(e) {
-            // If user clicked inside a copy badge or button, don't toggle accordion
             if ($(e.target).closest('.rawnaq-copy-badge, button, a').length) {
                 return;
             }
@@ -145,49 +137,52 @@
         });
 
         // Expand All / Collapse All Toggle
-        $btnToggleAll.on('click', function(e) {
+        $(document).on('click', '#btn-toggle-all-docs', function(e) {
             e.preventDefault();
-            var areAnyCollapsed = $docCards.filter(':visible:not(.is-expanded)').length > 0;
+            var $cards = $('.rawnaq-doc-card');
+            var areAnyCollapsed = $cards.filter(':visible:not(.is-expanded)').length > 0;
             if (areAnyCollapsed) {
-                $docCards.filter(':visible').addClass('is-expanded');
-                $btnToggleAll.find('.toggle-text').text('Collapse All');
+                $cards.filter(':visible').addClass('is-expanded');
+                $(this).find('.toggle-text').text('Collapse All');
             } else {
-                $docCards.filter(':visible').removeClass('is-expanded');
-                $btnToggleAll.find('.toggle-text').text('Expand All');
+                $cards.filter(':visible').removeClass('is-expanded');
+                $(this).find('.toggle-text').text('Expand All');
             }
         });
 
         function filterDocs() {
-            var query = ($docsSearch.val() || '').toLowerCase().trim();
-            var activeFilter = $('.docs-filter-btn.active').data('filter') || 'all';
+            var $cards = $('.rawnaq-doc-card');
+            var query = ($('#rawnaq-docs-search').val() || '').toLowerCase().trim();
+            var activeFilter = ($('.docs-filter-btn.active').attr('data-filter') || 'all').toLowerCase();
             var visibleCount = 0;
 
-            $docsClear.toggle(query.length > 0);
+            $('#rawnaq-docs-search-clear').toggle(query.length > 0);
 
-            $docCards.each(function() {
+            $cards.each(function() {
                 var $card = $(this);
-                var category = $card.data('category') || '';
-                var categories = category.split(' ');
+                var catAttr = ($card.attr('data-category') || '').toLowerCase();
+                var categories = catAttr.split(/\s+/).filter(Boolean);
                 var cardText = $card.text().toLowerCase();
 
                 var matchesCategory = (activeFilter === 'all') || (categories.indexOf(activeFilter) !== -1);
                 var matchesQuery = !query || (cardText.indexOf(query) !== -1);
 
                 if (matchesCategory && matchesQuery) {
-                    $card.show();
-                    // If searching with query, auto-expand matching cards
-                    if (query.length > 0) {
+                    $card.stop(true, true).fadeIn(180);
+                    // Automatically expand matching cards when a category is selected or search query is typed
+                    if (activeFilter !== 'all' || query.length > 0) {
                         $card.addClass('is-expanded');
                     }
                     visibleCount++;
                 } else {
-                    $card.hide();
+                    $card.stop(true, true).hide();
                 }
             });
 
+            var $noResults = $('#rawnaq-docs-no-results');
             if ($noResults.length) {
                 if (visibleCount === 0) {
-                    $noResults.show();
+                    $noResults.fadeIn(180);
                 } else {
                     $noResults.hide();
                 }
@@ -195,26 +190,46 @@
         }
 
         // Live search typing
-        $docsSearch.on('input keyup', function() {
+        $(document).on('input keyup', '#rawnaq-docs-search', function() {
             filterDocs();
         });
 
         // Clear search
-        $docsClear.on('click', function() {
-            $docsSearch.val('').trigger('input').focus();
+        $(document).on('click', '#rawnaq-docs-search-clear', function() {
+            $('#rawnaq-docs-search').val('').trigger('input').focus();
         });
 
-        // Category pills click
-        $filterBtns.on('click', function(e) {
+        // Category pills click (delegated)
+        $(document).on('click', '.docs-filter-btn', function(e) {
             e.preventDefault();
-            $filterBtns.removeClass('active');
+            $('.docs-filter-btn').removeClass('active');
             $(this).addClass('active');
             filterDocs();
         });
 
-        // Update counts
-        var totalGuides = $docCards.length;
-        $('.docs-filter-btn[data-filter="all"] .filter-count').text(totalGuides);
+        // Initialize counts on filter buttons
+        function updateFilterPillCounts() {
+            var $cards = $('.rawnaq-doc-card');
+            $('.docs-filter-btn').each(function() {
+                var $btn = $(this);
+                var filter = ($btn.attr('data-filter') || 'all').toLowerCase();
+                if (filter === 'all') {
+                    $btn.find('.filter-count').text($cards.length);
+                } else {
+                    var count = $cards.filter(function() {
+                        var catAttr = ($(this).attr('data-category') || '').toLowerCase();
+                        var cats = catAttr.split(/\s+/).filter(Boolean);
+                        return cats.indexOf(filter) !== -1;
+                    }).length;
+                    if (!$btn.find('.filter-count').length) {
+                        $btn.append(' <span class="filter-count">' + count + '</span>');
+                    } else {
+                        $btn.find('.filter-count').text(count);
+                    }
+                }
+            });
+        }
+        updateFilterPillCounts();
 
         // Copy to clipboard with toast
         function showCopyToast(text) {
