@@ -31,7 +31,7 @@ function rawnaq_asset_url( $relative_path ) {
 }
 
 function rawnaq_default_modules() {
-	return [
+	$modules = [
 		'hub-diagram'         => '1',
 		'tilt-card'           => '1',
 		'scroll-timeline'     => '1',
@@ -43,6 +43,16 @@ function rawnaq_default_modules() {
 		'smart-form'          => '1',
 		'case-study-grid'     => '1',
 	];
+
+	/**
+	 * Filter the complete module defaults map.
+	 *
+	 * Companion plugins can register modules here so they participate in the
+	 * same settings persistence and enable/disable checks as core modules.
+	 *
+	 * @param array<string, string> $modules Module slug => '1'|'0'.
+	 */
+	return apply_filters( 'rawnaq_default_modules', $modules );
 }
 
 /**

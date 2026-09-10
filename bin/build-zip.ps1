@@ -1,66 +1,107 @@
-# Build production zip files for Rawnaq (Free) and Rawnaq Pro
+# Build production zip files for Rawnaq (Free) and Rawnaq Pro with normalized forward slashes & strict .distignore filtering
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
 $pluginsDir = "c:\Users\Manzur\Local Sites\rawnaq\app\public\wp-content\plugins"
 $distDir    = Join-Path $pluginsDir "dist"
+$desktop    = [Environment]::GetFolderPath('Desktop')
 
-if (Test-Path $distDir) {
-    Remove-Item -Recurse -Force $distDir
-}
-New-Item -ItemType Directory -Force -Path $distDir | Out-Null
-
-# 1. Build Rawnaq (Free)
-$freeSource = Join-Path $pluginsDir "rawnaq"
-$freeStage  = Join-Path $distDir "rawnaq"
-New-Item -ItemType Directory -Force -Path $freeStage | Out-Null
-
-Get-ChildItem -Path $freeSource -Recurse | ForEach-Object {
-    $rel = $_.FullName.Substring($freeSource.Length + 1)
-    if ($rel -match '^\.git' -or $rel -match '^\.gitignore' -or $rel -match '^\.distignore' -or $rel -match '\.md$' -or $rel -match '^docs' -or $rel -match '^bin' -or $rel -match '^rawnaq-.*-mockup\.html' -or $rel -match '^assets[\\/]demo' -or $rel -match '^dist') {
-        return
-    }
-    $target = Join-Path $freeStage $rel
-    if ($_.PSIsContainer) {
-        if (-not (Test-Path $target)) {
-            New-Item -ItemType Directory -Force -Path $target | Out-Null
-        }
-    } else {
-        $parent = Split-Path $target -Parent
-        if (-not (Test-Path $parent)) {
-            New-Item -ItemType Directory -Force -Path $parent | Out-Null
-        }
-        Copy-Item -Path $_.FullName -Destination $target -Force
-    }
+if (-not (Test-Path $distDir)) {
+    New-Item -ItemType Directory -Force -Path $distDir | Out-Null
 }
 
-$freeZip = Join-Path $distDir "rawnaq-1.0.0.zip"
-Compress-Archive -Path $freeStage -DestinationPath $freeZip -Force
-Remove-Item -Recurse -Force $freeStage
-Write-Host "SUCCESS: Free plugin zip created at $freeZip"
+function Test-IsIgnored {
+    param(
+        [string]$RelPath,
+        [string[]]$Patterns
+    )
+    $fileName = Split-Path $RelPath -Leaf
+    foreach ($rawPat in $Patterns) {
+        $pat = $rawPat.Trim().Replace('\', '/')
+        if ([string]::IsNullOrWhiteSpace($pat) -or $pat.StartsWith('#')) {
+            continue
+        }
+        $pat = $pat.TrimStart('/')
+
+        # 1. Exact match on relative path or filename
+        if ($RelPath -eq $pat -or $fileName -eq $pat) {
+            return $true
+        }
+
+        # 2. Directory prefix match (e.g. docs, bin, assets/demo)
+        if ($RelPath.StartsWith($pat + '/')) {
+            return $true
+        }
+
+        # 3. Wildcard / Glob match (e.g. *.md, rawnaq-*-mockup.html, .git*)
+        if ($fileName -like $pat -or $RelPath -like $pat -or $RelPath -like "*/$pat" -or $RelPath -like "$pat/*") {
+            return $true
+        }
+    }
+    return $false
+}
+
+function Create-NormalizedZipArchive {
+    param(
+        [string]$SourceDir,
+        [string]$ZipDestination,
+        [string]$RootPrefix,
+        [string[]]$Patterns
+    )
+
+    if (Test-Path $ZipDestination) {
+        Remove-Item -Path $ZipDestination -Force
+    }
+
+    $zipStream = [System.IO.File]::Open($ZipDestination, [System.IO.FileMode]::Create)
+    $archive = New-Object System.IO.Compression.ZipArchive($zipStream, [System.IO.Compression.ZipArchiveMode]::Create)
+
+    $count = 0
+    Get-ChildItem -Path $SourceDir -Recurse | ForEach-Object {
+        if (-not $_.PSIsContainer) {
+            $rel = $_.FullName.Substring($SourceDir.Length).TrimStart('\', '/')
+            $relForward = $rel.Replace('\', '/')
+            
+            if (-not (Test-IsIgnored -RelPath $relForward -Patterns $Patterns)) {
+                $entryName = ($RootPrefix + '/' + $relForward).Replace('\', '/')
+                $entry = $archive.CreateEntry($entryName, [System.IO.Compression.CompressionLevel]::Optimal)
+                $entryStream = $entry.Open()
+                $fileStream = [System.IO.File]::OpenRead($_.FullName)
+                $fileStream.CopyTo($entryStream)
+                $fileStream.Dispose()
+                $entryStream.Dispose()
+                $count++
+            }
+        }
+    }
+
+    $archive.Dispose()
+    $zipStream.Dispose()
+
+    $size = [Math]::Round((Get-Item $ZipDestination).Length / 1KB, 2)
+    Write-Host "SUCCESS: Created $ZipDestination ($count files, ${size} KB)"
+}
+
+# 1. Build Rawnaq (Free) using .distignore
+$freeSource    = Join-Path $pluginsDir "rawnaq"
+$freeDistZip   = Join-Path $distDir "rawnaq-1.0.0.zip"
+$freeDeskZip   = Join-Path $desktop "rawnaq-1.0.0.zip"
+$distignorePath = Join-Path $freeSource ".distignore"
+
+$freePatterns = @()
+if (Test-Path $distignorePath) {
+    $freePatterns = Get-Content $distignorePath
+}
+$freePatterns += @('.git*', '*.zip', 'dist*', 'tmp_*')
+
+Create-NormalizedZipArchive -SourceDir $freeSource -ZipDestination $freeDistZip -RootPrefix 'rawnaq' -Patterns $freePatterns
+Copy-Item -Path $freeDistZip -Destination $freeDeskZip -Force
 
 # 2. Build Rawnaq Pro
-$proSource = Join-Path $pluginsDir "rawnaq-pro"
-$proStage  = Join-Path $distDir "rawnaq-pro"
-New-Item -ItemType Directory -Force -Path $proStage | Out-Null
+$proSource   = Join-Path $pluginsDir "rawnaq-pro"
+$proDistZip  = Join-Path $distDir "rawnaq-pro-1.0.0.zip"
+$proDeskZip  = Join-Path $desktop "rawnaq-pro.zip"
+$proPatterns = @('.git*', 'node_modules*', '.DS_Store', 'Thumbs.db', '*.log', '*.zip', 'dist*')
 
-Get-ChildItem -Path $proSource -Recurse | ForEach-Object {
-    $rel = $_.FullName.Substring($proSource.Length + 1)
-    if ($rel -match '^\.git' -or $rel -match '^\.gitignore' -or $rel -match '^dist') {
-        return
-    }
-    $target = Join-Path $proStage $rel
-    if ($_.PSIsContainer) {
-        if (-not (Test-Path $target)) {
-            New-Item -ItemType Directory -Force -Path $target | Out-Null
-        }
-    } else {
-        $parent = Split-Path $target -Parent
-        if (-not (Test-Path $parent)) {
-            New-Item -ItemType Directory -Force -Path $parent | Out-Null
-        }
-        Copy-Item -Path $_.FullName -Destination $target -Force
-    }
-}
-
-$proZip = Join-Path $distDir "rawnaq-pro-1.0.0.zip"
-Compress-Archive -Path $proStage -DestinationPath $proZip -Force
-Remove-Item -Recurse -Force $proStage
-Write-Host "SUCCESS: Pro plugin zip created at $proZip"
+Create-NormalizedZipArchive -SourceDir $proSource -ZipDestination $proDistZip -RootPrefix 'rawnaq-pro' -Patterns $proPatterns
+Copy-Item -Path $proDistZip -Destination $proDeskZip -Force

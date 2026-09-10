@@ -125,6 +125,146 @@
                 }
             });
         });
+
+        /* ── Documentation & Usage Guide Search / Filter / Copy / Accordion Engine ── */
+        // Accordion click toggle (delegated)
+        $(document).on('click', '.rawnaq-doc-card-header', function(e) {
+            if ($(e.target).closest('.rawnaq-copy-badge, button, a').length) {
+                return;
+            }
+            var $card = $(this).closest('.rawnaq-doc-card');
+            $card.toggleClass('is-expanded');
+        });
+
+        // Expand All / Collapse All Toggle
+        $(document).on('click', '#btn-toggle-all-docs', function(e) {
+            e.preventDefault();
+            var $cards = $('.rawnaq-doc-card');
+            var areAnyCollapsed = $cards.filter(':visible:not(.is-expanded)').length > 0;
+            if (areAnyCollapsed) {
+                $cards.filter(':visible').addClass('is-expanded');
+                $(this).find('.toggle-text').text('Collapse All');
+            } else {
+                $cards.filter(':visible').removeClass('is-expanded');
+                $(this).find('.toggle-text').text('Expand All');
+            }
+        });
+
+        function filterDocs() {
+            var $cards = $('.rawnaq-doc-card');
+            var query = ($('#rawnaq-docs-search').val() || '').toLowerCase().trim();
+            var activeFilter = ($('.docs-filter-btn.active').attr('data-filter') || 'all').toLowerCase();
+            var visibleCount = 0;
+
+            $('#rawnaq-docs-search-clear').toggle(query.length > 0);
+
+            $cards.each(function() {
+                var $card = $(this);
+                var catAttr = ($card.attr('data-category') || '').toLowerCase();
+                var categories = catAttr.split(/\s+/).filter(Boolean);
+                var cardText = $card.text().toLowerCase();
+
+                var matchesCategory = (activeFilter === 'all') || (categories.indexOf(activeFilter) !== -1);
+                var matchesQuery = !query || (cardText.indexOf(query) !== -1);
+
+                if (matchesCategory && matchesQuery) {
+                    $card.stop(true, true).fadeIn(180);
+                    // Automatically expand matching cards when a category is selected or search query is typed
+                    if (activeFilter !== 'all' || query.length > 0) {
+                        $card.addClass('is-expanded');
+                    }
+                    visibleCount++;
+                } else {
+                    $card.stop(true, true).hide();
+                }
+            });
+
+            var $noResults = $('#rawnaq-docs-no-results');
+            if ($noResults.length) {
+                if (visibleCount === 0) {
+                    $noResults.fadeIn(180);
+                } else {
+                    $noResults.hide();
+                }
+            }
+        }
+
+        // Live search typing
+        $(document).on('input keyup', '#rawnaq-docs-search', function() {
+            filterDocs();
+        });
+
+        // Clear search
+        $(document).on('click', '#rawnaq-docs-search-clear', function() {
+            $('#rawnaq-docs-search').val('').trigger('input').focus();
+        });
+
+        // Category pills click (delegated)
+        $(document).on('click', '.docs-filter-btn', function(e) {
+            e.preventDefault();
+            $('.docs-filter-btn').removeClass('active');
+            $(this).addClass('active');
+            filterDocs();
+        });
+
+        // Initialize counts on filter buttons
+        function updateFilterPillCounts() {
+            var $cards = $('.rawnaq-doc-card');
+            $('.docs-filter-btn').each(function() {
+                var $btn = $(this);
+                var filter = ($btn.attr('data-filter') || 'all').toLowerCase();
+                if (filter === 'all') {
+                    $btn.find('.filter-count').text($cards.length);
+                } else {
+                    var count = $cards.filter(function() {
+                        var catAttr = ($(this).attr('data-category') || '').toLowerCase();
+                        var cats = catAttr.split(/\s+/).filter(Boolean);
+                        return cats.indexOf(filter) !== -1;
+                    }).length;
+                    if (!$btn.find('.filter-count').length) {
+                        $btn.append(' <span class="filter-count">' + count + '</span>');
+                    } else {
+                        $btn.find('.filter-count').text(count);
+                    }
+                }
+            });
+        }
+        updateFilterPillCounts();
+
+        // Copy to clipboard with toast
+        function showCopyToast(text) {
+            $('.rawnaq-copy-toast').remove();
+            var $toast = $('<div class="rawnaq-copy-toast"><span class="dashicons dashicons-yes-alt" style="color:#34d399;"></span> Copied to clipboard: <strong>' + $('<div>').text(text).html() + '</strong></div>');
+            $('body').append($toast);
+            setTimeout(function() {
+                $toast.fadeOut(250, function() {
+                    $(this).remove();
+                });
+            }, 2500);
+        }
+
+        $(document).on('click', '.rawnaq-copy-badge, .copyable', function(e) {
+            e.preventDefault();
+            var textToCopy = $(this).data('copy') || $(this).text().trim();
+            // remove any leading icon symbols if copied from text
+            textToCopy = textToCopy.replace(/^📋\s*/, '').replace(/\s*📋$/, '');
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    showCopyToast(textToCopy);
+                });
+            } else {
+                // fallback
+                var $temp = $('<textarea>');
+                $('body').append($temp);
+                $temp.val(textToCopy).select();
+                document.execCommand('copy');
+                $temp.remove();
+                showCopyToast(textToCopy);
+            }
+        });
     });
 
 })(jQuery);
+
+
