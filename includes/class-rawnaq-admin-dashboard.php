@@ -466,8 +466,8 @@ class Rawnaq_Admin_Dashboard {
                         </div>
 
                         <div class="rawnaq-docs-filter-pills">
-                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">9</span></button>
-                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">2</span></button>
+                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">15</span></button>
+                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">8</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="snippets">📋 <?php esc_html_e( 'Quick Cheat Sheet', 'rawnaq' ); ?> <span class="filter-count">1</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="free">🧩 <?php esc_html_e( 'Core Widgets', 'rawnaq' ); ?> <span class="filter-count">6</span></button>
                         </div>
@@ -605,6 +605,36 @@ class Rawnaq_Admin_Dashboard {
                                             <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_smart_form]">[rawnaq_smart_form] <span class="dashicons dashicons-admin-page"></span></span></td>
                                             <td>Embeds lightweight Smart Form lead capture.</td>
                                         </tr>
+                                        <tr>
+                                            <td><strong>Spatial Spec Slider (Sprint 1)</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_spatial_slider]">[rawnaq_spatial_slider] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Multi-layer before/after CAD & spec slider with 2x zoom loupe.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Moodboard & Finishes Builder (Sprint 2)</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_moodboard_builder]">[rawnaq_moodboard_builder] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Interactive materials & finishes palette with PDF/PNG spec export.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Project Pinboard Map (Sprint 3)</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_project_pinboard]">[rawnaq_project_pinboard] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Vector map pinboard (World, GCC, Europe, USA, BD, Dubai) with pulse pins.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>ROI & Payback Visualizer (Sprint 4)</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_roi_calculator]">[rawnaq_roi_calculator] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Dynamic financial payback curve with live crossover breakeven stats.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>360° Panorama & 3D Viewer (Sprint 5)</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_spatial_3d]">[rawnaq_spatial_3d] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Zero-dependency WebGL 360° VR panorama and GLTF 3D model viewer.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Milestone Tracker Portal (Sprint 6)</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_milestone_tracker]">[rawnaq_milestone_tracker] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Client project tracking portal with photo logs & PM direct connect.</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -693,6 +723,216 @@ class Rawnaq_Admin_Dashboard {
                             </div>
                         </div>
 
+                        <!-- PRO MODULE 3: MULTI-LAYER SPATIAL SPEC SLIDER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff;">
+                                        <span class="dashicons dashicons-images-alt2"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '3. Multi-Layer Spatial Spec Slider', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Spatial Innovation', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Multi-layer Before/After/CAD compare slider, 2x inspection loupe lens, interactive hotspot pins & quote bridge.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Goes far beyond ordinary 2-image before/after sliders. Allows stacking unlimited architectural layers (e.g., As-Built Site ➔ 3D Photoreal Render ➔ Structural CAD / Night Lighting Blueprint) with interactive hotspot pins and precision zoom.', 'rawnaq' ); ?></p>
+
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Multi-Layer Stacking:</strong> Stack Base Underlay + multiple Overlay layers with interactive layer switcher pill navigation.</li>
+                                    <li><strong>Magnifying Inspection Lens:</strong> Circular 2x precision optical loupe that follows mouse/touch cursor for zooming into architectural joints, materials, and textures.</li>
+                                    <li><strong>Hotspot Callout Pins:</strong> Place custom coordinate pins on any layer with title, spec badges, dimensions, material tags, and direct "Inquire about this spec" buttons.</li>
+                                    <li><strong>Dual Layout Modes:</strong> Split Slider (Horizontal or Vertical with glassmorphic handle) or Side-by-Side Synchronized comparison.</li>
+                                    <li><strong>Zero Bloat:</strong> 100% vanilla JavaScript with GPU hardware-accelerated clipping masks and pointer capture.</li>
+                                </ul>
+
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> Search for <em>Spatial Spec Slider (Pro)</em> in the widget panel.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>Multi-Layer Spatial Slider</em> block with live preview and inspector controls.</li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_spatial_slider]">[rawnaq_spatial_slider]</span> or <span class="rawnaq-copy-badge" data-copy='[rawnaq_spatial_slider mode="horizontal" lens="true"]'>[rawnaq_spatial_slider mode="horizontal" lens="true"]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 4: DYNAMIC SPATIAL MOODBOARD BUILDER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff;">
+                                        <span class="dashicons dashicons-art"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '4. Dynamic Spatial Moodboard & Finishes Palette', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Spatial Innovation', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Interactive client material palette builder, finish specs, high-res spec sheet export & quote integration.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'An interactive material curation workspace for architects and interior designers. Clients can explore textures, finishes, eco-certifications, and price indices, assemble custom schemes, and download formal finish schedules.', 'rawnaq' ); ?></p>
+
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Material Swatch Catalog:</strong> Marble, timber, metals, fabrics, acoustic panels with high-res textures, hex codes, and manufacturer references.</li>
+                                    <li><strong>Interactive Canvas Layouts:</strong> Freeform Board, Masonry Grid, Split Contrast, and Hero Palette arrangements.</li>
+                                    <li><strong>Material Metadata Inspector:</strong> Shows finish type (Polished, Honed, Brushed), durability rating, sustainability badges, and price tier ($–$$$$).</li>
+                                    <li><strong>Specification Sheet Export:</strong> Instant 1-click print-ready PDF and high-res image export complete with material swatch legends and color codes.</li>
+                                    <li><strong>Lead Bridge:</strong> Clients can click "Estimate this Palette" to transfer their chosen finishes into the Get Quote discovery wizard.</li>
+                                </ul>
+
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> Add <em>Spatial Moodboard & Palette (Pro)</em> widget to showcase design collections.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>Spatial Moodboard & Palette</em> block with customizable swatches and live canvas.</li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_moodboard_builder]">[rawnaq_moodboard_builder]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 5: INTERACTIVE VECTOR MAP & PROJECT PINBOARD -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #10b981, #047857); color: #fff;">
+                                        <span class="dashicons dashicons-location-alt"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '5. Interactive Vector Map & Global Project Pinboard', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Spatial Innovation', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Zero-API vector SVG global maps (World, GCC, Europe, USA, BD, Dubai), pulse radar pins & project popups.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Showcase global architectural footprint without loading heavy Google Maps or Mapbox scripts. Pure vector SVG with smooth pan/zoom, sector filter pills, and pulse radar pins.', 'rawnaq' ); ?></p>
+
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>6 Built-in Vector Projections:</strong> World, GCC / Middle East, Europe, North America, Bangladesh, and Dubai Urban Districts.</li>
+                                    <li><strong>Zero External API Keys:</strong> Completely self-contained SVG geometry for instant 100/100 PageSpeed scores.</li>
+                                    <li><strong>Category Filter Pills:</strong> Instant filtering by sector (Luxury Residential, Commercial Towers, Hospitality, Cultural, Masterplans).</li>
+                                    <li><strong>Project Preview Popovers:</strong> Click or hover pins to reveal project imagery, area footprint, completion year, and Case-Study links.</li>
+                                    <li><strong>Interactive Radar Locator:</strong> Mini-map locator overview and smooth zoom/pan controls with touch support.</li>
+                                </ul>
+
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> Add <em>Global Project Pinboard (Pro)</em> widget with full pin repeater controls.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>Project Map & Pinboard</em> block with map projection selector and category badges.</li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy='[rawnaq_project_pinboard map="world"]'>[rawnaq_project_pinboard map="world"]</span> (Supported maps: <code>world</code>, <code>gcc</code>, <code>europe</code>, <code>north-america</code>, <code>bangladesh</code>, <code>dubai</code>)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 6: INTERACTIVE ROI & COST-SAVINGS PAYBACK VISUALIZER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff;">
+                                        <span class="dashicons dashicons-chart-area"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '6. Interactive ROI & Cost-Savings Payback Visualizer', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Conversion Engine', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Real-time financial payback curve, crossover break-even crossover points, inflation adjustment & quote bridge.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Converts analytical enterprise clients by visually proving the long-term ROI of architectural upgrades, green building retrofits, solar installations, and high-spec turnkey fitouts.', 'rawnaq' ); ?></p>
+
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Dynamic Vector Payback Curve:</strong> Pure SVG chart displaying Upfront Cost vs Cumulative Savings over 5 to 15 years with smooth Bézier curves.</li>
+                                    <li><strong>Break-Even Crossover Detection:</strong> Calculates the exact year and month of investment payback with a glowing visual milestone badge.</li>
+                                    <li><strong>4 Industry Preset Calculators:</strong> Green Architecture & HVAC, Solar PV / Energy Efficiency, Commercial Fitout Productivity, and Turnkey Renovation Yield.</li>
+                                    <li><strong>Customizable Variable Inputs:</strong> Area size, initial cost/sqft, annual savings rate, utility inflation factor, and currency symbol.</li>
+                                    <li><strong>1-Click Lead Lock-in:</strong> Pre-fills ROI calculations and payback timeframe directly into the Get Quote lead form.</li>
+                                </ul>
+
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> Add <em>ROI & Payback Visualizer (Pro)</em> widget with live graph color and formula settings.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>ROI Payback Visualizer</em> block with formula presets and interactive sliders.</li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy='[rawnaq_roi_calculator mode="energy"]'>[rawnaq_roi_calculator mode="energy"]</span> (Presets: <code>energy</code>, <code>turnkey</code>, <code>solar</code>, <code>commercial</code>)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 7: 360 SPATIAL PANORAMA & 3D VIEWER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #ec4899, #be185d); color: #fff;">
+                                        <span class="dashicons dashicons-visibility"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '7. 360° Spatial Panorama & Lightweight GLTF 3D Viewer', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Spatial Innovation', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Zero-dependency WebGL equirectangular VR viewer, 3D GLTF model orbit, gyro mobile support & spherical hotspots.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'A performance-optimized 3D spatial viewer featuring an in-house WebGL GLSL equirectangular fragment shader for 360° virtual tours and a seamless GLTF/GLB 3D model orbit viewer.', 'rawnaq' ); ?></p>
+
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Pure WebGL Shader Engine:</strong> Zero heavy 300KB+ external libraries. Renders 360° panoramas with ultra-fast startup and 60fps framerates.</li>
+                                    <li><strong>Spherical Hotspot Callouts:</strong> Place hotspots anchored in <code>(yaw, pitch)</code> coordinates that billboard and open spatial popovers or quote triggers.</li>
+                                    <li><strong>GLTF / GLB 3D Model Mode:</strong> Orbit, zoom, and inspect architectural 3D models with HDR lighting, auto-spin, and pitch limits.</li>
+                                    <li><strong>Mobile Gyroscope & Fullscreen:</strong> Enable VR device motion tracking for mobile visitors and immersive fullscreen view.</li>
+                                    <li><strong>Inertia & Touch Gestures:</strong> Smooth momentum dragging with bounded pointer capture.</li>
+                                </ul>
+
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> Add <em>360° Panorama & 3D Viewer (Pro)</em> widget and toggle between Panorama and 3D Model modes.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>360° Panorama & 3D Viewer</em> block with hotspot repeaters and auto-spin controls.</li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy='[rawnaq_spatial_3d mode="panorama"]'>[rawnaq_spatial_3d mode="panorama"]</span> or <span class="rawnaq-copy-badge" data-copy='[rawnaq_spatial_3d mode="model3d"]'>[rawnaq_spatial_3d mode="model3d"]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 8: LIVE CLIENT PROJECT MILESTONE TRACKER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff;">
+                                        <span class="dashicons dashicons-calendar-alt"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '8. Live Client Project Milestone Tracker', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Client Portal', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Client project portal, overall completion gauge, weekly on-site photo stream & PM direct connect.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'A modern client-facing project tracker portal that builds trust and transparency for luxury residential and commercial architecture projects during active construction.', 'rawnaq' ); ?></p>
+
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Project Completion Gauge:</strong> Radial and linear completion meters showing real-time overall construction progress (e.g. 74% Complete).</li>
+                                    <li><strong>Structured Milestone Timeline:</strong> Discovery ➔ Blueprint Approval ➔ Structural MEP ➔ Interior Fitout ➔ Final Handover with status badges (Completed, In Progress, Upcoming).</li>
+                                    <li><strong>On-Site Photo Stream & Logs:</strong> Supervisor date-tagged photo updates showing weekly construction milestones with lightbox view.</li>
+                                    <li><strong>Project Manager Quick Connect:</strong> Dedicated direct WhatsApp and phone call buttons to the assigned lead architect.</li>
+                                    <li><strong>Change-Order Request Modal:</strong> Allows clients to submit scope variations and revision requests directly from their portal.</li>
+                                </ul>
+
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> Add <em>Client Milestone Tracker (Pro)</em> widget to build private client progress dashboards.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>Client Milestone Tracker</em> block with dynamic milestone repeater controls.</li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_milestone_tracker]">[rawnaq_milestone_tracker]</span> or <span class="rawnaq-copy-badge" data-copy='[rawnaq_milestone_tracker project_id="PRJ-101"]'>[rawnaq_milestone_tracker project_id="PRJ-101"]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <!-- FREE MODULE 1: SMART FORM -->
                         <div class="rawnaq-doc-card" data-category="free">
                             <div class="rawnaq-doc-card-header">
@@ -701,7 +941,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-feedback"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '3. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '9. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Lightweight lead generation form with multi-step support, conditional logic, and WhatsApp template delivery.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -726,7 +966,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-format-chat"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '4. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '10. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'macOS-style dock menu, multi-agent WhatsApp routing, business hours, and click counters.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -751,7 +991,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-backup"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '5. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '11. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Native CSS animation-timeline 60fps compositor scroll animations, CPT queries & Bento sync.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -774,7 +1014,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-networking"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '6. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '12. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Process flows, Org Trees from WP Users, 360° radial workflows, and PNG/SVG export.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -797,7 +1037,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-grid-view"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '7. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '13. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'CSS Grid bento cards, Scrollytelling chapters, and auto-reading progress TOC indicator.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -821,7 +1061,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-portfolio"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '8. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '14. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Portfolio showcase with lightbox gallery, sector filters, NDA confidential masking & quote triggers.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -837,51 +1077,17 @@ class Rawnaq_Admin_Dashboard {
                             </div>
                         </div>
 
+                        <?php
+                        /**
+                         * Action hook for third-party or companion plugins to inject documentation cards.
+                         */
+                        do_action( 'rawnaq_admin_documentation_cards' );
+                        ?>
+
                         <!-- NO RESULTS EMPTY STATE -->
                         <div id="rawnaq-docs-no-results" class="rawnaq-no-results">
                             <h4><?php esc_html_e( 'No matching documentation found', 'rawnaq' ); ?></h4>
                             <p><?php esc_html_e( 'Try searching with different keywords like "calculator", "quote", "shortcode", or clear your filter.', 'rawnaq' ); ?></p>
-                        </div>
-
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;border-left:4px solid #4f46e5;">
-                            <span class="module-badge" style="background:#4f46e5;color:#fff;margin-bottom:8px;display:inline-block;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
-                            <h3>11. <?php esc_html_e( 'Get Quote Lead Engine (Pro)', 'rawnaq' ); ?></h3>
-                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
-                            <p><?php esc_html_e( 'An enterprise quotation CRM and multi-step lead discovery engine built specifically for architecture, interior design, and turnkey fitout studios. Features instant lead scoring, temperature classification, WhatsApp quick actions, client self-service portal, HTML5 digital e-signatures, and 1-click A4 PDF contract generation.', 'rawnaq' ); ?></p>
-                            <h4><?php esc_html_e( 'Key Features & Capabilities', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li><strong>5-Step Interactive Wizard:</strong> Service discipline, 3-tier finish quality packages (Essential, Premium, Luxe), room-by-room breakdown, dual budget sliders, and on-site consultation booking.</li>
-                                <li><strong>Lead Scoring Algorithm:</strong> Automatically calculates a 0–100 lead score and assigns Hot 🔥, Warm 🟡, or Cold ❄️ temperature badges.</li>
-                                <li><strong>Client Magic Portal & E-Signature:</strong> Generates secure cryptographic links (<code>?rawnaq_quote=TOKEN</code>) where clients customize upgrades and digitally sign agreements with touch/mouse canvas.</li>
-                                <li><strong>Branded A4 PDF Generator:</strong> Formal print-ready proposal with corporate letterhead, payment milestones (30%/40%/30%), 12-month defect warranty, and client signature seal.</li>
-                                <li><strong>Data Export & Bulk Actions:</strong> Full-data UTF-8 BOM CSV export and bulk status changes (Mark as Won, Contacted, Quoted).</li>
-                            </ul>
-                            <h4><?php esc_html_e( 'How to Use', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li><strong>Elementor:</strong> Search for <em>Get Quote Form (Pro)</em>, drag onto any page. Configure form mode (Wizard vs Single-step), finish packages, and colors.</li>
-                                <li><strong>Shortcode:</strong> Use <code>[rawnaq_get_quote]</code> with attributes (e.g. <code>layout="inline|modal|floating"</code>).</li>
-                                <li><strong>Admin CRM:</strong> Navigate to <em>Rawnaq → Get Quote</em> to inspect leads, view analytics charts, dispatch proposals, and manage settings.</li>
-                            </ul>
-                        </div>
-
-                        <div class="rawnaq-doc-card" style="margin-bottom: 24px;border-left:4px solid #d97706;">
-                            <span class="module-badge" style="background:#d97706;color:#fff;margin-bottom:8px;display:inline-block;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
-                            <h3>12. <?php esc_html_e( 'Services & Interactive Pricing Calculator (Pro)', 'rawnaq' ); ?></h3>
-                            <h4><?php esc_html_e( 'Introduction', 'rawnaq' ); ?></h4>
-                            <p><?php esc_html_e( 'A high-converting interactive pricing calculator and comparative service matrix. Allows visitors to slide their spatial area, choose quality tiers, toggle optional add-ons (3D VR, Smart Home, Custom Millwork), and view real-time budget allocation breakdowns.', 'rawnaq' ); ?></p>
-                            <h4><?php esc_html_e( 'Key Features & Capabilities', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li><strong>Dual-Sync Area Footprint Controls:</strong> Range slider (300 to 10,000+ sqft / sqm) coupled in real-time with numeric input.</li>
-                                <li><strong>3-Tier Quality Specification:</strong> Essential Architecture ($12/sqft), Premium Turnkey Suite ($28/sqft), and Luxe Royal Bespoke ($55/sqft).</li>
-                                <li><strong>Dynamic Scope Breakdown:</strong> Live allocation bars for Architectural Design, Materials & Millwork, and Engineering Supervision.</li>
-                                <li><strong>1-Click Get Quote Bridge:</strong> "Proceed with this Quotation" button automatically forwards chosen parameters into the Get Quote wizard without retyping.</li>
-                                <li><strong>4-Phase Delivery Blueprint:</strong> Spatial Discovery ➔ 3D VR ➔ Fabrication ➔ Turnkey Handover.</li>
-                            </ul>
-                            <h4><?php esc_html_e( 'How to Use', 'rawnaq' ); ?></h4>
-                            <ul>
-                                <li><strong>Elementor:</strong> Search for <em>Services & Pricing Calculator (Pro)</em> under the Rawnaq category. Customize area defaults, base rates, unit, and branding colors.</li>
-                                <li><strong>Shortcode:</strong> Place <code>[rawnaq_pricing_calculator]</code> or <code>[rawnaq_services_pricing]</code> on any service or pricing landing page.</li>
-                            </ul>
                         </div>
 
                     </div>
