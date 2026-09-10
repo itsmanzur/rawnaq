@@ -45,6 +45,11 @@ class Rawnaq_Elements {
         // Load Gutenberg Loader
         require_once RAWNAQ_PATH . 'includes/gutenberg/class-gutenberg-loader.php';
 
+        // Load Divi Builder Loader
+        if ( file_exists( RAWNAQ_PATH . 'includes/divi/class-divi-loader.php' ) ) {
+            require_once RAWNAQ_PATH . 'includes/divi/class-divi-loader.php';
+        }
+
         // Load Admin Dashboard
         if ( is_admin() ) {
             require_once RAWNAQ_PATH . 'includes/class-rawnaq-admin-dashboard.php';
