@@ -466,8 +466,8 @@ class Rawnaq_Admin_Dashboard {
                         </div>
 
                         <div class="rawnaq-docs-filter-pills">
-                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">15</span></button>
-                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">8</span></button>
+                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">16</span></button>
+                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">9</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="snippets">📋 <?php esc_html_e( 'Quick Cheat Sheet', 'rawnaq' ); ?> <span class="filter-count">1</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="free">🧩 <?php esc_html_e( 'Core Widgets', 'rawnaq' ); ?> <span class="filter-count">6</span></button>
                         </div>
@@ -634,6 +634,11 @@ class Rawnaq_Admin_Dashboard {
                                             <td><strong>Milestone Tracker Portal (Sprint 6)</strong></td>
                                             <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_milestone_tracker]">[rawnaq_milestone_tracker] <span class="dashicons dashicons-admin-page"></span></span></td>
                                             <td>Client project tracking portal with photo logs & PM direct connect.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Floor Plan & Space Navigator</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_floorplan]">[rawnaq_floorplan] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Interactive 2D/3D multi-floor blueprint navigator with SVG room zoning & quote bridge.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -933,6 +938,41 @@ class Rawnaq_Admin_Dashboard {
                             </div>
                         </div>
 
+                        <!-- PRO MODULE 9: ARCHITECTURAL FLOOR PLAN & SPACE NAVIGATOR -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #4f46e5, #3730a3); color: #fff;">
+                                        <span class="dashicons dashicons-layout"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '9. Architectural Floor Plan & Space Zoning Navigator', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Spatial Innovation', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Multi-floor blueprint navigator, SVG interactive room zoning, real estate unit availability & quote bridge.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'An elite spatial exploration module designed for architectural studios, interior fitout agencies, and luxury real estate developers. Allows visitors to seamlessly navigate multi-story floor plans, hover over room boundaries, inspect live dimensions, and bridge room inquiries into the Get Quote system.', 'rawnaq' ); ?></p>
+
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Multi-Floor Level Switcher:</strong> Tabbed pill navigation across multiple floors (Ground Floor, Level 1 Suite, Penthouse, Rooftop) with smooth crossfades.</li>
+                                    <li><strong>Interactive SVG Zone Polygon Mapping:</strong> Highlights room boundaries with semi-transparent tinted overlays, pulsing coordinate pins, and neon perimeter glow on hover.</li>
+                                    <li><strong>Room Inspection Drawer:</strong> Slide-out drawer showcasing 3D photoreal interior renders, ceiling height, sunlight orientation, material finish schedule, and architectural highlights.</li>
+                                    <li><strong>Real Estate Status Badges & Filtering:</strong> Filter zones by status (Available 🟢, Reserved 🟡, Sold 🔴) with real-time room highlight filtering.</li>
+                                    <li><strong>1-Click Lead & Quote Integration:</strong> "Inquire About This Space" button pre-fills room dimensions, floor level, and space category directly into the Get Quote discovery wizard.</li>
+                                </ul>
+
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> Search for <em>Floor Plan & Space Navigator (Pro)</em> in the widget panel.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>Architectural Floor Plan Navigator</em> block with live preview and inspector controls.</li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_floorplan]">[rawnaq_floorplan]</span> or <span class="rawnaq-copy-badge" data-copy='[rawnaq_floorplan show_filter="true" show_zoom="true"]'>[rawnaq_floorplan show_filter="true" show_zoom="true"]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <!-- FREE MODULE 1: SMART FORM -->
                         <div class="rawnaq-doc-card" data-category="free">
                             <div class="rawnaq-doc-card-header">
@@ -941,7 +981,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-feedback"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '9. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '10. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Lightweight lead generation form with multi-step support, conditional logic, and WhatsApp template delivery.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -966,7 +1006,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-format-chat"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '10. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '11. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'macOS-style dock menu, multi-agent WhatsApp routing, business hours, and click counters.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -991,7 +1031,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-backup"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '11. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '12. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Native CSS animation-timeline 60fps compositor scroll animations, CPT queries & Bento sync.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1014,7 +1054,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-networking"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '12. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '13. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Process flows, Org Trees from WP Users, 360° radial workflows, and PNG/SVG export.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1037,7 +1077,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-grid-view"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '13. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '14. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'CSS Grid bento cards, Scrollytelling chapters, and auto-reading progress TOC indicator.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1061,7 +1101,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-portfolio"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '14. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '15. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Portfolio showcase with lightbox gallery, sector filters, NDA confidential masking & quote triggers.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
