@@ -947,27 +947,28 @@ class Rawnaq_Admin_Dashboard {
                                     </div>
                                     <div class="header-titles">
                                         <h3><?php esc_html_e( '9. Architectural Floor Plan & Space Zoning Navigator', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Spatial Innovation', 'rawnaq' ); ?></span></h3>
-                                        <p class="header-sub"><?php esc_html_e( 'Multi-floor blueprint navigator, SVG interactive room zoning, real estate unit availability & quote bridge.', 'rawnaq' ); ?></p>
+                                        <p class="header-sub"><?php esc_html_e( 'Interactive 2D/3D blueprint explorer, layer toggles, multi-room footprint calculator, VR teleport & A4 export.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
                                 <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
                             </div>
                             <div class="rawnaq-doc-card-body">
-                                <p><?php esc_html_e( 'An elite spatial exploration module designed for architectural studios, interior fitout agencies, and luxury real estate developers. Allows visitors to seamlessly navigate multi-story floor plans, hover over room boundaries, inspect live dimensions, and bridge room inquiries into the Get Quote system.', 'rawnaq' ); ?></p>
+                                <p><?php esc_html_e( 'An enterprise spatial exploration engine built for architectural studios, interior fitout agencies, and luxury real estate developers. Allows visitors to navigate multi-story plans, switch between 2D CAD blueprints and 3D axonometric isometric views, toggle architectural layers, calculate live multi-room footprints, measure distances, teleport to 360° VR spaces, and export A4 specification schedules.', 'rawnaq' ); ?></p>
 
-                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <h4><?php esc_html_e( '6 Advanced Enterprise Maturity Features:', 'rawnaq' ); ?></h4>
                                 <ul>
-                                    <li><strong>Multi-Floor Level Switcher:</strong> Tabbed pill navigation across multiple floors (Ground Floor, Level 1 Suite, Penthouse, Rooftop) with smooth crossfades.</li>
-                                    <li><strong>Interactive SVG Zone Polygon Mapping:</strong> Highlights room boundaries with semi-transparent tinted overlays, pulsing coordinate pins, and neon perimeter glow on hover.</li>
-                                    <li><strong>Room Inspection Drawer:</strong> Slide-out drawer showcasing 3D photoreal interior renders, ceiling height, sunlight orientation, material finish schedule, and architectural highlights.</li>
-                                    <li><strong>Real Estate Status Badges & Filtering:</strong> Filter zones by status (Available 🟢, Reserved 🟡, Sold 🔴) with real-time room highlight filtering.</li>
-                                    <li><strong>1-Click Lead & Quote Integration:</strong> "Inquire About This Space" button pre-fills room dimensions, floor level, and space category directly into the Get Quote discovery wizard.</li>
+                                    <li><strong>1. 2D Blueprint vs 3D Isometric View Mode Switcher:</strong> Instant live toggle between technical 2D CAD schematics and 3D Axonometric Isometric perspective projections with seamless asset swapping.</li>
+                                    <li><strong>2. Floating Architectural Layer Toggles:</strong> Glassmorphic layer control panel allowing clients to toggle <em>Dimensions & Grid</em>, <em>Furniture Layout</em>, <em>Electrical & Lighting</em>, and <em>Zoning Highlights</em> on demand.</li>
+                                    <li><strong>3. Multi-Room Selection & Live Footprint Calculator:</strong> Multi-select mode with sticky bottom aggregation bar calculating combined area (sq ft / m²) and turnkey fitout budget ranges ($25–$45/sqft) with direct quote wizard bridge.</li>
+                                    <li><strong>4. Direct 360° VR Room Teleport Bridge:</strong> Dedicated "360° VR Teleport" button situated on inspection renders that smoothly transitions directly into Sprint 5’s <code>spatial-3d</code> panorama viewer.</li>
+                                    <li><strong>5. Interactive Digital Tape Measure / Ruler Tool:</strong> Precision point-to-point Euclidean distance ruler tool with dynamic SVG dimension lines displaying live calibrated distances in both feet (ft) and meters (m).</li>
+                                    <li><strong>6. 1-Click A4 Architectural Spec Sheet Export:</strong> High-resolution printable stylesheet converting blueprint graphics, room zoning schedules, and finish specifications into a clean landscape A4 PDF document.</li>
                                 </ul>
 
                                 <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
                                 <ul>
-                                    <li><strong>Elementor:</strong> Search for <em>Floor Plan & Space Navigator (Pro)</em> in the widget panel.</li>
-                                    <li><strong>Gutenberg Block:</strong> Add <em>Architectural Floor Plan Navigator</em> block with live preview and inspector controls.</li>
+                                    <li><strong>Elementor:</strong> Search for <em>Floor Plan & Space Navigator (Pro)</em> in the widget panel with full repeaters for levels, room zones, 3D renders, and VR links.</li>
+                                    <li><strong>Gutenberg Block:</strong> Add <em>Architectural Floor Plan Navigator</em> block with live editor canvas mock and sidebar inspector controls.</li>
                                     <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_floorplan]">[rawnaq_floorplan]</span> or <span class="rawnaq-copy-badge" data-copy='[rawnaq_floorplan show_filter="true" show_zoom="true"]'>[rawnaq_floorplan show_filter="true" show_zoom="true"]</span></li>
                                 </ul>
                             </div>
