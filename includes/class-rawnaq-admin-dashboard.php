@@ -466,8 +466,8 @@ class Rawnaq_Admin_Dashboard {
                         </div>
 
                         <div class="rawnaq-docs-filter-pills">
-                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">16</span></button>
-                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">9</span></button>
+                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">23</span></button>
+                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">16</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="snippets">📋 <?php esc_html_e( 'Quick Cheat Sheet', 'rawnaq' ); ?> <span class="filter-count">1</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="free">🧩 <?php esc_html_e( 'Core Widgets', 'rawnaq' ); ?> <span class="filter-count">6</span></button>
                         </div>
@@ -639,6 +639,41 @@ class Rawnaq_Admin_Dashboard {
                                             <td><strong>Floor Plan & Space Navigator</strong></td>
                                             <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_floorplan]">[rawnaq_floorplan] <span class="dashicons dashicons-admin-page"></span></span></td>
                                             <td>Interactive 2D/3D multi-floor blueprint navigator with SVG room zoning & quote bridge.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Global Project Map & Geo-Locator</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_global_map]">[rawnaq_global_map] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Lightweight SVG vector world map with pulsing location pins & floating Bento cards.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Interactive BOQ Cost Estimator Table</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_boq_estimator]">[rawnaq_boq_estimator] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Bill of Quantities cost schedule with safety contingency sliders & PDF export.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Team Skill Radar & Booking Drawer</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_team_radar]">[rawnaq_team_radar] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Leadership team skill hexagon radar with vCard download & 1-click consultation drawer.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Scope Matrix & Deliverables Table</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_scope_matrix]">[rawnaq_scope_matrix] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Multi-tier contract deliverable comparison matrix with phase breakdown & live search.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Eco-Efficiency & Sustainability Audit</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_eco_audit]">[rawnaq_eco_audit] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Green building energy audit card with circular SVG gauge, LEED scoring & CO2 offset.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Client Audio Story & Waveform Showcase</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_audio_testimonial]">[rawnaq_audio_testimonial] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Voice note testimonial card with 36-bar animated audio waveform & quote bridge.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Fast-Track vs Budget Simulator</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_timeline_budget_simulator]">[rawnaq_timeline_budget_simulator] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Schedule velocity vs budget trade-off simulator with live compressed critical path Gantt.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -974,6 +1009,231 @@ class Rawnaq_Admin_Dashboard {
                             </div>
                         </div>
 
+                        <!-- PRO MODULE 10: GLOBAL PROJECT MAP & GEO-LOCATOR -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff;">
+                                        <span class="dashicons dashicons-location-alt"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '10. Global Project Map & Vector Geo-Locator', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Showcase · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Zero-API vector SVG world map with pulse beacons, sector filters & floating Bento preview cards.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Showcase your international architectural commissions and landmark projects across the globe with a high-performance vector SVG map without loading heavy external Google Maps or Mapbox scripts.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Pulsing Geo-Beacons:</strong> Animated radar pins with category colors (Commercial, Residential, Hospitality, Civic).</li>
+                                    <li><strong>Floating Bento Cards:</strong> Hover or click reveals project thumbnail, valuation, footprint sqft, and direct case study links.</li>
+                                    <li><strong>Dual Modes:</strong> Interactive SVG Map Canvas and synchronized split-directory list view.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Global Project Map (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/global-project-map</code></li>
+                                    <li><strong>Divi Module:</strong> <code>rawnaq_global_project_map</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_global_map]">[rawnaq_global_map]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 11: BOQ & MATERIAL ESTIMATOR TABLE -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #d97706, #92400e); color: #fff;">
+                                        <span class="dashicons dashicons-calculator"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '11. Interactive BOQ & Material Estimator Table', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Estimation · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Itemized Bill of Quantities construction cost scheduler with safety contingencies & PDF export.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Empower clients and contractors to customize construction line items, trade breakdown subtotals, safety contingencies, and statutory taxes with real-time preliminary budget updates.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Trade Breakdown:</strong> Substructure, Superstructure, MEP Engineering, Luxury Interior Joinery, and Finishes.</li>
+                                    <li><strong>Live Modifiers:</strong> Dynamic contingency slider (0% to 20%) and VAT calculation.</li>
+                                    <li><strong>Export Suite:</strong> 1-Click Print / PDF Schedule and CSV spreadsheet download.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>BOQ & Material Estimator Table (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/boq-estimator</code></li>
+                                    <li><strong>Divi Module:</strong> <code>rawnaq_boq_estimator</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_boq_estimator]">[rawnaq_boq_estimator]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 12: TEAM SKILL RADAR & BOOKING DRAWER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff;">
+                                        <span class="dashicons dashicons-businessperson"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '12. Team Skill Radar & Booking Drawer', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Authority · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Leadership showcase with interactive SVG hexagon skill radars, vCard download & booking drawer.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Showcase principal architects, design directors, and structural consultants with interactive SVG radar polygons, credential metrics, and slide-out consultation drawers.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>SVG Hexagon Radar:</strong> Visualizes competency across Spatial Planning, Structural Feasibility, Sustainable Design, BIM/Revit, and Luxury Finishes.</li>
+                                    <li><strong>1-Click vCard (.vcf):</strong> Instant phone contact download for high-net-worth clients.</li>
+                                    <li><strong>Consultation Drawer:</strong> Direct booking request sliding panel prefilled with selected architect profile.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Team Skill Radar (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/team-radar</code></li>
+                                    <li><strong>Divi Module:</strong> <code>rawnaq_team_radar</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_team_radar]">[rawnaq_team_radar]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 13: SCOPE MATRIX & DELIVERABLES COMPARISON -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff;">
+                                        <span class="dashicons dashicons-grid-view"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '13. Scope Matrix & Deliverables Comparison', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Matrix · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Multi-tier contract deliverable comparison table with milestone phases, tooltips & quote prefill.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'A transparent contract matrix comparing Concept, Executive Construction, and Turnkey EPC packages across every project phase.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Phase Breakdown:</strong> Feasibility, Technical Engineering, Permits, and Turnkey Execution.</li>
+                                    <li><strong>Interactive Tooltips:</strong> Clear architectural glossary explaining BIM models, MEP dossiers, and SNAG inspections.</li>
+                                    <li><strong>Mobile Column Switcher:</strong> Clean responsive tabbed selector for smartphone viewports.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Scope Matrix & Comparison (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/scope-matrix</code></li>
+                                    <li><strong>Divi Module:</strong> <code>rawnaq_scope_matrix</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_scope_matrix]">[rawnaq_scope_matrix]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 14: ECO-EFFICIENCY & SUSTAINABILITY AUDIT CARD -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #059669, #047857); color: #fff;">
+                                        <span class="dashicons dashicons-heart"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '14. Eco-Efficiency & Sustainability Audit Card', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Sustainability · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Green building energy calculator with LEED/BREEAM scoring, carbon offset & utility savings.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Simulate thermal envelope upgrades, solar PV generation, and projected LEED certification ROI in real-time.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Interactive Parameters:</strong> Floor Area slider, R-Value Insulation tiers, High-Performance Glazing, and Rooftop Solar PV array (kWp).</li>
+                                    <li><strong>Radial SVG Eco-Gauge:</strong> Live Eco Score (0–100) and LEED Level predictor (Certified, Silver, Gold, Platinum).</li>
+                                    <li><strong>Financial & Ecological Impact:</strong> Calculates annual utility savings ($), 25-year lifetime value, CO2 offset tons, and tree equivalents.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Eco-Efficiency & Sustainability Audit (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/eco-audit</code></li>
+                                    <li><strong>Divi Module:</strong> <code>rawnaq_eco_audit</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_eco_audit]">[rawnaq_eco_audit]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 15: CLIENT AUDIO-VISUAL STORY SHOWCASE -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #ec4899, #be185d); color: #fff;">
+                                        <span class="dashicons dashicons-format-audio"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '15. Client Audio-Visual Story & Waveform Showcase', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Story · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'High-trust client voice notes with interactive 36-bar audio waveform player & commission metrics.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Authentic client voice note testimonial showcase with interactive waveform audio playback, client commission tags, and project outcome metrics.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Interactive Waveform:</strong> 36-bar animated waveform player with click-to-seek scrubbing and time tracking.</li>
+                                    <li><strong>Commission Footprint:</strong> Highlights location, scope valuation ($), project title, and verified client badge.</li>
+                                    <li><strong>Lead Synergy:</strong> 1-Click "Request Similar Scope Quote" prefilling story context into the lead funnel.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Audio Story & Testimonial Showcase (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/audio-testimonial</code></li>
+                                    <li><strong>Divi Module:</strong> <code>rawnaq_audio_testimonial</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_audio_testimonial]">[rawnaq_audio_testimonial]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 16: FAST-TRACK VS BUDGET TRADE-OFF SIMULATOR -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #d97706, #b45309); color: #fff;">
+                                        <span class="dashicons dashicons-clock"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '16. Fast-Track vs Budget Trade-off Simulator', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Simulation · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Project schedule acceleration velocity against resource allocation and net economic value.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'A dynamic financial and project management modeler allowing enterprise clients to simulate fast-tracking project delivery speeds against contractor shift costs.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Schedule Velocity:</strong> Target duration slider from 6 to 48 months with live speedup percentages.</li>
+                                    <li><strong>Shift Allocation:</strong> Standard 8h single shift, 16h double shift, and 24/7 continuous triple shift.</li>
+                                    <li><strong>Net Economic Gain:</strong> Computes early commercial revenue / avoided holding costs vs acceleration fee.</li>
+                                    <li><strong>Compressed Gantt Visualizer:</strong> Dynamic critical path bars showing real-time timeline compression.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Fast-Track vs Budget Simulator (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/timeline-budget-simulator</code></li>
+                                    <li><strong>Divi Module:</strong> <code>rawnaq_timeline_budget_simulator</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_timeline_budget_simulator]">[rawnaq_timeline_budget_simulator]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <!-- FREE MODULE 1: SMART FORM -->
                         <div class="rawnaq-doc-card" data-category="free">
                             <div class="rawnaq-doc-card-header">
@@ -982,7 +1242,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-feedback"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '10. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '17. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Lightweight lead generation form with multi-step support, conditional logic, and WhatsApp template delivery.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1007,7 +1267,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-format-chat"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '11. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '18. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'macOS-style dock menu, multi-agent WhatsApp routing, business hours, and click counters.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1032,7 +1292,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-backup"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '12. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '19. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Native CSS animation-timeline 60fps compositor scroll animations, CPT queries & Bento sync.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1055,7 +1315,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-networking"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '13. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '20. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Process flows, Org Trees from WP Users, 360° radial workflows, and PNG/SVG export.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1078,7 +1338,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-grid-view"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '14. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '21. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'CSS Grid bento cards, Scrollytelling chapters, and auto-reading progress TOC indicator.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1102,7 +1362,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-portfolio"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '15. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '22. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Portfolio showcase with lightbox gallery, sector filters, NDA confidential masking & quote triggers.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
