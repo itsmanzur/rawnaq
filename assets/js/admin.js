@@ -25,6 +25,124 @@
             refreshActiveCount();
         });
 
+        /* ── Elements Manager: Search, Category Filtering, & Bulk Actions ── */
+        function filterModules() {
+            var $cards = $('.modules-grid .module-card');
+            var query = ($('#rawnaq-modules-search').val() || '').toLowerCase().trim();
+            var activeFilter = ($('.module-filter-btn.active').attr('data-module-filter') || 'all').toLowerCase();
+            var visibleCount = 0;
+
+            $('#rawnaq-modules-search-clear').toggle(query.length > 0);
+
+            $cards.each(function() {
+                var $card = $(this);
+                var cardCat = ($card.attr('data-category') || '').toLowerCase();
+                var isPro = $card.attr('data-pro') === '1';
+                var searchText = ($card.attr('data-search-text') || $card.text()).toLowerCase();
+
+                var matchesCategory = false;
+                if (activeFilter === 'all') {
+                    matchesCategory = true;
+                } else if (activeFilter === 'pro') {
+                    matchesCategory = isPro;
+                } else if (activeFilter === 'free') {
+                    matchesCategory = !isPro;
+                } else {
+                    matchesCategory = (cardCat === activeFilter);
+                }
+
+                var matchesQuery = !query || (searchText.indexOf(query) !== -1);
+
+                if (matchesCategory && matchesQuery) {
+                    $card.stop(true, true).fadeIn(150);
+                    visibleCount++;
+                } else {
+                    $card.stop(true, true).hide();
+                }
+            });
+
+            var $noResults = $('#rawnaq-modules-no-results');
+            if ($noResults.length) {
+                if (visibleCount === 0) {
+                    $noResults.fadeIn(150);
+                } else {
+                    $noResults.hide();
+                }
+            }
+        }
+
+        // Live typing search for modules
+        $(document).on('input keyup', '#rawnaq-modules-search', function() {
+            filterModules();
+        });
+
+        // Clear module search
+        $(document).on('click', '#rawnaq-modules-search-clear', function() {
+            $('#rawnaq-modules-search').val('').trigger('input').focus();
+        });
+
+        // Category filter pills click
+        $(document).on('click', '.module-filter-btn', function(e) {
+            e.preventDefault();
+            $('.module-filter-btn').removeClass('active');
+            $(this).addClass('active');
+            filterModules();
+        });
+
+        // Module filter pills count updater
+        function updateModuleFilterPillCounts() {
+            var $cards = $('.modules-grid .module-card');
+            $('.module-filter-btn').each(function() {
+                var $btn = $(this);
+                var filter = ($btn.attr('data-module-filter') || 'all').toLowerCase();
+                var count = 0;
+                if (filter === 'all') {
+                    count = $cards.length;
+                } else if (filter === 'pro') {
+                    count = $cards.filter('[data-pro="1"]').length;
+                } else if (filter === 'free') {
+                    count = $cards.filter('[data-pro="0"]').length;
+                } else {
+                    count = $cards.filter('[data-category="' + filter + '"]').length;
+                }
+                $btn.find('.filter-count').text(count);
+            });
+        }
+        updateModuleFilterPillCounts();
+
+        // Bulk Actions
+        $('#btn-enable-all-modules').on('click', function(e) {
+            e.preventDefault();
+            $('.module-card:visible .module-toggle-input').prop('checked', true).trigger('change');
+        });
+
+        $('#btn-disable-all-modules').on('click', function(e) {
+            e.preventDefault();
+            $('.module-card:visible .module-toggle-input').prop('checked', false).trigger('change');
+        });
+
+        $('#btn-enable-pro-modules').on('click', function(e) {
+            e.preventDefault();
+            $('.module-card[data-pro="1"]:visible .module-toggle-input').prop('checked', true).trigger('change');
+        });
+
+        // Integrations Collapsible Toggle
+        $(document).on('click', '#btn-toggle-integrations', function() {
+            var $card = $(this).closest('.rawnaq-integrations-card');
+            var $body = $('#rawnaq-integrations-body');
+            var isExpanded = $(this).attr('aria-expanded') === 'true';
+
+            if (isExpanded) {
+                $body.slideUp(200);
+                $(this).attr('aria-expanded', 'false');
+                $card.addClass('is-collapsed');
+            } else {
+                $body.slideDown(200);
+                $(this).attr('aria-expanded', 'true');
+                $card.removeClass('is-collapsed');
+            }
+        });
+
         $('.rawnaq-nav .nav-item').on('click', function(e) {
             e.preventDefault();
             var target = $(this).data('tab');

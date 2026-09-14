@@ -171,118 +171,192 @@ class Rawnaq_Admin_Dashboard {
 
                     <!-- TAB 2: MODULES MANAGER -->
                     <div id="tab-modules" class="tab-panel">
-                        <div class="modules-hero">
-                            <div class="modules-hero-copy">
-                                <p class="modules-kicker"><?php esc_html_e( 'Performance control', 'rawnaq' ); ?></p>
+                        <?php
+                        $is_pro_active = (bool) apply_filters( 'rawnaq_pro_active', false );
+                        $category_map = [
+                            // Free Core
+                            'hub-diagram'                => 'layout',
+                            'tilt-card'                  => 'layout',
+                            'scroll-timeline'            => 'layout',
+                            'floating-dock'              => 'interactions',
+                            'flow-chart'                 => 'layout',
+                            'scroll-progress-toc'        => 'layout',
+                            'bento-grid'                 => 'layout',
+                            'scroll-story'               => 'layout',
+                            'smart-form'                 => 'interactions',
+                            'case-study-grid'            => 'showcase',
+
+                            // Pro Extensions
+                            'widget-actions'             => 'interactions',
+                            'services-pricing'           => 'estimation',
+                            'spatial-slider'             => 'spatial',
+                            'moodboard-builder'          => 'spatial',
+                            'project-pinboard'           => 'showcase',
+                            'roi-calculator'             => 'estimation',
+                            'spatial-3d'                 => 'spatial',
+                            'milestone-tracker'          => 'showcase',
+                            'floorplan-navigator'        => 'spatial',
+                            'global-project-map'         => 'showcase',
+                            'boq-estimator'              => 'estimation',
+                            'team-radar'                 => 'showcase',
+                            'scope-matrix'               => 'estimation',
+                            'eco-audit'                  => 'estimation',
+                            'audio-testimonial'          => 'showcase',
+                            'timeline-budget-simulator'  => 'estimation',
+                        ];
+
+                        $module_defs = [
+                            [
+                                'key'         => 'hub-diagram',
+                                'badge'       => __( 'Diagram', 'rawnaq' ),
+                                'tone'        => 'tone-diagram',
+                                'title'       => __( 'Hub Diagram', 'rawnaq' ),
+                                'desc'        => __( 'Interactive radial workflow chart with spokes and glow particle flow.', 'rawnaq' ),
+                                'icon'        => 'hub',
+                            ],
+                            [
+                                'key'         => 'tilt-card',
+                                'badge'       => __( 'Visuals', 'rawnaq' ),
+                                'tone'        => 'tone-visuals',
+                                'title'       => __( '3D Tilt Card', 'rawnaq' ),
+                                'desc'        => __( 'Perspective mouse-tilt cards with glare, overlay, and parallax depth.', 'rawnaq' ),
+                                'icon'        => 'tilt',
+                            ],
+                            [
+                                'key'         => 'scroll-timeline',
+                                'badge'       => __( 'Layouts', 'rawnaq' ),
+                                'tone'        => 'tone-layouts',
+                                'title'       => __( 'Scroll Sync Timeline', 'rawnaq' ),
+                                'desc'        => __( 'Vertical milestone timeline with a scroll-driven progress line.', 'rawnaq' ),
+                                'icon'        => 'timeline',
+                            ],
+                            [
+                                'key'         => 'floating-dock',
+                                'badge'       => __( 'Navigation', 'rawnaq' ),
+                                'tone'        => 'tone-nav',
+                                'title'       => __( 'Floating Dock Menu', 'rawnaq' ),
+                                'desc'        => __( 'macOS-style floating dock with proximity magnification and badges.', 'rawnaq' ),
+                                'icon'        => 'dock',
+                            ],
+                            [
+                                'key'         => 'flow-chart',
+                                'badge'       => __( 'Diagram', 'rawnaq' ),
+                                'tone'        => 'tone-diagram',
+                                'title'       => __( 'Flow Chart', 'rawnaq' ),
+                                'desc'        => __( 'Org tree and process flow diagrams with animated connectors.', 'rawnaq' ),
+                                'icon'        => 'flow',
+                            ],
+                            [
+                                'key'         => 'scroll-progress-toc',
+                                'badge'       => __( 'Layouts', 'rawnaq' ),
+                                'tone'        => 'tone-layouts',
+                                'title'       => __( 'Scroll Progress + TOC', 'rawnaq' ),
+                                'desc'        => __( 'Reading progress bar/ring with smart auto-highlighting table of contents.', 'rawnaq' ),
+                                'icon'        => 'toc',
+                            ],
+                            [
+                                'key'         => 'bento-grid',
+                                'badge'       => __( 'Layouts', 'rawnaq' ),
+                                'tone'        => 'tone-layouts',
+                                'title'       => __( 'Bento Grid', 'rawnaq' ),
+                                'desc'        => __( 'Apple-style asymmetric CSS grid with presets, stats, image & featured cells.', 'rawnaq' ),
+                                'icon'        => 'bento',
+                            ],
+                            [
+                                'key'         => 'scroll-story',
+                                'badge'       => __( 'Layouts', 'rawnaq' ),
+                                'tone'        => 'tone-layouts',
+                                'title'       => __( 'Scroll Story Chapters', 'rawnaq' ),
+                                'desc'        => __( 'Scrollytelling: pinned media column that swaps as chapter text scrolls into view.', 'rawnaq' ),
+                                'icon'        => 'story',
+                            ],
+                            [
+                                'key'         => 'smart-form',
+                                'badge'       => __( 'Conversion', 'rawnaq' ),
+                                'tone'        => 'tone-nav',
+                                'title'       => __( 'Smart Form', 'rawnaq' ),
+                                'desc'        => __( 'Lead form with email + WhatsApp redirect (Phase 1), honeypot spam guard, admin logs.', 'rawnaq' ),
+                                'icon'        => 'form',
+                            ],
+                            [
+                                'key'         => 'case-study-grid',
+                                'badge'       => __( 'Portfolio', 'rawnaq' ),
+                                'tone'        => 'tone-layouts',
+                                'title'       => __( 'Case-Study Grid', 'rawnaq' ),
+                                'desc'        => __( 'CPT/manual portfolio with Discuss CTA (Form/Dock) and Story/Timeline highlight sync.', 'rawnaq' ),
+                                'icon'        => 'cases',
+                            ],
+                        ];
+
+                        /**
+                         * Filter the cards shown in Elements Manager.
+                         */
+                        $module_defs = apply_filters( 'rawnaq_module_definitions', $module_defs );
+                        $total_modules_count = count( $module_defs );
+                        ?>
+
+                        <!-- Header Control Bar -->
+                        <div class="rawnaq-modules-header-bar">
+                            <div class="rawnaq-modules-intro">
+                                <div class="modules-kicker-row">
+                                    <span class="modules-kicker"><?php esc_html_e( 'Performance & Modular Engine', 'rawnaq' ); ?></span>
+                                    <span class="rawnaq-active-pill" id="modules-active-stat" aria-live="polite">
+                                        <span class="pulse-dot"></span>
+                                        <span id="modules-active-count">0</span> / <span id="modules-total-count"><?php echo esc_html( (string) $total_modules_count ); ?></span> <?php esc_html_e( 'Active', 'rawnaq' ); ?>
+                                    </span>
+                                </div>
                                 <h2><?php esc_html_e( 'Elements Manager', 'rawnaq' ); ?></h2>
-                                <p class="section-desc"><?php esc_html_e( 'Toggle widgets on or off. Disabled elements never load assets on the frontend — keep the site lean.', 'rawnaq' ); ?></p>
+                                <p class="section-desc"><?php esc_html_e( 'Toggle elements on or off. Disabled modules never enqueue frontend assets to guarantee ultimate site performance.', 'rawnaq' ); ?></p>
                             </div>
-                            <div class="modules-stat" id="modules-active-stat" aria-live="polite">
-                                <span class="modules-stat-num" id="modules-active-count">0</span>
-                                <span class="modules-stat-label"><?php esc_html_e( 'Active', 'rawnaq' ); ?></span>
+
+                            <div class="rawnaq-modules-toolbar">
+                                <div class="rawnaq-modules-search-wrap">
+                                    <span class="dashicons dashicons-search rawnaq-search-icon"></span>
+                                    <input type="text" id="rawnaq-modules-search" class="rawnaq-modules-search-input" placeholder="<?php esc_attr_e( 'Search elements (3D, ROI, Form, Divi)...', 'rawnaq' ); ?>" autocomplete="off">
+                                    <button type="button" id="rawnaq-modules-search-clear" class="rawnaq-search-clear" title="Clear search">&times;</button>
+                                </div>
+                                <div class="rawnaq-bulk-actions-group">
+                                    <button type="button" id="btn-enable-all-modules" class="btn-bulk btn-bulk-enable" title="<?php esc_attr_e( 'Enable all available modules', 'rawnaq' ); ?>">
+                                        <span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Enable All', 'rawnaq' ); ?>
+                                    </button>
+                                    <button type="button" id="btn-disable-all-modules" class="btn-bulk btn-bulk-disable" title="<?php esc_attr_e( 'Disable all modules', 'rawnaq' ); ?>">
+                                        <span class="dashicons dashicons-no-alt"></span> <?php esc_html_e( 'Disable All', 'rawnaq' ); ?>
+                                    </button>
+                                    <?php if ( $is_pro_active ) : ?>
+                                        <button type="button" id="btn-enable-pro-modules" class="btn-bulk btn-bulk-pro" title="<?php esc_attr_e( 'Enable only Pro modules', 'rawnaq' ); ?>">
+                                            ⚡ <?php esc_html_e( 'Enable Pro', 'rawnaq' ); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- Category Filter Pills -->
+                        <div class="rawnaq-modules-filter-pills">
+                            <button type="button" class="module-filter-btn active" data-module-filter="all">🌟 <?php esc_html_e( 'All Elements', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) $total_modules_count ); ?></span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="free">🧩 <?php esc_html_e( 'Free Core', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="spatial">🏢 <?php esc_html_e( 'Spatial & 3D', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="estimation">💰 <?php esc_html_e( 'Estimation & ROI', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="showcase">🏆 <?php esc_html_e( 'Showcase & Authority', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="interactions">⚡ <?php esc_html_e( 'Interactions & Leads', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="layout">📐 <?php esc_html_e( 'Layout & Motion', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
                         </div>
 
                         <form id="rawnaq-modules-form">
                             <div class="modules-grid">
                                 <?php
-                                $module_defs = [
-                                    [
-                                        'key'         => 'hub-diagram',
-                                        'badge'       => __( 'Diagram', 'rawnaq' ),
-                                        'tone'        => 'tone-diagram',
-                                        'title'       => __( 'Hub Diagram', 'rawnaq' ),
-                                        'desc'        => __( 'Interactive radial workflow chart with spokes and glow particle flow.', 'rawnaq' ),
-                                        'icon'        => 'hub',
-                                    ],
-                                    [
-                                        'key'         => 'tilt-card',
-                                        'badge'       => __( 'Visuals', 'rawnaq' ),
-                                        'tone'        => 'tone-visuals',
-                                        'title'       => __( '3D Tilt Card', 'rawnaq' ),
-                                        'desc'        => __( 'Perspective mouse-tilt cards with glare, overlay, and parallax depth.', 'rawnaq' ),
-                                        'icon'        => 'tilt',
-                                    ],
-                                    [
-                                        'key'         => 'scroll-timeline',
-                                        'badge'       => __( 'Layouts', 'rawnaq' ),
-                                        'tone'        => 'tone-layouts',
-                                        'title'       => __( 'Scroll Sync Timeline', 'rawnaq' ),
-                                        'desc'        => __( 'Vertical milestone timeline with a scroll-driven progress line.', 'rawnaq' ),
-                                        'icon'        => 'timeline',
-                                    ],
-                                    [
-                                        'key'         => 'floating-dock',
-                                        'badge'       => __( 'Navigation', 'rawnaq' ),
-                                        'tone'        => 'tone-nav',
-                                        'title'       => __( 'Floating Dock Menu', 'rawnaq' ),
-                                        'desc'        => __( 'macOS-style floating dock with proximity magnification and badges.', 'rawnaq' ),
-                                        'icon'        => 'dock',
-                                    ],
-                                    [
-                                        'key'         => 'flow-chart',
-                                        'badge'       => __( 'Diagram', 'rawnaq' ),
-                                        'tone'        => 'tone-diagram',
-                                        'title'       => __( 'Flow Chart', 'rawnaq' ),
-                                        'desc'        => __( 'Org tree and process flow diagrams with animated connectors.', 'rawnaq' ),
-                                        'icon'        => 'flow',
-                                    ],
-                                    [
-                                        'key'         => 'scroll-progress-toc',
-                                        'badge'       => __( 'Layouts', 'rawnaq' ),
-                                        'tone'        => 'tone-layouts',
-                                        'title'       => __( 'Scroll Progress + TOC', 'rawnaq' ),
-                                        'desc'        => __( 'Reading progress bar/ring with smart auto-highlighting table of contents.', 'rawnaq' ),
-                                        'icon'        => 'toc',
-                                    ],
-                                    [
-                                        'key'         => 'bento-grid',
-                                        'badge'       => __( 'Layouts', 'rawnaq' ),
-                                        'tone'        => 'tone-layouts',
-                                        'title'       => __( 'Bento Grid', 'rawnaq' ),
-                                        'desc'        => __( 'Apple-style asymmetric CSS grid with presets, stats, image & featured cells.', 'rawnaq' ),
-                                        'icon'        => 'bento',
-                                    ],
-                                    [
-                                        'key'         => 'scroll-story',
-                                        'badge'       => __( 'Layouts', 'rawnaq' ),
-                                        'tone'        => 'tone-layouts',
-                                        'title'       => __( 'Scroll Story Chapters', 'rawnaq' ),
-                                        'desc'        => __( 'Scrollytelling: pinned media column that swaps as chapter text scrolls into view.', 'rawnaq' ),
-                                        'icon'        => 'story',
-                                    ],
-                                    [
-                                        'key'         => 'smart-form',
-                                        'badge'       => __( 'Conversion', 'rawnaq' ),
-                                        'tone'        => 'tone-nav',
-                                        'title'       => __( 'Smart Form', 'rawnaq' ),
-                                        'desc'        => __( 'Lead form with email + WhatsApp redirect (Phase 1), honeypot spam guard, admin logs.', 'rawnaq' ),
-                                        'icon'        => 'form',
-                                    ],
-                                    [
-                                        'key'         => 'case-study-grid',
-                                        'badge'       => __( 'Portfolio', 'rawnaq' ),
-                                        'tone'        => 'tone-layouts',
-                                        'title'       => __( 'Case-Study Grid', 'rawnaq' ),
-                                        'desc'        => __( 'CPT/manual portfolio with Discuss CTA (Form/Dock) and Story/Timeline highlight sync.', 'rawnaq' ),
-                                        'icon'        => 'cases',
-                                    ],
-                                ];
-
-								/**
-								 * Filter the cards shown in Elements Manager.
-								 *
-								 * Companion plugins should also add the matching slug through
-								 * the rawnaq_default_modules filter so the toggle is persisted.
-								 *
-								 * @param array<int, array<string, string>> $module_defs Module card definitions.
-								 */
-								$module_defs = apply_filters( 'rawnaq_module_definitions', $module_defs );
-
                                 foreach ( $module_defs as $mod ) :
                                     $checked = isset( $modules[ $mod['key'] ] ) && $modules[ $mod['key'] ] === '1';
+                                    $mod_key = $mod['key'];
+                                    $cat     = isset( $mod['category'] ) ? $mod['category'] : ( $category_map[ $mod_key ] ?? 'layout' );
+                                    $is_pro  = ( isset( $mod['tone'] ) && 'tone-hero' === $mod['tone'] ) || ( isset( $mod['badge'] ) && false !== stripos( $mod['badge'], 'Pro' ) );
+                                    $search_text = strtolower( $mod['title'] . ' ' . ( $mod['desc'] ?? '' ) . ' ' . ( $mod['badge'] ?? '' ) . ' ' . $cat . ( $is_pro ? ' pro' : ' free' ) );
                                     ?>
-                                    <div class="module-card <?php echo esc_attr( $mod['tone'] ); ?><?php echo $checked ? ' is-on' : ''; ?>">
+                                    <div class="module-card <?php echo esc_attr( $mod['tone'] ); ?><?php echo $checked ? ' is-on' : ''; ?>"
+                                         data-category="<?php echo esc_attr( $cat ); ?>"
+                                         data-pro="<?php echo $is_pro ? '1' : '0'; ?>"
+                                         data-search-text="<?php echo esc_attr( $search_text ); ?>">
                                         <div class="module-card-top">
                                             <div class="module-icon" aria-hidden="true">
                                                 <?php if ( 'hub' === $mod['icon'] ) : ?>
@@ -291,6 +365,8 @@ class Rawnaq_Admin_Dashboard {
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="5" y="4" width="14" height="16" rx="2.5" transform="rotate(-8 12 12)"/><path d="M9 10h6M9 14h4"/></svg>
                                                 <?php elseif ( 'timeline' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 3v18"/><circle cx="12" cy="7" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="17" r="2"/><path d="M14.5 7H19M5 12h7M14.5 17H19"/></svg>
+                                                <?php elseif ( 'dock' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="14" width="18" height="6" rx="3"/><rect x="5" y="16" width="3.2" height="3.2" rx="0.8"/><rect x="10.4" y="15.2" width="4" height="4" rx="1"/><rect x="16.2" y="16" width="3.2" height="3.2" rx="0.8"/></svg>
                                                 <?php elseif ( 'flow' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="8" y="2" width="8" height="5" rx="1.5"/><rect x="2" y="17" width="7" height="5" rx="1.5"/><rect x="15" y="17" width="7" height="5" rx="1.5"/><path d="M12 7v4M12 11H5.5v6M12 11h6.5v6"/></svg>
                                                 <?php elseif ( 'toc' === $mod['icon'] ) : ?>
@@ -303,144 +379,171 @@ class Rawnaq_Admin_Dashboard {
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
                                                 <?php elseif ( 'cases' === $mod['icon'] ) : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="10" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="16" width="8" height="4" rx="1.5"/></svg>
-												<?php elseif ( 'actions' === $mod['icon'] ) : ?>
-													<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9.5 14.5 14.5 9"/><path d="M7.2 17.8 5.8 19.2a3.5 3.5 0 0 1-5-5l3-3a3.5 3.5 0 0 1 5 0" transform="translate(2 -2)"/><path d="m16.8 6.2 1.4-1.4a3.5 3.5 0 0 1 5 5l-3 3a3.5 3.5 0 0 1-5 0" transform="translate(-2 2)"/><path d="M17 14v5M14.5 16.5h5"/></svg>
+                                                <?php elseif ( 'actions' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9.5 14.5 14.5 9"/><path d="M7.2 17.8 5.8 19.2a3.5 3.5 0 0 1-5-5l3-3a3.5 3.5 0 0 1 5 0" transform="translate(2 -2)"/><path d="m16.8 6.2 1.4-1.4a3.5 3.5 0 0 1 5 5l-3 3a3.5 3.5 0 0 1-5 0" transform="translate(-2 2)"/><path d="M17 14v5M14.5 16.5h5"/></svg>
+                                                <?php elseif ( 'calculators' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="2" width="16" height="20" rx="3"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/><circle cx="8" cy="19" r="1"/><circle cx="12" cy="19" r="1"/><circle cx="16" cy="19" r="1"/></svg>
+                                                <?php elseif ( 'comparison' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="3" width="20" height="18" rx="2.5"/><line x1="12" y1="3" x2="12" y2="21"/><path d="m8 10-3 2 3 2M16 10l3 2-3 2"/></svg>
+                                                <?php elseif ( 'templates' === $mod['icon'] ) : ?>
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                                                 <?php else : ?>
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="14" width="18" height="6" rx="3"/><rect x="5" y="16" width="3.2" height="3.2" rx="0.8"/><rect x="10.4" y="15.2" width="4" height="4" rx="1"/><rect x="16.2" y="16" width="3.2" height="3.2" rx="0.8"/></svg>
                                                 <?php endif; ?>
                                             </div>
-                                            <label class="switch" title="<?php echo esc_attr( $mod['title'] ); ?>">
-                                                <input type="checkbox" name="modules[<?php echo esc_attr( $mod['key'] ); ?>]" value="1" <?php checked( $checked ); ?> class="module-toggle-input">
-                                                <span class="slider round"></span>
-                                                <?php
-                                                /* translators: %s: module / widget title */
-                                                $enable_label = sprintf( __( 'Enable %s', 'rawnaq' ), $mod['title'] );
-                                                ?>
-                                                <span class="screen-reader-text"><?php echo esc_html( $enable_label ); ?></span>
-                                            </label>
+                                            <div class="module-card-badges-wrap">
+                                                <span class="module-badge"><?php echo esc_html( $mod['badge'] ); ?></span>
+                                                <label class="switch" title="<?php echo esc_attr( $mod['title'] ); ?>">
+                                                    <input type="checkbox" name="modules[<?php echo esc_attr( $mod['key'] ); ?>]" value="1" <?php checked( $checked ); ?> class="module-toggle-input">
+                                                    <span class="slider round"></span>
+                                                    <?php
+                                                    /* translators: %s: module / widget title */
+                                                    $enable_label = sprintf( __( 'Enable %s', 'rawnaq' ), $mod['title'] );
+                                                    ?>
+                                                    <span class="screen-reader-text"><?php echo esc_html( $enable_label ); ?></span>
+                                                </label>
+                                            </div>
                                         </div>
                                         <div class="module-info">
-                                            <span class="module-badge"><?php echo esc_html( $mod['badge'] ); ?></span>
                                             <h4><?php echo esc_html( $mod['title'] ); ?></h4>
                                             <p><?php echo esc_html( $mod['desc'] ); ?></p>
                                             <div class="module-meta">
-                                                <span><?php esc_html_e( 'Elementor', 'rawnaq' ); ?></span>
-                                                <span><?php esc_html_e( 'Gutenberg', 'rawnaq' ); ?></span>
+                                                <span title="Elementor Widget">Elementor</span>
+                                                <span title="Gutenberg Block">Gutenberg</span>
+                                                <span title="Divi Module">Divi</span>
+                                                <span title="WordPress Shortcode">[shortcode]</span>
                                             </div>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
 
-                                <?php
-                                $is_pro_active = (bool) apply_filters( 'rawnaq_pro_active', false );
-                                ?>
-                                <div class="module-card tone-pro <?php echo $is_pro_active ? 'is-pro-active' : 'is-pro-locked'; ?>" style="<?php echo ! $is_pro_active ? 'background:linear-gradient(135deg, #1e1b4b05 0%, #312e8110 100%);border:1.5px dashed #6366f150;' : ''; ?>">
-                                    <div class="module-card-top">
-                                        <div class="module-icon" aria-hidden="true" style="<?php echo ! $is_pro_active ? 'background:#e0e7ff;color:#4f46e5;' : ''; ?>">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                                        </div>
-                                        <?php if ( $is_pro_active ) : ?>
-                                            <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;"><?php esc_html_e( 'PRO ACTIVE', 'rawnaq' ); ?></span>
-                                        <?php else : ?>
-                                            <span style="background:#e0e7ff;color:#4338ca;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;display:flex;align-items:center;gap:4px;">
+                                <?php if ( ! $is_pro_active ) : ?>
+                                    <!-- PRO UPGRADE TEASER CARDS (When Pro Plugin is not active) -->
+                                    <div class="module-card tone-pro is-pro-locked" data-category="interactions" data-pro="1" data-search-text="get quote lead engine cost estimator pro">
+                                        <div class="module-card-top">
+                                            <div class="module-icon" aria-hidden="true" style="background:#e0e7ff;color:#4f46e5;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                            </div>
+                                            <span class="pro-locked-badge">
                                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                                <?php esc_html_e( 'LOCKED', 'rawnaq' ); ?>
+                                                <?php esc_html_e( 'PRO LOCKED', 'rawnaq' ); ?>
                                             </span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="module-info">
-                                        <span class="module-badge" style="background:#4f46e5;color:#fff;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
-                                        <h4><?php esc_html_e( 'Get Quote Lead Engine', 'rawnaq' ); ?></h4>
-                                        <p><?php esc_html_e( 'Multi-step interactive cost estimator, room-by-room breakdown, quality tiers, magic link portal, digital e-signatures, and A4 PDF contracts.', 'rawnaq' ); ?></p>
-                                        <div class="module-meta">
-                                            <?php if ( $is_pro_active ) : ?>
-                                                <span style="color:#16a34a;font-weight:600;">✓ <?php esc_html_e( 'Loaded via Rawnaq Pro', 'rawnaq' ); ?></span>
-                                            <?php else : ?>
+                                        </div>
+                                        <div class="module-info">
+                                            <span class="module-badge" style="background:#4f46e5;color:#fff;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
+                                            <h4><?php esc_html_e( 'Get Quote Lead Engine', 'rawnaq' ); ?></h4>
+                                            <p><?php esc_html_e( 'Multi-step interactive cost estimator, room breakdown, quality tiers, magic link portal, digital signatures, and PDF contracts.', 'rawnaq' ); ?></p>
+                                            <div class="module-meta">
                                                 <a href="https://rawnaq.pro" target="_blank" rel="noopener noreferrer" style="color:#4f46e5;font-weight:700;text-decoration:none;font-size:12px;">
                                                     <?php esc_html_e( 'Unlock with Rawnaq Pro →', 'rawnaq' ); ?>
                                                 </a>
-                                            <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="module-card tone-pro <?php echo $is_pro_active ? 'is-pro-active' : 'is-pro-locked'; ?>" style="<?php echo ! $is_pro_active ? 'background:linear-gradient(135deg, #1e1b4b05 0%, #312e8110 100%);border:1.5px dashed #6366f150;' : ''; ?>">
-                                    <div class="module-card-top">
-                                        <div class="module-icon" aria-hidden="true" style="background:#fef3c7;color:#d97706;">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h12"/></svg>
-                                        </div>
-                                        <?php if ( $is_pro_active ) : ?>
-                                            <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;"><?php esc_html_e( 'PRO ACTIVE', 'rawnaq' ); ?></span>
-                                        <?php else : ?>
-                                            <span style="background:#e0e7ff;color:#4338ca;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;display:flex;align-items:center;gap:4px;">
+                                    <div class="module-card tone-pro is-pro-locked" data-category="estimation" data-pro="1" data-search-text="services pricing calculator area slider pro">
+                                        <div class="module-card-top">
+                                            <div class="module-icon" aria-hidden="true" style="background:#fef3c7;color:#d97706;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h12"/></svg>
+                                            </div>
+                                            <span class="pro-locked-badge">
                                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                                <?php esc_html_e( 'LOCKED', 'rawnaq' ); ?>
+                                                <?php esc_html_e( 'PRO LOCKED', 'rawnaq' ); ?>
                                             </span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="module-info">
-                                        <span class="module-badge" style="background:#d97706;color:#fff;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
-                                        <h4><?php esc_html_e( 'Services & Pricing Calculator', 'rawnaq' ); ?></h4>
-                                        <p><?php esc_html_e( 'Live dynamic area slider, 3-tier comparative matrix, real-time scope allocation breakdown bars, and seamless Get Quote bridge.', 'rawnaq' ); ?></p>
-                                        <div class="module-meta">
-                                            <?php if ( $is_pro_active ) : ?>
-                                                <span style="color:#16a34a;font-weight:600;">✓ <?php esc_html_e( 'Loaded via Rawnaq Pro', 'rawnaq' ); ?></span>
-                                            <?php else : ?>
+                                        </div>
+                                        <div class="module-info">
+                                            <span class="module-badge" style="background:#d97706;color:#fff;"><?php esc_html_e( 'PRO EXTENSION', 'rawnaq' ); ?></span>
+                                            <h4><?php esc_html_e( 'Services & Pricing Calculator', 'rawnaq' ); ?></h4>
+                                            <p><?php esc_html_e( 'Live dynamic area slider, 3-tier comparative matrix, real-time scope allocation breakdown bars, and seamless Get Quote bridge.', 'rawnaq' ); ?></p>
+                                            <div class="module-meta">
                                                 <a href="https://rawnaq.pro" target="_blank" rel="noopener noreferrer" style="color:#4f46e5;font-weight:700;text-decoration:none;font-size:12px;">
                                                     <?php esc_html_e( 'Unlock with Rawnaq Pro →', 'rawnaq' ); ?>
                                                 </a>
-                                            <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
 
-                            <div class="rawnaq-card" style="margin: 24px 0;">
-                                <h3 style="margin-top:0;"><?php esc_html_e( 'Smart Form & shared WhatsApp', 'rawnaq' ); ?></h3>
-                                <p class="section-desc"><?php esc_html_e( 'Site-wide defaults used by Smart Form and Floating Dock (when an agent number is blank).', 'rawnaq' ); ?></p>
-                                <?php
-                                $sf_settings = is_array( $settings ) ? $settings : [];
-                                $default_wa  = sanitize_text_field( $sf_settings['default_wa_number'] ?? '' );
-                                $rc_site     = sanitize_text_field( $sf_settings['recaptcha_site_key'] ?? '' );
-                                $rc_secret   = sanitize_text_field( $sf_settings['recaptcha_secret_key'] ?? '' );
-                                $mc_key      = sanitize_text_field( $sf_settings['mailchimp_api_key'] ?? '' );
-                                $hs_portal   = sanitize_text_field( $sf_settings['hubspot_portal_id'] ?? '' );
-                                $max_up      = isset( $sf_settings['sf_max_upload_mb'] ) ? absint( $sf_settings['sf_max_upload_mb'] ) : 5;
-                                if ( $max_up < 1 ) {
-                                    $max_up = 5;
-                                }
-                                ?>
-                                <p>
-                                    <label for="rawnaq-default-wa"><strong><?php esc_html_e( 'Default WhatsApp number', 'rawnaq' ); ?></strong></label><br />
-                                    <input type="text" class="regular-text" id="rawnaq-default-wa" name="default_wa_number" value="<?php echo esc_attr( $default_wa ); ?>" placeholder="8801XXXXXXXXX" />
-                                </p>
-                                <p>
-                                    <label for="rawnaq-sf-max-mb"><strong><?php esc_html_e( 'Smart Form max upload (MB)', 'rawnaq' ); ?></strong></label><br />
-                                    <input type="number" min="1" max="25" id="rawnaq-sf-max-mb" name="sf_max_upload_mb" value="<?php echo esc_attr( (string) $max_up ); ?>" />
-                                </p>
-                                <p>
-                                    <label for="rawnaq-rc-site"><strong><?php esc_html_e( 'reCAPTCHA v3 site key', 'rawnaq' ); ?></strong></label><br />
-                                    <input type="text" class="regular-text" id="rawnaq-rc-site" name="recaptcha_site_key" value="<?php echo esc_attr( $rc_site ); ?>" />
-                                </p>
-                                <p>
-                                    <label for="rawnaq-rc-secret"><strong><?php esc_html_e( 'reCAPTCHA v3 secret key', 'rawnaq' ); ?></strong></label><br />
-                                    <input type="password" class="regular-text" id="rawnaq-rc-secret" name="recaptcha_secret_key" value="<?php echo esc_attr( $rc_secret ); ?>" autocomplete="off" />
-                                </p>
-                                <p>
-                                    <label for="rawnaq-mc-key"><strong><?php esc_html_e( 'Mailchimp API key', 'rawnaq' ); ?></strong></label><br />
-                                    <input type="password" class="regular-text" id="rawnaq-mc-key" name="mailchimp_api_key" value="<?php echo esc_attr( $mc_key ); ?>" autocomplete="off" placeholder="xxxxxxxx-us21" />
-                                    <span class="description"><?php esc_html_e( 'Used by Smart Form CRM = Mailchimp. Set the Audience ID per form.', 'rawnaq' ); ?></span>
-                                </p>
-                                <p>
-                                    <label for="rawnaq-hs-portal"><strong><?php esc_html_e( 'HubSpot Portal ID', 'rawnaq' ); ?></strong></label><br />
-                                    <input type="text" class="regular-text" id="rawnaq-hs-portal" name="hubspot_portal_id" value="<?php echo esc_attr( $hs_portal ); ?>" placeholder="1234567" />
-                                    <span class="description"><?php esc_html_e( 'Used by Smart Form CRM = HubSpot. Set the Form GUID per form.', 'rawnaq' ); ?></span>
-                                </p>
+                            <!-- No search results state -->
+                            <div id="rawnaq-modules-no-results" class="rawnaq-no-results" style="display: none;">
+                                <span class="dashicons dashicons-search"></span>
+                                <h3><?php esc_html_e( 'No matching elements found', 'rawnaq' ); ?></h3>
+                                <p><?php esc_html_e( 'Try searching for a different keyword or select another category filter above.', 'rawnaq' ); ?></p>
+                            </div>
+
+                            <!-- Dedicated Global Integrations & API Keys Section -->
+                            <div class="rawnaq-integrations-card">
+                                <div class="rawnaq-integrations-header" id="btn-toggle-integrations" role="button" tabindex="0" aria-expanded="true">
+                                    <div class="integrations-title-wrap">
+                                        <div class="integrations-icon-badge">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                        </div>
+                                        <div>
+                                            <h3><?php esc_html_e( 'Global Integrations & API Keys', 'rawnaq' ); ?></h3>
+                                            <p class="section-desc"><?php esc_html_e( 'Site-wide WhatsApp, reCAPTCHA v3, Mailchimp & HubSpot settings used by Smart Form and Floating Dock.', 'rawnaq' ); ?></p>
+                                        </div>
+                                    </div>
+                                    <span class="dashicons dashicons-arrow-up-alt2 rawnaq-integrations-toggle-icon"></span>
+                                </div>
+                                <div class="rawnaq-integrations-body" id="rawnaq-integrations-body">
+                                    <?php
+                                    $sf_settings = is_array( $settings ) ? $settings : [];
+                                    $default_wa  = sanitize_text_field( $sf_settings['default_wa_number'] ?? '' );
+                                    $rc_site     = sanitize_text_field( $sf_settings['recaptcha_site_key'] ?? '' );
+                                    $rc_secret   = sanitize_text_field( $sf_settings['recaptcha_secret_key'] ?? '' );
+                                    $mc_key      = sanitize_text_field( $sf_settings['mailchimp_api_key'] ?? '' );
+                                    $hs_portal   = sanitize_text_field( $sf_settings['hubspot_portal_id'] ?? '' );
+                                    $max_up      = isset( $sf_settings['sf_max_upload_mb'] ) ? absint( $sf_settings['sf_max_upload_mb'] ) : 5;
+                                    if ( $max_up < 1 ) {
+                                        $max_up = 5;
+                                    }
+                                    ?>
+                                    <div class="integrations-grid">
+                                        <div class="integration-field">
+                                            <label for="rawnaq-default-wa"><strong><?php esc_html_e( 'Default WhatsApp Number', 'rawnaq' ); ?></strong></label>
+                                            <input type="text" class="regular-text" id="rawnaq-default-wa" name="default_wa_number" value="<?php echo esc_attr( $default_wa ); ?>" placeholder="e.g. 8801700000000" />
+                                            <span class="field-hint"><?php esc_html_e( 'Fallback agent phone in international format without + or hyphens.', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-sf-max-mb"><strong><?php esc_html_e( 'Smart Form Max Upload (MB)', 'rawnaq' ); ?></strong></label>
+                                            <input type="number" min="1" max="25" id="rawnaq-sf-max-mb" name="sf_max_upload_mb" value="<?php echo esc_attr( (string) $max_up ); ?>" />
+                                            <span class="field-hint"><?php esc_html_e( 'Maximum allowable file size per attachment (1 - 25 MB).', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-rc-site"><strong><?php esc_html_e( 'Google reCAPTCHA v3 Site Key', 'rawnaq' ); ?></strong></label>
+                                            <input type="text" class="regular-text" id="rawnaq-rc-site" name="recaptcha_site_key" value="<?php echo esc_attr( $rc_site ); ?>" placeholder="6LeIxacbAAAAA..." />
+                                            <span class="field-hint"><?php esc_html_e( 'Public site key for invisible spam verification score.', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-rc-secret"><strong><?php esc_html_e( 'Google reCAPTCHA v3 Secret Key', 'rawnaq' ); ?></strong></label>
+                                            <input type="password" class="regular-text" id="rawnaq-rc-secret" name="recaptcha_secret_key" value="<?php echo esc_attr( $rc_secret ); ?>" autocomplete="off" />
+                                            <span class="field-hint"><?php esc_html_e( 'Private server validation key.', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-mc-key"><strong><?php esc_html_e( 'Mailchimp API Key', 'rawnaq' ); ?></strong></label>
+                                            <input type="password" class="regular-text" id="rawnaq-mc-key" name="mailchimp_api_key" value="<?php echo esc_attr( $mc_key ); ?>" autocomplete="off" placeholder="xxxxxxxx-us21" />
+                                            <span class="field-hint"><?php esc_html_e( 'Required when Smart Form CRM routing is set to Mailchimp.', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-hs-portal"><strong><?php esc_html_e( 'HubSpot Portal ID', 'rawnaq' ); ?></strong></label>
+                                            <input type="text" class="regular-text" id="rawnaq-hs-portal" name="hubspot_portal_id" value="<?php echo esc_attr( $hs_portal ); ?>" placeholder="1234567" />
+                                            <span class="field-hint"><?php esc_html_e( 'Required when Smart Form CRM routing is set to HubSpot.', 'rawnaq' ); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-footer modules-footer">
-                                <button type="submit" class="btn btn-save" id="btn-save-settings"><?php esc_html_e( 'Save Changes', 'rawnaq' ); ?></button>
-                                <span class="save-status" id="save-status-msg"></span>
+                                <div class="footer-summary">
+                                    <span class="summary-text"><?php esc_html_e( 'Save will instantly persist all active modules and integration keys.', 'rawnaq' ); ?></span>
+                                </div>
+                                <div class="footer-actions">
+                                    <span class="save-status" id="save-status-msg"></span>
+                                    <button type="submit" class="btn btn-save" id="btn-save-settings">
+                                        <span class="dashicons dashicons-saved"></span> <?php esc_html_e( 'Save Changes', 'rawnaq' ); ?>
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
