@@ -59,12 +59,22 @@ class Rawnaq_Admin_Dashboard {
     }
 
     public function enqueue_admin_assets( $hook ) {
-        if ( 'toplevel_page_rawnaq' !== $hook ) {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        $is_rawnaq = (
+            'toplevel_page_rawnaq' === $hook ||
+            'rawnaq_page_rawnaq' === $hook ||
+            ( isset( $_GET['page'] ) && 'rawnaq' === $_GET['page'] ) ||
+            ( $screen && in_array( $screen->id, [ 'toplevel_page_rawnaq', 'rawnaq_page_rawnaq', 'rawnaq' ], true ) )
+        );
+
+        if ( ! $is_rawnaq ) {
             return;
         }
 
-        $css_ver = file_exists( RAWNAQ_PATH . 'assets/css/admin.css' ) ? filemtime( RAWNAQ_PATH . 'assets/css/admin.css' ) : RAWNAQ_VERSION;
-        $js_ver  = file_exists( RAWNAQ_PATH . 'assets/js/admin.js' ) ? filemtime( RAWNAQ_PATH . 'assets/js/admin.js' ) : RAWNAQ_VERSION;
+        $css_file = RAWNAQ_PATH . 'assets/css/admin.css';
+        $js_file  = RAWNAQ_PATH . 'assets/js/admin.js';
+        $css_ver  = file_exists( $css_file ) ? filemtime( $css_file ) : RAWNAQ_VERSION;
+        $js_ver   = file_exists( $js_file ) ? filemtime( $js_file ) : RAWNAQ_VERSION;
 
         wp_enqueue_style(
             'rawnaq-admin-css',
@@ -293,6 +303,39 @@ class Rawnaq_Admin_Dashboard {
                          */
                         $module_defs = apply_filters( 'rawnaq_module_definitions', $module_defs );
                         $total_modules_count = count( $module_defs );
+
+                        // Calculate counts server-side for instant accurate rendering
+                        $count_active = 0;
+                        $count_pro    = 0;
+                        $count_free   = 0;
+                        $cat_counts   = [
+                            'spatial'      => 0,
+                            'estimation'   => 0,
+                            'showcase'     => 0,
+                            'interactions' => 0,
+                            'layout'       => 0,
+                        ];
+
+                        foreach ( $module_defs as $mod_item ) {
+                            $m_key   = $mod_item['key'];
+                            $m_cat   = isset( $mod_item['category'] ) ? $mod_item['category'] : ( $category_map[ $m_key ] ?? 'layout' );
+                            $m_is_pro = ( isset( $mod_item['tone'] ) && 'tone-hero' === $mod_item['tone'] ) || ( isset( $mod_item['badge'] ) && false !== stripos( $mod_item['badge'], 'Pro' ) );
+                            $m_is_on  = isset( $modules[ $m_key ] ) && $modules[ $m_key ] === '1';
+
+                            if ( $m_is_on ) {
+                                $count_active++;
+                            }
+                            if ( $m_is_pro ) {
+                                $count_pro++;
+                            } else {
+                                $count_free++;
+                            }
+                            if ( isset( $cat_counts[ $m_cat ] ) ) {
+                                $cat_counts[ $m_cat ]++;
+                            } else {
+                                $cat_counts[ $m_cat ] = 1;
+                            }
+                        }
                         ?>
 
                         <!-- Header Control Bar -->
@@ -302,7 +345,7 @@ class Rawnaq_Admin_Dashboard {
                                     <span class="modules-kicker"><?php esc_html_e( 'Performance & Modular Engine', 'rawnaq' ); ?></span>
                                     <span class="rawnaq-active-pill" id="modules-active-stat" aria-live="polite">
                                         <span class="pulse-dot"></span>
-                                        <span id="modules-active-count">0</span> / <span id="modules-total-count"><?php echo esc_html( (string) $total_modules_count ); ?></span> <?php esc_html_e( 'Active', 'rawnaq' ); ?>
+                                        <span id="modules-active-count"><?php echo esc_html( (string) $count_active ); ?></span> / <span id="modules-total-count"><?php echo esc_html( (string) $total_modules_count ); ?></span> <?php esc_html_e( 'Active', 'rawnaq' ); ?>
                                     </span>
                                 </div>
                                 <h2><?php esc_html_e( 'Elements Manager', 'rawnaq' ); ?></h2>
@@ -334,13 +377,13 @@ class Rawnaq_Admin_Dashboard {
                         <!-- Category Filter Pills -->
                         <div class="rawnaq-modules-filter-pills">
                             <button type="button" class="module-filter-btn active" data-module-filter="all">🌟 <?php esc_html_e( 'All Elements', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) $total_modules_count ); ?></span></button>
-                            <button type="button" class="module-filter-btn" data-module-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
-                            <button type="button" class="module-filter-btn" data-module-filter="free">🧩 <?php esc_html_e( 'Free Core', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
-                            <button type="button" class="module-filter-btn" data-module-filter="spatial">🏢 <?php esc_html_e( 'Spatial & 3D', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
-                            <button type="button" class="module-filter-btn" data-module-filter="estimation">💰 <?php esc_html_e( 'Estimation & ROI', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
-                            <button type="button" class="module-filter-btn" data-module-filter="showcase">🏆 <?php esc_html_e( 'Showcase & Authority', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
-                            <button type="button" class="module-filter-btn" data-module-filter="interactions">⚡ <?php esc_html_e( 'Interactions & Leads', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
-                            <button type="button" class="module-filter-btn" data-module-filter="layout">📐 <?php esc_html_e( 'Layout & Motion', 'rawnaq' ); ?> <span class="filter-count">0</span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) $count_pro ); ?></span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="free">🧩 <?php esc_html_e( 'Free Core', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) $count_free ); ?></span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="spatial">🏢 <?php esc_html_e( 'Spatial & 3D', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) ( $cat_counts['spatial'] ?? 0 ) ); ?></span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="estimation">💰 <?php esc_html_e( 'Estimation & ROI', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) ( $cat_counts['estimation'] ?? 0 ) ); ?></span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="showcase">🏆 <?php esc_html_e( 'Showcase & Authority', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) ( $cat_counts['showcase'] ?? 0 ) ); ?></span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="interactions">⚡ <?php esc_html_e( 'Interactions & Leads', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) ( $cat_counts['interactions'] ?? 0 ) ); ?></span></button>
+                            <button type="button" class="module-filter-btn" data-module-filter="layout">📐 <?php esc_html_e( 'Layout & Motion', 'rawnaq' ); ?> <span class="filter-count"><?php echo esc_html( (string) ( $cat_counts['layout'] ?? 0 ) ); ?></span></button>
                         </div>
 
                         <form id="rawnaq-modules-form">

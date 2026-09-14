@@ -427,20 +427,23 @@
     min-width: 260px;
 }
 
-.rawnaq-modules-search-input {
+.rawnaq-admin-wrap .rawnaq-modules-search-input {
     width: 100%;
     padding: 9px 34px 9px 36px !important;
     border: 1.5px solid var(--rq-line) !important;
     border-radius: 12px !important;
     font-size: 13px !important;
+    line-height: 1.4 !important;
     background: #fff !important;
     color: var(--rq-ink) !important;
     outline: none !important;
     transition: border-color 0.2s, box-shadow 0.2s !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
 }
 
-.rawnaq-modules-search-input:focus {
+.rawnaq-admin-wrap .rawnaq-modules-search-input:focus {
     border-color: var(--rq-accent) !important;
     box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12) !important;
 }
@@ -455,23 +458,26 @@
     pointer-events: none;
 }
 
-.rawnaq-modules-search-wrap .rawnaq-search-clear {
+.rawnaq-admin-wrap .rawnaq-modules-search-wrap .rawnaq-search-clear {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    font-size: 18px;
-    line-height: 1;
+    border: none !important;
+    background: transparent !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
     cursor: pointer;
-    color: var(--rq-muted);
+    color: var(--rq-muted) !important;
     display: none;
-    padding: 0;
+    padding: 0 !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    box-shadow: none !important;
 }
 
-.rawnaq-modules-search-wrap .rawnaq-search-clear:hover {
-    color: var(--rq-ink);
+.rawnaq-admin-wrap .rawnaq-modules-search-wrap .rawnaq-search-clear:hover {
+    color: var(--rq-ink) !important;
 }
 
 .rawnaq-bulk-actions-group {
@@ -480,56 +486,65 @@
     gap: 6px;
 }
 
-.btn-bulk {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid var(--rq-line);
-    background: #fff;
-    color: var(--rq-ink);
-    cursor: pointer;
-    transition: all 0.2s;
+.rawnaq-admin-wrap button.btn-bulk,
+.rawnaq-admin-wrap .btn-bulk {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 8px 12px !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    border: 1px solid var(--rq-line) !important;
+    background: #fff !important;
+    color: var(--rq-ink) !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }
 
-.btn-bulk .dashicons {
+.rawnaq-admin-wrap .btn-bulk .dashicons {
     font-size: 15px;
     width: 15px;
     height: 15px;
     line-height: 15px;
 }
 
-.btn-bulk:hover {
-    background: var(--rq-soft);
-    border-color: #b9d0c4;
+.rawnaq-admin-wrap .btn-bulk:hover {
+    background: var(--rq-soft) !important;
+    border-color: #b9d0c4 !important;
+    color: var(--rq-ink) !important;
 }
 
-.btn-bulk-enable:hover {
-    background: #f0fdf4;
-    border-color: #86efac;
-    color: #15803d;
+.rawnaq-admin-wrap .btn-bulk-enable:hover {
+    background: #f0fdf4 !important;
+    border-color: #86efac !important;
+    color: #15803d !important;
 }
 
-.btn-bulk-disable:hover {
-    background: #fef2f2;
-    border-color: #fca5a5;
-    color: #b91c1c;
+.rawnaq-admin-wrap .btn-bulk-disable:hover {
+    background: #fef2f2 !important;
+    border-color: #fca5a5 !important;
+    color: #b91c1c !important;
 }
 
-.btn-bulk-pro {
-    background: linear-gradient(135deg, #4f46e5, #4338ca);
-    color: #fff;
-    border-color: transparent;
+.rawnaq-admin-wrap .btn-bulk-pro {
+    background: linear-gradient(135deg, #4f46e5, #4338ca) !important;
+    color: #fff !important;
+    border-color: transparent !important;
 }
 
-.btn-bulk-pro:hover {
-    background: linear-gradient(135deg, #4338ca, #3730a3);
-    color: #fff;
+.rawnaq-admin-wrap .btn-bulk-pro:hover {
+    background: linear-gradient(135deg, #4338ca, #3730a3) !important;
+    color: #fff !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25) !important;
 }
 
 /* Category Filter Pills */
@@ -540,42 +555,50 @@
     margin-bottom: 22px;
 }
 
-.module-filter-btn {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--rq-line);
-    background: #fff;
-    color: var(--rq-muted);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
+.rawnaq-admin-wrap button.module-filter-btn,
+.rawnaq-admin-wrap .module-filter-btn {
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--rq-line) !important;
+    background: #fff !important;
+    color: var(--rq-muted) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }
 
-.module-filter-btn:hover {
-    background: var(--rq-soft);
-    color: var(--rq-ink);
-    border-color: #b9d0c4;
+.rawnaq-admin-wrap .module-filter-btn:hover {
+    background: var(--rq-soft) !important;
+    color: var(--rq-ink) !important;
+    border-color: #b9d0c4 !important;
 }
 
-.module-filter-btn.active {
-    background: var(--rq-ink);
-    color: #fff;
-    border-color: var(--rq-ink);
-    box-shadow: 0 4px 12px rgba(19, 35, 28, 0.15);
+.rawnaq-admin-wrap .module-filter-btn.active {
+    background: var(--rq-ink) !important;
+    color: #fff !important;
+    border-color: var(--rq-ink) !important;
+    box-shadow: 0 4px 12px rgba(19, 35, 28, 0.15) !important;
 }
 
-.module-filter-btn .filter-count {
+.rawnaq-admin-wrap .module-filter-btn .filter-count {
     font-size: 11px;
     font-weight: 700;
     opacity: 0.8;
 }
 
-.module-filter-btn.active .filter-count {
-    color: #a7f3d0;
+.rawnaq-admin-wrap .module-filter-btn.active .filter-count {
+    color: #a7f3d0 !important;
 }
 
 /* 3-Column Executive Grid */
