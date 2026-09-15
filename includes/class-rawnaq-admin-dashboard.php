@@ -213,6 +213,12 @@ class Rawnaq_Admin_Dashboard {
                             'eco-audit'                  => 'estimation',
                             'audio-testimonial'          => 'showcase',
                             'timeline-budget-simulator'  => 'estimation',
+                            'sunlight-simulator'         => 'spatial',
+                            'building-stacker'           => 'spatial',
+                            'material-restyler'          => 'spatial',
+                            'timelapse-scrubber'         => 'showcase',
+                            'sustainability-scorecard'   => 'estimation',
+                            'acoustic-visualizer'        => 'spatial',
                         ];
 
                         $module_defs = [
