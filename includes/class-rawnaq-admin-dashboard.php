@@ -612,8 +612,8 @@ class Rawnaq_Admin_Dashboard {
                         </div>
 
                         <div class="rawnaq-docs-filter-pills">
-                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">23</span></button>
-                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">16</span></button>
+                            <button type="button" class="docs-filter-btn active" data-filter="all">🌟 <?php esc_html_e( 'All Guides', 'rawnaq' ); ?> <span class="filter-count">29</span></button>
+                            <button type="button" class="docs-filter-btn" data-filter="pro">⚡ <?php esc_html_e( 'Pro Solutions', 'rawnaq' ); ?> <span class="filter-count">22</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="snippets">📋 <?php esc_html_e( 'Quick Cheat Sheet', 'rawnaq' ); ?> <span class="filter-count">1</span></button>
                             <button type="button" class="docs-filter-btn" data-filter="free">🧩 <?php esc_html_e( 'Core Widgets', 'rawnaq' ); ?> <span class="filter-count">6</span></button>
                         </div>
@@ -820,6 +820,36 @@ class Rawnaq_Admin_Dashboard {
                                             <td><strong>Fast-Track vs Budget Simulator</strong></td>
                                             <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_timeline_budget_simulator]">[rawnaq_timeline_budget_simulator] <span class="dashicons dashicons-admin-page"></span></span></td>
                                             <td>Schedule velocity vs budget trade-off simulator with live compressed critical path Gantt.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>3D Sunlight & Shadow Simulator</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_sunlight_simulator]">[rawnaq_sunlight_simulator] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Real-time 24h solar trajectory, daylight penetration, compass azimuth dial & dynamic shadow casting.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>High-Rise Stacking Plan & Cutaway</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_building_stacker]">[rawnaq_building_stacker] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Building elevation floor plates stacker with interactive cutaway previews, unit status & reservations.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Live Material Finishes Restyler</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_material_restyler]">[rawnaq_material_restyler] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Clickable surface hotspots to swap luxury marble, timber & millwork finishes in real-time with budget sync.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Time-Lapse & Drone Progression Scrubber</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_timelapse_scrubber]">[rawnaq_timelapse_scrubber] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Interactive 365-day construction progression timeline with high-res drone telemetry & auto-play.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>LEED Net-Zero ESG Scorecard</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_sustainability_scorecard]">[rawnaq_sustainability_scorecard] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Green building ESG scorecard with Solar BIPV, Geothermal, CO2 offset tons & annual utility savings.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Room Acoustic & Sound Simulator</strong></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_acoustic_visualizer]">[rawnaq_acoustic_visualizer] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td>Interactive room acoustic wave dampening simulation with RT60 reverberation decay & STC soundproofing ratings.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1380,6 +1410,192 @@ class Rawnaq_Admin_Dashboard {
                             </div>
                         </div>
 
+                        <!-- PRO MODULE 17: 3D SUNLIGHT & SHADOW SIMULATOR -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;">
+                                        <span class="dashicons dashicons-lightbulb"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '17. 3D Sunlight & Shadow Path Simulator', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Solar · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Real-time solar trajectory, daylight penetration, golden hour ambient glow, and dynamic shadow casting.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Interactive architectural solar path simulator calibrated to real-world solar azimuth angles, seasonal solstices, and dynamic shadow projections.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>24-Hour Solar Scrubber:</strong> Smooth crossfading between morning sunrise, zenith midday, golden hour sunset, and night lighting layers.</li>
+                                    <li><strong>Solstice Modes:</strong> Summer Solstice (78° high zenith), Equinox (55° balanced), and Winter Solstice (32° elongated low shadow angle).</li>
+                                    <li><strong>Solar Azimuth Dial & Lux Meter:</strong> Live compass needle rotation, daylight illuminance (Lux), and UV index metrics.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Sunlight & Shadow Simulator (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/sunlight-simulator</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_sunlight_simulator]">[rawnaq_sunlight_simulator]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 18: HIGH-RISE STACKING PLAN & CUTAWAY -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #4f46e5, #3730a3); color: #fff;">
+                                        <span class="dashicons dashicons-building"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '18. High-Rise Stacking Plan & Cutaway Explorer', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Tower · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Interactive building elevation cross-section stacker with unit inventory availability and live reservation.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'The essential presale and leasing tool for high-rise residential towers, commercial headquarters, and mixed-use developments.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Multi-Level Tower Stacker:</strong> Interactive vertical plate navigation with hover highlights and smooth inspection transitions.</li>
+                                    <li><strong>Cutaway Detail Card:</strong> 3D isometric cutaways, floor gross area, ceiling clearances, price guides, and inventory status badges.</li>
+                                    <li><strong>Usage Category Filters:</strong> Instant filtering by Residential, Commercial Offices, and Sky Deck Amenities.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Building Stacking Plan & Cutaway (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/building-stacker</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_building_stacker]">[rawnaq_building_stacker]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 19: LIVE MATERIAL FINISHES & ROOM RESTYLER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #ec4899, #be185d); color: #fff;">
+                                        <span class="dashicons dashicons-art"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '19. Live Material Finishes & Room Restyler', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Palette · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Clickable surface hotspots on photoreal room perspectives to live-swap luxury marble, timber & millwork finishes.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Real-time interior room customizer enabling clients to test luxury material combinations before construction begins.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Surface Hotspots:</strong> Interactive pulsing beacons over flooring, feature wall millwork, and island countertops.</li>
+                                    <li><strong>Material Swatch Drawer:</strong> Live swatch palette with manufacturer SKUs, texture previews, and unit pricing ($/sqft).</li>
+                                    <li><strong>Running Budget Schedule:</strong> Computes cumulative material palette cost range and prefills lead specifications.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Live Material & Room Restyler (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/material-restyler</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_material_restyler]">[rawnaq_material_restyler]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 20: PROJECT TIME-LAPSE & DRONE PROGRESSION SCRUBBER -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff;">
+                                        <span class="dashicons dashicons-video-alt3"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '20. Project Time-Lapse & Drone Progression Scrubber', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Progress · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Interactive 365-day construction timeline scrubber with high-res drone shots and site telemetry logs.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Interactive construction progression portal showcasing site evolution from groundbreaking foundation to luxury turnkey handover.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Timeline Milestone Scrubber:</strong> Drag slider across construction days with automatic milestone snapping.</li>
+                                    <li><strong>Drone Telemetry HUD:</strong> Displays current phase, days elapsed, completion percentage, and supervisor notes.</li>
+                                    <li><strong>Playback Speeds:</strong> Auto-play timelapse animation with 1x, 2x, and 4x speed toggles.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Time-Lapse & Drone Progression (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/timelapse-scrubber</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_timelapse_scrubber]">[rawnaq_timelapse_scrubber]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 21: LEED NET-ZERO & CARBON OFFSET SCORECARD -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff;">
+                                        <span class="dashicons dashicons-chart-pie"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '21. LEED Net-Zero & Carbon Offset Scorecard', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'ESG · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Interactive ESG green building scorecard with Solar BIPV, Geothermal, and live annual power savings.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Simulate green building technologies to project ESG compliance, annual energy savings, and LEED certification ratings.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>6 Green System Toggles:</strong> Solar Photovoltaic BIPV, Low-E Argon Glazing, Geothermal HVAC, Rainwater Harvesting, Living Bio-Roof, and AI Smart BMS.</li>
+                                    <li><strong>Financial ROI & Savings:</strong> Real-time annual power savings ($/yr), 10-year cumulative projections, and green tax credits.</li>
+                                    <li><strong>Environmental Metrics:</strong> Carbon offset tons (CO₂/yr), trees planted equivalent, and LEED Platinum/Gold badge.</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>LEED & Net-Zero ESG Calculator (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/sustainability-scorecard</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_sustainability_scorecard]">[rawnaq_sustainability_scorecard]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PRO MODULE 22: ROOM ACOUSTIC & SOUND ISOLATION SIMULATOR -->
+                        <div class="rawnaq-doc-card is-pro" data-category="pro">
+                            <div class="rawnaq-doc-card-header">
+                                <div class="header-left">
+                                    <div class="doc-icon-box" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff;">
+                                        <span class="dashicons dashicons-controls-volumeon"></span>
+                                    </div>
+                                    <div class="header-titles">
+                                        <h3><?php esc_html_e( '22. Room Acoustic & Sound Isolation Simulator', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-pro"><?php esc_html_e( 'Audio · Pro', 'rawnaq' ); ?></span></h3>
+                                        <p class="header-sub"><?php esc_html_e( 'Interactive room acoustic wave dampening simulation with RT60 reverberation decay & STC ratings.', 'rawnaq' ); ?></p>
+                                    </div>
+                                </div>
+                                <span class="dashicons dashicons-arrow-down-alt2 rawnaq-card-toggle-icon"></span>
+                            </div>
+                            <div class="rawnaq-doc-card-body">
+                                <p><?php esc_html_e( 'Acoustic architecture engineering visualizer for private screening cinemas, executive glass boardrooms, and recording suites.', 'rawnaq' ); ?></p>
+                                <h4><?php esc_html_e( 'Key Capabilities:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Animated Sound Wave Pulse:</strong> Emit virtual sound pulses to visualize reverberation decay and wall dampening.</li>
+                                    <li><strong>4 Treatment Toggles:</strong> Micro-perforated timber panels, laminated acoustic glazing, floating floor, and drop-seal doors.</li>
+                                    <li><strong>Acoustic Telemetry:</strong> RT60 reverberation time (seconds), Sound Transmission Class (STC score), and Speech Clarity Index (STI).</li>
+                                </ul>
+                                <h4><?php esc_html_e( 'Shortcode & Builder Usage:', 'rawnaq' ); ?></h4>
+                                <ul>
+                                    <li><strong>Elementor:</strong> <em>Room Acoustic & Sound Simulator (Pro)</em> widget.</li>
+                                    <li><strong>Gutenberg Block:</strong> <code>rawnaq-pro/acoustic-visualizer</code></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_acoustic_visualizer]">[rawnaq_acoustic_visualizer]</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <!-- FREE MODULE 1: SMART FORM -->
                         <div class="rawnaq-doc-card" data-category="free">
                             <div class="rawnaq-doc-card-header">
@@ -1388,7 +1604,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-feedback"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '17. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '23. Smart Form & WhatsApp Delivery', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Lightweight lead generation form with multi-step support, conditional logic, and WhatsApp template delivery.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1413,7 +1629,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-format-chat"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '18. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '24. Floating Dock Menu (WhatsApp Contact Mode)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'macOS-style dock menu, multi-agent WhatsApp routing, business hours, and click counters.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1438,7 +1654,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-backup"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '19. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '25. Scroll Sync Timeline', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Native CSS animation-timeline 60fps compositor scroll animations, CPT queries & Bento sync.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1461,7 +1677,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-networking"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '20. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '26. Flow Chart & Hub Diagram', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Process flows, Org Trees from WP Users, 360° radial workflows, and PNG/SVG export.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1484,7 +1700,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-grid-view"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '21. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '27. Bento Grid, Scroll Story & Progress TOC', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'CSS Grid bento cards, Scrollytelling chapters, and auto-reading progress TOC indicator.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
@@ -1508,7 +1724,7 @@ class Rawnaq_Admin_Dashboard {
                                         <span class="dashicons dashicons-portfolio"></span>
                                     </div>
                                     <div class="header-titles">
-                                        <h3><?php esc_html_e( '22. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
+                                        <h3><?php esc_html_e( '28. Case-Study Grid (Portfolio Engine)', 'rawnaq' ); ?> <span class="rawnaq-doc-badge badge-free"><?php esc_html_e( 'Core Feature', 'rawnaq' ); ?></span></h3>
                                         <p class="header-sub"><?php esc_html_e( 'Portfolio showcase with lightbox gallery, sector filters, NDA confidential masking & quote triggers.', 'rawnaq' ); ?></p>
                                     </div>
                                 </div>
