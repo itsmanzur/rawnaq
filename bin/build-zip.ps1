@@ -84,8 +84,8 @@ function Create-NormalizedZipArchive {
 
 # 1. Build Rawnaq (Free) using .distignore
 $freeSource    = Join-Path $pluginsDir "rawnaq"
-$freeDistZip   = Join-Path $distDir "rawnaq-1.0.0.zip"
-$freeDeskZip   = Join-Path $desktop "rawnaq-1.0.0.zip"
+$freeDistZip   = Join-Path $distDir "rawnaq-1.1.0.zip"
+$freeDeskZip   = Join-Path $desktop "rawnaq-1.1.0.zip"
 $distignorePath = Join-Path $freeSource ".distignore"
 
 $freePatterns = @()
@@ -96,12 +96,16 @@ $freePatterns += @('.git*', '*.zip', 'dist*', 'tmp_*')
 
 Create-NormalizedZipArchive -SourceDir $freeSource -ZipDestination $freeDistZip -RootPrefix 'rawnaq' -Patterns $freePatterns
 Copy-Item -Path $freeDistZip -Destination $freeDeskZip -Force
+Copy-Item -Path $freeDistZip -Destination (Join-Path $distDir "rawnaq-1.0.0.zip") -Force
+Copy-Item -Path $freeDistZip -Destination (Join-Path $desktop "rawnaq-1.0.0.zip") -Force
 
 # 2. Build Rawnaq Pro
 $proSource   = Join-Path $pluginsDir "rawnaq-pro"
-$proDistZip  = Join-Path $distDir "rawnaq-pro-1.0.0.zip"
+$proDistZip  = Join-Path $distDir "rawnaq-pro.zip"
 $proDeskZip  = Join-Path $desktop "rawnaq-pro.zip"
 $proPatterns = @('.git*', 'node_modules*', '.DS_Store', 'Thumbs.db', '*.log', '*.zip', 'dist*')
 
 Create-NormalizedZipArchive -SourceDir $proSource -ZipDestination $proDistZip -RootPrefix 'rawnaq-pro' -Patterns $proPatterns
 Copy-Item -Path $proDistZip -Destination $proDeskZip -Force
+Copy-Item -Path $proDistZip -Destination (Join-Path $distDir "rawnaq-pro-1.0.0.zip") -Force
+
