@@ -1,10 +1,10 @@
-=== Rawnaq ===
+=== Rawnaq – Widgets & Blocks for Elementor, Gutenberg & Divi ===
 Contributors: itsmanzur
 Tags: elementor, gutenberg, divi, timeline, diagram, performance
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,10 @@ Source code: https://github.com/itsmanzur/rawnaq
 5. Case-Study Grid with multi-filter chips and the gallery lightbox.
 
 == Changelog ==
+
+= 1.1.0 =
+* Added Divi Visual Builder support — all 10 free modules now include dedicated Divi modules.
+* Updated plugin title for clarity.
 
 = 1.0.0 =
 * Initial public release on WordPress.org.
