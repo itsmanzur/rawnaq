@@ -44,7 +44,7 @@ class Rawnaq_ET_Scroll_Story extends ET_Builder_Module {
 				'label'           => esc_html__( 'Chapters JSON', 'rawnaq' ),
 				'type'            => 'textarea',
 				'option_category' => 'basic_option',
-				'default'         => '[{"chapter":"01","title":"The Vision","desc":"Rooted in timeless aesthetics, the architectural concept began with a minimalist spatial layout.","image":"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200"},{"chapter":"02","title":"Material Craft","desc":"Custom Italian terrazzo and natural fluted oak form the textural backbone of the living suites.","image":"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200"},{"chapter":"03","title":"The Execution","desc":"Precision engineering and acoustic optimization deliver a tranquil sanctuary.","image":"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200"}]',
+				'default'         => '[{"chapter":"01","title":"The Vision","desc":"Rooted in timeless aesthetics, the architectural concept began with a minimalist spatial layout.","image":""},{"chapter":"02","title":"Material Craft","desc":"Custom Italian terrazzo and natural fluted oak form the textural backbone of the living suites.","image":""},{"chapter":"03","title":"The Execution","desc":"Precision engineering and acoustic optimization deliver a tranquil sanctuary.","image":""}]',
 				'toggle_slug'     => 'chapters',
 			],
 		];

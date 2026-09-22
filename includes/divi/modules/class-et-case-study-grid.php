@@ -56,8 +56,8 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 	}
 
 	public function render( $attrs, $content = null, $render_slug = '' ) {
-		wp_enqueue_style( 'rawnaq-case-study' );
-		wp_enqueue_script( 'rawnaq-case-study' );
+		wp_enqueue_style( 'rawnaq-case-study-grid' );
+		wp_enqueue_script( 'rawnaq-case-study-grid' );
 
 		$posts_per_page = absint( $this->props['posts_per_page'] ?? 6 );
 		$show_filter    = ( $this->props['show_filter'] ?? 'on' ) === 'on';

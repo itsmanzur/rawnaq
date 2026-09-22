@@ -1,6 +1,6 @@
 === Rawnaq ===
 Contributors: itsmanzur
-Tags: elementor, gutenberg, timeline, diagram, performance
+Tags: elementor, gutenberg, divi, timeline, diagram, performance
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -8,15 +8,16 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A performance-optimized suite of widgets and blocks for Elementor and Gutenberg.
+A performance-optimized suite of widgets and modules for Elementor, Gutenberg, and Divi Builder.
 
 == Description ==
 
-Rawnaq is a lightweight, speed-first modular library. It introduces highly interactive, beautiful, and customizable elements without bloating your WordPress site.
+Rawnaq is a lightweight, speed-first modular library. It introduces highly interactive, beautiful, and customizable elements without bloating your WordPress site. Designed with native support for **Elementor**, the **Block Editor (Gutenberg)**, and **Divi Visual Builder**.
 
 Key highlights:
 * **Zero jQuery Dependency:** The frontend is powered by vanilla JavaScript for near-instant rendering.
-* **On-Demand Assets:** CSS/JS files are only loaded on pages where the widgets/blocks actually exist.
+* **On-Demand Assets:** CSS/JS files are only loaded on pages where the widgets/blocks/modules actually exist.
+* **Builder Agnostic:** Seamless integration across Elementor, Gutenberg, and Divi.
 * **Modular Codebase:** Fully ready for developers to extend with new components.
 
 = Included Modules =
@@ -26,7 +27,7 @@ Key highlights:
 4. **Floating Dock Menu:** macOS dock + WhatsApp Contact Mode.
 5. **Flow Chart:** Org/process/freeform + WP Users org + PNG/SVG export.
 6. **Scroll Progress + TOC:** Reading progress + smart TOC.
-7. **Bento Grid:** Marketing bento with Elementor resize + Gutenberg InnerBlocks.
+7. **Bento Grid:** Marketing bento with Elementor resize + Gutenberg InnerBlocks + Divi support.
 8. **Scroll Story Chapters:** Scrollytelling with pinned media.
 9. **Smart Form:** Lead form with email + WhatsApp redirect, layouts, uploads, multi-step.
 10. **Case-Study Grid:** CPT/manual portfolio, multi-filter, gallery modal, link-out, load more.
@@ -49,13 +50,17 @@ Rawnaq may call the following third-party services when you enable related featu
 
 1. Upload the entire `rawnaq` folder to the `/wp-content/plugins/` directory, or upload the ZIP file via WordPress Admin.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Drop the widgets into Elementor or search for them in the Gutenberg block inserter.
+3. Drop the widgets into Elementor, insert blocks in Gutenberg, or add modules directly inside the Divi Visual Builder.
 
 == Frequently Asked Questions ==
 
 = Does Rawnaq require Elementor? =
 
-No. Modules work with Elementor and/or Gutenberg. Enable only the modules you need in Rawnaq settings.
+No. Modules work seamlessly with Elementor, Gutenberg, and Divi Builder. Enable only the modules you need in Rawnaq settings.
+
+= Does Rawnaq support Divi Builder? =
+
+Yes! All 10 free modules and extensions include dedicated Divi Visual Builder modules with real-time controls.
 
 = Does Smart Form send data to Rawnaq servers? =
 
