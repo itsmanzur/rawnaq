@@ -197,6 +197,8 @@
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: var(--sf-gap);
+}
+
 .rawnaq-sf-field.is-valid .rawnaq-sf-input,
 .rawnaq-sf-field.is-valid .rawnaq-sf-textarea,
 .rawnaq-sf-field.is-valid .rawnaq-sf-select {
