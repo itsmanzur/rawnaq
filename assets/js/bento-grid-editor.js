@@ -9,12 +9,28 @@
     }
 
     function resolveWidgetContainer(view) {
-        var container = view && (view.container || (view.getOption && view.getOption('container')));
+        var container = null;
 
-        if (!container && window.elementor && elementor.selection) {
-            var selected = elementor.selection.getElements && elementor.selection.getElements();
-            if (selected && selected[0]) {
-                container = selected[0];
+        if (view) {
+            if (view.container) {
+                container = view.container;
+            } else if (view.options && view.options.container) {
+                container = view.options.container;
+            } else if (view.getOption && typeof view.getOption === 'function') {
+                container = view.getOption('container');
+            }
+        }
+
+        if (!container && window.elementor) {
+            if (typeof elementor.getCurrentElementContainer === 'function') {
+                container = elementor.getCurrentElementContainer();
+            } else if (elementor.selection && typeof elementor.selection.getElements === 'function') {
+                var selected = elementor.selection.getElements();
+                if (selected && selected[0]) {
+                    container = selected[0];
+                }
+            } else if (elementor.selection && elementor.selection.elements && elementor.selection.elements[0]) {
+                container = elementor.selection.elements[0];
             }
         }
 
@@ -22,9 +38,17 @@
             try {
                 var panel = elementor.getPanelView();
                 var page = panel && panel.getCurrentPageView && panel.getCurrentPageView();
-                var edited = page && page.getOption && page.getOption('editedElementView');
-                if (edited && edited.getContainer) {
-                    container = edited.getContainer();
+                if (page) {
+                    if (page.getContainer && typeof page.getContainer === 'function') {
+                        container = page.getContainer();
+                    } else if (page.container) {
+                        container = page.container;
+                    } else if (page.getOption && typeof page.getOption === 'function') {
+                        var edited = page.getOption('editedElementView');
+                        if (edited && edited.getContainer) {
+                            container = edited.getContainer();
+                        }
+                    }
                 }
             } catch (e) { /* ignore */ }
         }
@@ -46,20 +70,23 @@
 
     function applyPreset(view) {
         var container = resolveWidgetContainer(view);
-        if (!container) {
-            return;
+        var settings = (view && view.elementSettingsModel) || (container && container.settings);
+
+        var presetKey = '';
+        if (settings && typeof settings.get === 'function') {
+            presetKey = settings.get('preset') || 'featured';
+        }
+        if (!presetKey) {
+            var select = document.querySelector('.elementor-control-preset select');
+            if (select && select.value) {
+                presetKey = select.value;
+            }
         }
 
-        var settings = container.settings;
-        if (!settings || typeof settings.get !== 'function') {
-            return;
-        }
-
-        var presetKey = settings.get('preset') || 'featured';
         if (presetKey === 'custom') {
             if (window.elementor && elementor.notifications) {
                 elementor.notifications.showToast({
-                    message: (rawnaqBentoEditor && rawnaqBentoEditor.i18n && rawnaqBentoEditor.i18n.customHint)
+                    message: (window.rawnaqBentoEditor && rawnaqBentoEditor.i18n && rawnaqBentoEditor.i18n.customHint)
                         ? rawnaqBentoEditor.i18n.customHint
                         : 'Pick a layout preset (not Custom), then Apply.'
                 });
@@ -72,28 +99,50 @@
             return;
         }
 
+        var cellsWithIds = pack.cells.map(function (cell, index) {
+            var item = Object.assign({}, cell);
+            if (!item._id) {
+                if (window.elementorCommon && elementorCommon.helpers && elementorCommon.helpers.getUniqueId) {
+                    item._id = elementorCommon.helpers.getUniqueId();
+                } else {
+                    item._id = Math.random().toString(36).substring(2, 9) + index;
+                }
+            }
+            return item;
+        });
+
         var next = {
-            cells: pack.cells
+            cells: cellsWithIds
         };
         if (pack.columns) {
             next.columns = String(pack.columns);
         }
 
-        if (window.$e && $e.run) {
+        if (window.$e && $e.run && container) {
             $e.run('document/elements/settings', {
                 container: container,
                 settings: next,
                 options: { external: true }
             });
-        } else if (typeof settings.setExternalChange === 'function') {
+        } else if (settings && typeof settings.setExternalChange === 'function') {
             Object.keys(next).forEach(function (key) {
                 settings.setExternalChange(key, next[key]);
             });
         }
 
+        try {
+            if (window.elementor && elementor.getPanelView) {
+                var panel = elementor.getPanelView();
+                var curPage = panel && panel.getCurrentPageView && panel.getCurrentPageView();
+                if (curPage && typeof curPage.render === 'function') {
+                    curPage.render();
+                }
+            }
+        } catch (err) { /* ignore */ }
+
         if (window.elementor && elementor.notifications) {
             elementor.notifications.showToast({
-                message: (rawnaqBentoEditor && rawnaqBentoEditor.i18n && rawnaqBentoEditor.i18n.applied)
+                message: (window.rawnaqBentoEditor && rawnaqBentoEditor.i18n && rawnaqBentoEditor.i18n.applied)
                     ? rawnaqBentoEditor.i18n.applied
                     : 'Preset applied — cells updated.'
             });
@@ -104,7 +153,6 @@
         elementor.channels.editor.on('rawnaq:bento:applyPreset', applyPreset);
     });
 
-    // Late bind if Elementor already initialized
     if (window.elementor && elementor.channels && elementor.channels.editor) {
         elementor.channels.editor.on('rawnaq:bento:applyPreset', applyPreset);
     }

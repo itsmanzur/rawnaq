@@ -55,6 +55,14 @@ modules.forEach(mod => {
         fs.writeFileSync(minJsPath, minifyJS(raw), 'utf8');
         console.log(`Minified JS: ${mod}.min.js`);
     }
+
+    const editorJsPath = path.join(jsDir, `${mod}-editor.js`);
+    const minEditorJsPath = path.join(jsDir, `${mod}-editor.min.js`);
+    if (fs.existsSync(editorJsPath)) {
+        const raw = fs.readFileSync(editorJsPath, 'utf8');
+        fs.writeFileSync(minEditorJsPath, minifyJS(raw), 'utf8');
+        console.log(`Minified Editor JS: ${mod}-editor.min.js`);
+    }
 });
 
 console.log('All assets minified successfully!');

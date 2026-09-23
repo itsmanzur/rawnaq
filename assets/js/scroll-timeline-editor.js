@@ -11,12 +11,28 @@
     }
 
     function resolveWidgetContainer(view) {
-        var container = view && (view.container || (view.getOption && view.getOption('container')));
+        var container = null;
 
-        if (!container && window.elementor && elementor.selection) {
-            var selected = elementor.selection.getElements && elementor.selection.getElements();
-            if (selected && selected[0]) {
-                container = selected[0];
+        if (view) {
+            if (view.container) {
+                container = view.container;
+            } else if (view.options && view.options.container) {
+                container = view.options.container;
+            } else if (view.getOption && typeof view.getOption === 'function') {
+                container = view.getOption('container');
+            }
+        }
+
+        if (!container && window.elementor) {
+            if (typeof elementor.getCurrentElementContainer === 'function') {
+                container = elementor.getCurrentElementContainer();
+            } else if (elementor.selection && typeof elementor.selection.getElements === 'function') {
+                var selected = elementor.selection.getElements();
+                if (selected && selected[0]) {
+                    container = selected[0];
+                }
+            } else if (elementor.selection && elementor.selection.elements && elementor.selection.elements[0]) {
+                container = elementor.selection.elements[0];
             }
         }
 
@@ -24,9 +40,17 @@
             try {
                 var panel = elementor.getPanelView();
                 var page = panel && panel.getCurrentPageView && panel.getCurrentPageView();
-                var edited = page && page.getOption && page.getOption('editedElementView');
-                if (edited && edited.getContainer) {
-                    container = edited.getContainer();
+                if (page) {
+                    if (page.getContainer && typeof page.getContainer === 'function') {
+                        container = page.getContainer();
+                    } else if (page.container) {
+                        container = page.container;
+                    } else if (page.getOption && typeof page.getOption === 'function') {
+                        var edited = page.getOption('editedElementView');
+                        if (edited && edited.getContainer) {
+                            container = edited.getContainer();
+                        }
+                    }
                 }
             } catch (e) { /* ignore */ }
         }
@@ -48,20 +72,23 @@
 
     function applyPreset(view) {
         var container = resolveWidgetContainer(view);
-        if (!container) {
-            return;
+        var settings = (view && view.elementSettingsModel) || (container && container.settings);
+
+        var presetKey = '';
+        if (settings && typeof settings.get === 'function') {
+            presetKey = settings.get('agency_preset') || '';
+        }
+        if (!presetKey) {
+            var select = document.querySelector('.elementor-control-agency_preset select');
+            if (select && select.value) {
+                presetKey = select.value;
+            }
         }
 
-        var settings = container.settings;
-        if (!settings || typeof settings.get !== 'function') {
-            return;
-        }
-
-        var presetKey = settings.get('agency_preset') || '';
         if (!presetKey) {
             if (window.elementor && elementor.notifications) {
                 elementor.notifications.showToast({
-                    message: (rawnaqTimelineEditor && rawnaqTimelineEditor.i18n && rawnaqTimelineEditor.i18n.pickHint)
+                    message: (window.rawnaqTimelineEditor && rawnaqTimelineEditor.i18n && rawnaqTimelineEditor.i18n.pickHint)
                         ? rawnaqTimelineEditor.i18n.pickHint
                         : 'Choose an agency preset, then Apply.'
                 });
@@ -74,21 +101,45 @@
             return;
         }
 
-        var next = { steps: pack.steps };
+        var stepsWithIds = pack.steps.map(function (step, index) {
+            var item = Object.assign({}, step);
+            if (!item._id) {
+                if (window.elementorCommon && elementorCommon.helpers && elementorCommon.helpers.getUniqueId) {
+                    item._id = elementorCommon.helpers.getUniqueId();
+                } else {
+                    item._id = Math.random().toString(36).substring(2, 9) + index;
+                }
+            }
+            return item;
+        });
 
-        if (window.$e && $e.run) {
+        var next = { steps: stepsWithIds };
+
+        if (window.$e && $e.run && container) {
             $e.run('document/elements/settings', {
                 container: container,
                 settings: next,
                 options: { external: true }
             });
-        } else if (typeof settings.setExternalChange === 'function') {
-            settings.setExternalChange('steps', pack.steps);
+        } else if (settings && typeof settings.setExternalChange === 'function') {
+            settings.setExternalChange('steps', stepsWithIds);
+        } else if (settings && typeof settings.set === 'function') {
+            settings.set('steps', stepsWithIds);
         }
+
+        try {
+            if (window.elementor && elementor.getPanelView) {
+                var panel = elementor.getPanelView();
+                var curPage = panel && panel.getCurrentPageView && panel.getCurrentPageView();
+                if (curPage && typeof curPage.render === 'function') {
+                    curPage.render();
+                }
+            }
+        } catch (err) { /* ignore */ }
 
         if (window.elementor && elementor.notifications) {
             elementor.notifications.showToast({
-                message: (rawnaqTimelineEditor && rawnaqTimelineEditor.i18n && rawnaqTimelineEditor.i18n.applied)
+                message: (window.rawnaqTimelineEditor && rawnaqTimelineEditor.i18n && rawnaqTimelineEditor.i18n.applied)
                     ? rawnaqTimelineEditor.i18n.applied
                     : 'Preset applied — steps updated.'
             });
