@@ -1234,6 +1234,9 @@ function rawnaq_smart_form_markup( $cfg, $form_id = '' ) {
 
 			<?php if ( $multi_step ) : ?>
 				<div class="rawnaq-sf-steps" role="tablist" aria-label="<?php esc_attr_e( 'Form steps', 'rawnaq' ); ?>">
+					<div class="rawnaq-sf-progress-track" aria-hidden="true">
+						<div class="rawnaq-sf-progress-fill" style="width: 0%;"></div>
+					</div>
 					<?php foreach ( $step_nums as $si => $sn ) : ?>
 						<span class="rawnaq-sf-step-dot<?php echo 0 === $si ? ' is-active' : ''; ?>" data-step="<?php echo esc_attr( (string) $sn ); ?>"><?php echo esc_html( (string) ( $si + 1 ) ); ?></span>
 					<?php endforeach; ?>
@@ -1256,6 +1259,10 @@ function rawnaq_smart_form_markup( $cfg, $form_id = '' ) {
 					?>
 				</div>
 			<?php endforeach; ?>
+
+			<?php if ( $multi_step ) : ?>
+				<div class="rawnaq-sf-summary-card" data-summary-last hidden></div>
+			<?php endif; ?>
 
 			<?php if ( $multi_step && ! empty( $cfg_out['consentEnabled'] ) ) : ?>
 				<div class="rawnaq-sf-consent-wrap" data-consent-last hidden>

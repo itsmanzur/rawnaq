@@ -1779,6 +1779,12 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_script( 'rawnaq-smart-form' );
 
         $fields = json_decode( $attributes['fieldsJson'] ?? '[]', true );
+        if ( empty( $fields ) && ! empty( $attributes['preset'] ) && function_exists( 'rawnaq_smart_form_preset_for_elementor' ) ) {
+            $pack = rawnaq_smart_form_preset_for_elementor( sanitize_key( $attributes['preset'] ) );
+            if ( ! empty( $pack['fields'] ) ) {
+                $fields = $pack['fields'];
+            }
+        }
         if ( ! is_array( $fields ) ) {
             $fields = [];
         }
