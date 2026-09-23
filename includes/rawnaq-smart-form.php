@@ -123,43 +123,91 @@ function rawnaq_smart_form_fill_template( $template, $values ) {
  */
 function rawnaq_smart_form_presets() {
 	return [
-		'side_by_side'  => [
-			'label'  => __( 'Name + Email side by side', 'rawnaq' ),
+		'quick_contact' => [
+			'label'  => __( 'Quick Contact (First + Last Name, Email, Phone)', 'rawnaq' ),
 			'fields' => [
-				[ 'field_id' => 'name', 'id' => 'name', 'type' => 'text', 'label' => __( 'Name', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'email', 'id' => 'email', 'type' => 'email', 'label' => __( 'Email', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '1' ],
-				[ 'field_id' => 'message', 'id' => 'message', 'type' => 'textarea', 'label' => __( 'Message', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'first_name', 'id' => 'first_name', 'type' => 'text', 'label' => __( 'First Name', 'rawnaq' ), 'placeholder' => __( 'Jane', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'last_name', 'id' => 'last_name', 'type' => 'text', 'label' => __( 'Last Name', 'rawnaq' ), 'placeholder' => __( 'Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'email', 'id' => 'email', 'type' => 'email', 'label' => __( 'Email Address', 'rawnaq' ), 'placeholder' => __( 'jane@example.com', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone Number', 'rawnaq' ), 'placeholder' => __( '+1 (555) 000-0000', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'message', 'id' => 'message', 'type' => 'textarea', 'label' => __( 'Message', 'rawnaq' ), 'placeholder' => __( 'Tell us about your project or inquiry...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
 			],
 		],
 		'compact_lead'  => [
-			'label'  => __( 'Compact lead', 'rawnaq' ),
+			'label'  => __( 'Compact Lead (Hero / Landing Page)', 'rawnaq' ),
 			'fields' => [
-				[ 'field_id' => 'name', 'id' => 'name', 'type' => 'text', 'label' => __( 'Name', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'message', 'id' => 'message', 'type' => 'textarea', 'label' => __( 'How can we help?', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'name', 'id' => 'name', 'type' => 'text', 'label' => __( 'Your Name', 'rawnaq' ), 'placeholder' => __( 'Jane Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone / WhatsApp', 'rawnaq' ), 'placeholder' => __( '+1 (555) 000-0000', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'message', 'id' => 'message', 'type' => 'textarea', 'label' => __( 'How can we help you?', 'rawnaq' ), 'placeholder' => __( 'Briefly describe what you need...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
 			],
 		],
-		'full_contact'  => [
-			'label'  => __( 'Full contact', 'rawnaq' ),
+		'b2b_rfp'       => [
+			'label'  => __( 'B2B Request for Proposal / Quote (with File Upload)', 'rawnaq' ),
 			'fields' => [
-				[ 'field_id' => 'name', 'id' => 'name', 'type' => 'text', 'label' => __( 'Name', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'email', 'id' => 'email', 'type' => 'email', 'label' => __( 'Email', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'company', 'id' => 'company', 'type' => 'text', 'label' => __( 'Company', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
-				[ 'field_id' => 'subject', 'id' => 'subject', 'type' => 'text', 'label' => __( 'Subject', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '1' ],
-				[ 'field_id' => 'message', 'id' => 'message', 'type' => 'textarea', 'label' => __( 'Message', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'full_name', 'id' => 'full_name', 'type' => 'text', 'label' => __( 'Full Name', 'rawnaq' ), 'placeholder' => __( 'Jane Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'work_email', 'id' => 'work_email', 'type' => 'email', 'label' => __( 'Work Email', 'rawnaq' ), 'placeholder' => __( 'jane@company.com', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'company', 'id' => 'company', 'type' => 'text', 'label' => __( 'Company Name', 'rawnaq' ), 'placeholder' => __( 'Acme Corp', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone Number', 'rawnaq' ), 'placeholder' => __( '+1 (555) 000-0000', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'service', 'id' => 'service', 'type' => 'select', 'label' => __( 'Service Required', 'rawnaq' ), 'placeholder' => __( 'Select a service...', 'rawnaq' ), 'options' => 'Web Design & Development, UI/UX Design, Brand Identity, Custom Software, SEO & Growth', 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'budget', 'id' => 'budget', 'type' => 'select', 'label' => __( 'Estimated Budget', 'rawnaq' ), 'placeholder' => __( 'Select budget range...', 'rawnaq' ), 'options' => '$1,000 – $5,000, $5,000 – $15,000, $15,000 – $50,000, $50,000+', 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'project_details', 'id' => 'project_details', 'type' => 'textarea', 'label' => __( 'Project Overview & Goals', 'rawnaq' ), 'placeholder' => __( 'Tell us about your project, timeline, and goals...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'attachment', 'id' => 'attachment', 'type' => 'file', 'label' => __( 'Attach Project Brief / RFP (optional)', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '1', 'max_mb' => 10, 'accept' => '.pdf,.doc,.docx,.zip,.png,.jpg' ],
 			],
 		],
 		'multi_project' => [
-			'label'  => __( 'Multi-step project inquiry', 'rawnaq' ),
+			'label'  => __( 'Multi-Step Project Discovery Planner (3 Steps)', 'rawnaq' ),
 			'fields' => [
-				[ 'field_id' => 'project_type', 'id' => 'project_type', 'type' => 'select', 'label' => __( 'Project type', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1', 'options' => 'New build, Renovation, Consulting' ],
-				[ 'field_id' => 'budget', 'id' => 'budget', 'type' => 'select', 'label' => __( 'Budget', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '1', 'options' => 'Under 50k, 50–150k, 150k+', 'show_if' => 'project_type', 'show_if_value' => 'Renovation' ],
-				[ 'field_id' => 'scope', 'id' => 'scope', 'type' => 'textarea', 'label' => __( 'Project scope', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '2' ],
-				[ 'field_id' => 'name', 'id' => 'name', 'type' => 'text', 'label' => __( 'Name', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '3' ],
-				[ 'field_id' => 'email', 'id' => 'email', 'type' => 'email', 'label' => __( 'Email', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '3' ],
-				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '3' ],
+				[ 'field_id' => 'project_type', 'id' => 'project_type', 'type' => 'select', 'label' => __( 'What type of project is this?', 'rawnaq' ), 'placeholder' => __( 'Select project type...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1', 'options' => 'New Website, Website Redesign, E-Commerce Store, Web Application, Mobile App' ],
+				[ 'field_id' => 'budget_tier', 'id' => 'budget_tier', 'type' => 'select', 'label' => __( 'Anticipated Budget Range', 'rawnaq' ), 'placeholder' => __( 'Select your budget...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1', 'options' => 'Under $3,000, $3,000 – $10,000, $10,000 – $25,000, $25,000+' ],
+				[ 'field_id' => 'timeline', 'id' => 'timeline', 'type' => 'select', 'label' => __( 'Desired Launch Timeline', 'rawnaq' ), 'placeholder' => __( 'Select timeline...', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '2', 'options' => 'ASAP (1-2 weeks), 1 Month, 2-3 Months, Flexible' ],
+				[ 'field_id' => 'start_date', 'id' => 'start_date', 'type' => 'date', 'label' => __( 'Target Start Date', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '2' ],
+				[ 'field_id' => 'project_description', 'id' => 'project_description', 'type' => 'textarea', 'label' => __( 'Brief Description & Key Requirements', 'rawnaq' ), 'placeholder' => __( 'Describe what you want to achieve...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '2' ],
+				[ 'field_id' => 'contact_name', 'id' => 'contact_name', 'type' => 'text', 'label' => __( 'Your Full Name', 'rawnaq' ), 'placeholder' => __( 'Jane Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '3' ],
+				[ 'field_id' => 'contact_email', 'id' => 'contact_email', 'type' => 'email', 'label' => __( 'Email Address', 'rawnaq' ), 'placeholder' => __( 'jane@company.com', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '3' ],
+				[ 'field_id' => 'contact_phone', 'id' => 'contact_phone', 'type' => 'phone', 'label' => __( 'Phone / WhatsApp Number', 'rawnaq' ), 'placeholder' => __( '+1 (555) 000-0000', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '3' ],
+			],
+		],
+		'feedback_review' => [
+			'label'  => __( 'Customer Feedback & Star Rating', 'rawnaq' ),
+			'fields' => [
+				[ 'field_id' => 'satisfaction', 'id' => 'satisfaction', 'type' => 'rating', 'label' => __( 'Overall Experience & Satisfaction', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1', 'rating_max' => '5' ],
+				[ 'field_id' => 'highlight', 'id' => 'highlight', 'type' => 'textarea', 'label' => __( 'What did you like the most?', 'rawnaq' ), 'placeholder' => __( 'Share what stood out to you...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'suggestions', 'id' => 'suggestions', 'type' => 'textarea', 'label' => __( 'Suggestions for Improvement', 'rawnaq' ), 'placeholder' => __( 'Anything we could do better?', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'reviewer_name', 'id' => 'reviewer_name', 'type' => 'text', 'label' => __( 'Your Name', 'rawnaq' ), 'placeholder' => __( 'Jane Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'reviewer_email', 'id' => 'reviewer_email', 'type' => 'email', 'label' => __( 'Email Address', 'rawnaq' ), 'placeholder' => __( 'jane@example.com', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+			],
+		],
+		'job_application' => [
+			'label'  => __( 'Job Application & Career Inquiry (with Resume Upload)', 'rawnaq' ),
+			'fields' => [
+				[ 'field_id' => 'applicant_name', 'id' => 'applicant_name', 'type' => 'text', 'label' => __( 'Full Name', 'rawnaq' ), 'placeholder' => __( 'Jane Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'applicant_email', 'id' => 'applicant_email', 'type' => 'email', 'label' => __( 'Email Address', 'rawnaq' ), 'placeholder' => __( 'jane@example.com', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'position', 'id' => 'position', 'type' => 'select', 'label' => __( 'Position Applying For', 'rawnaq' ), 'placeholder' => __( 'Select a position...', 'rawnaq' ), 'options' => 'Senior Frontend Developer, UI/UX Designer, WordPress Specialist, Full-Stack Engineer, Digital Marketer', 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'portfolio_url', 'id' => 'portfolio_url', 'type' => 'url', 'label' => __( 'Portfolio / LinkedIn URL', 'rawnaq' ), 'placeholder' => __( 'https://linkedin.com/in/janedoe', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'cover_letter', 'id' => 'cover_letter', 'type' => 'textarea', 'label' => __( 'Why are you a great fit?', 'rawnaq' ), 'placeholder' => __( 'Tell us about your background and experience...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'resume_cv', 'id' => 'resume_cv', 'type' => 'file', 'label' => __( 'Upload Resume / CV (PDF or DOCX)', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1', 'max_mb' => 5, 'accept' => '.pdf,.doc,.docx' ],
+			],
+		],
+		// Legacy aliases for backward compatibility
+		'side_by_side'  => [
+			'label'  => __( 'Quick Contact (Classic)', 'rawnaq' ),
+			'fields' => [
+				[ 'field_id' => 'first_name', 'id' => 'first_name', 'type' => 'text', 'label' => __( 'First Name', 'rawnaq' ), 'placeholder' => __( 'Jane', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'last_name', 'id' => 'last_name', 'type' => 'text', 'label' => __( 'Last Name', 'rawnaq' ), 'placeholder' => __( 'Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'email', 'id' => 'email', 'type' => 'email', 'label' => __( 'Email Address', 'rawnaq' ), 'placeholder' => __( 'jane@example.com', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone Number', 'rawnaq' ), 'placeholder' => __( '+1 (555) 000-0000', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'message', 'id' => 'message', 'type' => 'textarea', 'label' => __( 'Message', 'rawnaq' ), 'placeholder' => __( 'Tell us about your project...', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
+			],
+		],
+		'full_contact'  => [
+			'label'  => __( 'Full Contact (Company & Subject)', 'rawnaq' ),
+			'fields' => [
+				[ 'field_id' => 'name', 'id' => 'name', 'type' => 'text', 'label' => __( 'Name', 'rawnaq' ), 'placeholder' => __( 'Jane Doe', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'email', 'id' => 'email', 'type' => 'email', 'label' => __( 'Email', 'rawnaq' ), 'placeholder' => __( 'jane@example.com', 'rawnaq' ), 'required' => 'yes', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'phone', 'id' => 'phone', 'type' => 'phone', 'label' => __( 'Phone', 'rawnaq' ), 'placeholder' => __( '+1 (555) 000-0000', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'company', 'id' => 'company', 'type' => 'text', 'label' => __( 'Company', 'rawnaq' ), 'placeholder' => __( 'Acme Corp', 'rawnaq' ), 'required' => '', 'width' => '50', 'step' => '1' ],
+				[ 'field_id' => 'subject', 'id' => 'subject', 'type' => 'text', 'label' => __( 'Subject', 'rawnaq' ), 'placeholder' => __( 'General Inquiry', 'rawnaq' ), 'required' => '', 'width' => '100', 'step' => '1' ],
+				[ 'field_id' => 'message', 'id' => 'message', 'type' => 'textarea', 'label' => __( 'Message', 'rawnaq' ), 'placeholder' => __( 'How can we help?', 'rawnaq' ), 'required' => 'yes', 'width' => '100', 'step' => '1' ],
 			],
 		],
 	];
