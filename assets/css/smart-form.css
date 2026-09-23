@@ -475,6 +475,163 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-accent) 45%, transparent);
 }
 
+/* Range / Slider Field */
+.rawnaq-sf-range-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 0;
+}
+
+.rawnaq-sf-range-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rawnaq-sf-range-val {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--sf-accent-deep);
+    background: color-mix(in srgb, var(--sf-accent-deep) 8%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--sf-accent-deep) 25%, #ffffff);
+    padding: 4px 12px;
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.rawnaq-sf-range-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--sf-line) 80%, #ffffff);
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.rawnaq-sf-range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--sf-accent-deep);
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rawnaq-sf-range-input::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--sf-accent-deep);
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.rawnaq-sf-range-input::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--sf-accent-deep) 25%, transparent);
+}
+
+.rawnaq-sf-range-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--sf-muted);
+}
+
+/* Digital Signature Pad */
+.rawnaq-sf-signature-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.rawnaq-sf-signature-canvas {
+    border: 1.5px dashed var(--sf-line);
+    border-radius: var(--sf-radius);
+    background: #ffffff;
+    width: 100%;
+    height: 140px;
+    cursor: crosshair;
+    touch-action: none;
+    transition: border-color 0.2s ease;
+}
+
+.rawnaq-sf-signature-canvas:hover,
+.rawnaq-sf-signature-canvas:focus {
+    border-color: var(--sf-accent-deep);
+}
+
+.rawnaq-sf-signature-tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rawnaq-sf-signature-hint {
+    font-size: 0.8rem;
+    color: var(--sf-muted);
+}
+
+.rawnaq-sf-signature-clear {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--sf-line);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--sf-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.rawnaq-sf-signature-clear:hover {
+    border-color: var(--sf-danger);
+    color: var(--sf-danger);
+    background: #fef2f2;
+}
+
+/* Live Price / Quote Estimator Card */
+.rawnaq-sf-estimator-card {
+    margin: 14px 0 6px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--sf-accent) 15%, #ffffff), color-mix(in srgb, var(--sf-accent-deep) 8%, #ffffff));
+    border: 1.5px solid color-mix(in srgb, var(--sf-accent-deep) 30%, #ffffff);
+    border-radius: var(--sf-radius);
+    padding: 14px 18px;
+    animation: rawnaq-sf-fade-in 0.3s ease both;
+}
+
+.rawnaq-sf-estimator-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rawnaq-sf-estimator-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--sf-ink);
+}
+
+.rawnaq-sf-estimator-total {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--sf-accent-deep);
+    letter-spacing: -0.02em;
+}
+
 /* File Dropzone & Thumbnail Preview */
 .rawnaq-sf-dropzone {
     position: relative;

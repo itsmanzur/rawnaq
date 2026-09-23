@@ -265,7 +265,7 @@ function rawnaq_smart_form_normalize_fields( $fields ) {
 	if ( ! is_array( $fields ) ) {
 		return $out;
 	}
-	$allowed = [ 'text', 'email', 'phone', 'textarea', 'select', 'checkbox', 'date', 'number', 'url', 'hidden', 'rating', 'file', 'cards', 'radio' ];
+	$allowed = [ 'text', 'email', 'phone', 'textarea', 'select', 'checkbox', 'date', 'number', 'url', 'hidden', 'rating', 'file', 'cards', 'radio', 'range', 'slider', 'signature' ];
 	foreach ( $fields as $i => $f ) {
 		$type = sanitize_key( $f['type'] ?? 'text' );
 		if ( ! in_array( $type, $allowed, true ) ) {
@@ -307,6 +307,11 @@ function rawnaq_smart_form_normalize_fields( $fields ) {
 			'showIfValue'   => sanitize_text_field( $f['showIfValue'] ?? ( $f['show_if_value'] ?? '' ) ),
 			'defaultValue'  => sanitize_text_field( $f['defaultValue'] ?? ( $f['default_value'] ?? '' ) ),
 			'countryPicker' => ! empty( $f['country_picker'] ) || ! empty( $f['countryPicker'] ) || 'yes' === ( $f['country_picker'] ?? '' ),
+			'min'           => isset( $f['min'] ) ? intval( $f['min'] ) : ( isset( $f['slider_min'] ) ? intval( $f['slider_min'] ) : 0 ),
+			'max'           => isset( $f['max'] ) ? intval( $f['max'] ) : ( isset( $f['slider_max'] ) ? intval( $f['slider_max'] ) : 100 ),
+			'step_val'      => isset( $f['step_val'] ) ? intval( $f['step_val'] ) : ( isset( $f['slider_step'] ) ? intval( $f['slider_step'] ) : 1 ),
+			'unit_prefix'   => sanitize_text_field( $f['unit_prefix'] ?? ( $f['prefix'] ?? '' ) ),
+			'unit_suffix'   => sanitize_text_field( $f['unit_suffix'] ?? ( $f['suffix'] ?? '' ) ),
 			'maxMb'         => max( 1, min( 25, absint( $f['maxMb'] ?? ( $f['max_mb'] ?? 5 ) ) ) ),
 			'accept'        => sanitize_text_field( $f['accept'] ?? '' ),
 			'ratingMax'     => max( 3, min( 10, absint( $f['ratingMax'] ?? ( $f['rating_max'] ?? 5 ) ) ) ),
@@ -1270,6 +1275,13 @@ function rawnaq_smart_form_markup( $cfg, $form_id = '' ) {
 				</div>
 			<?php endif; ?>
 
+			<div class="rawnaq-sf-estimator-card" hidden>
+				<div class="rawnaq-sf-estimator-inner">
+					<span class="rawnaq-sf-estimator-label"><?php esc_html_e( 'Estimated Total:', 'rawnaq' ); ?></span>
+					<span class="rawnaq-sf-estimator-total">$0</span>
+				</div>
+			</div>
+
 			<input class="rawnaq-sf-hp" type="text" name="rawnaq_hp" value="" tabindex="-1" autocomplete="off" aria-hidden="true" />
 			<input type="hidden" name="rawnaq_ts" value="" />
 			<?php if ( $recaptcha ) : ?>
@@ -1449,6 +1461,47 @@ function rawnaq_smart_form_render_field( $field, $form_id, $error ) {
 					<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
 			</div>
 			<div class="rawnaq-sf-preview-wrap"></div>
+		<?php elseif ( 'range' === $type || 'slider' === $type ) :
+			$min     = isset( $field['min'] ) ? intval( $field['min'] ) : 0;
+			$max     = isset( $field['max'] ) ? intval( $field['max'] ) : 100;
+			$step_v  = isset( $field['step_val'] ) ? intval( $field['step_val'] ) : 1;
+			$def_v   = ( isset( $field['defaultValue'] ) && '' !== $field['defaultValue'] ) ? intval( $field['defaultValue'] ) : $min;
+			$prefix  = (string) ( $field['unit_prefix'] ?? '' );
+			$suffix  = (string) ( $field['unit_suffix'] ?? '' );
+		?>
+			<div class="rawnaq-sf-range-wrap"
+				data-min="<?php echo esc_attr( (string) $min ); ?>"
+				data-max="<?php echo esc_attr( (string) $max ); ?>"
+				data-prefix="<?php echo esc_attr( $prefix ); ?>"
+				data-suffix="<?php echo esc_attr( $suffix ); ?>">
+				<div class="rawnaq-sf-range-header">
+					<span class="rawnaq-sf-range-val"><?php echo esc_html( $prefix . $def_v . $suffix ); ?></span>
+				</div>
+				<input class="rawnaq-sf-range-input" type="range"
+					id="<?php echo esc_attr( $input_id ); ?>"
+					name="sf_<?php echo esc_attr( $id ); ?>"
+					min="<?php echo esc_attr( (string) $min ); ?>"
+					max="<?php echo esc_attr( (string) $max ); ?>"
+					step="<?php echo esc_attr( (string) $step_v ); ?>"
+					value="<?php echo esc_attr( (string) $def_v ); ?>"
+					data-sf-type="range"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+				<div class="rawnaq-sf-range-scale">
+					<span><?php echo esc_html( $prefix . $min . $suffix ); ?></span>
+					<span><?php echo esc_html( $prefix . $max . $suffix ); ?></span>
+				</div>
+			</div>
+		<?php elseif ( 'signature' === $type ) : ?>
+			<div class="rawnaq-sf-signature-wrap" id="sig-wrap-<?php echo esc_attr( $input_id ); ?>">
+				<canvas class="rawnaq-sf-signature-canvas" width="500" height="150" aria-label="<?php esc_attr_e( 'Sign here', 'rawnaq' ); ?>"></canvas>
+				<div class="rawnaq-sf-signature-tools">
+					<span class="rawnaq-sf-signature-hint"><?php esc_html_e( 'Draw your signature above', 'rawnaq' ); ?></span>
+					<button type="button" class="rawnaq-sf-signature-clear"><?php esc_html_e( 'Clear', 'rawnaq' ); ?></button>
+				</div>
+				<input type="hidden" id="<?php echo esc_attr( $input_id ); ?>"
+					name="sf_<?php echo esc_attr( $id ); ?>"
+					value=""
+					data-sf-type="signature"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+			</div>
 		<?php else :
 			$html_type = 'text';
 			if ( 'email' === $type ) {

@@ -86,11 +86,43 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 				'date'     => esc_html__( 'Date', 'rawnaq' ),
 				'number'   => esc_html__( 'Number', 'rawnaq' ),
 				'url'      => esc_html__( 'URL', 'rawnaq' ),
-				'cards'    => esc_html__( 'Choice Cards (Visual Radio)', 'rawnaq' ),
-				'hidden'   => esc_html__( 'Hidden', 'rawnaq' ),
-				'rating'   => esc_html__( 'Rating', 'rawnaq' ),
-				'file'     => esc_html__( 'File upload', 'rawnaq' ),
+				'cards'     => esc_html__( 'Choice Cards (Visual Radio)', 'rawnaq' ),
+				'range'     => esc_html__( 'Range Slider', 'rawnaq' ),
+				'signature' => esc_html__( 'Digital Signature', 'rawnaq' ),
+				'hidden'    => esc_html__( 'Hidden', 'rawnaq' ),
+				'rating'    => esc_html__( 'Rating', 'rawnaq' ),
+				'file'      => esc_html__( 'File upload', 'rawnaq' ),
 			],
+		] );
+		$repeater->add_control( 'slider_min', [
+			'label'     => esc_html__( 'Min value', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::NUMBER,
+			'default'   => 0,
+			'condition' => [ 'type' => 'range' ],
+		] );
+		$repeater->add_control( 'slider_max', [
+			'label'     => esc_html__( 'Max value', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::NUMBER,
+			'default'   => 1000,
+			'condition' => [ 'type' => 'range' ],
+		] );
+		$repeater->add_control( 'slider_step', [
+			'label'     => esc_html__( 'Step', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::NUMBER,
+			'default'   => 10,
+			'condition' => [ 'type' => 'range' ],
+		] );
+		$repeater->add_control( 'unit_prefix', [
+			'label'     => esc_html__( 'Value prefix (e.g. $)', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::TEXT,
+			'default'   => '$',
+			'condition' => [ 'type' => 'range' ],
+		] );
+		$repeater->add_control( 'unit_suffix', [
+			'label'     => esc_html__( 'Value suffix (e.g. /mo)', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::TEXT,
+			'default'   => '',
+			'condition' => [ 'type' => 'range' ],
 		] );
 		$repeater->add_control( 'country_picker', [
 			'label'        => esc_html__( 'Country flag & code picker', 'rawnaq' ),

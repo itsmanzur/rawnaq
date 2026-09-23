@@ -107,7 +107,9 @@ class Rawnaq_Smart_Form_Admin {
 		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Field', 'rawnaq' ) . '</th><th>' . esc_html__( 'Value', 'rawnaq' ) . '</th></tr></thead><tbody>';
 		foreach ( $standard_fields as $k => $v ) {
 			$v = (string) $v;
-			if ( filter_var( $v, FILTER_VALIDATE_URL ) ) {
+			if ( strpos( $v, 'data:image/' ) === 0 || 'signature' === $k ) {
+				$cell = '<img src="' . esc_attr( $v ) . '" style="max-height:90px;max-width:320px;border:1px solid #ccd0d4;border-radius:6px;padding:6px;background:#ffffff;display:block;" alt="' . esc_attr__( 'Signature', 'rawnaq' ) . '" />';
+			} elseif ( filter_var( $v, FILTER_VALIDATE_URL ) ) {
 				$cell = '<a href="' . esc_url( $v ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $v ) . '</a>';
 			} else {
 				$cell = esc_html( $v );
