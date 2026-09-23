@@ -129,8 +129,8 @@
                 var distance = Math.hypot(e.clientX - cx, e.clientY - cy);
 
                 if (distance < maxDistance) {
-                    var ratio = (maxDistance - distance) / maxDistance;
-                    var size = baseSize + (baseSize * (maxScale - 1) * ratio);
+                    var factor = 0.5 * (1 + Math.cos(Math.PI * (distance / maxDistance)));
+                    var size = baseSize + (baseSize * (maxScale - 1) * factor);
                     item.style.transition = 'none';
                     item.style.width = size + 'px';
                     item.style.height = size + 'px';

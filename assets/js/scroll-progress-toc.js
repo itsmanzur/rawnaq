@@ -257,7 +257,8 @@
         }
     }
 
-    function observeActive(items, tocEl) {
+    function observeActive(items, tocEl, cfg) {
+        cfg = cfg || {};
         if (!('IntersectionObserver' in window) || !items.length) {
             return null;
         }
@@ -481,7 +482,7 @@
             }
 
             buildTocList(toc, items, cfg);
-            inst.observer = observeActive(items, toc);
+            inst.observer = observeActive(items, toc, cfg);
 
             var dockAttached = false;
             function tryDockAttach() {

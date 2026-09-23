@@ -115,6 +115,17 @@
             });
         }
 
+        // Interactive radial spotlight tracking
+        cells.forEach(function (cell) {
+            cell.addEventListener('mousemove', function (e) {
+                var rect = cell.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+                cell.style.setProperty('--mouse-x', x + 'px');
+                cell.style.setProperty('--mouse-y', y + 'px');
+            });
+        });
+
         var videos = root.querySelectorAll('video.rawnaq-bento-video');
         if (videos.length) {
             ensureVideoObserver();

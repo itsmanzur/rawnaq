@@ -130,17 +130,22 @@
 }
 
 .rawnaq-story-chapter {
+    position: relative;
     min-height: 72vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 32px 8px;
-    opacity: 0.42;
-    transition: opacity 0.35s ease;
+    padding: 32px 16px 32px 24px;
+    border-left: 3px solid transparent;
+    opacity: 0.38;
+    transform: translateX(0);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s ease, transform 0.4s ease;
 }
 
 .rawnaq-story-chapter.is-active {
     opacity: 1;
+    border-left-color: var(--story-accent);
+    transform: translateX(6px);
 }
 
 .rawnaq-story-kicker {

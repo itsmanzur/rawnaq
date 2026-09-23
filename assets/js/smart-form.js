@@ -248,6 +248,28 @@
         });
     }
 
+    function launchConfetti(form) {
+        var wrap = document.createElement('div');
+        wrap.className = 'rawnaq-sf-confetti-wrap';
+        var colors = ['#0f766e', '#10b981', '#fbbf24', '#6366f1', '#ec4899', '#3b82f6'];
+        for (var i = 0; i < 36; i++) {
+            var p = document.createElement('div');
+            p.className = 'rawnaq-sf-confetti-particle';
+            p.style.left = (Math.random() * 100) + '%';
+            p.style.top = (Math.random() * 20) + 'px';
+            p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            p.style.animationDelay = (Math.random() * 0.4) + 's';
+            p.style.width = (Math.random() * 6 + 6) + 'px';
+            p.style.height = (Math.random() * 6 + 6) + 'px';
+            wrap.appendChild(p);
+        }
+        form.style.position = 'relative';
+        form.appendChild(wrap);
+        setTimeout(function () {
+            if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+        }, 2500);
+    }
+
     function doSubmit(form) {
         var cfg = cfgOf(form);
         hideStatus(form);
@@ -257,6 +279,8 @@
         fields.forEach(function (field) {
             if (!validateField(field)) {
                 valid = false;
+                field.classList.add('is-shake');
+                setTimeout(function () { field.classList.remove('is-shake'); }, 450);
             }
         });
         if (!valid) {
@@ -313,8 +337,15 @@
 
             var data = json.data || {};
             showStatus(form, 'success', data.message || cfg.successMessage || 'Message sent.');
+            launchConfetti(form);
             form.reset();
-            fields.forEach(function (f) { setInvalid(f, false); });
+            fields.forEach(function (f) {
+                setInvalid(f, false);
+                f.classList.remove('is-valid');
+            });
+            form.querySelectorAll('.rawnaq-sf-preview-wrap').forEach(function (p) {
+                p.innerHTML = '';
+            });
             form.querySelectorAll('.rawnaq-sf-star').forEach(function (s) {
                 s.classList.remove('is-on');
             });
@@ -346,6 +377,84 @@
         doSubmit(e.currentTarget);
     }
 
+    function setupDropzone(form) {
+        form.querySelectorAll('.rawnaq-sf-dropzone').forEach(function (zone) {
+            var fileInput = zone.querySelector('input[type="file"]');
+            var previewWrap = zone.parentNode.querySelector('.rawnaq-sf-preview-wrap');
+            if (!previewWrap) {
+                previewWrap = document.createElement('div');
+                previewWrap.className = 'rawnaq-sf-preview-wrap';
+                zone.parentNode.appendChild(previewWrap);
+            }
+
+            function updatePreviews(files) {
+                previewWrap.innerHTML = '';
+                if (!files || !files.length) return;
+                Array.prototype.forEach.call(files, function (file) {
+                    var chip = document.createElement('div');
+                    chip.className = 'rawnaq-sf-preview-chip';
+                    var sizeKb = Math.round(file.size / 1024);
+                    var sizeStr = sizeKb > 1024 ? (sizeKb / 1024).toFixed(1) + ' MB' : sizeKb + ' KB';
+
+                    if (file.type.indexOf('image/') === 0) {
+                        var img = document.createElement('img');
+                        img.className = 'rawnaq-sf-preview-thumb';
+                        var reader = new FileReader();
+                        reader.onload = function (e) { img.src = e.target.result; };
+                        reader.readAsDataURL(file);
+                        chip.appendChild(img);
+                    }
+
+                    var nameSpan = document.createElement('span');
+                    nameSpan.textContent = file.name + ' (' + sizeStr + ')';
+                    chip.appendChild(nameSpan);
+
+                    var removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'rawnaq-sf-preview-remove';
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.title = 'Remove file';
+                    removeBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        fileInput.value = '';
+                        previewWrap.innerHTML = '';
+                    });
+                    chip.appendChild(removeBtn);
+                    previewWrap.appendChild(chip);
+                });
+            }
+
+            ['dragenter', 'dragover'].forEach(function (evt) {
+                zone.addEventListener(evt, function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zone.classList.add('is-dragover');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(function (evt) {
+                zone.addEventListener(evt, function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zone.classList.remove('is-dragover');
+                });
+            });
+
+            zone.addEventListener('drop', function (e) {
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    updatePreviews(fileInput.files);
+                    validateField(zone.closest('.rawnaq-sf-field'));
+                }
+            });
+
+            fileInput.addEventListener('change', function () {
+                updatePreviews(fileInput.files);
+                validateField(zone.closest('.rawnaq-sf-field'));
+            });
+        });
+    }
+
     function bindOne(form) {
         if (!form || form.classList.contains('sf-bound')) {
             return;
@@ -358,12 +467,17 @@
 
         applyConditionals(form);
         syncStepUi(form, 0);
+        setupDropzone(form);
 
         form.addEventListener('submit', onSubmit);
 
         form.querySelectorAll('.rawnaq-sf-field input, .rawnaq-sf-field textarea, .rawnaq-sf-field select').forEach(function (el) {
             el.addEventListener('blur', function () {
-                validateField(el.closest('.rawnaq-sf-field'));
+                var field = el.closest('.rawnaq-sf-field');
+                var isOk = validateField(field);
+                if (field && el.value.trim().length > 0) {
+                    field.classList.toggle('is-valid', isOk);
+                }
             });
             el.addEventListener('input', function () {
                 applyConditionals(form);
@@ -374,6 +488,16 @@
             });
             el.addEventListener('change', function () {
                 applyConditionals(form);
+            });
+            // Conversational Enter key navigation in multi-step form
+            el.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && el.tagName !== 'TEXTAREA') {
+                    var nextBtn = form.querySelector('.rawnaq-sf-next');
+                    if (nextBtn && fieldVisible(nextBtn)) {
+                        e.preventDefault();
+                        nextBtn.click();
+                    }
+                }
             });
         });
 
@@ -402,7 +526,16 @@
                 }
                 hideStatus(form);
                 var idx = parseInt(form.getAttribute('data-step-index') || '0', 10) || 0;
-                syncStepUi(form, idx + 1);
+                var nextIdx = idx + 1;
+                syncStepUi(form, nextIdx);
+                // Auto-focus first input on the new step for smooth conversational UX
+                var panels = getStepPanels(form);
+                if (panels[nextIdx]) {
+                    var firstInput = panels[nextIdx].querySelector('input:not([type="hidden"]), textarea, select');
+                    if (firstInput) {
+                        setTimeout(function () { firstInput.focus(); }, 50);
+                    }
+                }
             });
         }
         if (prev) {

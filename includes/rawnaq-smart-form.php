@@ -1293,18 +1293,23 @@ function rawnaq_smart_form_render_field( $field, $form_id, $error ) {
 				<input type="hidden" name="sf_<?php echo esc_attr( $id ); ?>" value="" data-sf-type="rating"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
 			</div>
 		<?php elseif ( 'file' === $type ) : ?>
-			<input class="rawnaq-sf-file" type="file" id="<?php echo esc_attr( $input_id ); ?>"
-				name="sf_files[<?php echo esc_attr( $id ); ?>]" data-sf-type="file"
-				data-max-mb="<?php echo esc_attr( (string) $field['maxMb'] ); ?>"
-				<?php echo ! empty( $field['accept'] ) ? ' accept="' . esc_attr( $field['accept'] ) . '"' : ''; ?>
-				<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
-			<p class="rawnaq-sf-hint"><?php
-				printf(
-					/* translators: %d: max MB */
-					esc_html__( 'Max %d MB', 'rawnaq' ),
-					(int) $field['maxMb']
-				);
-			?></p>
+			<div class="rawnaq-sf-dropzone">
+				<svg class="rawnaq-sf-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+				<span class="rawnaq-sf-dropzone-text"><?php esc_html_e( 'Choose a file or drag & drop here', 'rawnaq' ); ?></span>
+				<span class="rawnaq-sf-dropzone-sub"><?php
+					printf(
+						/* translators: %d: max MB */
+						esc_html__( 'Maximum file size: %d MB', 'rawnaq' ),
+						(int) $field['maxMb']
+					);
+				?></span>
+				<input class="rawnaq-sf-file" type="file" id="<?php echo esc_attr( $input_id ); ?>"
+					name="sf_files[<?php echo esc_attr( $id ); ?>]" data-sf-type="file"
+					data-max-mb="<?php echo esc_attr( (string) $field['maxMb'] ); ?>"
+					<?php echo ! empty( $field['accept'] ) ? ' accept="' . esc_attr( $field['accept'] ) . '"' : ''; ?>
+					<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+			</div>
+			<div class="rawnaq-sf-preview-wrap"></div>
 		<?php else :
 			$html_type = 'text';
 			if ( 'email' === $type ) {

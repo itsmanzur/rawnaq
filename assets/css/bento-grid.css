@@ -117,6 +117,23 @@
         opacity 0.45s ease;
 }
 
+/* Bento Interactive Radial Spotlight Glow */
+.rawnaq-bento-cell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--bento-accent) 15%, rgba(255, 255, 255, 0.15)), transparent 80%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.rawnaq-bento-cell:hover::before {
+    opacity: 1;
+}
+
 .rawnaq-bento-grid[data-reveal="1"] .rawnaq-bento-cell {
     opacity: 0;
     transform: translateY(14px) scale(0.97);
