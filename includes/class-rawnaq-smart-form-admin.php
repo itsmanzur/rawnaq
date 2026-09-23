@@ -91,20 +91,49 @@ class Rawnaq_Smart_Form_Admin {
 			echo '<p>' . esc_html__( 'No structured fields stored.', 'rawnaq' ) . '</p>';
 			return;
 		}
-		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Field', 'rawnaq' ) . '</th><th>' . esc_html__( 'Value', 'rawnaq' ) . '</th></tr></thead><tbody>';
+		$utm_keys         = [ 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid', 'referrer_url', 'landing_page' ];
+		$standard_fields  = [];
+		$marketing_fields = [];
 		foreach ( $values as $k => $v ) {
+			if ( in_array( $k, $utm_keys, true ) ) {
+				if ( ! empty( $v ) ) {
+					$marketing_fields[ $k ] = $v;
+				}
+			} else {
+				$standard_fields[ $k ] = $v;
+			}
+		}
+
+		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Field', 'rawnaq' ) . '</th><th>' . esc_html__( 'Value', 'rawnaq' ) . '</th></tr></thead><tbody>';
+		foreach ( $standard_fields as $k => $v ) {
 			$v = (string) $v;
 			if ( filter_var( $v, FILTER_VALIDATE_URL ) ) {
 				$cell = '<a href="' . esc_url( $v ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $v ) . '</a>';
 			} else {
 				$cell = esc_html( $v );
 			}
-			echo '<tr><th style="width:180px;">' . esc_html( $k ) . '</th><td>' . $cell . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$label = ucwords( str_replace( [ '_', '-' ], ' ', esc_html( $k ) ) );
+			echo '<tr><th style="width:180px;">' . $label . '</th><td>' . $cell . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		echo '</tbody></table>';
+
+		if ( ! empty( $marketing_fields ) ) {
+			echo '<div style="margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;">';
+			echo '<h4 style="margin:0 0 8px 0;color:#166534;display:flex;align-items:center;gap:6px;"><span class="dashicons dashicons-chart-line" style="font-size:18px;color:#16a34a;"></span> ' . esc_html__( 'Campaign & Lead Attribution (UTM)', 'rawnaq' ) . '</h4>';
+			echo '<table class="widefat" style="background:transparent;border:0;box-shadow:none;"><tbody>';
+			foreach ( $marketing_fields as $mk => $mv ) {
+				$mv_str = (string) $mv;
+				$cell   = filter_var( $mv_str, FILTER_VALIDATE_URL )
+					? '<a href="' . esc_url( $mv_str ) . '" target="_blank" rel="noopener noreferrer" style="color:#15803d;">' . esc_html( $mv_str ) . '</a>'
+					: '<strong style="color:#15803d;">' . esc_html( $mv_str ) . '</strong>';
+				echo '<tr><th style="width:160px;padding:4px 8px;border:0;color:#14532d;">' . esc_html( $mk ) . '</th><td style="padding:4px 8px;border:0;">' . $cell . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			echo '</tbody></table></div>';
+		}
+
 		$form_id = get_post_meta( $post->ID, '_rawnaq_sf_form_id', true );
 		if ( $form_id ) {
-			echo '<p style="margin-top:12px;"><strong>' . esc_html__( 'Form ID:', 'rawnaq' ) . '</strong> ' . esc_html( $form_id ) . '</p>';
+			echo '<p style="margin-top:12px;color:#646970;"><strong>' . esc_html__( 'Form ID:', 'rawnaq' ) . '</strong> ' . esc_html( $form_id ) . '</p>';
 		}
 	}
 

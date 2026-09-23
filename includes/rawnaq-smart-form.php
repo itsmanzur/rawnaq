@@ -79,6 +79,13 @@ function rawnaq_smart_form_page_tokens() {
 		'sku'         => (string) ( $ctx['sku'] ?? '' ),
 		'productUrl'  => (string) ( $ctx['productUrl'] ?? '' ),
 		'productId'   => (string) ( $ctx['productId'] ?? '' ),
+		'utm_source'  => '',
+		'utm_medium'  => '',
+		'utm_campaign'=> '',
+		'utm_term'    => '',
+		'utm_content' => '',
+		'gclid'       => '',
+		'referrer_url'=> '',
 	];
 	return $tokens;
 }
@@ -258,7 +265,7 @@ function rawnaq_smart_form_normalize_fields( $fields ) {
 	if ( ! is_array( $fields ) ) {
 		return $out;
 	}
-	$allowed = [ 'text', 'email', 'phone', 'textarea', 'select', 'checkbox', 'date', 'number', 'url', 'hidden', 'rating', 'file' ];
+	$allowed = [ 'text', 'email', 'phone', 'textarea', 'select', 'checkbox', 'date', 'number', 'url', 'hidden', 'rating', 'file', 'cards', 'radio' ];
 	foreach ( $fields as $i => $f ) {
 		$type = sanitize_key( $f['type'] ?? 'text' );
 		if ( ! in_array( $type, $allowed, true ) ) {
@@ -288,20 +295,21 @@ function rawnaq_smart_form_normalize_fields( $fields ) {
 		}
 		$step = max( 1, absint( $f['step'] ?? 1 ) );
 		$out[] = [
-			'id'           => $id,
-			'type'         => $type,
-			'label'        => sanitize_text_field( $f['label'] ?? '' ),
-			'placeholder'  => sanitize_text_field( $f['placeholder'] ?? '' ),
-			'required'     => ! empty( $f['required'] ) && 'no' !== $f['required'] && 'false' !== $f['required'],
-			'options'      => $options,
-			'width'        => $width,
-			'step'         => $step,
-			'showIf'       => sanitize_key( $f['showIf'] ?? ( $f['show_if'] ?? '' ) ),
-			'showIfValue'  => sanitize_text_field( $f['showIfValue'] ?? ( $f['show_if_value'] ?? '' ) ),
-			'defaultValue' => sanitize_text_field( $f['defaultValue'] ?? ( $f['default_value'] ?? '' ) ),
-			'maxMb'        => max( 1, min( 25, absint( $f['maxMb'] ?? ( $f['max_mb'] ?? 5 ) ) ) ),
-			'accept'       => sanitize_text_field( $f['accept'] ?? '' ),
-			'ratingMax'    => max( 3, min( 10, absint( $f['ratingMax'] ?? ( $f['rating_max'] ?? 5 ) ) ) ),
+			'id'            => $id,
+			'type'          => $type,
+			'label'         => sanitize_text_field( $f['label'] ?? '' ),
+			'placeholder'   => sanitize_text_field( $f['placeholder'] ?? '' ),
+			'required'      => ! empty( $f['required'] ) && 'no' !== $f['required'] && 'false' !== $f['required'],
+			'options'       => $options,
+			'width'         => $width,
+			'step'          => $step,
+			'showIf'        => sanitize_key( $f['showIf'] ?? ( $f['show_if'] ?? '' ) ),
+			'showIfValue'   => sanitize_text_field( $f['showIfValue'] ?? ( $f['show_if_value'] ?? '' ) ),
+			'defaultValue'  => sanitize_text_field( $f['defaultValue'] ?? ( $f['default_value'] ?? '' ) ),
+			'countryPicker' => ! empty( $f['country_picker'] ) || ! empty( $f['countryPicker'] ) || 'yes' === ( $f['country_picker'] ?? '' ),
+			'maxMb'         => max( 1, min( 25, absint( $f['maxMb'] ?? ( $f['max_mb'] ?? 5 ) ) ) ),
+			'accept'        => sanitize_text_field( $f['accept'] ?? '' ),
+			'ratingMax'     => max( 3, min( 10, absint( $f['ratingMax'] ?? ( $f['rating_max'] ?? 5 ) ) ) ),
 		];
 	}
 	return $out;
@@ -1314,18 +1322,52 @@ function rawnaq_smart_form_render_field( $field, $form_id, $error ) {
 
 		<?php if ( 'hidden' === $type ) : ?>
 			<input type="hidden" name="sf_<?php echo esc_attr( $id ); ?>" value="<?php echo esc_attr( $field['defaultValue'] ?? '' ); ?>" data-sf-type="hidden" />
-		<?php elseif ( 'textarea' === $type ) : ?>
-			<textarea class="rawnaq-sf-textarea" id="<?php echo esc_attr( $input_id ); ?>"
-				name="sf_<?php echo esc_attr( $id ); ?>" data-sf-type="textarea"
-				placeholder="<?php echo esc_attr( $ph ); ?>"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>></textarea>
-		<?php elseif ( 'select' === $type ) : ?>
-			<select class="rawnaq-sf-select" id="<?php echo esc_attr( $input_id ); ?>"
-				name="sf_<?php echo esc_attr( $id ); ?>" data-sf-type="select"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-				<option value=""><?php echo esc_html( $ph ?: __( 'Select…', 'rawnaq' ) ); ?></option>
-				<?php foreach ( $field['options'] as $opt ) : ?>
-					<option value="<?php echo esc_attr( $opt ); ?>"><?php echo esc_html( $opt ); ?></option>
+		<?php elseif ( 'cards' === $type || 'radio' === $type ) : ?>
+			<div class="rawnaq-sf-cards-grid" role="radiogroup">
+				<?php foreach ( $field['options'] as $idx => $opt ) :
+					$opt_title = $opt;
+					$opt_desc  = '';
+					if ( strpos( $opt, '|' ) !== false ) {
+						$parts     = explode( '|', $opt, 2 );
+						$opt_title = trim( $parts[0] );
+						$opt_desc  = trim( $parts[1] );
+					}
+					$card_id = $input_id . '-' . $idx;
+				?>
+					<label class="rawnaq-sf-card-option" for="<?php echo esc_attr( $card_id ); ?>">
+						<input type="radio" id="<?php echo esc_attr( $card_id ); ?>"
+							name="sf_<?php echo esc_attr( $id ); ?>"
+							value="<?php echo esc_attr( $opt_title ); ?>"
+							data-sf-type="cards"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+						<div class="rawnaq-sf-card-content">
+							<span class="rawnaq-sf-card-radio-indicator" aria-hidden="true"></span>
+							<div class="rawnaq-sf-card-text">
+								<span class="rawnaq-sf-card-title"><?php echo esc_html( $opt_title ); ?></span>
+								<?php if ( $opt_desc ) : ?>
+									<span class="rawnaq-sf-card-desc"><?php echo esc_html( $opt_desc ); ?></span>
+								<?php endif; ?>
+							</div>
+						</div>
+					</label>
 				<?php endforeach; ?>
-			</select>
+			</div>
+		<?php elseif ( 'textarea' === $type ) : ?>
+			<div class="rawnaq-sf-input-wrap">
+				<textarea class="rawnaq-sf-textarea" id="<?php echo esc_attr( $input_id ); ?>"
+					name="sf_<?php echo esc_attr( $id ); ?>" data-sf-type="textarea"
+					placeholder="<?php echo esc_attr( $ph ); ?>"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>></textarea>
+				<span class="rawnaq-sf-live-badge" aria-hidden="true"></span>
+			</div>
+		<?php elseif ( 'select' === $type ) : ?>
+			<div class="rawnaq-sf-input-wrap">
+				<select class="rawnaq-sf-select" id="<?php echo esc_attr( $input_id ); ?>"
+					name="sf_<?php echo esc_attr( $id ); ?>" data-sf-type="select"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+					<option value=""><?php echo esc_html( $ph ?: __( 'Select…', 'rawnaq' ) ); ?></option>
+					<?php foreach ( $field['options'] as $opt ) : ?>
+						<option value="<?php echo esc_attr( $opt ); ?>"><?php echo esc_html( $opt ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
 		<?php elseif ( 'checkbox' === $type ) : ?>
 			<label class="rawnaq-sf-check">
 				<input type="checkbox" id="<?php echo esc_attr( $input_id ); ?>"
@@ -1339,6 +1381,48 @@ function rawnaq_smart_form_render_field( $field, $form_id, $error ) {
 					<button type="button" class="rawnaq-sf-star" data-value="<?php echo esc_attr( (string) $r ); ?>" aria-label="<?php echo esc_attr( (string) $r ); ?>">★</button>
 				<?php endfor; ?>
 				<input type="hidden" name="sf_<?php echo esc_attr( $id ); ?>" value="" data-sf-type="rating"<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+			</div>
+		<?php elseif ( 'phone' === $type && ! empty( $field['countryPicker'] ) ) : ?>
+			<div class="rawnaq-sf-phone-wrap">
+				<div class="rawnaq-sf-country-select-wrap">
+					<select class="rawnaq-sf-country-code" aria-label="<?php esc_attr_e( 'Country dialing code', 'rawnaq' ); ?>">
+						<option value="+1" data-flag="🇺🇸">🇺🇸 +1</option>
+						<option value="+44" data-flag="🇬🇧">🇬🇧 +44</option>
+						<option value="+880" data-flag="🇧🇩" selected>🇧🇩 +880</option>
+						<option value="+91" data-flag="🇮🇳">🇮🇳 +91</option>
+						<option value="+971" data-flag="🇦🇪">🇦🇪 +971</option>
+						<option value="+966" data-flag="🇸🇦">🇸🇦 +966</option>
+						<option value="+61" data-flag="🇦🇺">🇦🇺 +61</option>
+						<option value="+49" data-flag="🇩🇪">🇩🇪 +49</option>
+						<option value="+33" data-flag="🇫🇷">🇫🇷 +33</option>
+						<option value="+81" data-flag="🇯🇵">🇯🇵 +81</option>
+						<option value="+65" data-flag="🇸🇬">🇸🇬 +65</option>
+						<option value="+60" data-flag="🇲🇾">🇲🇾 +60</option>
+						<option value="+39" data-flag="🇮🇹">🇮🇹 +39</option>
+						<option value="+34" data-flag="🇪🇸">🇪🇸 +34</option>
+						<option value="+1" data-flag="🇨🇦">🇨🇦 +1</option>
+						<option value="+86" data-flag="🇨🇳">🇨🇳 +86</option>
+						<option value="+92" data-flag="🇵🇰">🇵🇰 +92</option>
+						<option value="+90" data-flag="🇹🇷">🇹🇷 +90</option>
+						<option value="+7" data-flag="🇷🇺">🇷🇺 +7</option>
+						<option value="+55" data-flag="🇧🇷">🇧🇷 +55</option>
+						<option value="+27" data-flag="🇿🇦">🇿🇦 +27</option>
+						<option value="+20" data-flag="🇪🇬">🇪🇬 +20</option>
+						<option value="+974" data-flag="🇶🇦">🇶🇦 +974</option>
+						<option value="+965" data-flag="🇰🇼">🇰🇼 +965</option>
+						<option value="+968" data-flag="🇴🇲">🇴🇲 +968</option>
+					</select>
+				</div>
+				<div class="rawnaq-sf-input-wrap">
+					<input class="rawnaq-sf-input rawnaq-sf-phone-input" type="tel"
+						id="<?php echo esc_attr( $input_id ); ?>"
+						name="sf_<?php echo esc_attr( $id ); ?>"
+						data-sf-type="phone"
+						placeholder="<?php echo esc_attr( $ph ?: '1700-000000' ); ?>"
+						value=""
+						<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+					<span class="rawnaq-sf-live-badge" aria-hidden="true"></span>
+				</div>
 			</div>
 		<?php elseif ( 'file' === $type ) : ?>
 			<div class="rawnaq-sf-dropzone">
@@ -1372,13 +1456,16 @@ function rawnaq_smart_form_render_field( $field, $form_id, $error ) {
 				$html_type = 'url';
 			}
 			?>
-			<input class="rawnaq-sf-input" type="<?php echo esc_attr( $html_type ); ?>"
-				id="<?php echo esc_attr( $input_id ); ?>"
-				name="sf_<?php echo esc_attr( $id ); ?>"
-				data-sf-type="<?php echo esc_attr( $type ); ?>"
-				placeholder="<?php echo esc_attr( $ph ); ?>"
-				value="<?php echo 'hidden' === $type ? esc_attr( $field['defaultValue'] ?? '' ) : ''; ?>"
-				<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+			<div class="rawnaq-sf-input-wrap">
+				<input class="rawnaq-sf-input" type="<?php echo esc_attr( $html_type ); ?>"
+					id="<?php echo esc_attr( $input_id ); ?>"
+					name="sf_<?php echo esc_attr( $id ); ?>"
+					data-sf-type="<?php echo esc_attr( $type ); ?>"
+					placeholder="<?php echo esc_attr( $ph ); ?>"
+					value="<?php echo 'hidden' === $type ? esc_attr( $field['defaultValue'] ?? '' ) : ''; ?>"
+					<?php echo $attr_req; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
+				<span class="rawnaq-sf-live-badge" aria-hidden="true"></span>
+			</div>
 		<?php endif; ?>
 		<?php if ( 'hidden' !== $type ) : ?>
 			<p class="rawnaq-sf-error"><?php echo esc_html( $error ); ?></p>

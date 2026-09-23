@@ -15,9 +15,10 @@
         }
     }
 
-    function setInvalid(field, on) {
+    function setValidationState(field, isValid, isInvalid) {
         if (!field) return;
-        field.classList.toggle('is-invalid', !!on);
+        field.classList.toggle('is-valid', !!isValid);
+        field.classList.toggle('is-invalid', !!isInvalid);
     }
 
     function fieldVisible(field) {
@@ -32,6 +33,24 @@
         return panel.classList.contains('is-active');
     }
 
+    function extractUtmParams() {
+        var utms = {};
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid'];
+            keys.forEach(function (k) {
+                if (params.has(k)) {
+                    utms[k] = params.get(k);
+                }
+            });
+            if (document.referrer) {
+                utms['referrer_url'] = document.referrer;
+            }
+            utms['landing_page'] = window.location.href.split('#')[0];
+        } catch (e) { /* ignore */ }
+        return utms;
+    }
+
     function validateField(field, opts) {
         opts = opts || {};
         if (!field || !fieldVisible(field)) {
@@ -44,6 +63,19 @@
         if (type === 'hidden') {
             return true;
         }
+
+        // Choice cards / Radio group validation
+        if (type === 'cards' || type === 'radio') {
+            var checkedRadio = field.querySelector('input[type="radio"]:checked');
+            var firstRadio = field.querySelector('input[type="radio"]');
+            var isCardReq = firstRadio ? (firstRadio.hasAttribute('required') || firstRadio.getAttribute('aria-required') === 'true') : false;
+            var isCardOk = !isCardReq || !!checkedRadio;
+            if (!opts.silent) {
+                setValidationState(field, isCardOk && !!checkedRadio, !isCardOk);
+            }
+            return isCardOk;
+        }
+
         var input = field.querySelector('input:not([type="hidden"]), textarea, select');
         var hiddenRating = field.querySelector('input[data-sf-type="rating"]');
         if (hiddenRating) {
@@ -79,12 +111,16 @@
         } else if (val && sfType === 'email') {
             ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
         } else if (val && sfType === 'phone') {
-            ok = val.replace(/[^\d+]/g, '').length >= 7;
+            var digits = val.replace(/[^\d]/g, '');
+            ok = digits.length >= 6 && digits.length <= 16;
         } else if (val && sfType === 'url') {
             ok = /^https?:\/\//i.test(val) || /^[^\s]+\.[^\s]+/.test(val);
         }
 
-        setInvalid(field, !ok);
+        if (!opts.silent) {
+            var showValid = ok && (val.length > 0 || (input.type === 'checkbox' && input.checked));
+            setValidationState(field, showValid, !ok);
+        }
         return ok;
     }
 
@@ -94,15 +130,43 @@
             if (!fieldVisible(field) && field.getAttribute('data-show-if')) {
                 return;
             }
+            var type = (field.getAttribute('data-type') || '').toLowerCase();
+            if (type === 'cards' || type === 'radio') {
+                var checkedRadio = field.querySelector('input[type="radio"]:checked');
+                var radioSample = field.querySelector('input[type="radio"]');
+                if (radioSample) {
+                    var rKey = radioSample.name.replace(/^sf_/, '');
+                    data[rKey] = checkedRadio ? checkedRadio.value : '';
+                }
+                return;
+            }
             var el = field.querySelector('[name^="sf_"]:not([type="file"])');
             if (!el) return;
             var key = el.name.replace(/^sf_/, '');
             if (el.type === 'checkbox') {
                 data[key] = el.checked ? '1' : '';
+            } else if (type === 'phone') {
+                var phoneWrap = field.querySelector('.rawnaq-sf-phone-wrap');
+                var cc = phoneWrap ? phoneWrap.querySelector('.rawnaq-sf-country-code') : null;
+                var phoneVal = String(el.value || '').trim();
+                if (cc && phoneVal && phoneVal.indexOf('+') !== 0) {
+                    data[key] = cc.value + ' ' + phoneVal;
+                } else {
+                    data[key] = phoneVal;
+                }
             } else {
                 data[key] = el.value;
             }
         });
+
+        // Automatically inject UTM attribution
+        var utmParams = extractUtmParams();
+        for (var u in utmParams) {
+            if (utmParams.hasOwnProperty(u) && !data[u]) {
+                data[u] = utmParams[u];
+            }
+        }
+
         return data;
     }
 
@@ -135,11 +199,15 @@
             var key = el.name.replace(/^sf_/, '');
             if (el.type === 'checkbox') {
                 values[key] = el.checked ? '1' : (el.value || '');
+            } else if (el.type === 'radio') {
+                if (el.checked) {
+                    values[key] = el.value;
+                }
             } else if (el.type !== 'file') {
                 values[key] = el.value;
             }
         });
-        // For select, use selected option text/value as stored
+        // For select/radios, use selected option text/value as stored
         form.querySelectorAll('.rawnaq-sf-field[data-show-if]').forEach(function (field) {
             var dep = field.getAttribute('data-show-if');
             var want = field.getAttribute('data-show-if-value') || '';
@@ -149,11 +217,7 @@
                 field.removeAttribute('hidden');
             } else {
                 field.setAttribute('hidden', '');
-                setInvalid(field, false);
-                var input = field.querySelector('input, textarea, select');
-                if (input && input.type !== 'file' && input.type !== 'checkbox') {
-                    // keep value but not required when hidden — strip required for validation
-                }
+                setValidationState(field, false, false);
             }
         });
     }
@@ -471,23 +535,73 @@
 
         form.addEventListener('submit', onSubmit);
 
+        form.querySelectorAll('.rawnaq-sf-card-option').forEach(function (optLabel) {
+            var radio = optLabel.querySelector('input[type="radio"]');
+            if (!radio) return;
+            optLabel.addEventListener('click', function () {
+                var grid = optLabel.closest('.rawnaq-sf-cards-grid');
+                if (grid) {
+                    grid.querySelectorAll('.rawnaq-sf-card-option').forEach(function (c) {
+                        c.classList.remove('is-selected');
+                    });
+                }
+                optLabel.classList.add('is-selected');
+                radio.checked = true;
+                applyConditionals(form);
+                var field = optLabel.closest('.rawnaq-sf-field');
+                if (field) {
+                    validateField(field);
+                }
+            });
+            if (radio.checked) {
+                optLabel.classList.add('is-selected');
+            }
+        });
+
+        form.querySelectorAll('.rawnaq-sf-country-code').forEach(function (cc) {
+            cc.addEventListener('change', function () {
+                var field = cc.closest('.rawnaq-sf-field');
+                if (field) {
+                    validateField(field);
+                }
+            });
+        });
+
         form.querySelectorAll('.rawnaq-sf-field input, .rawnaq-sf-field textarea, .rawnaq-sf-field select').forEach(function (el) {
+            if (el.type === 'hidden' || el.type === 'radio') {
+                return;
+            }
             el.addEventListener('blur', function () {
                 var field = el.closest('.rawnaq-sf-field');
+                if (!field) return;
+                var val = String(el.value || '').trim();
                 var isOk = validateField(field);
-                if (field && el.value.trim().length > 0) {
+                if (val.length > 0) {
                     field.classList.toggle('is-valid', isOk);
+                    field.classList.toggle('is-invalid', !isOk);
+                } else if (!el.hasAttribute('required') && el.getAttribute('aria-required') !== 'true') {
+                    field.classList.remove('is-valid', 'is-invalid');
                 }
             });
             el.addEventListener('input', function () {
                 applyConditionals(form);
                 var field = el.closest('.rawnaq-sf-field');
-                if (field && field.classList.contains('is-invalid')) {
+                if (!field) return;
+                var val = String(el.value || '').trim();
+                var sfType = (el.getAttribute('data-sf-type') || el.type || 'text').toLowerCase();
+                if (field.classList.contains('is-invalid')) {
                     validateField(field);
+                } else if (val.length > 0 && (sfType === 'email' || sfType === 'phone' || sfType === 'url')) {
+                    var isOk = validateField(field, { silent: true });
+                    field.classList.toggle('is-valid', isOk);
                 }
             });
             el.addEventListener('change', function () {
                 applyConditionals(form);
+                var field = el.closest('.rawnaq-sf-field');
+                if (field) {
+                    validateField(field);
+                }
             });
             // Conversational Enter key navigation in multi-step form
             el.addEventListener('keydown', function (e) {

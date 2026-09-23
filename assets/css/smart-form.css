@@ -199,10 +199,41 @@
     gap: var(--sf-gap);
 }
 
+.rawnaq-sf-input-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.rawnaq-sf-live-badge {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.rawnaq-sf-field.is-valid .rawnaq-sf-live-badge {
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .rawnaq-sf-field.is-valid .rawnaq-sf-input,
 .rawnaq-sf-field.is-valid .rawnaq-sf-textarea,
 .rawnaq-sf-field.is-valid .rawnaq-sf-select {
     border-color: #10b981;
+}
+
+.rawnaq-sf-field.is-valid .rawnaq-sf-input:focus,
+.rawnaq-sf-field.is-valid .rawnaq-sf-textarea:focus,
+.rawnaq-sf-field.is-valid .rawnaq-sf-select:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
 .rawnaq-sf-field.is-invalid.is-shake {
@@ -214,6 +245,129 @@
     20%, 80% { transform: translate3d(2px, 0, 0); }
     30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
     40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Choice Cards (Visual Radio Group) */
+.rawnaq-sf-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+
+.rawnaq-sf-card-option {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    border: 1.5px solid var(--sf-line);
+    border-radius: var(--sf-radius);
+    padding: 14px 16px;
+    background: var(--sf-panel);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    user-select: none;
+}
+
+.rawnaq-sf-card-option:hover {
+    border-color: var(--sf-accent-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.rawnaq-sf-card-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    margin: 0;
+}
+
+.rawnaq-sf-card-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+}
+
+.rawnaq-sf-card-radio-indicator {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--sf-line);
+    background: #ffffff;
+    margin-top: 2px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.rawnaq-sf-card-option.is-selected,
+.rawnaq-sf-card-option input[type="radio"]:checked ~ .rawnaq-sf-card-content {
+    /* checked state */
+}
+
+.rawnaq-sf-card-option.is-selected {
+    border-color: var(--sf-accent-deep);
+    background: color-mix(in srgb, var(--sf-accent-deep) 6%, #ffffff);
+    box-shadow: 0 0 0 1px var(--sf-accent-deep), 0 6px 18px color-mix(in srgb, var(--sf-accent-deep) 12%, transparent);
+}
+
+.rawnaq-sf-card-option.is-selected .rawnaq-sf-card-radio-indicator {
+    border-color: var(--sf-accent-deep);
+    background: var(--sf-accent-deep);
+    box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+.rawnaq-sf-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.rawnaq-sf-card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--sf-ink);
+    line-height: 1.35;
+}
+
+.rawnaq-sf-card-desc {
+    font-size: 0.8rem;
+    color: var(--sf-muted);
+    line-height: 1.4;
+}
+
+/* Phone & Country Code Selector */
+.rawnaq-sf-phone-wrap {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    align-items: stretch;
+}
+
+.rawnaq-sf-country-select-wrap {
+    flex-shrink: 0;
+    min-width: 115px;
+    max-width: 135px;
+}
+
+.rawnaq-sf-country-code {
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--sf-line);
+    border-radius: var(--sf-radius);
+    background: var(--sf-panel);
+    color: var(--sf-ink);
+    padding: var(--sf-input-pad);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rawnaq-sf-country-code:focus {
+    border-color: var(--sf-accent-deep);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-accent) 45%, transparent);
 }
 
 /* File Dropzone & Thumbnail Preview */

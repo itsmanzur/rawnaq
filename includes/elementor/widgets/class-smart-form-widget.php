@@ -86,10 +86,18 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 				'date'     => esc_html__( 'Date', 'rawnaq' ),
 				'number'   => esc_html__( 'Number', 'rawnaq' ),
 				'url'      => esc_html__( 'URL', 'rawnaq' ),
+				'cards'    => esc_html__( 'Choice Cards (Visual Radio)', 'rawnaq' ),
 				'hidden'   => esc_html__( 'Hidden', 'rawnaq' ),
 				'rating'   => esc_html__( 'Rating', 'rawnaq' ),
 				'file'     => esc_html__( 'File upload', 'rawnaq' ),
 			],
+		] );
+		$repeater->add_control( 'country_picker', [
+			'label'        => esc_html__( 'Country flag & code picker', 'rawnaq' ),
+			'type'         => \Elementor\Controls_Manager::SWITCHER,
+			'return_value' => 'yes',
+			'default'      => '',
+			'condition'    => [ 'type' => 'phone' ],
 		] );
 		$repeater->add_control( 'label', [
 			'label'   => esc_html__( 'Label', 'rawnaq' ),
@@ -108,10 +116,10 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'default'      => 'yes',
 		] );
 		$repeater->add_control( 'options', [
-			'label'       => esc_html__( 'Select options (comma-separated)', 'rawnaq' ),
+			'label'       => esc_html__( 'Options (comma-separated, or Title | Subtitle)', 'rawnaq' ),
 			'type'        => \Elementor\Controls_Manager::TEXT,
 			'default'     => '',
-			'condition'   => [ 'type' => 'select' ],
+			'condition'   => [ 'type' => [ 'select', 'cards' ] ],
 			'label_block' => true,
 		] );
 		$repeater->add_control( 'width', [
