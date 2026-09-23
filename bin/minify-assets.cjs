@@ -65,4 +65,12 @@ modules.forEach(mod => {
     }
 });
 
+const gutenbergPath = path.join(jsDir, 'gutenberg-editor.js');
+const minGutenbergPath = path.join(jsDir, 'gutenberg-editor.min.js');
+if (fs.existsSync(gutenbergPath)) {
+    const raw = fs.readFileSync(gutenbergPath, 'utf8');
+    fs.writeFileSync(minGutenbergPath, minifyJS(raw), 'utf8');
+    console.log('Minified Gutenberg Editor JS: gutenberg-editor.min.js');
+}
+
 console.log('All assets minified successfully!');

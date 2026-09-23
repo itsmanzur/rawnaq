@@ -1105,6 +1105,119 @@ function rawnaq_bento_video_markup( $url ) {
 }
 
 /**
+ * Retrieve post data for Bento Grid WordPress Post cell.
+ *
+ * @param array $cell Cell settings array.
+ * @return array Normalized post data
+ */
+function rawnaq_bento_get_post_data( array $cell ) {
+	$source         = sanitize_key( $cell['post_source'] ?? $cell['postSource'] ?? 'latest' );
+	$post_id        = absint( $cell['post_id'] ?? $cell['postId'] ?? 0 );
+	$offset         = absint( $cell['post_offset'] ?? $cell['postOffset'] ?? 0 );
+	$category       = sanitize_text_field( $cell['post_category'] ?? $cell['postCategory'] ?? '' );
+	$display_mode   = sanitize_key( $cell['post_display_mode'] ?? $cell['postDisplayMode'] ?? 'cover' );
+	$show_image     = ( ( $cell['post_show_image'] ?? $cell['postShowImage'] ?? 'yes' ) !== 'no' && ( $cell['post_show_image'] ?? $cell['postShowImage'] ?? true ) !== false );
+	$show_date      = ( ( $cell['post_show_date'] ?? $cell['postShowDate'] ?? 'yes' ) === 'yes' || ( $cell['post_show_date'] ?? $cell['postShowDate'] ?? false ) === true );
+	$show_author    = ( ( $cell['post_show_author'] ?? $cell['postShowAuthor'] ?? 'no' ) === 'yes' || ( $cell['post_show_author'] ?? $cell['postShowAuthor'] ?? false ) === true );
+	$show_badge     = ( ( $cell['post_show_badge'] ?? $cell['postShowBadge'] ?? 'yes' ) === 'yes' || ( $cell['post_show_badge'] ?? $cell['postShowBadge'] ?? true ) === true );
+	$excerpt_length = max( 5, min( 100, absint( $cell['post_excerpt_length'] ?? $cell['postExcerptLength'] ?? 15 ) ) );
+	$read_more      = sanitize_text_field( $cell['post_read_more'] ?? $cell['postReadMore'] ?? $cell['cta_text'] ?? $cell['ctaText'] ?? '' );
+
+	$post = null;
+	if ( 'specific' === $source && $post_id > 0 ) {
+		$post = get_post( $post_id );
+	} else {
+		$args = [
+			'post_type'        => 'post',
+			'post_status'      => 'publish',
+			'posts_per_page'   => 1,
+			'offset'           => $offset,
+			'orderby'          => 'date',
+			'order'            => 'DESC',
+			'suppress_filters' => false,
+		];
+		if ( ! empty( $category ) ) {
+			if ( is_numeric( $category ) ) {
+				$args['cat'] = absint( $category );
+			} else {
+				$args['category_name'] = $category;
+			}
+		}
+		$posts = get_posts( $args );
+		if ( ! empty( $posts ) ) {
+			$post = $posts[0];
+		}
+	}
+
+	if ( ! $post || ! ( $post instanceof WP_Post ) ) {
+		return [
+			'found'         => false,
+			'id'            => 0,
+			'title'         => ! empty( $cell['title'] ) ? $cell['title'] : __( 'WordPress Post', 'rawnaq' ),
+			'excerpt'       => ! empty( $cell['subtitle'] ) ? $cell['subtitle'] : __( 'Select a valid post or check latest posts.', 'rawnaq' ),
+			'link'          => '#',
+			'image'         => '',
+			'tag'           => ! empty( $cell['tag'] ) ? $cell['tag'] : __( 'Blog', 'rawnaq' ),
+			'date'          => '',
+			'author'        => '',
+			'author_avatar' => '',
+			'display_mode'  => $display_mode,
+			'show_image'    => $show_image,
+			'show_date'     => $show_date,
+			'show_author'   => $show_author,
+			'show_badge'    => $show_badge,
+			'read_more'     => $read_more,
+		];
+	}
+
+	$pid    = $post->ID;
+	$title  = get_the_title( $post );
+	$link   = get_permalink( $post );
+	$image  = $show_image && has_post_thumbnail( $pid ) ? (string) get_the_post_thumbnail_url( $pid, 'large' ) : '';
+
+	// Excerpt
+	if ( has_excerpt( $post ) ) {
+		$raw_excerpt = get_the_excerpt( $post );
+	} else {
+		$raw_excerpt = wp_strip_all_tags( strip_shortcodes( $post->post_content ) );
+	}
+	$excerpt = wp_trim_words( $raw_excerpt, $excerpt_length, '…' );
+
+	// Category badge
+	$tag = ! empty( $cell['tag'] ) ? sanitize_text_field( $cell['tag'] ) : '';
+	if ( empty( $tag ) && $show_badge ) {
+		$cats = get_the_category( $pid );
+		if ( ! empty( $cats ) && ! is_wp_error( $cats ) ) {
+			$tag = $cats[0]->name;
+		}
+	}
+
+	$date   = $show_date ? get_the_date( '', $post ) : '';
+	$author = $show_author ? get_the_author_meta( 'display_name', $post->post_author ) : '';
+	$avatar = ( $show_author && function_exists( 'get_avatar_url' ) ) ? (string) get_avatar_url( $post->post_author, [ 'size' => 48 ] ) : '';
+
+	return [
+		'found'         => true,
+		'id'            => $pid,
+		'title'         => $title,
+		'excerpt'       => $excerpt,
+		'link'          => $link,
+		'image'         => $image,
+		'tag'           => $tag,
+		'date'          => $date,
+		'author'        => $author,
+		'author_avatar' => $avatar,
+		'display_mode'  => $display_mode,
+		'show_image'    => $show_image,
+		'show_date'     => $show_date,
+		'show_author'   => $show_author,
+		'show_badge'    => $show_badge,
+		'read_more'     => $read_more,
+	];
+}
+
+
+/**
  * Sanitize a CSS scroll-timeline custom-ident (without leading --).
  *
  * @param string $name     Proposed name.

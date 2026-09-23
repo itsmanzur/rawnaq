@@ -13,6 +13,34 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
     public function get_style_depends()  { return [ 'rawnaq-bento-grid', 'dashicons' ]; }
     public function get_script_depends() { return [ 'rawnaq-bento-grid' ]; }
 
+    private function get_post_options() {
+        $options = [ 0 => esc_html__( '— Select Post —', 'rawnaq' ) ];
+        $posts   = get_posts( [
+            'post_type'      => 'post',
+            'post_status'    => 'publish',
+            'posts_per_page' => 50,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ] );
+        if ( ! empty( $posts ) ) {
+            foreach ( $posts as $p ) {
+                $options[ $p->ID ] = esc_html( $p->post_title ? $p->post_title : '#' . $p->ID );
+            }
+        }
+        return $options;
+    }
+
+    private function get_category_options() {
+        $options    = [ '' => esc_html__( 'All Categories', 'rawnaq' ) ];
+        $categories = get_categories( [ 'hide_empty' => false ] );
+        if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
+            foreach ( $categories as $cat ) {
+                $options[ $cat->slug ] = esc_html( $cat->name );
+            }
+        }
+        return $options;
+    }
+
     protected function register_controls() {
         $this->start_controls_section( 's_layout', [
             'label' => esc_html__( 'Grid Layout', 'rawnaq' ),
@@ -121,6 +149,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
                 'stat'         => esc_html__( 'Stat Counter', 'rawnaq' ),
                 'video'        => esc_html__( 'Video', 'rawnaq' ),
                 'testimonial'  => esc_html__( 'Testimonial', 'rawnaq' ),
+                'post'         => esc_html__( 'WordPress Post', 'rawnaq' ),
             ],
         ] );
 
@@ -326,6 +355,123 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
             'condition' => [ 'cell_type' => 'stat' ],
         ] );
 
+        // ── WordPress Post Controls ──
+        $r->add_control( 'post_heading', [
+            'label'     => esc_html__( 'WordPress Post Options', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::HEADING,
+            'separator' => 'before',
+            'condition' => [ 'cell_type' => 'post' ],
+        ] );
+
+        $r->add_control( 'post_source', [
+            'label'     => esc_html__( 'Post Source', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::SELECT,
+            'default'   => 'latest',
+            'options'   => [
+                'latest'   => esc_html__( 'Dynamic Latest Post', 'rawnaq' ),
+                'specific' => esc_html__( 'Specific Post', 'rawnaq' ),
+            ],
+            'condition' => [ 'cell_type' => 'post' ],
+        ] );
+
+        $r->add_control( 'post_id', [
+            'label'       => esc_html__( 'Select Post', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::SELECT,
+            'options'     => $this->get_post_options(),
+            'default'     => 0,
+            'condition'   => [
+                'cell_type'   => 'post',
+                'post_source' => 'specific',
+            ],
+            'description' => esc_html__( 'Select a specific published post.', 'rawnaq' ),
+        ] );
+
+        $r->add_control( 'post_offset', [
+            'label'       => esc_html__( 'Post Offset (0 = latest)', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::NUMBER,
+            'default'     => 0,
+            'min'         => 0,
+            'max'         => 50,
+            'condition'   => [
+                'cell_type'   => 'post',
+                'post_source' => 'latest',
+            ],
+            'description' => esc_html__( '0 = 1st latest, 1 = 2nd latest, etc. Allows placing different latest posts across cells.', 'rawnaq' ),
+        ] );
+
+        $r->add_control( 'post_category', [
+            'label'       => esc_html__( 'Filter by Category', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::SELECT,
+            'options'     => $this->get_category_options(),
+            'default'     => '',
+            'condition'   => [
+                'cell_type'   => 'post',
+                'post_source' => 'latest',
+            ],
+            'description' => esc_html__( 'Optionally restrict dynamic post to a category.', 'rawnaq' ),
+        ] );
+
+        $r->add_control( 'post_display_mode', [
+            'label'     => esc_html__( 'Display Style', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::SELECT,
+            'default'   => 'cover',
+            'options'   => [
+                'cover' => esc_html__( 'Image Cover (Dark Gradient Overlay)', 'rawnaq' ),
+                'card'  => esc_html__( 'Card Style (Thumbnail on Top)', 'rawnaq' ),
+            ],
+            'condition' => [ 'cell_type' => 'post' ],
+        ] );
+
+        $r->add_control( 'post_show_image', [
+            'label'        => esc_html__( 'Show Featured Image', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'cell_type' => 'post' ],
+        ] );
+
+        $r->add_control( 'post_show_badge', [
+            'label'        => esc_html__( 'Show Category as Badge', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'cell_type' => 'post' ],
+            'description'  => esc_html__( 'Uses the post category as eyebrow tag pill (or custom tag if set).', 'rawnaq' ),
+        ] );
+
+        $r->add_control( 'post_show_date', [
+            'label'        => esc_html__( 'Show Post Date', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'cell_type' => 'post' ],
+        ] );
+
+        $r->add_control( 'post_show_author', [
+            'label'        => esc_html__( 'Show Post Author', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'no',
+            'condition'    => [ 'cell_type' => 'post' ],
+        ] );
+
+        $r->add_control( 'post_excerpt_length', [
+            'label'       => esc_html__( 'Excerpt Length (words)', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::NUMBER,
+            'default'     => 14,
+            'min'         => 3,
+            'max'         => 100,
+            'condition'   => [ 'cell_type' => 'post' ],
+        ] );
+
+        $r->add_control( 'post_read_more', [
+            'label'       => esc_html__( 'Read More CTA Text', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => '',
+            'placeholder' => esc_html__( 'Read Article', 'rawnaq' ),
+            'condition'   => [ 'cell_type' => 'post' ],
+        ] );
+
         $r->add_control( 'sync_timeline', [
             'label'       => esc_html__( 'Sync Timeline ID', 'rawnaq' ),
             'type'        => \Elementor\Controls_Manager::TEXT,
@@ -340,7 +486,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
             'type'          => \Elementor\Controls_Manager::URL,
             'placeholder'   => 'https://example.com',
             'show_external' => true,
-            'description'   => esc_html__( 'Makes the whole cell clickable when CTA is empty.', 'rawnaq' ),
+            'description'   => esc_html__( 'Makes the whole cell clickable when CTA is empty. Defaults to post permalink for posts.', 'rawnaq' ),
         ] );
 
         $r->add_control( 'cta_text', [
@@ -349,6 +495,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
             'default'     => '',
             'placeholder' => esc_html__( 'Learn more', 'rawnaq' ),
             'label_block' => true,
+            'condition'   => [ 'cell_type!' => 'post' ],
         ] );
 
         $r->add_control( 'cta_link', [
@@ -363,7 +510,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
         $r->add_control( 'bg_color', [
             'label'     => esc_html__( 'Background Color', 'rawnaq' ),
             'type'      => \Elementor\Controls_Manager::COLOR,
-            'condition' => [ 'cell_type' => [ 'text', 'stat', 'testimonial' ] ],
+            'condition' => [ 'cell_type' => [ 'text', 'stat', 'testimonial', 'post' ] ],
         ] );
 
         $this->add_control( 'cells', [
@@ -778,12 +925,130 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
         $this->render_cta( $cell );
     }
 
+    private function render_post_cell( $cell, $post_data ) {
+        $display_mode    = $post_data['display_mode'] ?? 'cover';
+        $title           = ( ! empty( $cell['title'] ) && 'Cell title' !== $cell['title'] ) ? $cell['title'] : $post_data['title'];
+        $subtitle        = ! empty( $cell['subtitle'] ) ? $cell['subtitle'] : $post_data['excerpt'];
+        $tag             = ! empty( $cell['tag'] ) ? $cell['tag'] : $post_data['tag'];
+        $image           = ! empty( $cell['image']['url'] ) ? $cell['image']['url'] : $post_data['image'];
+        $cta_text        = ! empty( $cell['post_read_more'] ) ? $cell['post_read_more'] : ( ! empty( $cell['cta_text'] ) ? $cell['cta_text'] : '' );
+        $cta_link        = ! empty( $cell['cta_link']['url'] ) ? $cell['cta_link']['url'] : $post_data['link'];
+        $has_cta         = '' !== trim( (string) $cta_text );
+
+        $tag_cell = $cell;
+        $tag_cell['tag'] = $tag;
+
+        if ( 'card' === $display_mode ) {
+            if ( $image ) {
+                echo '<div class="rawnaq-bento-post-thumb">';
+                echo '<img src="' . esc_url( $image ) . '" alt="' . esc_attr( $title ) . '" loading="lazy" decoding="async" />';
+                if ( $tag && ( $post_data['show_badge'] ?? true ) ) {
+                    $this->render_tag( $tag_cell );
+                }
+                echo '</div>';
+            }
+            echo '<div class="rawnaq-bento-post-content">';
+            if ( ! $image && $tag && ( $post_data['show_badge'] ?? true ) ) {
+                $this->render_tag( $tag_cell );
+            }
+            if ( ! empty( $post_data['date'] ) || ! empty( $post_data['author'] ) ) {
+                echo '<div class="rawnaq-bento-post-meta">';
+                if ( ! empty( $post_data['author'] ) ) {
+                    if ( ! empty( $post_data['author_avatar'] ) ) {
+                        echo '<img class="rawnaq-bento-post-author-img" src="' . esc_url( $post_data['author_avatar'] ) . '" alt="" loading="lazy" />';
+                    }
+                    echo '<span class="rawnaq-bento-post-author">' . esc_html( $post_data['author'] ) . '</span>';
+                }
+                if ( ! empty( $post_data['date'] ) ) {
+                    echo '<span class="rawnaq-bento-post-date">' . esc_html( $post_data['date'] ) . '</span>';
+                }
+                echo '</div>';
+            }
+            if ( $title ) {
+                echo '<h4 class="rawnaq-bento-title">' . esc_html( $title ) . '</h4>';
+            }
+            if ( $subtitle ) {
+                echo '<div class="rawnaq-bento-sub">' . esc_html( $subtitle ) . '</div>';
+            }
+            if ( $has_cta ) {
+                echo '<a class="rawnaq-bento-cta" href="' . esc_url( $cta_link ) . '">' . esc_html( $cta_text ) . '</a>';
+            }
+            echo '</div>';
+        } else {
+            // Cover Mode
+            if ( $image ) {
+                echo '<img class="rawnaq-bento-media" src="' . esc_url( $image ) . '" alt="' . esc_attr( $title ) . '" loading="lazy" decoding="async" />';
+            } else {
+                echo '<div class="rawnaq-bento-media" style="background:linear-gradient(135deg,#0f766e,#134e4a);" aria-hidden="true"></div>';
+            }
+            echo '<div class="rawnaq-bento-overlay" aria-hidden="true"></div>';
+            echo '<div class="rawnaq-bento-body">';
+            if ( $tag && ( $post_data['show_badge'] ?? true ) ) {
+                $this->render_tag( $tag_cell );
+            }
+            if ( ! empty( $post_data['date'] ) || ! empty( $post_data['author'] ) ) {
+                echo '<div class="rawnaq-bento-post-meta">';
+                if ( ! empty( $post_data['author'] ) ) {
+                    if ( ! empty( $post_data['author_avatar'] ) ) {
+                        echo '<img class="rawnaq-bento-post-author-img" src="' . esc_url( $post_data['author_avatar'] ) . '" alt="" loading="lazy" />';
+                    }
+                    echo '<span class="rawnaq-bento-post-author">' . esc_html( $post_data['author'] ) . '</span>';
+                }
+                if ( ! empty( $post_data['date'] ) ) {
+                    echo '<span class="rawnaq-bento-post-date">' . esc_html( $post_data['date'] ) . '</span>';
+                }
+                echo '</div>';
+            }
+            if ( $title ) {
+                echo '<h4 class="rawnaq-bento-title">' . esc_html( $title ) . '</h4>';
+            }
+            if ( $subtitle ) {
+                echo '<div class="rawnaq-bento-sub">' . esc_html( $subtitle ) . '</div>';
+            }
+            if ( $has_cta ) {
+                echo '<a class="rawnaq-bento-cta" href="' . esc_url( $cta_link ) . '">' . esc_html( $cta_text ) . '</a>';
+            }
+            echo '</div>';
+        }
+    }
+
     private function render_cell( $cell, $index = 0 ) {
-        $type     = sanitize_key( $cell['cell_type'] ?? 'text' );
-        $title    = $cell['title'] ?? '';
-        $subtitle = $cell['subtitle'] ?? '';
-        $link     = $cell['link'] ?? [];
-        $cta_text = trim( (string) ( $cell['cta_text'] ?? '' ) );
+        $type      = sanitize_key( $cell['cell_type'] ?? 'text' );
+        $title     = $cell['title'] ?? '';
+        $subtitle  = $cell['subtitle'] ?? '';
+        $link      = $cell['link'] ?? [];
+        $cta_text  = trim( (string) ( $cell['cta_text'] ?? '' ) );
+        $post_data = [];
+
+        if ( 'post' === $type ) {
+            $post_data = function_exists( 'rawnaq_bento_get_post_data' )
+                ? rawnaq_bento_get_post_data( $cell )
+                : [
+                    'found'        => false,
+                    'title'        => $title ?: 'Blog Post',
+                    'excerpt'      => $subtitle,
+                    'link'         => '#',
+                    'image'        => '',
+                    'tag'          => 'Blog',
+                    'date'         => '',
+                    'author'       => '',
+                    'author_avatar'=> '',
+                    'display_mode' => 'cover',
+                    'show_image'   => true,
+                    'show_date'    => true,
+                    'show_author'  => false,
+                    'show_badge'   => true,
+                    'read_more'    => $cell['post_read_more'] ?? '',
+                ];
+
+            if ( empty( $link['url'] ) && ! empty( $post_data['link'] ) ) {
+                $link['url'] = $post_data['link'];
+            }
+            if ( ! empty( $cell['post_read_more'] ) ) {
+                $cta_text = trim( (string) $cell['post_read_more'] );
+            }
+        }
+
         $has_cta  = '' !== $cta_text;
         $has_link = ! empty( $link['url'] );
         // Avoid nested anchors: whole-cell link only when there is no CTA button.
@@ -835,6 +1100,13 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
             }
         } elseif ( 'testimonial' === $type ) {
             $classes[] = 'is-testimonial';
+        } elseif ( 'post' === $type ) {
+            $classes[] = 'is-post';
+            if ( ! empty( $post_data['display_mode'] ) && 'card' === $post_data['display_mode'] ) {
+                $classes[] = 'is-card';
+            } else {
+                $classes[] = 'is-cover';
+            }
         }
 
         $sync_raw = trim( (string) ( $cell['sync_timeline'] ?? '' ) );
@@ -852,7 +1124,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
         if ( $sync_name ) {
             $style .= 'animation-timeline:--' . $sync_name . ';';
         }
-        if ( ! empty( $cell['bg_color'] ) && in_array( $type, [ 'text', 'stat', 'testimonial' ], true ) ) {
+        if ( ! empty( $cell['bg_color'] ) && in_array( $type, [ 'text', 'stat', 'testimonial', 'post' ], true ) ) {
             $style .= 'background-color:' . esc_attr( $cell['bg_color'] ) . ';';
         }
 
@@ -868,6 +1140,8 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
 
         if ( 'testimonial' === $type ) {
             $this->render_testimonial( $cell );
+        } elseif ( 'post' === $type ) {
+            $this->render_post_cell( $cell, $post_data );
         } elseif ( 'image' === $type ) {
             $img = $cell['image']['url'] ?? '';
             if ( $img ) {

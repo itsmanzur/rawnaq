@@ -2326,7 +2326,18 @@
             link: { type: 'string', default: '' },
             mediaUrl: { type: 'string', default: '' },
             tagBg: { type: 'string', default: '' },
-            tagColor: { type: 'string', default: '' }
+            tagColor: { type: 'string', default: '' },
+            postSource: { type: 'string', default: 'latest' },
+            postId: { type: 'number', default: 0 },
+            postOffset: { type: 'number', default: 0 },
+            postCategory: { type: 'string', default: '' },
+            postDisplayMode: { type: 'string', default: 'cover' },
+            postShowImage: { type: 'boolean', default: true },
+            postShowBadge: { type: 'boolean', default: true },
+            postShowDate: { type: 'boolean', default: true },
+            postShowAuthor: { type: 'boolean', default: false },
+            postExcerptLength: { type: 'number', default: 14 },
+            postReadMore: { type: 'string', default: '' }
         },
         edit: function(props) {
             var a = props.attributes;
@@ -2338,6 +2349,10 @@
             if (type === 'video') classes.push('is-video');
             if (type === 'stat') classes.push('is-stat');
             if (type === 'testimonial') classes.push('is-testimonial');
+            if (type === 'post') {
+                classes.push('is-post');
+                classes.push(a.postDisplayMode === 'card' ? 'is-card' : 'is-cover');
+            }
             if (a.align === 'center') classes.push('align-center');
             if (a.align === 'bottom') classes.push('align-bottom');
 
@@ -2359,7 +2374,8 @@
                                 { label: 'Image', value: 'image' },
                                 { label: 'Video', value: 'video' },
                                 { label: 'Stat', value: 'stat' },
-                                { label: 'Testimonial', value: 'testimonial' }
+                                { label: 'Testimonial', value: 'testimonial' },
+                                { label: 'WordPress Post', value: 'post' }
                             ],
                             onChange: function(v) { setAttributes({ cellType: v }); }
                         }),
@@ -2390,6 +2406,74 @@
                             value: a.link || '',
                             onChange: function(v) { setAttributes({ link: v || '' }); }
                         })
+                    ),
+                    type === 'post' && el(PanelBody, { title: 'WordPress Post Options', initialOpen: true },
+                        el(SelectControl, {
+                            label: 'Source',
+                            value: a.postSource || 'latest',
+                            options: [
+                                { label: 'Dynamic Latest Post', value: 'latest' },
+                                { label: 'Specific Post', value: 'specific' }
+                            ],
+                            onChange: function(v) { setAttributes({ postSource: v }); }
+                        }),
+                        (a.postSource === 'specific') && el(TextControl, {
+                            label: 'Post ID',
+                            value: a.postId ? String(a.postId) : '',
+                            onChange: function(v) { setAttributes({ postId: parseInt(v, 10) || 0 }); }
+                        }),
+                        (a.postSource !== 'specific') && el(RangeControl, {
+                            label: 'Post Offset (0 = latest)',
+                            value: a.postOffset || 0,
+                            min: 0, max: 50,
+                            onChange: function(v) { setAttributes({ postOffset: v || 0 }); }
+                        }),
+                        (a.postSource !== 'specific') && el(TextControl, {
+                            label: 'Category Slug (optional)',
+                            value: a.postCategory || '',
+                            onChange: function(v) { setAttributes({ postCategory: v || '' }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Display Style',
+                            value: a.postDisplayMode || 'cover',
+                            options: [
+                                { label: 'Image Cover (Dark Gradient Overlay)', value: 'cover' },
+                                { label: 'Card Style (Thumbnail on Top)', value: 'card' }
+                            ],
+                            onChange: function(v) { setAttributes({ postDisplayMode: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Featured Image',
+                            checked: a.postShowImage !== false,
+                            onChange: function(v) { setAttributes({ postShowImage: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Category Badge',
+                            checked: a.postShowBadge !== false,
+                            onChange: function(v) { setAttributes({ postShowBadge: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Post Date',
+                            checked: a.postShowDate !== false,
+                            onChange: function(v) { setAttributes({ postShowDate: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Post Author',
+                            checked: !!a.postShowAuthor,
+                            onChange: function(v) { setAttributes({ postShowAuthor: v }); }
+                        }),
+                        el(RangeControl, {
+                            label: 'Excerpt Length (words)',
+                            value: a.postExcerptLength || 14,
+                            min: 3, max: 80,
+                            onChange: function(v) { setAttributes({ postExcerptLength: v || 14 }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Read More CTA Text (optional)',
+                            value: a.postReadMore || '',
+                            placeholder: 'Read Post',
+                            onChange: function(v) { setAttributes({ postReadMore: v || '' }); }
+                        })
                     )
                 ),
                 el('div', { className: classes.join(' '), style: style },
@@ -2414,6 +2498,10 @@
             if (type === 'video') classes.push('is-video');
             if (type === 'stat') classes.push('is-stat');
             if (type === 'testimonial') classes.push('is-testimonial');
+            if (type === 'post') {
+                classes.push('is-post');
+                classes.push(a.postDisplayMode === 'card' ? 'is-card' : 'is-cover');
+            }
             if (a.align === 'center') classes.push('align-center');
             if (a.align === 'bottom') classes.push('align-bottom');
             if (a.colMd) classes.push('has-md-col-' + a.colMd);
