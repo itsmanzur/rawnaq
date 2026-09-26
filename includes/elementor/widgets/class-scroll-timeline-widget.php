@@ -582,6 +582,7 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
 
     protected function render() {
         $s               = $this->get_settings_for_display();
+        $source          = sanitize_key( $s['source'] ?? 'manual' );
         $bundle          = $this->resolve_steps_bundle( $s );
         $steps           = $bundle['steps'];
         $layout          = $s['layout'] ?? 'alternating';

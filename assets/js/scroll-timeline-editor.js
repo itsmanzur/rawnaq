@@ -55,16 +55,18 @@
             } catch (e) { /* ignore */ }
         }
 
-        while (container && container.parent) {
-            var model = container.model;
+        // Verify or traverse
+        var curr = container;
+        while (curr) {
+            var model = curr.model;
             var widgetType = model && model.get && model.get('widgetType');
             if (widgetType === 'rawnaq_scroll_timeline') {
-                return container;
+                return curr;
             }
-            if (container.type === 'widget' && widgetType) {
-                return container;
+            if (curr.type === 'widget' && widgetType) {
+                return curr;
             }
-            container = container.parent;
+            curr = curr.parent;
         }
 
         return container;
@@ -74,12 +76,22 @@
         var container = resolveWidgetContainer(view);
         var settings = (view && view.elementSettingsModel) || (container && container.settings);
 
+        if (!settings && window.elementor && elementor.getPanelView) {
+            try {
+                var panel = elementor.getPanelView();
+                var page = panel && panel.getCurrentPageView && panel.getCurrentPageView();
+                if (page && page.model && page.model.get('settings')) {
+                    settings = page.model.get('settings');
+                }
+            } catch (e) { /* ignore */ }
+        }
+
         var presetKey = '';
         if (settings && typeof settings.get === 'function') {
             presetKey = settings.get('agency_preset') || '';
         }
         if (!presetKey) {
-            var select = document.querySelector('.elementor-control-agency_preset select');
+            var select = document.querySelector('.elementor-control-agency_preset select, [data-setting="agency_preset"]');
             if (select && select.value) {
                 presetKey = select.value;
             }
@@ -96,11 +108,13 @@
             return;
         }
 
-        var pack = getPresets()[presetKey];
+        var presets = getPresets();
+        var pack = presets[presetKey] || presets[presetKey.replace(/_/g, '-')] || presets[presetKey.replace(/-/g, '_')];
         if (!pack || !pack.steps) {
             return;
         }
 
+        // Attach unique _id to each repeater item so Elementor Backbone collections diff cleanly
         var stepsWithIds = pack.steps.map(function (step, index) {
             var item = Object.assign({}, step);
             if (!item._id) {
@@ -115,22 +129,37 @@
 
         var next = { steps: stepsWithIds };
 
+        // 1. Update through Elementor $e commands API
         if (window.$e && $e.run && container) {
-            $e.run('document/elements/settings', {
-                container: container,
-                settings: next,
-                options: { external: true }
-            });
-        } else if (settings && typeof settings.setExternalChange === 'function') {
+            try {
+                $e.run('document/elements/settings', {
+                    container: container,
+                    settings: next,
+                    options: { external: true }
+                });
+            } catch (err) { /* ignore */ }
+        }
+
+        // 2. Update Backbone settings models
+        if (settings && typeof settings.setExternalChange === 'function') {
             settings.setExternalChange('steps', stepsWithIds);
         } else if (settings && typeof settings.set === 'function') {
             settings.set('steps', stepsWithIds);
         }
 
+        if (container && container.settings && container.settings !== settings) {
+            if (typeof container.settings.setExternalChange === 'function') {
+                container.settings.setExternalChange('steps', stepsWithIds);
+            } else if (typeof container.settings.set === 'function') {
+                container.settings.set('steps', stepsWithIds);
+            }
+        }
+
+        // 3. Re-render panel view so the repeater list in sidebar refreshes immediately
         try {
             if (window.elementor && elementor.getPanelView) {
-                var panel = elementor.getPanelView();
-                var curPage = panel && panel.getCurrentPageView && panel.getCurrentPageView();
+                var panelView = elementor.getPanelView();
+                var curPage = panelView && panelView.getCurrentPageView && panelView.getCurrentPageView();
                 if (curPage && typeof curPage.render === 'function') {
                     curPage.render();
                 }
@@ -153,4 +182,10 @@
     if (window.elementor && elementor.channels && elementor.channels.editor) {
         elementor.channels.editor.on('rawnaq:timeline:applyPreset', applyPreset);
     }
+
+    // Direct click fallback
+    $(document).on('click', '.elementor-control-apply_agency_preset button, [data-event="rawnaq:timeline:applyPreset"]', function (e) {
+        e.preventDefault();
+        applyPreset();
+    });
 })(jQuery);

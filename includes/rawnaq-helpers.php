@@ -613,14 +613,30 @@ function rawnaq_timeline_preset_for_elementor( $key ) {
 	$steps = [];
 	foreach ( $presets[ $key ]['steps'] as $step ) {
 		$steps[] = [
-			'meta'  => $step['meta'] ?? '',
-			'title' => $step['title'] ?? '',
-			'desc'  => $step['desc'] ?? '',
-			'icon'  => $step['icon'] ?? '',
-			'image' => [ 'url' => '', 'id' => '' ],
-			'video' => '',
-			'cta_text' => $step['cta_text'] ?? '',
-			'cta_link' => [ 'url' => '' ],
+			'meta'          => $step['meta'] ?? '',
+			'title'         => $step['title'] ?? '',
+			'desc'          => $step['desc'] ?? '',
+			'selected_icon' => [
+				'value'   => ! empty( $step['icon'] ) ? $step['icon'] : '',
+				'library' => ! empty( $step['icon'] ) ? 'dashicons' : '',
+			],
+			'image'         => [
+				'url' => ! empty( $step['image'] ) ? $step['image'] : '',
+				'id'  => '',
+			],
+			'video_url'     => [
+				'url'         => ! empty( $step['video'] ) ? $step['video'] : '',
+				'is_external' => false,
+				'nofollow'    => false,
+			],
+			'cta_text'      => $step['cta_text'] ?? '',
+			'cta_link'      => [
+				'url'         => ! empty( $step['cta_link'] ) ? $step['cta_link'] : '',
+				'is_external' => false,
+				'nofollow'    => false,
+			],
+			'project_id'    => $step['project_id'] ?? '',
+			'project_slug'  => $step['project_slug'] ?? '',
 		];
 	}
 	return [
