@@ -43,6 +43,13 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             'rows'    => 3,
         ] );
 
+        $r->add_control( 'status_badge', [
+            'label'       => esc_html__( 'Status / Pill Tag', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'default'     => '',
+            'placeholder' => 'Completed / In Progress',
+        ] );
+
         $r->add_control( 'selected_icon', [
             'label'   => esc_html__( 'Icon', 'rawnaq' ),
             'type'    => \Elementor\Controls_Manager::ICONS,
@@ -251,8 +258,44 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
         $this->end_controls_section();
 
         $this->start_controls_section( 's_layout', [
-            'label' => esc_html__( 'Layout', 'rawnaq' ),
+            'label' => esc_html__( 'Layout & Theme', 'rawnaq' ),
             'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+        ] );
+
+        $this->add_control( 'timeline_skin', [
+            'label'   => esc_html__( 'Design Skin / Theme', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'classic',
+            'options' => [
+                'classic' => esc_html__( 'Classic Card (Modern Clean)', 'rawnaq' ),
+                'glass'   => esc_html__( 'Glassmorphism (Frosted Glass)', 'rawnaq' ),
+                'minimal' => esc_html__( 'Minimal Editorial (Cardless)', 'rawnaq' ),
+                'glow'    => esc_html__( 'Gradient Glow (Illuminated)', 'rawnaq' ),
+                'process' => esc_html__( 'Process / Roadmap (Milestone Steps)', 'rawnaq' ),
+            ],
+        ] );
+
+        $this->add_control( 'node_style', [
+            'label'   => esc_html__( 'Node Indicator Style', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'number',
+            'options' => [
+                'number'    => esc_html__( 'Step Number (01, 02...)', 'rawnaq' ),
+                'icon'      => esc_html__( 'Icon Pointer', 'rawnaq' ),
+                'dot'       => esc_html__( 'Pulse Dot (Minimal)', 'rawnaq' ),
+                'date_pill' => esc_html__( 'Date / Year Pill', 'rawnaq' ),
+            ],
+        ] );
+
+        $this->add_control( 'line_style', [
+            'label'   => esc_html__( 'Connecting Line Style', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'solid',
+            'options' => [
+                'solid'    => esc_html__( 'Solid Line', 'rawnaq' ),
+                'gradient' => esc_html__( 'Dual-Color Gradient', 'rawnaq' ),
+                'dashed'   => esc_html__( 'Dashed Blueprint', 'rawnaq' ),
+            ],
         ] );
 
         $this->add_control( 'layout', [
@@ -265,6 +308,24 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
                 'right'       => esc_html__( 'All Right', 'rawnaq' ),
                 'horizontal'  => esc_html__( 'Horizontal', 'rawnaq' ),
             ],
+        ] );
+
+        $this->add_control( 'active_node_glow', [
+            'label'        => esc_html__( 'Active Node Pulse Glow', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'label_on'     => esc_html__( 'Yes', 'rawnaq' ),
+            'label_off'    => esc_html__( 'No', 'rawnaq' ),
+            'return_value' => 'yes',
+            'default'      => 'yes',
+        ] );
+
+        $this->add_control( 'card_hover_tilt', [
+            'label'        => esc_html__( 'Card Hover Elevation', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'label_on'     => esc_html__( 'Yes', 'rawnaq' ),
+            'label_off'    => esc_html__( 'No', 'rawnaq' ),
+            'return_value' => 'yes',
+            'default'      => 'yes',
         ] );
 
         $this->add_control( 'timeline_name', [
@@ -283,6 +344,7 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             'label_off'    => esc_html__( 'No', 'rawnaq' ),
             'return_value' => 'yes',
             'default'      => 'yes',
+            'condition'    => [ 'node_style' => 'number' ],
         ] );
 
         $this->add_control( 'initial_visible', [
@@ -328,7 +390,20 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             'label'     => esc_html__( 'Active Line Color', 'rawnaq' ),
             'type'      => \Elementor\Controls_Manager::COLOR,
             'default'   => '#6366f1',
-            'selectors' => [ '{{WRAPPER}} .rawnaq-timeline-line-active' => 'background: {{VALUE}};' ],
+            'selectors' => [ '{{WRAPPER}} .rawnaq-timeline-wrapper' => '--tl-line-active: {{VALUE}};' ],
+        ] );
+        $this->add_control( 'line_gradient_to', [
+            'label'     => esc_html__( 'Gradient Line End Color', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'default'   => '#f59e0b',
+            'condition' => [ 'line_style' => 'gradient' ],
+            'selectors' => [ '{{WRAPPER}} .rawnaq-timeline-wrapper' => '--tl-line-gradient-to: {{VALUE}};' ],
+        ] );
+        $this->add_control( 'glow_color', [
+            'label'     => esc_html__( 'Glow & Active Pulse Color', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'default'   => 'rgba(99, 102, 241, 0.45)',
+            'selectors' => [ '{{WRAPPER}} .rawnaq-timeline-wrapper' => '--tl-glow-color: {{VALUE}};' ],
         ] );
         $this->add_responsive_control( 'line_width', [
             'label'      => esc_html__( 'Line Thickness', 'rawnaq' ),
@@ -370,6 +445,22 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             'type'      => \Elementor\Controls_Manager::COLOR,
             'default'   => '#ffffff',
             'selectors' => [ '{{WRAPPER}} .rawnaq-timeline-card' => 'background-color: {{VALUE}};' ],
+        ] );
+        $this->add_responsive_control( 'glass_blur', [
+            'label'      => esc_html__( 'Glass Blur Intensity', 'rawnaq' ),
+            'type'       => \Elementor\Controls_Manager::SLIDER,
+            'size_units' => [ 'px' ],
+            'range'      => [ 'px' => [ 'min' => 0, 'max' => 32 ] ],
+            'default'    => [ 'unit' => 'px', 'size' => 16 ],
+            'condition'  => [ 'timeline_skin' => 'glass' ],
+            'selectors'  => [ '{{WRAPPER}} .rawnaq-timeline-wrapper' => '--tl-glass-blur: {{SIZE}}{{UNIT}};' ],
+        ] );
+        $this->add_control( 'glass_border_color', [
+            'label'     => esc_html__( 'Glass Border Color', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::COLOR,
+            'default'   => 'rgba(255, 255, 255, 0.45)',
+            'condition' => [ 'timeline_skin' => 'glass' ],
+            'selectors' => [ '{{WRAPPER}} .rawnaq-timeline-wrapper' => '--tl-glass-border: {{VALUE}};' ],
         ] );
         $this->add_responsive_control( 'card_radius', [
             'label'      => esc_html__( 'Card Radius', 'rawnaq' ),
@@ -598,9 +689,24 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             $load_more_text = rawnaq_translate( 'load_more', $load_more_text );
         }
         $tl_name    = $this->resolve_tl_name( $s );
-        $wrap_class = 'rawnaq-timeline-wrapper layout-' . sanitize_html_class( $layout );
-        if ( $show_numbers ) {
+        $skin       = sanitize_key( $s['timeline_skin'] ?? 'classic' );
+        $node_style = sanitize_key( $s['node_style'] ?? 'number' );
+        $line_style = sanitize_key( $s['line_style'] ?? 'solid' );
+        $active_glow= ( $s['active_node_glow'] ?? 'yes' ) === 'yes';
+        $card_hover = ( $s['card_hover_tilt'] ?? 'yes' ) === 'yes';
+
+        $wrap_class = 'rawnaq-timeline-wrapper layout-' . sanitize_html_class( $layout )
+            . ' skin-' . sanitize_html_class( $skin )
+            . ' node-' . sanitize_html_class( $node_style )
+            . ' line-' . sanitize_html_class( $line_style );
+        if ( $show_numbers && 'number' === $node_style ) {
             $wrap_class .= ' show-numbers';
+        }
+        if ( $active_glow ) {
+            $wrap_class .= ' has-node-glow';
+        }
+        if ( $card_hover ) {
+            $wrap_class .= ' has-card-hover';
         }
         if ( $this->is_elementor_edit_mode() ) {
             $wrap_class .= ' is-editor';
@@ -616,7 +722,7 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
         ?>
         <div
             class="<?php echo esc_attr( $wrap_class ); ?>"
-            data-show-numbers="<?php echo $show_numbers ? '1' : '0'; ?>"
+            data-show-numbers="<?php echo ( $show_numbers && 'number' === $node_style ) ? '1' : '0'; ?>"
             data-tl-name="<?php echo esc_attr( $tl_name ); ?>"
             data-initial-visible="<?php echo esc_attr( (string) ( $bundle['use_ajax'] ? 0 : $initial_visible ) ); ?>"
             data-load-chunk="<?php echo esc_attr( (string) $load_chunk ); ?>"
@@ -635,10 +741,11 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             <div class="rawnaq-timeline-line-active"></div>
 
             <?php foreach ( $steps as $index => $step ) :
-                $side     = $this->side_class( $index, $layout );
-                $num      = str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT );
-                $cta_text = trim( (string) ( $step['cta_text'] ?? $step['ctaText'] ?? '' ) );
-                $cta_link = $step['cta_link'] ?? [];
+                $side         = $this->side_class( $index, $layout );
+                $num          = str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT );
+                $status_badge = trim( (string) ( $step['status_badge'] ?? ( $step['status'] ?? '' ) ) );
+                $cta_text     = trim( (string) ( $step['cta_text'] ?? $step['ctaText'] ?? '' ) );
+                $cta_link     = $step['cta_link'] ?? [];
                 if ( empty( $cta_link['url'] ) && ! empty( $step['ctaLink'] ) ) {
                     $cta_link = [ 'url' => $step['ctaLink'] ];
                 }
@@ -652,16 +759,25 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
                     <?php if ( $project_id ) : ?>data-project-id="<?php echo esc_attr( $project_id ); ?>"<?php endif; ?>
                     <?php if ( $project_slug ) : ?>data-project-slug="<?php echo esc_attr( $project_slug ); ?>"<?php endif; ?>>
                     <span class="rawnaq-timeline-bullet">
-                        <?php if ( $show_numbers ) : ?>
+                        <?php if ( 'icon' === $node_style && ! empty( $step['selected_icon']['value'] ) ) : ?>
+                            <span class="bullet-icon"><?php \Elementor\Icons_Manager::render_icon( $step['selected_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
+                        <?php elseif ( 'date_pill' === $node_style && ! empty( $step['meta'] ) ) : ?>
+                            <span class="bullet-date"><?php echo esc_html( $step['meta'] ); ?></span>
+                        <?php elseif ( 'dot' === $node_style ) : ?>
+                            <span class="bullet-dot"></span>
+                        <?php elseif ( $show_numbers ) : ?>
                             <span class="num"><?php echo esc_html( $num ); ?></span>
                         <?php endif; ?>
                     </span>
                     <div class="rawnaq-timeline-card">
                         <?php $this->render_step_media( $step ); ?>
-                        <?php if ( ! empty( $step['meta'] ) ) : ?>
+                        <?php if ( $status_badge ) : ?>
+                            <span class="rawnaq-timeline-status"><?php echo esc_html( $status_badge ); ?></span>
+                        <?php endif; ?>
+                        <?php if ( ! empty( $step['meta'] ) && 'date_pill' !== $node_style ) : ?>
                             <span class="rawnaq-timeline-meta"><?php echo esc_html( $step['meta'] ); ?></span>
                         <?php endif; ?>
-                        <?php $this->render_step_icon( $step ); ?>
+                        <?php if ( 'icon' !== $node_style ) { $this->render_step_icon( $step ); } ?>
                         <?php if ( ! empty( $step['title'] ) ) : ?>
                             <h4><?php echo esc_html( $step['title'] ); ?></h4>
                         <?php endif; ?>
@@ -691,6 +807,11 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
         ?>
         <#
         var layout = settings.layout || 'alternating';
+        var skin = settings.timeline_skin || 'classic';
+        var nodeStyle = settings.node_style || 'number';
+        var lineStyle = settings.line_style || 'solid';
+        var activeGlow = settings.active_node_glow === 'yes';
+        var cardHover = settings.card_hover_tilt === 'yes';
         var showNumbers = settings.show_numbers === 'yes';
         var initialVisible = parseInt( settings.initial_visible, 10 ) || 0;
         var loadChunk = parseInt( settings.load_chunk, 10 ) || 3;
@@ -699,12 +820,12 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
         var customTl = ( settings.timeline_name || '' ).toString().replace(/[^a-zA-Z0-9_-]/g, '');
         var tlName = customTl || ( 'rawnaq-tl-' + view.getID() );
         if ( /^[0-9]/.test( tlName ) ) { tlName = 'tl-' + tlName; }
-        var wrapClass = 'rawnaq-timeline-wrapper layout-' + layout + ' is-editor' + ( showNumbers ? ' show-numbers' : '' );
+        var wrapClass = 'rawnaq-timeline-wrapper layout-' + layout + ' skin-' + skin + ' node-' + nodeStyle + ' line-' + lineStyle + ' is-editor' + ( showNumbers && nodeStyle === 'number' ? ' show-numbers' : '' ) + ( activeGlow ? ' has-node-glow' : '' ) + ( cardHover ? ' has-card-hover' : '' );
         var stepCount = ( settings.steps && settings.steps.length ) ? settings.steps.length : 0;
         #>
         <div
             class="{{ wrapClass }}"
-            data-show-numbers="{{ showNumbers ? '1' : '0' }}"
+            data-show-numbers="{{ ( showNumbers && nodeStyle === 'number' ) ? '1' : '0' }}"
             data-tl-name="{{ tlName }}"
             data-initial-visible="{{ initialVisible }}"
             data-load-chunk="{{ loadChunk }}"
@@ -717,7 +838,7 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
             <div class="rawnaq-timeline-line-active"></div>
             <# if ( source === 'query' ) { #>
                 <div class="rawnaq-timeline-item left-item item-active">
-                    <span class="rawnaq-timeline-bullet"><# if ( showNumbers ) { #><span class="num">01</span><# } #></span>
+                    <span class="rawnaq-timeline-bullet"><# if ( showNumbers && nodeStyle === 'number' ) { #><span class="num">01</span><# } else if ( nodeStyle === 'dot' ) { #><span class="bullet-dot"></span><# } #></span>
                     <div class="rawnaq-timeline-card">
                         <span class="rawnaq-timeline-meta"><?php echo esc_html__( 'Query mode', 'rawnaq' ); ?></span>
                         <h4><?php echo esc_html__( 'Posts load on the frontend', 'rawnaq' ); ?></h4>
@@ -742,10 +863,19 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
                     var img = ( step.image && step.image.url ) ? step.image.url : '';
                     var iconHTML = elementor.helpers.renderIcon( view, step.selected_icon, { 'aria-hidden': true }, 'i', 'object' );
                     var ctaUrl = ( step.cta_link && step.cta_link.url ) ? step.cta_link.url : '';
+                    var statusBadge = step.status_badge || step.status || '';
                     #>
                     <div class="rawnaq-timeline-item {{ side }} item-active">
                         <span class="rawnaq-timeline-bullet">
-                            <# if ( showNumbers ) { #><span class="num">{{ num }}</span><# } #>
+                            <# if ( nodeStyle === 'icon' && iconHTML && iconHTML.rendered ) { #>
+                                <span class="bullet-icon">{{{ iconHTML.value }}}</span>
+                            <# } else if ( nodeStyle === 'date_pill' && step.meta ) { #>
+                                <span class="bullet-date">{{{ step.meta }}}</span>
+                            <# } else if ( nodeStyle === 'dot' ) { #>
+                                <span class="bullet-dot"></span>
+                            <# } else if ( showNumbers ) { #>
+                                <span class="num">{{ num }}</span>
+                            <# } #>
                         </span>
                         <div class="rawnaq-timeline-card">
                             <# if ( videoUrl ) { #>
@@ -755,10 +885,13 @@ class Rawnaq_Scroll_Timeline_Widget extends \Elementor\Widget_Base {
                             <# } else if ( img ) { #>
                                 <img class="rawnaq-timeline-thumb" src="{{ img }}" alt="" />
                             <# } #>
-                            <# if ( step.meta ) { #>
+                            <# if ( statusBadge ) { #>
+                                <span class="rawnaq-timeline-status">{{{ statusBadge }}}</span>
+                            <# } #>
+                            <# if ( step.meta && nodeStyle !== 'date_pill' ) { #>
                                 <span class="rawnaq-timeline-meta">{{{ step.meta }}}</span>
                             <# } #>
-                            <# if ( iconHTML && iconHTML.rendered ) { #>
+                            <# if ( nodeStyle !== 'icon' && iconHTML && iconHTML.rendered ) { #>
                                 <span class="rawnaq-timeline-icon">{{{ iconHTML.value }}}</span>
                             <# } #>
                             <# if ( step.title ) { #><h4>{{{ step.title }}}</h4><# } #>

@@ -1594,37 +1594,47 @@ function rawnaq_timeline_side_class( $index, $layout ) {
  * @param int    $start_index  Numbering offset (0-based index of first step).
  * @return string
  */
-function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $show_numbers = true, $start_index = 0 ) {
-	$steps  = is_array( $steps ) ? $steps : [];
-	$layout = sanitize_html_class( $layout );
+function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $show_numbers = true, $start_index = 0, $node_style = 'number' ) {
+	$steps      = is_array( $steps ) ? $steps : [];
+	$layout     = sanitize_html_class( $layout );
+	$node_style = sanitize_key( $node_style ? $node_style : 'number' );
 	if ( ! in_array( $layout, [ 'alternating', 'left', 'right', 'horizontal' ], true ) ) {
 		$layout = 'alternating';
 	}
 	$start_index = max( 0, (int) $start_index );
 	ob_start();
 	foreach ( $steps as $i => $step ) {
-		$index = $start_index + (int) $i;
-		$side  = rawnaq_timeline_side_class( $index, $layout );
-		$num   = str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT );
-		$meta  = $step['meta'] ?? '';
-		$title = $step['title'] ?? '';
-		$desc  = $step['desc'] ?? '';
-		$icon  = $step['icon'] ?? '';
-		$img   = $step['imageUrl'] ?? ( $step['image']['url'] ?? '' );
-		$video = trim( (string) ( $step['video'] ?? ( $step['video_url']['url'] ?? '' ) ) );
-		$cta_text = trim( (string) ( $step['ctaText'] ?? $step['cta_text'] ?? '' ) );
-		$cta_link = $step['ctaLink'] ?? ( $step['cta_link']['url'] ?? '' );
-		$project_id = (string) ( $step['projectId'] ?? $step['project_id'] ?? '' );
+		$index        = $start_index + (int) $i;
+		$side         = rawnaq_timeline_side_class( $index, $layout );
+		$num          = str_pad( (string) ( $index + 1 ), 2, '0', STR_PAD_LEFT );
+		$meta         = $step['meta'] ?? '';
+		$title        = $step['title'] ?? '';
+		$desc         = $step['desc'] ?? '';
+		$icon         = $step['icon'] ?? '';
+		$status_badge = trim( (string) ( $step['status_badge'] ?? ( $step['status'] ?? '' ) ) );
+		$img          = $step['imageUrl'] ?? ( $step['image']['url'] ?? '' );
+		$video        = trim( (string) ( $step['video'] ?? ( $step['video_url']['url'] ?? '' ) ) );
+		$cta_text     = trim( (string) ( $step['ctaText'] ?? ( $step['cta_text'] ?? '' ) ) );
+		$cta_link     = $step['ctaLink'] ?? ( $step['cta_link']['url'] ?? '' );
+		$project_id   = (string) ( $step['projectId'] ?? ( $step['project_id'] ?? '' ) );
 		if ( ! $project_id && ! empty( $step['post_id'] ) ) {
 			$project_id = 'post-' . absint( $step['post_id'] );
 		}
-		$project_slug = (string) ( $step['projectSlug'] ?? $step['project_slug'] ?? '' );
+		$project_slug = (string) ( $step['projectSlug'] ?? ( $step['project_slug'] ?? '' ) );
 		?>
 		<div class="rawnaq-timeline-item <?php echo esc_attr( $side ); ?>"
 			<?php if ( $project_id ) : ?>data-project-id="<?php echo esc_attr( $project_id ); ?>"<?php endif; ?>
 			<?php if ( $project_slug ) : ?>data-project-slug="<?php echo esc_attr( $project_slug ); ?>"<?php endif; ?>>
 			<span class="rawnaq-timeline-bullet">
-				<?php if ( $show_numbers ) : ?>
+				<?php if ( 'icon' === $node_style && ! empty( $step['selected_icon']['value'] ) && class_exists( '\Elementor\Icons_Manager' ) ) : ?>
+					<span class="bullet-icon"><?php \Elementor\Icons_Manager::render_icon( $step['selected_icon'], [ 'aria-hidden' => 'true' ] ); ?></span>
+				<?php elseif ( 'icon' === $node_style && ! empty( $icon ) ) : ?>
+					<span class="bullet-icon"><span class="dashicons <?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span></span>
+				<?php elseif ( 'date_pill' === $node_style && ! empty( $meta ) ) : ?>
+					<span class="bullet-date"><?php echo esc_html( $meta ); ?></span>
+				<?php elseif ( 'dot' === $node_style ) : ?>
+					<span class="bullet-dot"></span>
+				<?php elseif ( $show_numbers ) : ?>
 					<span class="num"><?php echo esc_html( $num ); ?></span>
 				<?php endif; ?>
 			</span>
@@ -1636,13 +1646,16 @@ function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $sh
 				<?php elseif ( $img ) : ?>
 					<img class="rawnaq-timeline-thumb" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
 				<?php endif; ?>
-				<?php if ( $meta ) : ?>
+				<?php if ( $status_badge ) : ?>
+					<span class="rawnaq-timeline-status"><?php echo esc_html( $status_badge ); ?></span>
+				<?php endif; ?>
+				<?php if ( $meta && 'date_pill' !== $node_style ) : ?>
 					<span class="rawnaq-timeline-meta"><?php echo esc_html( $meta ); ?></span>
 				<?php endif; ?>
-				<?php if ( $icon ) : ?>
+				<?php if ( 'icon' !== $node_style && $icon ) : ?>
 					<span class="rawnaq-timeline-icon"><span class="dashicons <?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span></span>
 				<?php endif; ?>
-				<?php if ( ! empty( $step['selected_icon']['value'] ) && class_exists( '\Elementor\Icons_Manager' ) ) : ?>
+				<?php if ( 'icon' !== $node_style && ! empty( $step['selected_icon']['value'] ) && class_exists( '\Elementor\Icons_Manager' ) ) : ?>
 					<span class="rawnaq-timeline-icon">
 						<?php \Elementor\Icons_Manager::render_icon( $step['selected_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 					</span>

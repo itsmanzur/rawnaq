@@ -29,6 +29,20 @@ class Rawnaq_ET_Scroll_Timeline extends ET_Builder_Module {
 				'default'         => 'Our Journey & Milestones',
 				'toggle_slug'     => 'main_content',
 			],
+			'timeline_skin' => [
+				'label'           => esc_html__( 'Timeline Skin / Theme', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'basic_option',
+				'options'         => [
+					'classic' => esc_html__( 'Classic Card', 'rawnaq' ),
+					'glass'   => esc_html__( 'Glassmorphism', 'rawnaq' ),
+					'minimal' => esc_html__( 'Minimal Editorial', 'rawnaq' ),
+					'glow'    => esc_html__( 'Gradient Glow', 'rawnaq' ),
+					'process' => esc_html__( 'Process Roadmap', 'rawnaq' ),
+				],
+				'default'         => 'classic',
+				'toggle_slug'     => 'main_content',
+			],
 			'items_json' => [
 				'label'           => esc_html__( 'Timeline Milestones JSON', 'rawnaq' ),
 				'type'            => 'textarea',
@@ -50,9 +64,10 @@ class Rawnaq_ET_Scroll_Timeline extends ET_Builder_Module {
 		wp_enqueue_style( 'rawnaq-scroll-timeline' );
 		wp_enqueue_script( 'rawnaq-scroll-timeline' );
 
-		$title        = sanitize_text_field( $this->props['timeline_title'] ?? 'Our Journey & Milestones' );
-		$accent_color = sanitize_hex_color( $this->props['accent_color'] ?? '#0f766e' ) ?: '#0f766e';
-		$raw_items    = $this->props['items_json'] ?? '';
+		$title         = sanitize_text_field( $this->props['timeline_title'] ?? 'Our Journey & Milestones' );
+		$timeline_skin = sanitize_key( $this->props['timeline_skin'] ?? 'classic' );
+		$accent_color  = sanitize_hex_color( $this->props['accent_color'] ?? '#0f766e' ) ?: '#0f766e';
+		$raw_items     = $this->props['items_json'] ?? '';
 
 		$items = json_decode( $raw_items, true );
 		if ( ! is_array( $items ) || empty( $items ) ) {
@@ -65,7 +80,7 @@ class Rawnaq_ET_Scroll_Timeline extends ET_Builder_Module {
 
 		ob_start();
 		?>
-		<div class="rawnaq-scroll-timeline-wrap" style="--rq-accent: <?php echo esc_attr( $accent_color ); ?>;">
+		<div class="rawnaq-scroll-timeline-wrap rawnaq-timeline-wrapper skin-<?php echo esc_attr( $timeline_skin ); ?>" style="--rq-accent: <?php echo esc_attr( $accent_color ); ?>; --tl-line-active: <?php echo esc_attr( $accent_color ); ?>; --tl-bullet-active: <?php echo esc_attr( $accent_color ); ?>;">
 			<?php if ( $title ) : ?>
 				<h3 class="rawnaq-timeline-heading"><?php echo esc_html( $title ); ?></h3>
 			<?php endif; ?>

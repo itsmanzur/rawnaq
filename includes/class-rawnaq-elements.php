@@ -370,6 +370,7 @@ class Rawnaq_Elements {
         $offset = isset( $_POST['offset'] ) ? max( 0, absint( $_POST['offset'] ) ) : 0;
         $chunk  = isset( $_POST['chunk'] ) ? max( 1, min( 20, absint( $_POST['chunk'] ) ) ) : 3;
         $layout = isset( $_POST['layout'] ) ? sanitize_html_class( wp_unslash( $_POST['layout'] ) ) : 'alternating';
+        $node_style = isset( $_POST['node_style'] ) ? sanitize_key( wp_unslash( $_POST['node_style'] ) ) : 'number';
         $show_numbers = ! empty( $_POST['show_numbers'] );
 
         $q = rawnaq_timeline_sanitize_query_args( $decoded );
@@ -395,7 +396,7 @@ class Rawnaq_Elements {
         $next       = $offset + count( $steps );
         $found      = (int) $result['found_posts'];
         $has_more   = $next < $max && $next < $found && count( $steps ) > 0;
-        $html       = rawnaq_timeline_render_items_html( $steps, $layout, $show_numbers, $offset );
+        $html       = rawnaq_timeline_render_items_html( $steps, $layout, $show_numbers, $offset, $node_style );
 
         wp_send_json_success( [
             'html'        => $html,

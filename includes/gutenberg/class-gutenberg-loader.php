@@ -175,6 +175,15 @@ class Rawnaq_Gutenberg_Loader {
                     'initialVisible'  => [ 'type' => 'number', 'default' => 0 ],
                     'loadChunk'       => [ 'type' => 'number', 'default' => 3 ],
                     'loadMoreText'    => [ 'type' => 'string', 'default' => 'Load more' ],
+                    'skin'            => [ 'type' => 'string', 'default' => 'classic' ],
+                    'nodeStyle'       => [ 'type' => 'string', 'default' => 'number' ],
+                    'lineStyle'       => [ 'type' => 'string', 'default' => 'solid' ],
+                    'lineGradientTo'  => [ 'type' => 'string', 'default' => '#f59e0b' ],
+                    'glowColor'       => [ 'type' => 'string', 'default' => 'rgba(99, 102, 241, 0.45)' ],
+                    'glassBlur'       => [ 'type' => 'number', 'default' => 16 ],
+                    'glassBorder'     => [ 'type' => 'string', 'default' => 'rgba(255, 255, 255, 0.45)' ],
+                    'activeNodeGlow'  => [ 'type' => 'boolean', 'default' => true ],
+                    'cardHoverTilt'   => [ 'type' => 'boolean', 'default' => true ],
                 ]
             ] );
         }
@@ -856,6 +865,11 @@ class Rawnaq_Gutenberg_Loader {
         if ( ! in_array( $layout, [ 'alternating', 'left', 'right', 'horizontal' ], true ) ) {
             $layout = 'alternating';
         }
+        $skin            = sanitize_key( $attributes['skin'] ?? 'classic' );
+        $node_style      = sanitize_key( $attributes['nodeStyle'] ?? 'number' );
+        $line_style      = sanitize_key( $attributes['lineStyle'] ?? 'solid' );
+        $active_glow     = ! empty( $attributes['activeNodeGlow'] );
+        $card_hover      = ! empty( $attributes['cardHoverTilt'] );
         $show_numbers    = ! empty( $attributes['showNumbers'] );
         $initial_visible = max( 0, absint( $attributes['initialVisible'] ?? 0 ) );
         $load_chunk      = max( 1, absint( $attributes['loadChunk'] ?? 3 ) );
@@ -867,25 +881,39 @@ class Rawnaq_Gutenberg_Loader {
         } elseif ( function_exists( 'rawnaq_translate' ) ) {
             $load_more_text = rawnaq_translate( 'load_more', $load_more_text );
         }
-        $wrap_class = 'rawnaq-timeline-wrapper layout-' . $layout;
-        if ( $show_numbers ) {
+
+        $wrap_class = 'rawnaq-timeline-wrapper layout-' . $layout
+            . ' skin-' . sanitize_html_class( $skin )
+            . ' node-' . sanitize_html_class( $node_style )
+            . ' line-' . sanitize_html_class( $line_style );
+        if ( $show_numbers && 'number' === $node_style ) {
             $wrap_class .= ' show-numbers';
+        }
+        if ( $active_glow ) {
+            $wrap_class .= ' has-node-glow';
+        }
+        if ( $card_hover ) {
+            $wrap_class .= ' has-card-hover';
         }
 
         $style_vars = [
-            '--tl-line-bg'       => sanitize_hex_color( $attributes['lineBg'] ?? '' ) ?: '#e2e8f0',
-            '--tl-line-active'   => sanitize_hex_color( $attributes['lineActive'] ?? '' ) ?: '#6366f1',
-            '--tl-line-width'    => max( 1, min( 12, absint( $attributes['lineWidth'] ?? 4 ) ) ) . 'px',
-            '--tl-bullet-border' => sanitize_hex_color( $attributes['bulletBorder'] ?? '' ) ?: '#cbd5e1',
-            '--tl-bullet-active' => sanitize_hex_color( $attributes['bulletActive'] ?? '' ) ?: '#6366f1',
-            '--tl-card-bg'       => sanitize_hex_color( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
-            '--tl-meta'          => sanitize_hex_color( $attributes['metaColor'] ?? '' ) ?: '#6366f1',
-            '--tl-title'         => sanitize_hex_color( $attributes['titleColor'] ?? '' ) ?: '#1a1a1a',
-            '--tl-desc'          => sanitize_hex_color( $attributes['descColor'] ?? '' ) ?: '#666666',
-            '--tl-cta'           => sanitize_hex_color( $attributes['ctaColor'] ?? '' ) ?: '#6366f1',
-            '--tl-card-radius'   => max( 0, min( 40, absint( $attributes['cardRadius'] ?? 16 ) ) ) . 'px',
-            '--tl-bullet-size'   => max( 16, min( 48, absint( $attributes['bulletSize'] ?? 28 ) ) ) . 'px',
-            '--tl-item-pad-y'    => max( 8, min( 80, absint( $attributes['itemGap'] ?? 20 ) ) ) . 'px',
+            '--tl-line-bg'          => sanitize_hex_color( $attributes['lineBg'] ?? '' ) ?: '#e2e8f0',
+            '--tl-line-active'      => sanitize_hex_color( $attributes['lineActive'] ?? '' ) ?: '#6366f1',
+            '--tl-line-gradient-to' => sanitize_hex_color( $attributes['lineGradientTo'] ?? '' ) ?: '#f59e0b',
+            '--tl-glow-color'       => sanitize_text_field( $attributes['glowColor'] ?? 'rgba(99, 102, 241, 0.45)' ),
+            '--tl-glass-blur'       => max( 0, min( 32, absint( $attributes['glassBlur'] ?? 16 ) ) ) . 'px',
+            '--tl-glass-border'     => sanitize_text_field( $attributes['glassBorder'] ?? 'rgba(255, 255, 255, 0.45)' ),
+            '--tl-line-width'       => max( 1, min( 12, absint( $attributes['lineWidth'] ?? 4 ) ) ) . 'px',
+            '--tl-bullet-border'    => sanitize_hex_color( $attributes['bulletBorder'] ?? '' ) ?: '#cbd5e1',
+            '--tl-bullet-active'    => sanitize_hex_color( $attributes['bulletActive'] ?? '' ) ?: '#6366f1',
+            '--tl-card-bg'          => sanitize_hex_color( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
+            '--tl-meta'             => sanitize_hex_color( $attributes['metaColor'] ?? '' ) ?: '#6366f1',
+            '--tl-title'            => sanitize_hex_color( $attributes['titleColor'] ?? '' ) ?: '#1a1a1a',
+            '--tl-desc'             => sanitize_hex_color( $attributes['descColor'] ?? '' ) ?: '#666666',
+            '--tl-cta'              => sanitize_hex_color( $attributes['ctaColor'] ?? '' ) ?: '#6366f1',
+            '--tl-card-radius'      => max( 0, min( 40, absint( $attributes['cardRadius'] ?? 16 ) ) ) . 'px',
+            '--tl-bullet-size'      => max( 16, min( 48, absint( $attributes['bulletSize'] ?? 28 ) ) ) . 'px',
+            '--tl-item-pad-y'       => max( 8, min( 80, absint( $attributes['itemGap'] ?? 20 ) ) ) . 'px',
         ];
         $style_attr = 'scroll-timeline-name: --' . $tl_name . ';';
         foreach ( $style_vars as $prop => $val ) {
@@ -904,7 +932,7 @@ class Rawnaq_Gutenberg_Loader {
         ?>
         <div
             class="<?php echo esc_attr( $wrap_class ); ?>"
-            data-show-numbers="<?php echo $show_numbers ? '1' : '0'; ?>"
+            data-show-numbers="<?php echo ( $show_numbers && 'number' === $node_style ) ? '1' : '0'; ?>"
             data-tl-name="<?php echo esc_attr( $tl_name ); ?>"
             data-initial-visible="<?php echo esc_attr( (string) ( $use_ajax ? 0 : $initial_visible ) ); ?>"
             data-load-chunk="<?php echo esc_attr( (string) $load_chunk ); ?>"
@@ -920,7 +948,7 @@ class Rawnaq_Gutenberg_Loader {
             <div class="rawnaq-timeline-line-active"></div>
             <?php
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes.
-            echo rawnaq_timeline_render_items_html( $steps, $layout, $show_numbers, 0 );
+            echo rawnaq_timeline_render_items_html( $steps, $layout, $show_numbers, 0, $node_style );
             ?>
             <?php if ( $show_load ) : ?>
                 <div class="rawnaq-timeline-load-more">

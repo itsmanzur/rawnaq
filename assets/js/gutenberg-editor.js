@@ -612,7 +612,16 @@
             initialVisible: { type: 'number', default: 0 },
             loadChunk: { type: 'number', default: 3 },
             loadMoreText: { type: 'string', default: 'Load more' },
-            agencyPreset: { type: 'string', default: '' }
+            agencyPreset: { type: 'string', default: '' },
+            skin: { type: 'string', default: 'classic' },
+            nodeStyle: { type: 'string', default: 'number' },
+            lineStyle: { type: 'string', default: 'solid' },
+            lineGradientTo: { type: 'string', default: '#f59e0b' },
+            glowColor: { type: 'string', default: 'rgba(99, 102, 241, 0.45)' },
+            glassBlur: { type: 'number', default: 16 },
+            glassBorder: { type: 'string', default: 'rgba(255, 255, 255, 0.45)' },
+            activeNodeGlow: { type: 'boolean', default: true },
+            cardHoverTilt: { type: 'boolean', default: true }
         },
         edit: function(props) {
             var attributes = props.attributes;
@@ -626,10 +635,20 @@
             var customTl = (attributes.timelineName || '').toString().replace(/[^a-zA-Z0-9_-]/g, '');
             var tlName = customTl || 'rawnaq-tl-editor';
             if (/^[0-9]/.test(tlName)) { tlName = 'tl-' + tlName; }
+            var skin = attributes.skin || 'classic';
+            var nodeStyle = attributes.nodeStyle || 'number';
+            var lineStyle = attributes.lineStyle || 'solid';
+            var activeNodeGlow = attributes.activeNodeGlow !== false;
+            var cardHoverTilt = attributes.cardHoverTilt !== false;
+
             var wrapStyle = {
                 'scroll-timeline-name': '--' + tlName,
                 '--tl-line-bg': attributes.lineBg || '#e2e8f0',
                 '--tl-line-active': attributes.lineActive || '#6366f1',
+                '--tl-line-gradient-to': attributes.lineGradientTo || '#f59e0b',
+                '--tl-glow-color': attributes.glowColor || 'rgba(99, 102, 241, 0.45)',
+                '--tl-glass-blur': (attributes.glassBlur || 16) + 'px',
+                '--tl-glass-border': attributes.glassBorder || 'rgba(255, 255, 255, 0.45)',
                 '--tl-line-width': (attributes.lineWidth || 4) + 'px',
                 '--tl-bullet-border': attributes.bulletBorder || '#cbd5e1',
                 '--tl-bullet-active': attributes.bulletActive || '#6366f1',
@@ -667,6 +686,11 @@
                     el(TextControl, {
                         label: 'Date / Label', value: step.meta || '',
                         onChange: function(val) { patchStep(idx, { meta: val }); }
+                    }),
+                    el(TextControl, {
+                        label: 'Status / Pill Tag', value: step.status_badge || step.status || '',
+                        placeholder: 'Completed / In Progress',
+                        onChange: function(val) { patchStep(idx, { status_badge: val }); }
                     }),
                     el(TextControl, {
                         label: 'Step Title', value: step.title || '',
@@ -767,10 +791,14 @@
                 } else if (step.imageUrl) {
                     children.push(el('img', { className: 'rawnaq-timeline-thumb', src: step.imageUrl, alt: '', key: 'img' }));
                 }
-                if (step.meta) {
+                var statusTag = step.status_badge || step.status || '';
+                if (statusTag) {
+                    children.push(el('span', { className: 'rawnaq-timeline-status', key: 'status' }, statusTag));
+                }
+                if (step.meta && nodeStyle !== 'date_pill') {
                     children.push(el('span', { className: 'rawnaq-timeline-meta', key: 'meta' }, step.meta));
                 }
-                if (step.icon) {
+                if (step.icon && nodeStyle !== 'icon') {
                     children.push(el('span', { className: 'rawnaq-timeline-icon', key: 'icon' },
                         el('span', { className: 'dashicons ' + step.icon, 'aria-hidden': true })
                     ));
@@ -780,15 +808,25 @@
                 if (step.ctaText && step.ctaLink) {
                     children.push(el('a', { className: 'rawnaq-timeline-cta', href: step.ctaLink, key: 'cta' }, step.ctaText));
                 }
+
+                var bulletContent = null;
+                if (nodeStyle === 'icon' && step.icon) {
+                    bulletContent = el('span', { className: 'bullet-icon' }, el('span', { className: 'dashicons ' + step.icon }));
+                } else if (nodeStyle === 'date_pill' && step.meta) {
+                    bulletContent = el('span', { className: 'bullet-date' }, step.meta);
+                } else if (nodeStyle === 'dot') {
+                    bulletContent = el('span', { className: 'bullet-dot' });
+                } else if (showNumbers) {
+                    bulletContent = el('span', { className: 'num' }, num);
+                }
+
                 return el('div', { className: 'rawnaq-timeline-item ' + sideClass(idx) + ' item-active', key: idx },
-                    el('span', { className: 'rawnaq-timeline-bullet' },
-                        showNumbers ? el('span', { className: 'num' }, num) : null
-                    ),
+                    el('span', { className: 'rawnaq-timeline-bullet' }, bulletContent),
                     el('div', { className: 'rawnaq-timeline-card' }, children)
                 );
             });
 
-            var wrapClass = 'rawnaq-timeline-wrapper layout-' + layout + ' is-editor' + (showNumbers ? ' show-numbers' : '');
+            var wrapClass = 'rawnaq-timeline-wrapper layout-' + layout + ' skin-' + skin + ' node-' + nodeStyle + ' line-' + lineStyle + ' is-editor' + (showNumbers && nodeStyle === 'number' ? ' show-numbers' : '') + (activeNodeGlow ? ' has-node-glow' : '') + (cardHoverTilt ? ' has-card-hover' : '');
             try {
                 if (window.CSS && CSS.supports && (CSS.supports('animation-timeline: view()') || CSS.supports('animation-timeline: scroll()'))) {
                     wrapClass += ' tl-css-driven';
@@ -802,7 +840,50 @@
 
             return el(Fragment, {},
                 el(InspectorControls, {},
-                    el(PanelBody, { title: 'Layout', initialOpen: true },
+                    el(PanelBody, { title: 'Layout & Theme', initialOpen: true },
+                        el(SelectControl, {
+                            label: 'Design Skin / Theme',
+                            value: skin,
+                            options: [
+                                { label: 'Classic Card (Modern Clean)', value: 'classic' },
+                                { label: 'Glassmorphism (Frosted Glass)', value: 'glass' },
+                                { label: 'Minimal Editorial (Cardless)', value: 'minimal' },
+                                { label: 'Gradient Glow (Illuminated)', value: 'glow' },
+                                { label: 'Process / Roadmap (Milestone Steps)', value: 'process' }
+                            ],
+                            onChange: function(val) { setAttributes({ skin: val }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Node Indicator Style',
+                            value: nodeStyle,
+                            options: [
+                                { label: 'Step Number (01, 02...)', value: 'number' },
+                                { label: 'Icon Pointer', value: 'icon' },
+                                { label: 'Pulse Dot (Minimal)', value: 'dot' },
+                                { label: 'Date / Year Pill', value: 'date_pill' }
+                            ],
+                            onChange: function(val) { setAttributes({ nodeStyle: val }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Connecting Line Style',
+                            value: lineStyle,
+                            options: [
+                                { label: 'Solid Line', value: 'solid' },
+                                { label: 'Dual-Color Gradient', value: 'gradient' },
+                                { label: 'Dashed Blueprint', value: 'dashed' }
+                            ],
+                            onChange: function(val) { setAttributes({ lineStyle: val }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Active Node Pulse Glow',
+                            checked: activeNodeGlow,
+                            onChange: function(val) { setAttributes({ activeNodeGlow: !!val }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Card Hover Elevation',
+                            checked: cardHoverTilt,
+                            onChange: function(val) { setAttributes({ cardHoverTilt: !!val }); }
+                        }),
                         el(SelectControl, {
                             label: 'Steps Source',
                             value: source,
@@ -853,11 +934,11 @@
                             help: 'Optional. Paste the same ID into Bento cells to sync scroll animations.',
                             onChange: function(val) { setAttributes({ timelineName: val }); }
                         }),
-                        el(ToggleControl, {
+                        nodeStyle === 'number' ? el(ToggleControl, {
                             label: 'Show Step Numbers',
                             checked: showNumbers,
                             onChange: function(val) { setAttributes({ showNumbers: !!val }); }
-                        }),
+                        }) : null,
                         el(RangeControl, {
                             label: 'Initial Visible Steps',
                             help: '0 = show all. Otherwise Load More reveals the rest.',
@@ -937,6 +1018,10 @@
                     el(PanelBody, { title: 'Style & Colors', initialOpen: true },
                         el(TextControl, { label: 'Line Background (Hex)', value: attributes.lineBg || '#e2e8f0', onChange: function(val) { setAttributes({ lineBg: val }); } }),
                         el(TextControl, { label: 'Active Line (Hex)', value: attributes.lineActive || '#6366f1', onChange: function(val) { setAttributes({ lineActive: val }); } }),
+                        lineStyle === 'gradient' ? el(TextControl, { label: 'Gradient Line End (Hex)', value: attributes.lineGradientTo || '#f59e0b', onChange: function(val) { setAttributes({ lineGradientTo: val }); } }) : null,
+                        el(TextControl, { label: 'Glow & Active Pulse Color', value: attributes.glowColor || 'rgba(99, 102, 241, 0.45)', onChange: function(val) { setAttributes({ glowColor: val }); } }),
+                        skin === 'glass' ? el(RangeControl, { label: 'Glass Blur Intensity (px)', value: attributes.glassBlur || 16, onChange: function(val) { setAttributes({ glassBlur: val }); }, min: 0, max: 32 }) : null,
+                        skin === 'glass' ? el(TextControl, { label: 'Glass Border Color', value: attributes.glassBorder || 'rgba(255, 255, 255, 0.45)', onChange: function(val) { setAttributes({ glassBorder: val }); } }) : null,
                         el(RangeControl, {
                             label: 'Line Thickness (px)',
                             value: attributes.lineWidth || 4,

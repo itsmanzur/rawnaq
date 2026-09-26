@@ -193,6 +193,8 @@
             body.append('query', query);
             body.append('layout', layout);
             body.append('show_numbers', showNumbers ? '1' : '0');
+            var nodeMatch = wrap.className.match(/\bnode-([a-z_]+)\b/);
+            body.append('node_style', nodeMatch ? nodeMatch[1] : 'number');
 
             window.fetch(cfg.ajaxUrl, {
                 method: 'POST',

@@ -5,6 +5,10 @@
 .rawnaq-timeline-wrapper {
     --tl-line-bg: #e2e8f0;
     --tl-line-active: #6366f1;
+    --tl-line-gradient-to: #f59e0b;
+    --tl-glow-color: rgba(99, 102, 241, 0.45);
+    --tl-glass-blur: 16px;
+    --tl-glass-border: rgba(255, 255, 255, 0.45);
     --tl-line-width: 4px;
     --tl-bullet-border: #cbd5e1;
     --tl-bullet-active: #6366f1;
@@ -54,6 +58,23 @@
     height: 0%;
     border-radius: 999px;
     will-change: height, transform;
+}
+
+/* Connecting Line Styles */
+.rawnaq-timeline-wrapper.line-gradient:not(.layout-horizontal) .rawnaq-timeline-line-active {
+    background: linear-gradient(180deg, var(--tl-line-active) 0%, var(--tl-line-gradient-to, #f59e0b) 100%);
+}
+
+.rawnaq-timeline-wrapper.line-gradient.layout-horizontal .rawnaq-timeline-line-active {
+    background: linear-gradient(90deg, var(--tl-line-active) 0%, var(--tl-line-gradient-to, #f59e0b) 100%);
+}
+
+.rawnaq-timeline-wrapper.line-dashed:not(.layout-horizontal) .rawnaq-timeline-line-bg {
+    background: repeating-linear-gradient(180deg, var(--tl-line-bg), var(--tl-line-bg) 6px, transparent 6px, transparent 12px);
+}
+
+.rawnaq-timeline-wrapper.line-dashed.layout-horizontal .rawnaq-timeline-line-bg {
+    background: repeating-linear-gradient(90deg, var(--tl-line-bg), var(--tl-line-bg) 6px, transparent 6px, transparent 12px);
 }
 
 /* Timeline items */
@@ -166,6 +187,88 @@
     color: var(--tl-bullet-active);
 }
 
+/* Node indicator variants */
+.bullet-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1;
+}
+
+.bullet-icon i,
+.bullet-icon svg,
+.bullet-icon .dashicons {
+    width: 1em;
+    height: 1em;
+    font-size: 1em;
+    line-height: 1;
+    display: block;
+}
+
+.rawnaq-timeline-item.item-active .rawnaq-timeline-bullet .bullet-icon {
+    color: var(--tl-bullet-active);
+}
+
+.bullet-date {
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    color: #64748b;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.rawnaq-timeline-item.item-active .rawnaq-timeline-bullet .bullet-date {
+    color: var(--tl-bullet-active);
+}
+
+.bullet-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--tl-bullet-border);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.rawnaq-timeline-item.item-active .bullet-dot {
+    background: var(--tl-bullet-active);
+    transform: scale(1.25);
+}
+
+.rawnaq-timeline-wrapper.node-dot .rawnaq-timeline-bullet {
+    width: 18px;
+    height: 18px;
+    border-width: 2.5px;
+}
+
+.rawnaq-timeline-wrapper.node-dot .rawnaq-timeline-item.left-item .rawnaq-timeline-bullet {
+    right: -9px;
+}
+
+.rawnaq-timeline-wrapper.node-dot .rawnaq-timeline-item.right-item .rawnaq-timeline-bullet {
+    left: -9px;
+}
+
+.rawnaq-timeline-wrapper.node-date_pill .rawnaq-timeline-bullet {
+    width: auto;
+    min-width: 48px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 999px;
+}
+
+.rawnaq-timeline-wrapper.node-date_pill .rawnaq-timeline-item.left-item .rawnaq-timeline-bullet {
+    right: -24px;
+}
+
+.rawnaq-timeline-wrapper.node-date_pill .rawnaq-timeline-item.right-item .rawnaq-timeline-bullet {
+    left: -24px;
+}
+
 /* Cards / media */
 .rawnaq-timeline-card {
     background: var(--tl-card-bg);
@@ -211,6 +314,19 @@
     height: 100%;
     border: 0;
     object-fit: cover;
+}
+
+.rawnaq-timeline-status {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.09);
+    color: var(--tl-meta);
+    margin-bottom: 8px;
 }
 
 .rawnaq-timeline-meta {
@@ -280,6 +396,139 @@
 .rawnaq-timeline-cta:hover,
 .rawnaq-timeline-cta:focus {
     border-bottom-color: currentColor;
+}
+
+/* ── Active Node Glow & Pulse ── */
+@keyframes rawnaq-node-pulse {
+    0% {
+        box-shadow: 0 0 0 0 var(--tl-glow-color);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    }
+}
+
+.rawnaq-timeline-wrapper.has-node-glow .rawnaq-timeline-item.item-active .rawnaq-timeline-bullet {
+    animation: rawnaq-node-pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    box-shadow: 0 0 14px var(--tl-glow-color);
+}
+
+/* ── Card Hover Elevation ── */
+.rawnaq-timeline-wrapper.has-card-hover .rawnaq-timeline-card {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.rawnaq-timeline-wrapper.has-card-hover .rawnaq-timeline-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px -6px rgba(0, 0, 0, 0.1), 0 8px 14px -4px rgba(0, 0, 0, 0.05);
+}
+
+/* ─── Timeline Design Skins / Themes ─── */
+
+/* 1. Skin: Classic (Default) */
+.rawnaq-timeline-wrapper.skin-classic .rawnaq-timeline-card {
+    background: var(--tl-card-bg);
+}
+
+/* 2. Skin: Glassmorphism (Frosted Glass) */
+.rawnaq-timeline-wrapper.skin-glass .rawnaq-timeline-card {
+    background: rgba(255, 255, 255, 0.68);
+    backdrop-filter: blur(var(--tl-glass-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--tl-glass-blur, 16px));
+    border: 1px solid var(--tl-glass-border, rgba(255, 255, 255, 0.45));
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.dark .rawnaq-timeline-wrapper.skin-glass .rawnaq-timeline-card,
+[data-theme="dark"] .rawnaq-timeline-wrapper.skin-glass .rawnaq-timeline-card {
+    background: rgba(17, 24, 39, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* 3. Skin: Minimal Editorial (Cardless) */
+.rawnaq-timeline-wrapper.skin-minimal .rawnaq-timeline-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 6px 0;
+}
+
+.rawnaq-timeline-wrapper.skin-minimal .rawnaq-timeline-item.left-item .rawnaq-timeline-card {
+    border-right: 3px solid transparent;
+    padding-right: 18px;
+}
+
+.rawnaq-timeline-wrapper.skin-minimal .rawnaq-timeline-item.right-item .rawnaq-timeline-card {
+    border-left: 3px solid transparent;
+    padding-left: 18px;
+}
+
+.rawnaq-timeline-wrapper.skin-minimal .rawnaq-timeline-item.item-active.left-item .rawnaq-timeline-card {
+    border-right-color: var(--tl-bullet-active);
+}
+
+.rawnaq-timeline-wrapper.skin-minimal .rawnaq-timeline-item.item-active.right-item .rawnaq-timeline-card {
+    border-left-color: var(--tl-bullet-active);
+}
+
+.rawnaq-timeline-wrapper.skin-minimal .rawnaq-timeline-meta {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+/* 4. Skin: Gradient Glow */
+.rawnaq-timeline-wrapper.skin-glow .rawnaq-timeline-card {
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.rawnaq-timeline-wrapper.skin-glow .rawnaq-timeline-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--tl-line-active), var(--tl-line-gradient-to, #f59e0b));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.rawnaq-timeline-wrapper.skin-glow .rawnaq-timeline-item.item-active .rawnaq-timeline-card {
+    border-color: var(--tl-bullet-active);
+    box-shadow: 0 0 24px -2px var(--tl-glow-color), 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+}
+
+.rawnaq-timeline-wrapper.skin-glow .rawnaq-timeline-item.item-active .rawnaq-timeline-card::before {
+    opacity: 1;
+}
+
+/* 5. Skin: Process / Roadmap Steps */
+.rawnaq-timeline-wrapper.skin-process .rawnaq-timeline-card {
+    border-left: 4px solid var(--tl-bullet-border);
+    border-radius: calc(var(--tl-card-radius) / 2);
+}
+
+.rawnaq-timeline-wrapper.skin-process .rawnaq-timeline-item.item-active .rawnaq-timeline-card {
+    border-left-color: var(--tl-bullet-active);
+}
+
+.rtl .rawnaq-timeline-wrapper.skin-process .rawnaq-timeline-card,
+[dir="rtl"] .rawnaq-timeline-wrapper.skin-process .rawnaq-timeline-card {
+    border-left: 1px solid #eef2f6;
+    border-right: 4px solid var(--tl-bullet-border);
+}
+
+.rtl .rawnaq-timeline-wrapper.skin-process .rawnaq-timeline-item.item-active .rawnaq-timeline-card,
+[dir="rtl"] .rawnaq-timeline-wrapper.skin-process .rawnaq-timeline-item.item-active .rawnaq-timeline-card {
+    border-right-color: var(--tl-bullet-active);
 }
 
 .rawnaq-timeline-load-more {
