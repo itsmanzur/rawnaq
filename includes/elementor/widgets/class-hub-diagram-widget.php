@@ -31,6 +31,12 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
             'default' => "REVIEW WITH\nCLIENT",
             'rows'    => 2,
         ] );
+        $this->add_control( 'center_icon', [
+            'label'   => esc_html__( 'Center Icon Class / Token', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::TEXT,
+            'default' => '',
+            'placeholder' => 'dashicons-networking or fa-solid fa-atom',
+        ] );
         $this->add_control( 'import_json', [
             'label'       => esc_html__( 'JSON Config Import/Export Override', 'rawnaq' ),
             'type'        => \Elementor\Controls_Manager::TEXTAREA,
@@ -47,6 +53,18 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
                 'type'        => \Elementor\Controls_Manager::TEXT,
                 'default'     => 'Node Name',
                 'label_block' => true,
+            ] );
+            $r->add_control( 'desc', [
+                'label'       => esc_html__( 'Description / Subtitle', 'rawnaq' ),
+                'type'        => \Elementor\Controls_Manager::TEXT,
+                'default'     => '',
+                'label_block' => true,
+            ] );
+            $r->add_control( 'badge', [
+                'label'       => esc_html__( 'Step / Badge Text', 'rawnaq' ),
+                'type'        => \Elementor\Controls_Manager::TEXT,
+                'default'     => '',
+                'placeholder' => '01 or PRO',
             ] );
             $r->add_control( 'bar_color', [
                 'label'   => esc_html__( 'Accent Color', 'rawnaq' ),
@@ -105,24 +123,28 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
             'default'     => [
                 [
                     'label'         => 'Design',
+                    'desc'          => 'Wireframe & system architecture',
                     'bar_color'     => '#E8793A',
                     'selected_icon' => [ 'value' => 'fas fa-pencil-ruler', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-art',
                 ],
                 [
                     'label'         => 'P&amp;ID',
+                    'desc'          => 'Piping & instrumentation diagram',
                     'bar_color'     => '#D4A92A',
                     'selected_icon' => [ 'value' => 'fas fa-project-diagram', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-editor-justify',
                 ],
                 [
                     'label'         => 'Sketch',
+                    'desc'          => 'Concept drafts & visual ideation',
                     'bar_color'     => '#26B8B8',
                     'selected_icon' => [ 'value' => 'fas fa-pen', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-welcome-write-blog',
                 ],
                 [
                     'label'         => 'Specification',
+                    'desc'          => 'Technical constraints & scoping',
                     'bar_color'     => '#E8793A',
                     'selected_icon' => [ 'value' => 'fas fa-clipboard-list', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-clipboard',
@@ -144,24 +166,28 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
             'default'     => [
                 [
                     'label'         => 'MTO/BOQ',
+                    'desc'          => 'Material takeoff & quantitative bill',
                     'bar_color'     => '#E8793A',
                     'selected_icon' => [ 'value' => 'fas fa-list', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-list-view',
                 ],
                 [
                     'label'         => '3D CAD Model',
+                    'desc'          => 'Parametric solid rendering',
                     'bar_color'     => '#D4A92A',
                     'selected_icon' => [ 'value' => 'fas fa-cube', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-format-image',
                 ],
                 [
                     'label'         => 'Drawings',
+                    'desc'          => 'High-precision fabrication blueprints',
                     'bar_color'     => '#26B8B8',
                     'selected_icon' => [ 'value' => 'fas fa-folder-open', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-portfolio',
                 ],
                 [
                     'label'         => 'Pipe Isometric',
+                    'desc'          => 'Detailed spool breakdown & routing',
                     'bar_color'     => '#E8793A',
                     'selected_icon' => [ 'value' => 'fas fa-chart-area', 'library' => 'fa-solid' ],
                     'icon'          => 'dashicons-chart-area',
@@ -173,7 +199,7 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
 
         // Style Tab
         $this->start_controls_section( 's_style', [
-            'label' => esc_html__( 'Style &amp; Colors', 'rawnaq' ),
+            'label' => esc_html__( 'Style &amp; Layout', 'rawnaq' ),
             'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
         ] );
         $this->add_responsive_control( 'height', [
@@ -196,6 +222,16 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
                 'horizontal' => esc_html__( 'Horizontal (Top/Bottom Row)', 'rawnaq' ),
                 'vertical'   => esc_html__( 'Vertical (Left/Right Column)', 'rawnaq' ),
                 'radial'     => esc_html__( 'Radial (360° Circular)', 'rawnaq' ),
+            ],
+        ] );
+        $this->add_control( 'line_curve', [
+            'label'   => esc_html__( 'Connector Path Geometry', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'orthogonal',
+            'options' => [
+                'orthogonal' => esc_html__( 'Orthogonal Elbows', 'rawnaq' ),
+                'bezier'     => esc_html__( 'Organic Bezier Curves', 'rawnaq' ),
+                'straight'   => esc_html__( 'Direct Straight Spokes', 'rawnaq' ),
             ],
         ] );
         $this->add_control( 'card_shape', [
@@ -226,6 +262,21 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
                 'no'  => esc_html__( 'Disable', 'rawnaq' ),
                 'yes' => esc_html__( 'Enable', 'rawnaq' ),
             ],
+        ] );
+        $this->add_control( 'pulse_effect', [
+            'label'   => esc_html__( 'Center Ripple Wave Pulse', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'yes',
+            'options' => [
+                'yes' => esc_html__( 'Enable', 'rawnaq' ),
+                'no'  => esc_html__( 'Disable', 'rawnaq' ),
+            ],
+        ] );
+        $this->add_control( 'show_step_numbers', [
+            'label'        => esc_html__( 'Show Step Badges', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => '',
         ] );
         $this->add_control( 'show_export', [
             'label'        => esc_html__( 'PNG / SVG Export', 'rawnaq' ),
@@ -290,6 +341,8 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
                 $out[] = [
                     'id'        => 'n' . $i,
                     'label'     => $n['label'] ?? '',
+                    'desc'      => $n['desc'] ?? '',
+                    'badge'     => $n['badge'] ?? '',
                     'color'     => ( $n['bar_color'] ?: '#E8793A' ),
                     'cardBg'    => $n['card_bg'] ?? '#ffffff',
                     'cardColor' => $n['card_color'] ?? '#1a1a1a',
@@ -304,21 +357,25 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
         };
 
         $cfg = [
-            'centerTitle'    => $s['center_title'] ?? 'STUDY 2D & 3D',
-            'centerSubtitle' => $s['center_sub']   ?? "REVIEW WITH\nCLIENT",
-            'lineColor'      => $s['line_color']   ?? '#c2c2c2',
-            'seg1Color'      => $s['seg1_color']   ?? '#E8793A',
-            'seg2Color'      => $s['seg2_color']   ?? '#D4A92A',
-            'seg3Color'      => $s['seg3_color']   ?? '#26B8B8',
-            'cardShape'      => $s['card_shape']   ?? 'rect',
-            'lineStyle'      => $s['line_style']   ?? 'solid',
-            'glowLines'      => $s['glow_lines']   ?? 'no',
-            'centerStyle'    => $s['center_style'] ?? 'conic',
-            'layoutFlow'     => $s['layout_flow']  ?? 'horizontal',
-            'importJson'     => $s['import_json']  ?? '',
-            'export'         => ( $s['show_export'] ?? 'yes' ) === 'yes',
-            'top'            => $map( $s['top_nodes']    ?? [] ),
-            'bottom'         => $map( $s['bottom_nodes'] ?? [] ),
+            'centerTitle'     => $s['center_title'] ?? 'STUDY 2D & 3D',
+            'centerSubtitle'  => $s['center_sub']   ?? "REVIEW WITH\nCLIENT",
+            'centerIcon'      => $s['center_icon']  ?? '',
+            'lineColor'       => $s['line_color']   ?? '#c2c2c2',
+            'seg1Color'       => $s['seg1_color']   ?? '#E8793A',
+            'seg2Color'       => $s['seg2_color']   ?? '#D4A92A',
+            'seg3Color'       => $s['seg3_color']   ?? '#26B8B8',
+            'cardShape'       => $s['card_shape']   ?? 'rect',
+            'lineStyle'       => $s['line_style']   ?? 'solid',
+            'lineCurve'       => $s['line_curve']   ?? 'orthogonal',
+            'glowLines'       => $s['glow_lines']   ?? 'no',
+            'pulseEffect'     => $s['pulse_effect'] ?? 'yes',
+            'showStepNumbers' => ( $s['show_step_numbers'] ?? '' ) === 'yes',
+            'centerStyle'     => $s['center_style'] ?? 'conic',
+            'layoutFlow'      => $s['layout_flow']  ?? 'horizontal',
+            'importJson'      => $s['import_json']  ?? '',
+            'export'          => ( $s['show_export'] ?? 'yes' ) === 'yes',
+            'top'             => $map( $s['top_nodes']    ?? [] ),
+            'bottom'          => $map( $s['bottom_nodes'] ?? [] ),
         ];
         ?>
         <div class="hub-diagram-host"
@@ -345,6 +402,8 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
                 return {
                     id: prefix + i,
                     label: n.label || '',
+                    desc: n.desc || '',
+                    badge: n.badge || '',
                     color: n.bar_color || '#E8793A',
                     cardBg: n.card_bg || '#ffffff',
                     cardColor: n.card_color || '#1a1a1a',
@@ -356,21 +415,25 @@ class Rawnaq_Hub_Diagram_Widget extends \Elementor\Widget_Base {
         };
 
         var cfg = {
-            centerTitle:    settings.center_title || 'STUDY 2D & 3D',
-            centerSubtitle: settings.center_sub   || 'REVIEW WITH\nCLIENT',
-            lineColor:      settings.line_color   || '#c2c2c2',
-            seg1Color:      settings.seg1_color   || '#E8793A',
-            seg2Color:      settings.seg2_color   || '#D4A92A',
-            seg3Color:      settings.seg3_color   || '#26B8B8',
-            cardShape:      settings.card_shape   || 'rect',
-            lineStyle:      settings.line_style   || 'solid',
-            glowLines:      settings.glow_lines   || 'no',
-            centerStyle:    settings.center_style || 'conic',
-            layoutFlow:     settings.layout_flow  || 'horizontal',
-            importJson:     settings.import_json  || '',
-            export:         settings.show_export !== '',
-            top:            map(topNodes, 't'),
-            bottom:         map(botNodes, 'b')
+            centerTitle:     settings.center_title || 'STUDY 2D & 3D',
+            centerSubtitle:  settings.center_sub   || 'REVIEW WITH\nCLIENT',
+            centerIcon:      settings.center_icon  || '',
+            lineColor:       settings.line_color   || '#c2c2c2',
+            seg1Color:       settings.seg1_color   || '#E8793A',
+            seg2Color:       settings.seg2_color   || '#D4A92A',
+            seg3Color:       settings.seg3_color   || '#26B8B8',
+            cardShape:       settings.card_shape   || 'rect',
+            lineStyle:       settings.line_style   || 'solid',
+            lineCurve:       settings.line_curve   || 'orthogonal',
+            glowLines:       settings.glow_lines   || 'no',
+            pulseEffect:     settings.pulse_effect || 'yes',
+            showStepNumbers: settings.show_step_numbers === 'yes',
+            centerStyle:     settings.center_style || 'conic',
+            layoutFlow:      settings.layout_flow  || 'horizontal',
+            importJson:      settings.import_json  || '',
+            export:          settings.show_export !== '',
+            top:             map(topNodes, 't'),
+            bottom:          map(botNodes, 'b')
         };
         #>
         <div class="hub-diagram-host"

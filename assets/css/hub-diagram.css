@@ -1,4 +1,7 @@
-/* Shared CSS for Hub Diagram - Elementor & Gutenberg */
+/* ==========================================================================
+   Rawnaq Hub Diagram — Interactive Ecosystem Styles
+   ========================================================================== */
+
 .hub-diagram-host {
     position: relative;
     width: 100%;
@@ -10,86 +13,150 @@
     counter-reset: step-counter;
     container-type: inline-size;
     container-name: hub-diagram;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-/* CENTER CIRCLE */
+/* ─────────────────────────────────────────────────────────────
+   CENTER HUB
+───────────────────────────────────────────────────────────── */
 .hub-diagram-host .hd-center {
     position: absolute;
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.hub-diagram-host .hd-center-pulse {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 2px solid #E8793A;
+    opacity: 0;
+    pointer-events: none;
+    animation: hd-pulse-ripple 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
 .hub-diagram-host .hd-center-ring {
     position: absolute;
     inset: 0;
     border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
+
 .hub-diagram-host .hd-center-inner {
     position: absolute;
     border-radius: 50%;
-    background: #fff;
+    background: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 14px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.15);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    transition: background-color 0.25s ease, transform 0.25s ease;
 }
+
+.hub-diagram-host .hd-center-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .hub-diagram-host .hd-center-title {
     font-weight: 800;
     text-transform: uppercase;
     line-height: 1.2;
-    color: #111;
+    color: #0f172a;
+    letter-spacing: -0.01em;
 }
+
 .hub-diagram-host .hd-center-sub {
     font-weight: 600;
     text-transform: uppercase;
-    color: #555;
+    color: #64748b;
     margin-top: 4px;
     line-height: 1.35;
+    letter-spacing: 0.02em;
 }
 
-/* CARDS base */
+/* ─────────────────────────────────────────────────────────────
+   SPOKE CARDS
+───────────────────────────────────────────────────────────── */
 .hub-diagram-host .hd-card {
     position: absolute;
-    background: #fff;
+    background: #ffffff;
     cursor: pointer;
     overflow: hidden;
-    transition: transform .22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .22s ease, opacity .3s, border-color .22s;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s ease,
+                opacity 0.25s ease,
+                border-color 0.25s ease,
+                outline 0.2s ease;
     z-index: 10;
     text-decoration: none;
     counter-increment: step-counter;
+    box-sizing: border-box;
+}
+
+.hub-diagram-host .hd-card:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 3px;
 }
 
 /* SHAPES */
 .hub-diagram-host .hd-card.shape-rect {
-    border-radius: 13px;
-    box-shadow: 0 3px 10px rgba(0,0,0,.09), 0 6px 22px rgba(0,0,0,.07);
-}
-.hub-diagram-host .hd-card.shape-pill {
-    border-radius: 40px;
-    box-shadow: 0 3px 10px rgba(0,0,0,.09), 0 6px 22px rgba(0,0,0,.07);
-}
-.hub-diagram-host .hd-card.shape-outline {
-    background: transparent !important;
-    border: 2px solid #cbd5e1;
-    box-shadow: none;
-    border-radius: 13px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-/* HOVER STATES */
-.hub-diagram-host .hd-card:hover {
-    transform: translateY(-5px) scale(1.04);
+.hub-diagram-host .hd-card.shape-pill {
+    border-radius: 40px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
+
+.hub-diagram-host .hd-card.shape-outline {
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+}
+
+/* HOVER & ACTIVE STATES */
+.hub-diagram-host .hd-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    z-index: 20;
+}
+
 .hub-diagram-host .hd-card.shape-rect:hover,
 .hub-diagram-host .hd-card.shape-pill:hover {
-    box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.06);
 }
+
 .hub-diagram-host .hd-card.shape-outline:hover {
     border-color: #6366f1;
 }
 
+.hub-diagram-host .hd-card.hd-highlighted {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+    transform: translateY(-4px) scale(1.04);
+    z-index: 25;
+    box-shadow: 0 14px 32px rgba(99, 102, 241, 0.22);
+}
+
+.hub-diagram-host .hd-card.hd-dimmed {
+    opacity: 0.22;
+    pointer-events: none;
+    filter: grayscale(0.5);
+}
+
+/* CARD INNER STRUCTURE */
 .hub-diagram-host .hd-card-inner {
     width: 100%;
     height: 100%;
@@ -97,47 +164,106 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+    position: relative;
 }
+
+.hub-diagram-host .hd-card-bar {
+    width: 100%;
+    height: 8px;
+    flex-shrink: 0;
+}
+
+.hub-diagram-host .hd-card-badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 9px;
+    font-weight: 800;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 1px 4px;
+    line-height: 1;
+    letter-spacing: 0.5px;
+}
+
 .hub-diagram-host .hd-card-icon {
     font-size: 20px;
     height: 20px;
     width: 20px;
-    margin-top: 10px;
+    margin-top: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #555;
+    color: #475569;
+    flex-shrink: 0;
 }
-.hub-diagram-host .hd-card-label {
+
+.hub-diagram-host .hd-card-text {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-weight: 700;
-    color: #1a1a1a;
-    line-height: 1.3;
-    padding: 6px 10px;
-}
-.hub-diagram-host .hd-card-bar {
+    padding: 4px 8px;
     width: 100%;
-    height: 11px;
-    flex-shrink: 0;
-}
-.hub-diagram-host .hd-card.hd-highlighted {
-    outline: 3px solid #E8793A;
-    outline-offset: 2px;
-}
-.hub-diagram-host .hd-card.hd-dimmed {
-    opacity: .18;
-    pointer-events: none;
+    box-sizing: border-box;
 }
 
-/* GLOW FLOW PARTICLES ANIMATION (GPU Rendered) */
+.hub-diagram-host .hd-card-label {
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+    word-break: break-word;
+}
+
+.hub-diagram-host .hd-card-desc {
+    font-size: 10px;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 2px;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CONNECTOR SVG LINES & GLOW PARTICLES
+───────────────────────────────────────────────────────────── */
+.hub-diagram-host .hd-spoke-line-group {
+    transition: opacity 0.25s ease;
+}
+
+.hub-diagram-host .hd-base-line {
+    transition: stroke-width 0.25s ease, stroke 0.25s ease;
+}
+
 .hub-diagram-host .hd-glow-line {
+    opacity: 0;
+    transition: opacity 0.25s ease, stroke-width 0.25s ease;
+}
+
+.hub-diagram-host .hd-glow-line.hd-flowing {
+    opacity: 0.85;
     stroke-dasharray: 6, 14;
     animation: hd-glow-flow 1.4s linear infinite;
-    opacity: 0.95;
+}
+
+.hub-diagram-host .hd-spoke-line-group.hd-line-active .hd-base-line {
+    stroke-width: 2.5;
+}
+
+.hub-diagram-host .hd-spoke-line-group.hd-line-active .hd-glow-line {
+    opacity: 1;
+    stroke-width: 3.5;
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+.hub-diagram-host .hd-spoke-line-group.hd-line-dimmed {
+    opacity: 0.15;
 }
 
 @keyframes hd-glow-flow {
@@ -146,8 +272,22 @@
     }
 }
 
+@keyframes hd-pulse-ripple {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
 /* ─────────────────────────────────────────────────────────────
-   TABLET — tighter diagram, still hub layout
+   TABLET — Responsive Reflow
 ───────────────────────────────────────────────────────────── */
 .hub-diagram-host.hd-tablet {
     min-height: 380px;
@@ -160,7 +300,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   MOBILE — vertical timeline (JS toggles .hd-mobile on host width)
+   MOBILE — Vertical Timeline Mode
 ───────────────────────────────────────────────────────────── */
 .hub-diagram-host.hd-mobile {
     height: auto !important;
@@ -199,16 +339,17 @@
     flex-direction: column;
     gap: 14px;
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
     margin: 0 auto;
     padding-left: 28px;
+    box-sizing: border-box;
 }
 
 .hub-diagram-host.hd-mobile .hd-mobile-rail {
     position: absolute;
     left: 9px;
-    top: 8px;
-    bottom: 8px;
+    top: 10px;
+    bottom: 10px;
     width: 2px;
     background: linear-gradient(180deg, #E8793A 0%, #D4A92A 50%, #26B8B8 100%);
     border-radius: 2px;
@@ -229,8 +370,8 @@
     height: 12px;
     border-radius: 50%;
     transform: translateY(-50%);
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px rgba(0,0,0,.08);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
     z-index: 2;
 }
 
@@ -249,26 +390,14 @@
 }
 
 .hub-diagram-host.hd-mobile .hd-card-inner {
-    min-height: 72px;
+    min-height: 68px;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    gap: 10px;
-    padding: 14px 14px 14px 18px;
+    gap: 12px;
+    padding: 12px 14px 12px 16px;
     text-align: left;
     position: relative;
-}
-
-.hub-diagram-host.hd-mobile .hd-card-inner::before {
-    content: "Step " counter(step-counter);
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #94a3b8;
-    letter-spacing: 0.5px;
-    position: absolute;
-    top: 8px;
-    right: 12px;
 }
 
 .hub-diagram-host.hd-mobile .hd-card-icon {
@@ -279,11 +408,19 @@
     height: 24px;
 }
 
-.hub-diagram-host.hd-mobile .hd-card-label {
-    flex: 1;
-    justify-content: flex-start;
+.hub-diagram-host.hd-mobile .hd-card-text {
+    align-items: flex-start;
+    text-align: left;
     padding: 0;
+}
+
+.hub-diagram-host.hd-mobile .hd-card-label {
     font-size: 14px !important;
+}
+
+.hub-diagram-host.hd-mobile .hd-card-desc {
+    font-size: 12px;
+    margin-top: 2px;
 }
 
 .hub-diagram-host.hd-mobile .hd-card-bar {
@@ -298,31 +435,38 @@
 
 .hub-diagram-host.hd-mobile .hd-card.shape-pill .hd-card-bar,
 .hub-diagram-host.hd-mobile .hd-card.shape-rect .hd-card-bar {
-    border-radius: 13px 0 0 13px;
+    border-radius: 12px 0 0 12px;
 }
 
-/* Fallback if JS class missing (viewport-based) */
-@media (max-width: 767px) {
-    .hub-diagram-host:not(.hd-tablet) {
-        height: auto;
-        min-height: 0;
-    }
-}
-
-/* ANIMATIONS */
+/* ─────────────────────────────────────────────────────────────
+   ANIMATIONS & REDUCED MOTION
+───────────────────────────────────────────────────────────── */
 @keyframes hd-fadeDown {
-    from { opacity:0; transform:translateY(-22px); }
-    to   { opacity:1; transform:none; }
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: none; }
 }
+
 @keyframes hd-fadeUp {
-    from { opacity:0; transform:translateY(22px); }
-    to   { opacity:1; transform:none; }
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: none; }
 }
+
 @keyframes hd-scaleIn {
-    from { opacity:0; transform:translate(-50%,-50%) scale(.5); }
-    to   { opacity:1; transform:translate(-50%,-50%) scale(1); }
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
+
 @keyframes hd-mobileIn {
-    from { opacity:0; transform:scale(.85); }
-    to   { opacity:1; transform:scale(1); }
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hub-diagram-host *,
+    .hub-diagram-host *::before,
+    .hub-diagram-host *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

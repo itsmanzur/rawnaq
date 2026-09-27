@@ -1,7 +1,17 @@
 /**
- * Shared Hub Diagram Logic - ULTRA SPEED EDITION
- * Version: 1.0.0
- * Includes: 360° Radial Layout, Glow Flow Particles, Responsive Mobile Timeline.
+ * Shared Hub Diagram Logic — Ultra Interactive Engine
+ * Version: 2.0.0
+ * 
+ * Features:
+ * - 3 Layout Flows: Horizontal (Top/Bottom), Vertical (Left/Right), and 360° Radial Circular.
+ * - 3 Connector Path Algorithms: Smooth Cubic Bezier Curves, Orthogonal Elbows, and Direct Spokes.
+ * - Interactive Spoke Illumination: Hover and Click/Focus lock highlights corresponding SVG line & node.
+ * - GPU-accelerated Neon Glow Particle Flow along SVG paths.
+ * - Expanding Center Ripple Wave Pulse.
+ * - Full Keyboard A11y (Arrow navigation, Enter/Space toggle, Escape dismiss).
+ * - High-Res Diagram Export (SVG & PNG).
+ * - Mobile-first Vertical Stepper Timeline with Auto-Orientation.
+ * - Elementor, Gutenberg & Divi Builder Integration.
  */
 (function() {
     'use strict';
@@ -20,12 +30,16 @@
     };
 
     function HubDgmInstance(host) {
-        this.host     = host;
-        this.activeId = null;
-        this.ro       = null;
+        this.host       = host;
+        this.activeId   = null;
+        this.hoveredId  = null;
+        this.ro         = null;
+        this._nodeEls   = [];
+        this._lineEls   = [];
         this._readCfg();
         this._build();
         this._bindResize();
+        this._bindKeyboard();
     }
 
     HubDgmInstance.prototype = {
@@ -35,11 +49,11 @@
                 this.host.removeChild(this.host.firstChild);
             }
         },
+
         _readCfg: function() {
             this.cfg = this.cfg || {};
             try {
                 var raw = this.host.getAttribute('data-hub') || '{}';
-                // Decode HTML entities Elementor may leave in the attribute
                 if (raw.indexOf('&') !== -1) {
                     var ta = document.createElement('textarea');
                     ta.innerHTML = raw;
@@ -57,17 +71,20 @@
                             this.cfg.bottom = parsed.slice(mid);
                         }
                     } catch (ie) {
-                        // Keep repeater nodes if import JSON is invalid
+                        // Keep repeater nodes if JSON is invalid
                     }
                 }
             } catch (e) {
                 this.cfg = this.cfg || {};
             }
         },
+
         _build: function() {
             var h = this.host;
             h.innerHTML = '';
             h.style.position = 'relative';
+            h.setAttribute('role', 'region');
+            h.setAttribute('aria-label', this.cfg.centerTitle || 'Hub Ecosystem Diagram');
 
             this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             Object.assign(this.svg.style, {
@@ -83,8 +100,10 @@
             this.centerEl = document.createElement('div');
             this.centerEl.className = 'hd-center';
             this.centerEl.innerHTML =
+                '<div class="hd-center-pulse"></div>' +
                 '<div class="hd-center-ring"></div>' +
                 '<div class="hd-center-inner">' +
+                    '<div class="hd-center-icon"></div>' +
                     '<div class="hd-center-title"></div>' +
                     '<div class="hd-center-sub"></div>' +
                 '</div>';
@@ -95,9 +114,21 @@
             this.nodesEl.style.cssText = 'position:absolute;inset:0;';
             h.appendChild(this.nodesEl);
 
+            // Canvas background click clears active node
+            var self = this;
+            h.addEventListener('click', function(e) {
+                if (!e.target.closest('.hd-card') && !e.target.closest('.hd-center') && !e.target.closest('.rawnaq-diagram-export')) {
+                    if (self.activeId !== null) {
+                        self.activeId = null;
+                        self._applyHighlightState();
+                    }
+                }
+            });
+
             this.render(true);
             this._attachExport();
         },
+
         _attachExport: function() {
             if (this.cfg && this.cfg.export === false) {
                 return;
@@ -113,12 +144,15 @@
                 getHide: function () { return ['.rawnaq-diagram-export']; }
             });
         },
+
         _isMobile: function(width) {
             return width < 768;
         },
+
         _isTablet: function(width) {
             return width >= 768 && width < 1024;
         },
+
         _paintCenterRing: function(cfg, D) {
             var s1 = cfg.seg1Color || '#E8793A';
             var s2 = cfg.seg2Color || '#D4A92A';
@@ -131,10 +165,28 @@
                 cr.style.background = 'conic-gradient(' + s1 + ' 0deg 95deg, ' + s2 + ' 95deg 185deg, ' + s3 + ' 185deg 255deg, ' + s4 + ' 255deg 360deg)';
             }
             var ci = this.centerEl.querySelector('.hd-center-inner');
-            ci.style.inset = (D * 0.047) + 'px';
+            ci.style.inset = Math.max(3, D * 0.047) + 'px';
+
+            var iconEl = this.centerEl.querySelector('.hd-center-icon');
+            if (cfg.centerIcon) {
+                iconEl.style.display = 'flex';
+                var cIcon = String(cfg.centerIcon);
+                if (cIcon.indexOf('dashicons-') === 0) {
+                    iconEl.innerHTML = '<span class="dashicons ' + cIcon + '"></span>';
+                } else if (/\bfa[srb]?\b|\beicon-/.test(cIcon) || cIcon.indexOf(' ') !== -1) {
+                    iconEl.innerHTML = '<i class="' + cIcon + '" aria-hidden="true"></i>';
+                } else {
+                    iconEl.textContent = cIcon;
+                }
+            } else {
+                iconEl.style.display = 'none';
+                iconEl.innerHTML = '';
+            }
+
             var ctEl = this.centerEl.querySelector('.hd-center-title');
             ctEl.textContent = cfg.centerTitle || '';
             ctEl.style.fontSize = Math.max(11, D * 0.09) + 'px';
+
             var csEl = this.centerEl.querySelector('.hd-center-sub');
             csEl.textContent = '';
             var subParts = String(cfg.centerSubtitle || '').split('\n');
@@ -145,24 +197,40 @@
                 csEl.appendChild(document.createTextNode(part));
             });
             csEl.style.fontSize = Math.max(9, D * 0.075) + 'px';
+
+            // Center Pulse Wave
+            var pulseEl = this.centerEl.querySelector('.hd-center-pulse');
+            if (pulseEl) {
+                if (cfg.pulseEffect === 'no') {
+                    pulseEl.style.display = 'none';
+                } else {
+                    pulseEl.style.display = 'block';
+                    pulseEl.style.borderColor = s1;
+                }
+            }
         },
-        _makeCardEl: function(node, cardShape, barOnTop, animate, delay, animCls) {
-            var div = document.createElement(node.link ? 'a' : 'div');
+
+        _makeCardEl: function(node, cardShape, barOnTop, animate, delay, animCls, index) {
+            var isLink = Boolean(node.link);
+            var div = document.createElement(isLink ? 'a' : 'div');
             div.className = 'hd-card shape-' + cardShape;
-            if (node.link) {
+            div.setAttribute('data-id', node.id);
+            div.setAttribute('tabindex', '0');
+            div.setAttribute('role', isLink ? 'link' : 'button');
+            div.setAttribute('aria-label', (node.label || 'Node') + (node.desc ? ': ' + node.desc : ''));
+
+            if (isLink) {
                 div.setAttribute('href', node.link);
                 if (node.target) div.setAttribute('target', node.target);
+                if (node.target === '_blank') div.setAttribute('rel', 'noopener noreferrer');
             }
+
             if (node.cardBg) div.style.backgroundColor = node.cardBg;
 
             if (animate) {
                 div.style.animation = 'none';
                 void div.offsetWidth;
                 div.style.animation = (animCls || 'hd-fadeUp') + ' .5s ease ' + (delay || 0) + 's both';
-            }
-            if (this.activeId) {
-                if (node.id === this.activeId) div.classList.add('hd-highlighted');
-                else div.classList.add('hd-dimmed');
             }
 
             var inner = document.createElement('div');
@@ -172,6 +240,16 @@
             bar.className = 'hd-card-bar';
             bar.style.background = node.color || '#E8793A';
             if (barOnTop) inner.appendChild(bar);
+
+            // Step Badge (Optional)
+            if (node.badge || (this.cfg.showStepNumbers && typeof index === 'number')) {
+                var badgeEl = document.createElement('span');
+                badgeEl.className = 'hd-card-badge';
+                badgeEl.textContent = node.badge || ('0' + (index + 1)).slice(-2);
+                badgeEl.style.borderColor = node.color || '#E8793A';
+                badgeEl.style.color = node.color || '#E8793A';
+                inner.appendChild(badgeEl);
+            }
 
             if (node.icon) {
                 var iconSpan = document.createElement('span');
@@ -192,25 +270,99 @@
                 inner.appendChild(iconSpan);
             }
 
+            var textWrap = document.createElement('div');
+            textWrap.className = 'hd-card-text';
+
             var lbl = document.createElement('div');
             lbl.className = 'hd-card-label';
             lbl.textContent = node.label || '';
             if (node.cardColor) lbl.style.color = node.cardColor;
-            inner.appendChild(lbl);
-            if (!barOnTop) inner.appendChild(bar);
+            textWrap.appendChild(lbl);
 
+            if (node.desc) {
+                var descEl = document.createElement('div');
+                descEl.className = 'hd-card-desc';
+                descEl.textContent = node.desc;
+                if (node.cardColor) descEl.style.color = node.cardColor;
+                textWrap.appendChild(descEl);
+            }
+
+            inner.appendChild(textWrap);
+
+            if (!barOnTop) inner.appendChild(bar);
             div.appendChild(inner);
 
-            if (!node.link) {
-                var self = this;
-                div.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    self.activeId = self.activeId === node.id ? null : node.id;
-                    self.render(false);
-                });
-            }
+            // Interaction Listeners (Hover & Click)
+            var self = this;
+            div.addEventListener('mouseenter', function() {
+                self.hoveredId = node.id;
+                self._applyHighlightState();
+            });
+            div.addEventListener('mouseleave', function() {
+                self.hoveredId = null;
+                self._applyHighlightState();
+            });
+
+            div.addEventListener('click', function(e) {
+                if (isLink && e.target.closest('a') === div && !e.defaultPrevented) {
+                    return; // Follow link
+                }
+                e.stopPropagation();
+                self.activeId = self.activeId === node.id ? null : node.id;
+                self._applyHighlightState();
+            });
+
+            div.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    if (!isLink) {
+                        e.preventDefault();
+                        self.activeId = self.activeId === node.id ? null : node.id;
+                        self._applyHighlightState();
+                    }
+                }
+            });
+
             return div;
         },
+
+        _applyHighlightState: function() {
+            var targetId = this.activeId || this.hoveredId;
+            var self = this;
+
+            this._nodeEls.forEach(function(item) {
+                var isMatch = targetId ? (item.id === targetId) : false;
+                if (targetId) {
+                    if (isMatch) {
+                        item.el.classList.add('hd-highlighted');
+                        item.el.classList.remove('hd-dimmed');
+                        item.el.setAttribute('aria-expanded', 'true');
+                    } else {
+                        item.el.classList.add('hd-dimmed');
+                        item.el.classList.remove('hd-highlighted');
+                        item.el.setAttribute('aria-expanded', 'false');
+                    }
+                } else {
+                    item.el.classList.remove('hd-highlighted', 'hd-dimmed');
+                    item.el.removeAttribute('aria-expanded');
+                }
+            });
+
+            this._lineEls.forEach(function(item) {
+                var isMatch = targetId ? (item.id === targetId) : false;
+                if (targetId) {
+                    if (isMatch) {
+                        item.group.classList.add('hd-line-active');
+                        item.group.classList.remove('hd-line-dimmed');
+                    } else {
+                        item.group.classList.add('hd-line-dimmed');
+                        item.group.classList.remove('hd-line-active');
+                    }
+                } else {
+                    item.group.classList.remove('hd-line-active', 'hd-line-dimmed');
+                }
+            });
+        },
+
         _renderMobile: function(animate) {
             var cfg = this.cfg || {};
             var cardShape = cfg.cardShape || 'rect';
@@ -230,6 +382,8 @@
             this.nodesEl.style.cssText = '';
             this.nodesEl.className = 'hd-nodes';
             this.nodesEl.innerHTML = '';
+            this._nodeEls = [];
+            this._lineEls = [];
 
             Object.assign(this.centerEl.style, {
                 position: '',
@@ -266,16 +420,17 @@
                 bullet.style.background = node.color || '#E8793A';
                 wrap.appendChild(bullet);
 
-                var card = self._makeCardEl(node, cardShape, false, animate, i * 0.06, 'hd-fadeUp');
+                var card = self._makeCardEl(node, cardShape, false, animate, i * 0.06, 'hd-fadeUp', i);
                 card.style.cssText = '';
                 wrap.appendChild(card);
                 self.nodesEl.appendChild(wrap);
+                self._nodeEls.push({ id: node.id, el: card });
             });
         },
+
         render: function(animate) {
             this._readCfg();
             var W = this.host.clientWidth;
-            // Width-only gate so mobile (height:auto) can still init
             if (W < 10) {
                 var selfEarly = this;
                 if (!this._retryPending) {
@@ -297,7 +452,6 @@
             var isTablet = this._isTablet(W);
             this.host.classList.toggle('hd-tablet', isTablet);
 
-            // Restore desktop chrome if coming back from mobile
             this.svg.style.display = '';
             this.nodesEl.style.cssText = 'position:absolute;inset:0;';
             this.nodesEl.className = 'hd-nodes';
@@ -324,7 +478,6 @@
             var D   = R * 2;
             var lineColor = cfg.lineColor || '#c2c2c2';
 
-            /* ── center ring style ── */
             var ce = this.centerEl;
             Object.assign(ce.style, {
                 position: 'absolute',
@@ -345,16 +498,17 @@
                 ce.style.animation = 'hd-scaleIn .65s cubic-bezier(.34,1.56,.64,1) .3s both';
             }
 
-            var cardShape = cfg.cardShape || 'rect';
-            var lineStyle = cfg.lineStyle || 'solid';
+            var cardShape  = cfg.cardShape || 'rect';
+            var lineStyle  = cfg.lineStyle || 'solid';
+            var lineCurve  = cfg.lineCurve || 'orthogonal';
             var layoutFlow = cfg.layoutFlow || 'horizontal';
-            var glowLines = cfg.glowLines || 'no';
+            var glowLines  = cfg.glowLines || 'no';
 
             var maxN  = Math.max((cfg.top || []).length, (cfg.bottom || []).length, 1);
-            var cardW = Math.max(isTablet ? 78 : 90, Math.min(isTablet ? 120 : 152, (W - 32) / maxN - 10));
-            var cardH = isTablet ? 70 : 80;
+            var cardW = Math.max(isTablet ? 82 : 96, Math.min(isTablet ? 126 : 160, (W - 32) / maxN - 10));
+            var cardH = isTablet ? 72 : 84;
             var PAD_Y = isTablet ? 12 : 18;
-            var GAP = isTablet ? 8 : 10;
+            var GAP   = isTablet ? 8 : 12;
 
             var self = this;
             function distHorizontal(nodes, side) {
@@ -365,6 +519,7 @@
                 return nodes.map(function(nd, i) {
                     var x = sx + i * (cardW + GAP);
                     return Object.assign({}, nd, {
+                        id: nd.id || (side === 'top' ? 't' + i : 'b' + i),
                         x: x, y: y, w: cardW, h: cardH,
                         cx: x + cardW / 2, cy: y + cardH / 2,
                         side: side, rowIndex: i, rowCount: n
@@ -380,6 +535,7 @@
                 return nodes.map(function(nd, i) {
                     var y = sy + i * (cardH + GAP);
                     return Object.assign({}, nd, {
+                        id: nd.id || (side === 'left' ? 'l' + i : 'r' + i),
                         x: x, y: y, w: cardW, h: cardH,
                         cx: x + cardW / 2, cy: y + cardH / 2,
                         side: side, rowIndex: i, rowCount: n
@@ -403,7 +559,12 @@
                     else ry = ry * (H / W) * 0.72;
                     var x = CX + Math.cos(angle) * rx - cardW / 2;
                     var y = CY + Math.sin(angle) * ry - cardH / 2;
-                    return Object.assign({}, nd, { x: x, y: y, w: cardW, h: cardH, cx: x + cardW / 2, cy: y + cardH / 2 });
+                    return Object.assign({}, nd, {
+                        id: nd.id || ('r' + i),
+                        x: x, y: y, w: cardW, h: cardH,
+                        cx: x + cardW / 2, cy: y + cardH / 2,
+                        angle: angle, rowIndex: i, rowCount: total
+                    });
                 });
             } else if (layoutFlow === 'vertical') {
                 topN = distVertical(topNodesList, 'left');
@@ -416,7 +577,7 @@
             }
 
             this.nodesEl.innerHTML = '';
-            var activeId = this.activeId;
+            this._nodeEls = [];
 
             all.forEach(function(node, i) {
                 var barOnTop = (layoutFlow === 'horizontal' && node.side === 'bottom')
@@ -427,7 +588,7 @@
                 } else {
                     animCls = (i < topN.length) ? 'hd-fadeDown' : 'hd-fadeUp';
                 }
-                var div = self._makeCardEl(node, cardShape, barOnTop, animate, i * 0.07 + 0.08, animCls);
+                var div = self._makeCardEl(node, cardShape, barOnTop, animate, i * 0.07 + 0.08, animCls, i);
                 Object.assign(div.style, {
                     left: node.x + 'px',
                     top: node.y + 'px',
@@ -437,10 +598,13 @@
                 var lbl = div.querySelector('.hd-card-label');
                 if (lbl) lbl.style.fontSize = Math.max(10, node.w * 0.086) + 'px';
                 self.nodesEl.appendChild(div);
+                self._nodeEls.push({ id: node.id, el: div, node: node });
             });
 
-            this._drawLines(all, CX, CY, R, W, H, lineColor, lineStyle, glowLines, layoutFlow);
+            this._drawLines(all, CX, CY, R, W, H, lineColor, lineStyle, lineCurve, glowLines, layoutFlow);
+            this._applyHighlightState();
         },
+
         _cardEdge: function(cx, cy, cw, ch, tx, ty) {
             var dx = tx - cx, dy = ty - cy, hw = cw / 2, hh = ch / 2, t = Infinity;
             if (Math.abs(dx) > 0.001) {
@@ -455,36 +619,83 @@
             }
             return { x: cx + t * dx, y: cy + t * dy };
         },
+
         _circleEdge: function(CX, CY, R, fx, fy) {
             var dx = fx - CX, dy = fy - CY, d = Math.hypot(dx, dy) || 1;
             return { x: CX + (dx / d) * R, y: CY + (dy / d) * R };
         },
+
         _circleAtAngle: function(CX, CY, R, angle) {
             return { x: CX + Math.cos(angle) * R, y: CY + Math.sin(angle) * R };
         },
+
         _mkSvg: function(tag, attrs) {
             var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
             Object.keys(attrs).forEach(function(k) { el.setAttribute(k, attrs[k]); });
             return el;
         },
-        /**
-         * Orthogonal elbow path for outer cards (matches Canva reference).
-         * Inner cards keep a straight hub-facing link.
-         */
-        _pathForNode: function(node, CX, CY, R, layoutFlow) {
-            var isOuter = node.rowCount >= 3
-                && (node.rowIndex === 0 || node.rowIndex === node.rowCount - 1);
-            var isLeft = node.rowIndex === 0;
-            var pts = [];
-            var cardPt, hubPt;
 
+        /**
+         * Path generation supporting Bezier Curves, Orthogonal Elbows, and Direct Spokes.
+         */
+        _pathForNode: function(node, CX, CY, R, layoutFlow, lineCurve) {
+            var isOuter = node.rowCount >= 3 && (node.rowIndex === 0 || node.rowIndex === node.rowCount - 1);
+            var isLeft = node.rowIndex === 0;
+            var cardPt, hubPt, d = '';
+
+            if (lineCurve === 'bezier') {
+                if (layoutFlow === 'horizontal') {
+                    cardPt = node.side === 'top'
+                        ? { x: node.cx, y: node.y + node.h }
+                        : { x: node.cx, y: node.y };
+                    hubPt = this._circleEdge(CX, CY, R, cardPt.x, cardPt.y);
+                    var midY = (cardPt.y + hubPt.y) / 2;
+                    d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) +
+                        ' C ' + cardPt.x.toFixed(1) + ' ' + midY.toFixed(1) +
+                        ', ' + hubPt.x.toFixed(1) + ' ' + midY.toFixed(1) +
+                        ', ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
+                } else if (layoutFlow === 'vertical') {
+                    cardPt = node.side === 'left'
+                        ? { x: node.x + node.w, y: node.cy }
+                        : { x: node.x, y: node.cy };
+                    hubPt = this._circleEdge(CX, CY, R, cardPt.x, cardPt.y);
+                    var midX = (cardPt.x + hubPt.x) / 2;
+                    d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) +
+                        ' C ' + midX.toFixed(1) + ' ' + cardPt.y.toFixed(1) +
+                        ', ' + midX.toFixed(1) + ' ' + hubPt.y.toFixed(1) +
+                        ', ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
+                } else {
+                    cardPt = this._cardEdge(node.cx, node.cy, node.w, node.h, CX, CY);
+                    hubPt = this._circleEdge(CX, CY, R, node.cx, node.cy);
+                    d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) +
+                        ' L ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
+                }
+                return { d: d, cardPt: cardPt, hubPt: hubPt };
+            }
+
+            if (lineCurve === 'straight') {
+                if (layoutFlow === 'horizontal') {
+                    cardPt = node.side === 'top'
+                        ? { x: node.cx, y: node.y + node.h }
+                        : { x: node.cx, y: node.y };
+                } else if (layoutFlow === 'vertical') {
+                    cardPt = node.side === 'left'
+                        ? { x: node.x + node.w, y: node.cy }
+                        : { x: node.x, y: node.cy };
+                } else {
+                    cardPt = this._cardEdge(node.cx, node.cy, node.w, node.h, CX, CY);
+                }
+                hubPt = this._circleEdge(CX, CY, R, cardPt.x, cardPt.y);
+                d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) + ' L ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
+                return { d: d, cardPt: cardPt, hubPt: hubPt };
+            }
+
+            // Default: Orthogonal Elbows for outer cards, straight vertical/horizontal for inner cards
             if (layoutFlow === 'horizontal' && isOuter) {
-                // Dock near 9 o'clock / 3 o'clock, nudged by row (Canva style)
                 var nudge = node.side === 'top' ? -0.28 : 0.28;
                 var angle = isLeft ? (Math.PI + nudge) : (0 - nudge);
                 hubPt = this._circleAtAngle(CX, CY, R, angle);
 
-                // Outer cards: enter from the outer side edge (left / right middle)
                 cardPt = isLeft
                     ? { x: node.x, y: node.cy }
                     : { x: node.x + node.w, y: node.cy };
@@ -493,13 +704,10 @@
                     ? Math.min(cardPt.x - 20, hubPt.x - 32)
                     : Math.max(cardPt.x + 20, hubPt.x + 32);
 
-                // Orthogonal elbow: side → out → down/up to hub → into hub
-                pts = [
-                    cardPt,
-                    { x: channelX, y: cardPt.y },
-                    { x: channelX, y: hubPt.y },
-                    hubPt
-                ];
+                d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) +
+                    ' L ' + channelX.toFixed(1) + ' ' + cardPt.y.toFixed(1) +
+                    ' L ' + channelX.toFixed(1) + ' ' + hubPt.y.toFixed(1) +
+                    ' L ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
             } else if (layoutFlow === 'vertical' && isOuter) {
                 var isTopOuter = node.rowIndex === 0;
                 var vAngle = isTopOuter
@@ -515,82 +723,116 @@
                     ? Math.min(cardPt.y - 20, hubPt.y - 32)
                     : Math.max(cardPt.y + 20, hubPt.y + 32);
 
-                pts = [
-                    cardPt,
-                    { x: cardPt.x, y: channelY },
-                    { x: hubPt.x, y: channelY },
-                    hubPt
-                ];
+                d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) +
+                    ' L ' + cardPt.x.toFixed(1) + ' ' + channelY.toFixed(1) +
+                    ' L ' + hubPt.x.toFixed(1) + ' ' + channelY.toFixed(1) +
+                    ' L ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
             } else if (layoutFlow === 'horizontal') {
-                // Inner cards: straight vertical to facing edge
                 cardPt = node.side === 'top'
                     ? { x: node.cx, y: node.y + node.h }
                     : { x: node.cx, y: node.y };
                 hubPt = this._circleEdge(CX, CY, R, cardPt.x, cardPt.y);
-                pts = [cardPt, hubPt];
+                d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) + ' L ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
             } else if (layoutFlow === 'vertical') {
                 cardPt = node.side === 'left'
                     ? { x: node.x + node.w, y: node.cy }
                     : { x: node.x, y: node.cy };
                 hubPt = this._circleEdge(CX, CY, R, cardPt.x, cardPt.y);
-                pts = [cardPt, hubPt];
+                d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) + ' L ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
             } else {
-                // Radial: straight spoke
                 cardPt = this._cardEdge(node.cx, node.cy, node.w, node.h, CX, CY);
                 hubPt = this._circleEdge(CX, CY, R, node.cx, node.cy);
-                pts = [cardPt, hubPt];
+                d = 'M ' + cardPt.x.toFixed(1) + ' ' + cardPt.y.toFixed(1) + ' L ' + hubPt.x.toFixed(1) + ' ' + hubPt.y.toFixed(1);
             }
 
-            return { pts: pts, cardPt: pts[0], hubPt: pts[pts.length - 1] };
+            return { d: d, cardPt: cardPt, hubPt: hubPt };
         },
-        _drawLines: function(all, CX, CY, R, W, H, lineColor, lineStyle, glowLines, layoutFlow) {
+
+        _drawLines: function(all, CX, CY, R, W, H, lineColor, lineStyle, lineCurve, glowLines, layoutFlow) {
             var svg = this.svg;
             svg.innerHTML = '';
             svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+            this._lineEls = [];
+
             var self = this;
             var dash = '';
             if (lineStyle === 'dashed') dash = '8,6';
             else if (lineStyle === 'dotted') dash = '3,4';
 
             all.forEach(function(node) {
-                var path = self._pathForNode(node, CX, CY, R, layoutFlow || 'horizontal');
-                var pts = path.pts;
-                var d = pts.map(function(p, i) {
-                    return (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ' ' + p.y.toFixed(1);
-                }).join(' ');
+                var pathInfo = self._pathForNode(node, CX, CY, R, layoutFlow || 'horizontal', lineCurve || 'orthogonal');
+                var group = self._mkSvg('g', {
+                    class: 'hd-spoke-line-group',
+                    'data-id': node.id
+                });
 
+                // Background Main Path
                 var pathAttrs = {
-                    d: d,
+                    d: pathInfo.d,
                     fill: 'none',
                     stroke: lineColor,
                     'stroke-width': 1.8,
                     'stroke-linecap': 'round',
-                    'stroke-linejoin': 'round'
+                    'stroke-linejoin': 'round',
+                    class: 'hd-base-line'
                 };
                 if (dash) pathAttrs['stroke-dasharray'] = dash;
-                svg.appendChild(self._mkSvg('path', pathAttrs));
+                group.appendChild(self._mkSvg('path', pathAttrs));
 
-                if (glowLines === 'yes') {
-                    var glowAttrs = {
-                        d: d,
-                        fill: 'none',
-                        stroke: node.color || '#6366f1',
-                        'stroke-width': 2.2,
-                        'stroke-linecap': 'round',
-                        'stroke-linejoin': 'round',
-                        class: 'hd-glow-line'
-                    };
-                    svg.appendChild(self._mkSvg('path', glowAttrs));
-                }
+                // Active / Glowing Flow Line
+                var glowAttrs = {
+                    d: pathInfo.d,
+                    fill: 'none',
+                    stroke: node.color || '#6366f1',
+                    'stroke-width': 2.5,
+                    'stroke-linecap': 'round',
+                    'stroke-linejoin': 'round',
+                    class: (glowLines === 'yes') ? 'hd-glow-line hd-flowing' : 'hd-glow-line'
+                };
+                group.appendChild(self._mkSvg('path', glowAttrs));
 
-                svg.appendChild(self._mkSvg('circle', {
-                    cx: path.cardPt.x, cy: path.cardPt.y, r: 4, fill: '#555'
+                // Terminus Anchors
+                group.appendChild(self._mkSvg('circle', {
+                    cx: pathInfo.cardPt.x, cy: pathInfo.cardPt.y, r: 4, fill: node.color || '#555', class: 'hd-anchor-node'
                 }));
-                svg.appendChild(self._mkSvg('circle', {
-                    cx: path.hubPt.x, cy: path.hubPt.y, r: 4, fill: '#555'
+                group.appendChild(self._mkSvg('circle', {
+                    cx: pathInfo.hubPt.x, cy: pathInfo.hubPt.y, r: 4, fill: node.color || '#555', class: 'hd-anchor-hub'
                 }));
+
+                svg.appendChild(group);
+                self._lineEls.push({ id: node.id, group: group, node: node });
             });
         },
+
+        _bindKeyboard: function() {
+            var self = this;
+            this.host.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (self.activeId !== null) {
+                        self.activeId = null;
+                        self._applyHighlightState();
+                    }
+                    return;
+                }
+
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    var focused = document.activeElement;
+                    var cards = Array.prototype.slice.call(self.host.querySelectorAll('.hd-card'));
+                    var idx = cards.indexOf(focused);
+                    if (idx !== -1) {
+                        e.preventDefault();
+                        var nextIdx;
+                        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                            nextIdx = (idx + 1) % cards.length;
+                        } else {
+                            nextIdx = (idx - 1 + cards.length) % cards.length;
+                        }
+                        cards[nextIdx].focus();
+                    }
+                }
+            });
+        },
+
         _bindResize: function() {
             var self = this;
             if (window.ResizeObserver) {
@@ -628,8 +870,6 @@
         initAllHubs();
     }
 
-    // Elementor editor/frontend: hook must register on elementor/frontend/init
-    // (elementorFrontend is usually not ready at DOMContentLoaded).
     if (!bindElementorHook()) {
         window.addEventListener('elementor/frontend/init', bindElementorHook);
         if (window.jQuery) {
