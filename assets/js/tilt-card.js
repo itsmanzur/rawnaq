@@ -1,11 +1,23 @@
 /**
- * 3D Tilt Card — Professional motion engine
- * Glare + hover scale + reduced-motion / touch guards
+ * 3D Tilt Card — Professional Motion Engine
+ * 
+ * Features:
+ * - Buttery smooth 60-120fps requestAnimationFrame spring damping / Lerping
+ * - Mobile & Tablet Gyroscope / DeviceOrientation 3D Motion
+ * - Radial Glare Light Follower
+ * - Cursor Spotlight Border Lighting Coordinates (--mouse-x, --mouse-y)
+ * - Holographic / Iridescent Rainbow Sheen Tracking
+ * - 3D Flip Card interaction with click & hover triggers + Keyboard A11y
+ * - Elementor, Gutenberg, & Divi Builder Lifecycle Integration
  */
 (function() {
     'use strict';
 
     var bound = typeof WeakSet !== 'undefined' ? new WeakSet() : null;
+    var gyroAttached = false;
+    var gyroCards = [];
+    var currentGamma = 0;
+    var currentBeta = 0;
 
     function prefersReducedMotion() {
         return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -20,8 +32,11 @@
         return isNaN(n) ? fallback : n;
     }
 
+    function lerp(start, end, factor) {
+        return start + (end - start) * factor;
+    }
+
     function bindFlip(card) {
-        // Click-to-flip trigger with keyboard support.
         if (!card.classList.contains('flip-click')) {
             return;
         }
@@ -30,15 +45,14 @@
             card.setAttribute('aria-pressed', flipped ? 'true' : 'false');
         }
         card.addEventListener('click', function (e) {
-            // Let real links inside the card work without toggling.
-            if (e.target.closest('a')) {
+            if (e.target.closest('a') || e.target.closest('button')) {
                 return;
             }
             toggle();
         });
         card.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-                if (e.target.closest('a')) {
+                if (e.target.closest('a') || e.target.closest('button')) {
                     return;
                 }
                 e.preventDefault();
@@ -51,13 +65,13 @@
         if (!card || (bound && bound.has(card))) return;
         if (bound) bound.add(card);
 
-        // Flip cards manage their own interaction; skip 3D pointer tilt.
+        // Flip cards manage their own 3D interaction.
         if (card.classList.contains('is-flip')) {
             bindFlip(card);
             return;
         }
 
-        if (prefersReducedMotion() || isCoarsePointer()) {
+        if (prefersReducedMotion()) {
             card.classList.add('no-tilt');
             return;
         }
@@ -65,16 +79,82 @@
         var maxTilt = parseNum(card.getAttribute('data-tilt-max'), 15);
         var hoverScale = parseNum(card.getAttribute('data-hover-scale') || card.style.getPropertyValue('--hover-scale'), 1.03);
         var glareEl = card.querySelector('.rawnaq-tilt-glare');
+        var holoEl = card.querySelector('.rawnaq-tilt-holo');
+        var enableGyro = card.getAttribute('data-gyro') !== 'no';
+
+        // Gyroscope registration for mobile / touch devices
+        if (isCoarsePointer()) {
+            if (enableGyro) {
+                gyroCards.push({
+                    el: card,
+                    maxTilt: Math.min(maxTilt, 12),
+                    glareEl: glareEl,
+                    holoEl: holoEl
+                });
+                attachGyroscope();
+            }
+            return;
+        }
 
         if (maxTilt <= 0 && hoverScale <= 1) {
             return;
         }
 
-        card.addEventListener('mouseenter', function() {
-            card.style.transition = 'box-shadow 0.25s ease';
-            card.classList.add('is-tilting');
+        // Spring Damping Motion Physics (Smooth Lerp)
+        var targetTiltX = 0;
+        var targetTiltY = 0;
+        var currentTiltX = 0;
+        var currentTiltY = 0;
+        var targetScale = 1;
+        var currentScale = 1;
+        var targetGlareX = 0;
+        var targetGlareY = 0;
+        var targetGlareOp = 0;
+        var isHovered = false;
+        var animFrameId = null;
+
+        function renderFrame() {
+            if (!isHovered && Math.abs(currentTiltX) < 0.05 && Math.abs(currentTiltY) < 0.05 && Math.abs(currentScale - 1) < 0.005) {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+                if (glareEl) {
+                    glareEl.style.opacity = '0';
+                }
+                if (holoEl) {
+                    holoEl.style.opacity = '0';
+                }
+                animFrameId = null;
+                return;
+            }
+
+            var lerpSpeed = isHovered ? 0.15 : 0.08;
+            currentTiltX = lerp(currentTiltX, targetTiltX, lerpSpeed);
+            currentTiltY = lerp(currentTiltY, targetTiltY, lerpSpeed);
+            currentScale = lerp(currentScale, targetScale, lerpSpeed);
+
+            card.style.transform =
+                'rotateX(' + currentTiltX.toFixed(2) + 'deg) rotateY(' + currentTiltY.toFixed(2) + 'deg) scale(' + currentScale.toFixed(3) + ')';
+
             if (glareEl) {
-                glareEl.style.transition = 'opacity 0.2s ease';
+                glareEl.style.left = targetGlareX + 'px';
+                glareEl.style.top = targetGlareY + 'px';
+                glareEl.style.opacity = String(targetGlareOp);
+            }
+
+            if (holoEl) {
+                holoEl.style.opacity = isHovered ? '0.75' : '0';
+            }
+
+            animFrameId = window.requestAnimationFrame(renderFrame);
+        }
+
+        card.addEventListener('mouseenter', function(e) {
+            isHovered = true;
+            targetScale = hoverScale;
+            targetGlareOp = 1;
+            card.classList.add('is-tilting');
+
+            if (!animFrameId) {
+                animFrameId = window.requestAnimationFrame(renderFrame);
             }
         });
 
@@ -85,28 +165,74 @@
             var px = x / rect.width;
             var py = y / rect.height;
 
-            var tiltX = (0.5 - py) * (maxTilt * 2);
-            var tiltY = (px - 0.5) * (maxTilt * 2);
+            targetTiltX = (0.5 - py) * (maxTilt * 2);
+            targetTiltY = (px - 0.5) * (maxTilt * 2);
+            targetGlareX = x;
+            targetGlareY = y;
 
-            card.style.transform =
-                'rotateX(' + tiltX.toFixed(2) + 'deg) rotateY(' + tiltY.toFixed(2) + 'deg) scale(' + hoverScale + ')';
+            // Update Spotlight border coordinates
+            card.style.setProperty('--mouse-x', x + 'px');
+            card.style.setProperty('--mouse-y', y + 'px');
 
-            if (glareEl) {
-                glareEl.style.left = x + 'px';
-                glareEl.style.top = y + 'px';
-                glareEl.style.opacity = '1';
+            // Update Holo gradient angle based on pointer
+            if (holoEl) {
+                var holoAngle = Math.round((px + py) * 180);
+                holoEl.style.setProperty('--holo-angle', holoAngle + 'deg');
+                holoEl.style.setProperty('--holo-pos', (px * 100).toFixed(1) + '% ' + (py * 100).toFixed(1) + '%');
+            }
+
+            if (!animFrameId) {
+                animFrameId = window.requestAnimationFrame(renderFrame);
             }
         });
 
         card.addEventListener('mouseleave', function() {
-            card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease';
-            card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+            isHovered = false;
+            targetTiltX = 0;
+            targetTiltY = 0;
+            targetScale = 1;
+            targetGlareOp = 0;
             card.classList.remove('is-tilting');
-            if (glareEl) {
-                glareEl.style.transition = 'opacity 0.4s ease';
-                glareEl.style.opacity = '0';
+
+            if (!animFrameId) {
+                animFrameId = window.requestAnimationFrame(renderFrame);
             }
         });
+    }
+
+    // Gyroscope / DeviceOrientation on Mobile
+    function attachGyroscope() {
+        if (gyroAttached || typeof window.DeviceOrientationEvent === 'undefined') {
+            return;
+        }
+        gyroAttached = true;
+
+        var gyroTicking = false;
+
+        function updateGyro() {
+            gyroCards.forEach(function(item) {
+                if (!item.el.offsetParent) return;
+                var tX = Math.max(-item.maxTilt, Math.min(item.maxTilt, currentBeta * 0.4));
+                var tY = Math.max(-item.maxTilt, Math.min(item.maxTilt, currentGamma * 0.4));
+
+                item.el.style.transform = 'rotateX(' + (-tX).toFixed(2) + 'deg) rotateY(' + tY.toFixed(2) + 'deg)';
+                if (item.holoEl) {
+                    item.holoEl.style.opacity = '0.5';
+                    item.holoEl.style.setProperty('--holo-angle', Math.round((tX + tY) * 10 + 180) + 'deg');
+                }
+            });
+            gyroTicking = false;
+        }
+
+        window.addEventListener('deviceorientation', function(e) {
+            if (e.beta === null || e.gamma === null) return;
+            currentBeta = e.beta;
+            currentGamma = e.gamma;
+            if (!gyroTicking) {
+                gyroTicking = true;
+                window.requestAnimationFrame(updateGyro);
+            }
+        }, { passive: true });
     }
 
     function initTiltCards(root) {
@@ -139,6 +265,11 @@
             jQuery(window).on('elementor/frontend/init', bindElementor);
         }
     }
+
+    // Divi Builder hook
+    window.addEventListener('et_pb_after_init_modules', function() {
+        initTiltCards(document);
+    });
 
     window.RawnaqTiltCard = { init: initTiltCards };
 })();

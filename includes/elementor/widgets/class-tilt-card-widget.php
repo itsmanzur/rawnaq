@@ -237,13 +237,29 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
             ],
         ] );
 
-        $this->add_group_control(
-            \Elementor\Group_Control_Box_Shadow::get_type(),
-            [
-                'name'     => 'card_shadow',
-                'selector' => '{{WRAPPER}} .rawnaq-tilt-card',
-            ]
-        );
+        $this->add_control( 'enable_spotlight', [
+            'label'        => esc_html__( 'Spotlight Border Glow', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'description'  => esc_html__( 'Cursor-following radial border lighting.', 'rawnaq' ),
+        ] );
+
+        $this->add_control( 'enable_holo', [
+            'label'        => esc_html__( 'Holographic Foil Sheen', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => '',
+            'description'  => esc_html__( 'Dynamic iridescent rainbow reflection on tilt.', 'rawnaq' ),
+        ] );
+
+        $this->add_control( 'enable_gyro', [
+            'label'        => esc_html__( 'Mobile Gyroscope 3D Motion', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'description'  => esc_html__( 'Tilt card responding to physical phone orientation on mobile.', 'rawnaq' ),
+        ] );
 
         $this->end_controls_section();
 
@@ -430,12 +446,18 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
             $cta_link = $card_link;
         }
 
-        $enable_flip = ( $s['enable_flip'] ?? '' ) === 'yes';
-        $flip_trigger = ( $s['flip_trigger'] ?? 'hover' ) === 'click' ? 'click' : 'hover';
+        $enable_flip      = ( $s['enable_flip'] ?? '' ) === 'yes';
+        $flip_trigger     = ( $s['flip_trigger'] ?? 'hover' ) === 'click' ? 'click' : 'hover';
+        $enable_spotlight = ( $s['enable_spotlight'] ?? 'yes' ) === 'yes';
+        $enable_holo      = ( $s['enable_holo'] ?? '' ) === 'yes';
+        $enable_gyro      = ( $s['enable_gyro'] ?? 'yes' ) === 'yes';
 
         $classes = [ 'rawnaq-tilt-card', 'align-' . sanitize_html_class( $align ) ];
         if ( $has_image ) {
             $classes[] = 'has-image';
+        }
+        if ( $enable_spotlight ) {
+            $classes[] = 'has-spotlight';
         }
         if ( $enable_flip ) {
             $classes[] = 'is-flip';
@@ -459,13 +481,14 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
                  style="<?php echo esc_attr( $style ); ?>"
                  data-tilt-max="<?php echo esc_attr( $max_tilt ); ?>"
                  data-hover-scale="<?php echo esc_attr( $hover_scale ); ?>"
-                 data-glare="<?php echo esc_attr( $glare ); ?>"<?php
+                 data-glare="<?php echo esc_attr( $glare ); ?>"
+                 data-gyro="<?php echo $enable_gyro ? 'yes' : 'no'; ?>"<?php
 					echo $card_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr above.
 				?>>
                 <?php if ( $enable_flip ) : ?>
                     <div class="rawnaq-tilt-flip">
                         <div class="rawnaq-tilt-face rawnaq-tilt-front">
-                            <?php $this->render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link ); ?>
+                            <?php $this->render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link, $enable_holo ); ?>
                         </div>
                         <div class="rawnaq-tilt-back">
                             <div class="rawnaq-tilt-back-inner">
@@ -489,7 +512,7 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
                         </div>
                     </div>
                 <?php else : ?>
-                    <?php $this->render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link ); ?>
+                    <?php $this->render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link, $enable_holo ); ?>
                     <?php if ( ! empty( $card_link['url'] ) ) : ?>
                         <a class="rawnaq-tilt-stretch-link"<?php
 							echo $this->url_attrs( $card_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -502,9 +525,9 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
     }
 
     /**
-     * Shared front-face children (image, overlay, glare, badge, icon, content).
+     * Shared front-face children (image, overlay, glare, holo, badge, icon, content).
      */
-    private function render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link ) {
+    private function render_front_children( $s, $has_image, $image_url, $image_alt, $cta_text, $cta_link, $enable_holo = false ) {
         ?>
         <?php if ( $has_image ) : ?>
             <img class="rawnaq-tilt-image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="lazy" />
@@ -512,6 +535,10 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
         <?php endif; ?>
 
         <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
+
+        <?php if ( $enable_holo ) : ?>
+            <span class="rawnaq-tilt-holo" aria-hidden="true"></span>
+        <?php endif; ?>
 
         <?php if ( ! empty( $s['badge'] ) ) : ?>
             <span class="rawnaq-tilt-badge"><?php echo esc_html( $s['badge'] ); ?></span>
@@ -547,7 +574,10 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
         var hoverScale = ( settings.hover_scale && settings.hover_scale.size != null ) ? settings.hover_scale.size : 1.03;
         var glare = ( settings.glare_intensity && settings.glare_intensity.size != null ) ? settings.glare_intensity.size : 0.45;
         var overlay = ( settings.overlay_strength && settings.overlay_strength.size != null ) ? settings.overlay_strength.size : 0.7;
-        var cardClass = 'rawnaq-tilt-card align-' + align + ( hasImage ? ' has-image' : '' );
+        var enableSpotlight = settings.enable_spotlight !== 'no';
+        var enableHolo = settings.enable_holo === 'yes';
+        var enableGyro = settings.enable_gyro !== 'no';
+        var cardClass = 'rawnaq-tilt-card align-' + align + ( hasImage ? ' has-image' : '' ) + ( enableSpotlight ? ' has-spotlight' : '' );
         var imageAlt = ( settings.image && settings.image.alt ) ? settings.image.alt : ( settings.title || '' );
         var cardUrl = ( settings.link && settings.link.url ) ? settings.link.url : '';
         var ctaText = settings.cta_text || '';
@@ -564,7 +594,8 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
                  style="--overlay:{{ overlay }};--glare:{{ glare }};--hover-scale:{{ hoverScale }};"
                  data-tilt-max="{{ maxTilt }}"
                  data-hover-scale="{{ hoverScale }}"
-                 data-glare="{{ glare }}">
+                 data-glare="{{ glare }}"
+                 data-gyro="{{ enableGyro ? 'yes' : 'no' }}">
                 <# if ( enableFlip ) { #>
                 <div class="rawnaq-tilt-flip">
                     <div class="rawnaq-tilt-face rawnaq-tilt-front">
@@ -574,6 +605,9 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
                     <span class="rawnaq-tilt-overlay"></span>
                 <# } #>
                 <span class="rawnaq-tilt-glare"></span>
+                <# if ( enableHolo ) { #>
+                    <span class="rawnaq-tilt-holo"></span>
+                <# } #>
                 <# if ( settings.badge ) { #>
                     <span class="rawnaq-tilt-badge">{{{ settings.badge }}}</span>
                 <# } #>

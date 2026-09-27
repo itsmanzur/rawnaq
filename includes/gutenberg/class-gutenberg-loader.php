@@ -125,6 +125,9 @@ class Rawnaq_Gutenberg_Loader {
                     'btnColor'     => [ 'type' => 'string', 'default' => '#ffffff' ],
                     'enableFlip'   => [ 'type' => 'boolean', 'default' => false ],
                     'flipTrigger'  => [ 'type' => 'string', 'default' => 'hover' ],
+                    'enableSpotlight' => [ 'type' => 'boolean', 'default' => true ],
+                    'enableHolo'      => [ 'type' => 'boolean', 'default' => false ],
+                    'enableGyro'      => [ 'type' => 'boolean', 'default' => true ],
                     'backTitle'    => [ 'type' => 'string', 'default' => 'Why choose us' ],
                     'backDesc'     => [ 'type' => 'string', 'default' => 'Add the extra detail or a persuasive reason on the reverse side.' ],
                     'backCtaText'  => [ 'type' => 'string', 'default' => 'Get started' ],
@@ -671,6 +674,9 @@ class Rawnaq_Gutenberg_Loader {
             'btnColor'     => '#ffffff',
             'enableFlip'   => false,
             'flipTrigger'  => 'hover',
+            'enableSpotlight' => true,
+            'enableHolo'      => false,
+            'enableGyro'      => true,
             'backTitle'    => '',
             'backDesc'     => '',
             'backCtaText'  => '',
@@ -686,6 +692,9 @@ class Rawnaq_Gutenberg_Loader {
         $classes      = [ 'rawnaq-tilt-card', 'align-' . $align ];
         if ( $has_image ) {
             $classes[] = 'has-image';
+        }
+        if ( ! empty( $a['enableSpotlight'] ) ) {
+            $classes[] = 'has-spotlight';
         }
         if ( $enable_flip ) {
             $classes[] = 'is-flip';
@@ -727,6 +736,9 @@ class Rawnaq_Gutenberg_Loader {
         endif;
         ?>
         <span class="rawnaq-tilt-glare" aria-hidden="true"></span>
+        <?php if ( ! empty( $a['enableHolo'] ) ) : ?>
+            <span class="rawnaq-tilt-holo" aria-hidden="true"></span>
+        <?php endif; ?>
         <?php if ( ! empty( $a['badge'] ) ) : ?>
             <span class="rawnaq-tilt-badge"><?php echo esc_html( $a['badge'] ); ?></span>
         <?php endif; ?>
@@ -766,7 +778,8 @@ class Rawnaq_Gutenberg_Loader {
                  style="<?php echo esc_attr( $style ); ?>"
                  data-tilt-max="<?php echo esc_attr( $a['maxTilt'] ); ?>"
                  data-hover-scale="<?php echo esc_attr( $a['hoverScale'] ); ?>"
-                 data-glare="<?php echo esc_attr( $a['glare'] ); ?>"<?php
+                 data-glare="<?php echo esc_attr( $a['glare'] ); ?>"
+                 data-gyro="<?php echo ! empty( $a['enableGyro'] ) ? 'yes' : 'no'; ?>"<?php
 					echo $card_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped above.
 				?>>
                 <?php if ( $enable_flip ) : ?>
