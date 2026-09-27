@@ -308,25 +308,29 @@ class Rawnaq_Gutenberg_Loader {
                 'style'           => 'rawnaq-scroll-progress-toc',
                 'render_callback' => [ $this, 'render_scroll_progress_toc_block' ],
                 'attributes'      => [
-                    'progress'       => [ 'type' => 'string', 'default' => 'both' ],
-                    'barPosition'    => [ 'type' => 'string', 'default' => 'top' ],
-                    'tocPosition'    => [ 'type' => 'string', 'default' => 'sticky' ],
-                    'tocTitle'       => [ 'type' => 'string', 'default' => 'Contents' ],
-                    'source'         => [ 'type' => 'string', 'default' => 'auto' ],
-                    'levels'         => [ 'type' => 'string', 'default' => 'h2,h3' ],
-                    'contentSelector'=> [ 'type' => 'string', 'default' => '' ],
-                    'hideIfShort'    => [ 'type' => 'boolean', 'default' => true ],
-                    'scrollOffset'   => [ 'type' => 'number', 'default' => 80 ],
-                    'smooth'         => [ 'type' => 'boolean', 'default' => true ],
-                    'readingTime'    => [ 'type' => 'boolean', 'default' => true ],
-                    'showPercent'    => [ 'type' => 'boolean', 'default' => true ],
-                    'mobileCollapse' => [ 'type' => 'boolean', 'default' => true ],
-                    'manualJson'     => [ 'type' => 'string', 'default' => '[]' ],
-                    'collapseSubs'   => [ 'type' => 'boolean', 'default' => false ],
-                    'showSearch'     => [ 'type' => 'boolean', 'default' => false ],
-                    'dockAttach'     => [ 'type' => 'boolean', 'default' => false ],
-                    'syncTimeline'   => [ 'type' => 'string', 'default' => '' ],
-                    'ringSize'       => [ 'type' => 'number', 'default' => 56 ],
+                    'progress'           => [ 'type' => 'string', 'default' => 'both' ],
+                    'barPosition'        => [ 'type' => 'string', 'default' => 'top' ],
+                    'clickToTop'         => [ 'type' => 'boolean', 'default' => true ],
+                    'tocPosition'        => [ 'type' => 'string', 'default' => 'sticky' ],
+                    'tocTitle'           => [ 'type' => 'string', 'default' => 'Contents' ],
+                    'tocCollapsible'     => [ 'type' => 'boolean', 'default' => true ],
+                    'source'             => [ 'type' => 'string', 'default' => 'auto' ],
+                    'levels'             => [ 'type' => 'string', 'default' => 'h2,h3' ],
+                    'contentSelector'    => [ 'type' => 'string', 'default' => '' ],
+                    'hideIfShort'        => [ 'type' => 'boolean', 'default' => true ],
+                    'scrollOffset'       => [ 'type' => 'number', 'default' => 80 ],
+                    'smooth'             => [ 'type' => 'boolean', 'default' => true ],
+                    'readingTime'        => [ 'type' => 'boolean', 'default' => true ],
+                    'showPercent'        => [ 'type' => 'boolean', 'default' => true ],
+                    'mobileCollapse'     => [ 'type' => 'boolean', 'default' => true ],
+                    'manualJson'         => [ 'type' => 'string', 'default' => '[]' ],
+                    'collapseSubs'       => [ 'type' => 'boolean', 'default' => false ],
+                    'showSearch'         => [ 'type' => 'boolean', 'default' => false ],
+                    'urlHashSync'        => [ 'type' => 'boolean', 'default' => true ],
+                    'sectionReadingTime' => [ 'type' => 'boolean', 'default' => false ],
+                    'dockAttach'         => [ 'type' => 'boolean', 'default' => false ],
+                    'syncTimeline'       => [ 'type' => 'string', 'default' => '' ],
+                    'ringSize'           => [ 'type' => 'number', 'default' => 56 ],
                 ],
             ] );
         }
@@ -1378,24 +1382,28 @@ class Rawnaq_Gutenberg_Loader {
         }
 
         $cfg = [
-            'progress'       => sanitize_key( $attributes['progress'] ?? 'both' ),
-            'barPosition'    => sanitize_key( $attributes['barPosition'] ?? 'top' ),
-            'showPercent'    => ! empty( $attributes['showPercent'] ),
-            'tocPosition'    => sanitize_key( $attributes['tocPosition'] ?? 'sticky' ),
-            'tocTitle'       => sanitize_text_field( $attributes['tocTitle'] ?? 'Contents' ),
-            'source'         => sanitize_key( $attributes['source'] ?? 'auto' ),
-            'levels'         => $levels ?: [ 'h2', 'h3' ],
-            'manual'         => $manual_clean,
-            'collapseSubs'   => ! empty( $attributes['collapseSubs'] ),
-            'showSearch'     => ! empty( $attributes['showSearch'] ),
-            'smooth'         => ! empty( $attributes['smooth'] ),
-            'scrollOffset'   => absint( $attributes['scrollOffset'] ?? 80 ),
-            'readingTime'    => ! empty( $attributes['readingTime'] ),
-            'mobileCollapse' => ! empty( $attributes['mobileCollapse'] ),
-            'dockAttach'     => ! empty( $attributes['dockAttach'] ),
-            'syncTimeline'   => sanitize_text_field( $attributes['syncTimeline'] ?? '' ),
-            'scope'          => sanitize_text_field( $attributes['contentSelector'] ?? '' ),
-            'hideIfShort'    => ! isset( $attributes['hideIfShort'] ) || ! empty( $attributes['hideIfShort'] ),
+            'progress'           => sanitize_key( $attributes['progress'] ?? 'both' ),
+            'barPosition'        => sanitize_key( $attributes['barPosition'] ?? 'top' ),
+            'showPercent'        => ! empty( $attributes['showPercent'] ),
+            'clickToTop'         => ! isset( $attributes['clickToTop'] ) || ! empty( $attributes['clickToTop'] ),
+            'tocPosition'        => sanitize_key( $attributes['tocPosition'] ?? 'sticky' ),
+            'tocTitle'           => sanitize_text_field( $attributes['tocTitle'] ?? 'Contents' ),
+            'tocCollapsible'     => ! isset( $attributes['tocCollapsible'] ) || ! empty( $attributes['tocCollapsible'] ),
+            'source'             => sanitize_key( $attributes['source'] ?? 'auto' ),
+            'levels'             => $levels ?: [ 'h2', 'h3' ],
+            'manual'             => $manual_clean,
+            'collapseSubs'       => ! empty( $attributes['collapseSubs'] ),
+            'showSearch'         => ! empty( $attributes['showSearch'] ),
+            'urlHashSync'        => ! isset( $attributes['urlHashSync'] ) || ! empty( $attributes['urlHashSync'] ),
+            'sectionReadingTime' => ! empty( $attributes['sectionReadingTime'] ),
+            'smooth'             => ! empty( $attributes['smooth'] ),
+            'scrollOffset'       => absint( $attributes['scrollOffset'] ?? 80 ),
+            'readingTime'        => ! empty( $attributes['readingTime'] ),
+            'mobileCollapse'     => ! empty( $attributes['mobileCollapse'] ),
+            'dockAttach'         => ! empty( $attributes['dockAttach'] ),
+            'syncTimeline'       => sanitize_text_field( $attributes['syncTimeline'] ?? '' ),
+            'scope'              => sanitize_text_field( $attributes['contentSelector'] ?? '' ),
+            'hideIfShort'        => ! isset( $attributes['hideIfShort'] ) || ! empty( $attributes['hideIfShort'] ),
         ];
         $ring_size = absint( $attributes['ringSize'] ?? 56 );
         if ( $ring_size < 40 ) {
@@ -1417,10 +1425,19 @@ class Rawnaq_Gutenberg_Loader {
              style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px; --spt-ring-size: <?php echo esc_attr( (string) $ring_size ); ?>px;"
              data-spt="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>">
             <?php if ( 'none' !== $cfg['tocPosition'] ) : ?>
-                <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $cfg['tocPosition'] ); ?>" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
-                    <p class="rawnaq-spt-reading" hidden></p>
-                    <p class="rawnaq-spt-chapter" hidden></p>
-                    <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
+                <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $cfg['tocPosition'] ); ?>" role="navigation" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
+                    <div class="rawnaq-spt-header-wrap">
+                        <p class="rawnaq-spt-reading" hidden></p>
+                        <p class="rawnaq-spt-chapter" hidden></p>
+                        <div class="rawnaq-spt-title-row">
+                            <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
+                            <?php if ( ! empty( $cfg['tocCollapsible'] ) ) : ?>
+                                <button type="button" class="rawnaq-spt-toggle-btn" aria-expanded="true" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'rawnaq' ); ?>">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                     <ul class="rawnaq-spt-list"></ul>
                 </nav>
             <?php endif; ?>

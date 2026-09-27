@@ -1,5 +1,18 @@
 /**
  * Rawnaq Scroll Progress + Smart TOC
+ * 
+ * Features:
+ * - Scroll Progress Bar (Top / Bottom)
+ * - Click-to-Top Circular Progress Ring (with hover arrow + percentage)
+ * - Auto-detect or Manual Headings (H2-H4)
+ * - Active ScrollSpy with Vertical Glow Indicator Tracker
+ * - Collapsible TOC Accordion Header
+ * - Headings Search Filter & Auto-collapsible subheadings
+ * - Per-section & Total Article Reading Time Estimation
+ * - Dynamic URL Hash Sync (history.replaceState)
+ * - Keyboard Navigation (Arrow keys, Home, End) & ARIA A11y
+ * - Floating Dock & Mobile Radial Action FAB Integration
+ * - Elementor, Gutenberg, & Divi Builder Support
  */
 (function () {
     'use strict';
@@ -59,6 +72,15 @@
         if (inst.ringLabel) {
             inst.ringLabel.textContent = Math.round(p * 100) + '%';
         }
+
+        // Show/hide ring based on scroll threshold (show after 5% scrolled)
+        if (inst.ring) {
+            if (p > 0.05) {
+                inst.ring.classList.add('is-visible');
+            } else {
+                inst.ring.classList.remove('is-visible');
+            }
+        }
         
         // Live reading time updates
         if (inst.cfg.readingTime && inst.totalMins) {
@@ -106,7 +128,7 @@
         if (!selector) {
             return [];
         }
-        var scope = document.querySelector(cfg.scope || 'main, .entry-content, article, .wp-block-post-content, body');
+        var scope = document.querySelector(cfg.scope || 'main, .entry-content, article, .wp-block-post-content, .et_pb_section, body');
         if (!scope) {
             scope = document.body;
         }
@@ -114,7 +136,8 @@
         var used = {};
         var items = [];
         var currentParent = null;
-        nodes.forEach(function (h) {
+
+        nodes.forEach(function (h, idx) {
             var text = (h.textContent || '').trim();
             if (!text) {
                 return;
@@ -128,12 +151,24 @@
             if (lvl === 2) {
                 currentParent = h.id;
             }
+
+            // Estimate section reading time
+            var secWords = 0;
+            var nextNode = nodes[idx + 1];
+            var walker = h.nextElementSibling;
+            while (walker && walker !== nextNode && walker !== h) {
+                secWords += (walker.textContent || '').split(/\s+/).filter(Boolean).length;
+                walker = walker.nextElementSibling;
+            }
+            var secMins = Math.max(1, Math.round(secWords / 200));
+
             items.push({
                 id: h.id,
                 text: text,
                 level: lvl,
                 el: h,
-                parentH2: lvl > 2 ? currentParent : null
+                parentH2: lvl > 2 ? currentParent : null,
+                secMins: secMins
             });
         });
         return items;
@@ -152,7 +187,8 @@
                 text: m.title || '',
                 level: lvl,
                 el: document.getElementById(m.id) || null,
-                parentH2: lvl > 2 ? currentParent : null
+                parentH2: lvl > 2 ? currentParent : null,
+                secMins: 1
             };
         }).filter(function (m) { return m.text; });
     }
@@ -168,13 +204,30 @@
         });
         // fallback: whole article
         if (words < 50) {
-            var art = document.querySelector('article, .entry-content, .wp-block-post-content');
+            var art = document.querySelector('article, .entry-content, .wp-block-post-content, .et_pb_section');
             if (art) {
                 words = String(art.textContent || '').split(/\s+/).filter(Boolean).length;
             }
         }
         var mins = Math.max(1, Math.round(words / 200));
         return mins;
+    }
+
+    function updateActiveIndicator(tocEl) {
+        var activeLink = tocEl.querySelector('.rawnaq-spt-list a.is-active');
+        var indicator = tocEl.querySelector('.rawnaq-spt-indicator');
+        if (!indicator) {
+            return;
+        }
+        if (activeLink && activeLink.offsetParent !== null) {
+            var top = activeLink.offsetTop;
+            var height = activeLink.offsetHeight;
+            indicator.style.opacity = '1';
+            indicator.style.transform = 'translateY(' + top + 'px)';
+            indicator.style.height = height + 'px';
+        } else {
+            indicator.style.opacity = '0';
+        }
     }
 
     function buildTocList(tocEl, items, cfg) {
@@ -185,7 +238,15 @@
         list.innerHTML = '';
         var offset = parseInt(cfg.scrollOffset, 10) || 80;
 
-        items.forEach(function (it) {
+        // Sliding vertical glow indicator
+        var indicator = document.createElement('span');
+        indicator.className = 'rawnaq-spt-indicator';
+        indicator.setAttribute('aria-hidden', 'true');
+        list.appendChild(indicator);
+
+        var allLinks = [];
+
+        items.forEach(function (it, index) {
             var li = document.createElement('li');
             li.className = 'lvl-' + it.level;
             if (it.level > 2 && cfg.collapseSubs) {
@@ -197,15 +258,32 @@
 
             var a = document.createElement('a');
             a.href = '#' + it.id;
-            a.textContent = it.text;
             a.className = 'lvl-' + it.level;
+            a.setAttribute('role', 'link');
+            a.setAttribute('tabindex', '0');
+
+            // Text content + optional section reading time
+            var textSpan = document.createElement('span');
+            textSpan.className = 'rawnaq-spt-link-text';
+            textSpan.textContent = it.text;
+            a.appendChild(textSpan);
+
+            if (cfg.sectionReadingTime && it.level === 2 && it.secMins > 0) {
+                var timeBadge = document.createElement('span');
+                timeBadge.className = 'rawnaq-spt-sec-badge';
+                timeBadge.textContent = '~' + it.secMins + 'm';
+                timeBadge.setAttribute('title', 'Estimated ' + it.secMins + ' min section');
+                a.appendChild(timeBadge);
+            }
             
-            a.addEventListener('click', function (e) {
+            function scrollToTarget(e) {
                 var target = document.getElementById(it.id);
                 if (!target) {
                     return;
                 }
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
                 var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
                 if (prefersReducedMotion() || cfg.smooth === false) {
                     window.scrollTo(0, top);
@@ -214,18 +292,63 @@
                 }
                 // close mobile sheet
                 tocEl.classList.remove('is-sheet-open');
+
+                if (cfg.urlHashSync !== false) {
+                    try {
+                        history.replaceState(null, null, '#' + it.id);
+                    } catch (err) {}
+                }
+            }
+
+            a.addEventListener('click', scrollToTarget);
+
+            // Keyboard navigation (Arrow keys, Home, End)
+            a.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToTarget(e);
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    var next = allLinks[index + 1];
+                    if (next) {
+                        next.focus();
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    var prev = allLinks[index - 1];
+                    if (prev) {
+                        prev.focus();
+                    }
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    if (allLinks[0]) {
+                        allLinks[0].focus();
+                    }
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    if (allLinks[allLinks.length - 1]) {
+                        allLinks[allLinks.length - 1].focus();
+                    }
+                }
             });
+
             li.appendChild(a);
             list.appendChild(li);
             it.link = a;
             it.liElement = li;
+            allLinks.push(a);
         });
 
         // Add search headings input at the top if enabled
         if (cfg.showSearch) {
+            var existingSearch = tocEl.querySelector('.rawnaq-spt-search-wrap');
+            if (existingSearch) {
+                existingSearch.parentNode.removeChild(existingSearch);
+            }
+
             var searchBox = document.createElement('div');
             searchBox.className = 'rawnaq-spt-search-wrap';
-            searchBox.innerHTML = '<input type="search" class="rawnaq-spt-search-input" placeholder="Search headings..." />';
+            searchBox.innerHTML = '<input type="search" class="rawnaq-spt-search-input" placeholder="Search headings..." aria-label="Search headings" />';
             tocEl.insertBefore(searchBox, list);
 
             var searchInput = searchBox.querySelector('.rawnaq-spt-search-input');
@@ -235,9 +358,7 @@
                 listItems.forEach(function(li) {
                     var text = li.textContent.toLowerCase();
                     if (!q) {
-                        // Restore standard collapsible/non-collapsible state
                         if (li.classList.contains('lvl-3') || li.classList.contains('lvl-4')) {
-                            // If collapsible is active, it will be handled by the scroll observer
                             if (!cfg.collapseSubs) {
                                 li.style.display = '';
                             }
@@ -253,6 +374,7 @@
                         li.style.display = 'none';
                     }
                 });
+                updateActiveIndicator(tocEl);
             });
         }
     }
@@ -275,6 +397,11 @@
                     if (it.link) {
                         var isActive = it.id === id;
                         it.link.classList.toggle('is-active', isActive);
+                        if (isActive) {
+                            it.link.setAttribute('aria-current', 'location');
+                        } else {
+                            it.link.removeAttribute('aria-current');
+                        }
                     }
                     
                     // Dynamic Collapsing/Expanding of subheadings
@@ -284,7 +411,6 @@
                             it.liElement.style.display = '';
                         } else {
                             it.liElement.classList.add('is-collapsed-child');
-                            // Only hide if search query is not active
                             var searchInput = tocEl ? tocEl.querySelector('.rawnaq-spt-search-input') : null;
                             if (!searchInput || !searchInput.value.trim()) {
                                 it.liElement.style.display = 'none';
@@ -292,12 +418,22 @@
                         }
                     }
                 });
+
+                updateActiveIndicator(tocEl);
+
+                // Update browser URL hash quietly if enabled
+                if (cfg.urlHashSync && id) {
+                    try {
+                        history.replaceState(null, null, '#' + id);
+                    } catch (e) {}
+                }
             });
         }, {
             root: null,
             rootMargin: '-20% 0px -60% 0px',
             threshold: 0
         });
+
         items.forEach(function (it) {
             if (it.el) {
                 observer.observe(it.el);
@@ -356,6 +492,9 @@
             if (inst.timelineMo) {
                 inst.timelineMo.disconnect();
             }
+            if (inst.resizeObserver) {
+                inst.resizeObserver.disconnect();
+            }
             if (inst.bar && inst.bar.parentNode) {
                 inst.bar.parentNode.removeChild(inst.bar);
             }
@@ -379,6 +518,8 @@
         root.classList.add('spt-bound');
         var cfg = parseCfg(root);
         cfg.hideIfShort = cfg.hideIfShort !== false;
+        cfg.clickToTop = cfg.clickToTop !== false;
+        cfg.tocCollapsible = cfg.tocCollapsible !== false;
 
         var progress = cfg.progress || 'bar'; // bar | ring | both | none
         var tocPos = cfg.tocPosition || 'inline'; // sticky | floating | inline | none
@@ -392,10 +533,11 @@
             ring: null,
             ringFg: null,
             ringLabel: null,
-            observer: null
+            observer: null,
+            resizeObserver: null
         };
 
-        // Progress UI (document-level for fixed)
+        // Progress Bar UI (document-level)
         if (progress === 'bar' || progress === 'both') {
             var bar = document.createElement('div');
             bar.className = 'rawnaq-spt-bar' + (cfg.barPosition === 'bottom' ? ' is-bottom' : '');
@@ -404,14 +546,24 @@
             inst.bar = bar;
             inst.barFill = bar.querySelector('.rawnaq-spt-bar-fill');
         }
+
+        // Circular Ring UI (with Click-to-Top support)
         if (progress === 'ring' || progress === 'both') {
             var ring = document.createElement('div');
-            ring.className = 'rawnaq-spt-ring';
+            ring.className = 'rawnaq-spt-ring' + (cfg.clickToTop ? ' is-clickable' : '');
+            if (cfg.clickToTop) {
+                ring.setAttribute('role', 'button');
+                ring.setAttribute('tabindex', '0');
+                ring.setAttribute('aria-label', 'Scroll to top of page');
+                ring.setAttribute('title', 'Back to top');
+            }
             ring.innerHTML = '<svg viewBox="0 0 48 48" aria-hidden="true">'
                 + '<circle class="rawnaq-spt-ring-bg" cx="24" cy="24" r="20"></circle>'
                 + '<circle class="rawnaq-spt-ring-fg" cx="24" cy="24" r="20"></circle>'
+                + '<path class="rawnaq-spt-ring-arrow" d="M24 14 L16 22 L18.5 24.5 L22.2 20.8 L22.2 34 L25.8 34 L25.8 20.8 L29.5 24.5 L32 22 Z" />'
                 + '</svg>'
                 + (cfg.showPercent !== false ? '<span class="rawnaq-spt-ring-label">0%</span>' : '');
+
             var ringSize = (getComputedStyle(root).getPropertyValue('--spt-ring-size') || '').trim();
             if (ringSize) {
                 ring.style.setProperty('--spt-ring-size', ringSize);
@@ -420,6 +572,19 @@
             inst.ring = ring;
             inst.ringFg = ring.querySelector('.rawnaq-spt-ring-fg');
             inst.ringLabel = ring.querySelector('.rawnaq-spt-ring-label');
+
+            if (cfg.clickToTop) {
+                function doScrollTop(e) {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+                }
+                ring.addEventListener('click', doScrollTop);
+                ring.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        doScrollTop(e);
+                    }
+                });
+            }
         }
 
         // TOC
@@ -435,7 +600,12 @@
             if (!toc) {
                 toc = document.createElement('nav');
                 toc.className = 'rawnaq-spt-toc';
-                toc.innerHTML = '<p class="rawnaq-spt-reading" hidden></p><h3 class="rawnaq-spt-title"></h3><ul class="rawnaq-spt-list"></ul>';
+                toc.setAttribute('role', 'navigation');
+                toc.innerHTML = '<div class="rawnaq-spt-header-wrap">'
+                    + '<p class="rawnaq-spt-reading" hidden></p>'
+                    + '<div class="rawnaq-spt-title-row"><h3 class="rawnaq-spt-title"></h3></div>'
+                    + '</div>'
+                    + '<ul class="rawnaq-spt-list"></ul>';
                 root.appendChild(toc);
             }
             toc.classList.add('is-' + tocPos);
@@ -449,16 +619,39 @@
                 toc.classList.add('is-expanded');
             }
 
+            var titleRow = toc.querySelector('.rawnaq-spt-title-row');
             var titleEl = toc.querySelector('.rawnaq-spt-title');
             if (titleEl) {
                 titleEl.textContent = cfg.tocTitle || 'Contents';
+            }
+
+            // Add Accordion Toggle Chevron to TOC Title if enabled
+            if (cfg.tocCollapsible && titleRow && !titleRow.querySelector('.rawnaq-spt-toggle-btn')) {
+                var toggleBtn = document.createElement('button');
+                toggleBtn.type = 'button';
+                toggleBtn.className = 'rawnaq-spt-toggle-btn';
+                toggleBtn.setAttribute('aria-expanded', 'true');
+                toggleBtn.setAttribute('aria-label', 'Toggle Table of Contents');
+                toggleBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+                titleRow.appendChild(toggleBtn);
+
+                function toggleTocCollapse(e) {
+                    e.stopPropagation();
+                    var isClosed = toc.classList.toggle('is-toc-collapsed');
+                    toggleBtn.setAttribute('aria-expanded', isClosed ? 'false' : 'true');
+                    updateActiveIndicator(toc);
+                }
+
+                toggleBtn.addEventListener('click', toggleTocCollapse);
+                titleRow.addEventListener('click', toggleTocCollapse);
+                titleRow.style.cursor = 'pointer';
             }
 
             if (cfg.readingTime) {
                 var readEl = toc.querySelector('.rawnaq-spt-reading');
                 if (readEl) {
                     var mins = estimateReadingTime(items);
-                    inst.totalMins = mins; // Store inside instance
+                    inst.totalMins = mins;
                     readEl.hidden = false;
                     readEl.textContent = mins + ' min read';
                 }
@@ -469,9 +662,9 @@
                 chapterEl = document.createElement('p');
                 chapterEl.className = 'rawnaq-spt-chapter';
                 chapterEl.hidden = true;
-                var titleNode = toc.querySelector('.rawnaq-spt-title');
-                if (titleNode && titleNode.parentNode) {
-                    titleNode.parentNode.insertBefore(chapterEl, titleNode);
+                var headerWrap = toc.querySelector('.rawnaq-spt-header-wrap');
+                if (headerWrap) {
+                    headerWrap.insertBefore(chapterEl, headerWrap.firstChild);
                 } else {
                     toc.insertBefore(chapterEl, toc.firstChild);
                 }
@@ -483,6 +676,14 @@
 
             buildTocList(toc, items, cfg);
             inst.observer = observeActive(items, toc, cfg);
+
+            // ResizeObserver to recalibrate indicator
+            if (window.ResizeObserver) {
+                inst.resizeObserver = new ResizeObserver(function () {
+                    updateActiveIndicator(toc);
+                });
+                inst.resizeObserver.observe(toc);
+            }
 
             var dockAttached = false;
             function tryDockAttach() {
@@ -553,13 +754,13 @@
                 fabWrapper = document.createElement('div');
                 fabWrapper.className = 'rawnaq-spt-fab-wrapper';
                 fabWrapper.innerHTML =
-                    '<button type="button" class="rawnaq-spt-fab-trigger" aria-label="Toggle Actions">≡</button>' +
+                    '<button type="button" class="rawnaq-spt-fab-trigger" aria-label="Toggle Navigation Actions">≡</button>' +
                     '<div class="rawnaq-spt-radial-menu">' +
-                        '<button type="button" class="rawnaq-spt-action-btn action-toc" title="Toggle Contents">📖</button>' +
-                        '<button type="button" class="rawnaq-spt-action-btn action-top" title="Scroll to Top">▲</button>' +
-                        '<button type="button" class="rawnaq-spt-action-btn action-copy" title="Copy Article Link">🔗</button>' +
+                        '<button type="button" class="rawnaq-spt-action-btn action-toc" title="Toggle Contents" aria-label="Toggle Table of Contents">📖</button>' +
+                        '<button type="button" class="rawnaq-spt-action-btn action-top" title="Scroll to Top" aria-label="Scroll to top of page">▲</button>' +
+                        '<button type="button" class="rawnaq-spt-action-btn action-copy" title="Copy Article Link" aria-label="Copy page link">🔗</button>' +
                     '</div>' +
-                    '<div class="rawnaq-spt-toast-msg" hidden>Copied!</div>';
+                    '<div class="rawnaq-spt-toast-msg" hidden>Link Copied!</div>';
                 root.appendChild(fabWrapper);
             }
 
@@ -575,7 +776,8 @@
 
                 trigger.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    fabWrapper.classList.toggle('is-active');
+                    var active = fabWrapper.classList.toggle('is-active');
+                    trigger.setAttribute('aria-expanded', active ? 'true' : 'false');
                 });
 
                 // 1. Toggle TOC Slide Drawer
@@ -590,7 +792,7 @@
                 var btnTop = radialMenu.querySelector('.action-top');
                 btnTop.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
                     fabWrapper.classList.remove('is-active');
                 });
 
@@ -599,14 +801,16 @@
                 btnCopy.addEventListener('click', function(e) {
                     e.stopPropagation();
                     var url = window.location.href.split('#')[0];
-                    navigator.clipboard.writeText(url).then(function() {
-                        toast.hidden = false;
-                        toast.classList.add('show');
-                        setTimeout(function() {
-                            toast.classList.remove('show');
-                            toast.hidden = true;
-                        }, 2000);
-                    });
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(url).then(function() {
+                            toast.hidden = false;
+                            toast.classList.add('show');
+                            setTimeout(function() {
+                                toast.classList.remove('show');
+                                toast.hidden = true;
+                            }, 2000);
+                        });
+                    }
                     fabWrapper.classList.remove('is-active');
                 });
 
@@ -652,4 +856,7 @@
     if (window.jQuery) {
         jQuery(window).on('elementor/frontend/init', hookElementor);
     }
+
+    // Divi builder event listener
+    window.addEventListener('et_pb_after_init_modules', initAll);
 })();

@@ -192,13 +192,37 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'condition'    => [ 'toc_position' => [ 'sticky', 'floating' ] ],
         ] );
 
-        $this->add_control( 'dock_attach', [
-            'label'        => esc_html__( 'Attach TOC to Floating Dock', 'rawnaq' ),
+        $this->add_control( 'click_to_top', [
+            'label'        => esc_html__( 'Click Ring for Back to Top', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'progress' => [ 'ring', 'both' ] ],
+        ] );
+
+        $this->add_control( 'toc_collapsible', [
+            'label'        => esc_html__( 'Collapsible Header Accordion', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'toc_position!' => 'none' ],
+        ] );
+
+        $this->add_control( 'url_hash_sync', [
+            'label'        => esc_html__( 'Sync URL Hash on Scroll', 'rawnaq' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'toc_position!' => 'none' ],
+        ] );
+
+        $this->add_control( 'section_reading_time', [
+            'label'        => esc_html__( 'Per-Section Time Badges', 'rawnaq' ),
             'type'         => \Elementor\Controls_Manager::SWITCHER,
             'return_value' => 'yes',
             'default'      => '',
-            'description'  => esc_html__( 'When a Floating Dock is on the page, hide the TOC FAB and add a Contents button to the dock.', 'rawnaq' ),
-            'condition'    => [ 'toc_position' => 'floating' ],
+            'description'  => esc_html__( 'Display estimated ~Xm badges next to H2 items.', 'rawnaq' ),
+            'condition'    => [ 'toc_position!' => 'none' ],
         ] );
 
         $this->end_controls_section();
@@ -268,24 +292,28 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             ];
         }
         return [
-            'progress'       => $s['progress'] ?? 'both',
-            'barPosition'    => $s['bar_position'] ?? 'top',
-            'showPercent'    => ( $s['show_percent'] ?? '' ) === 'yes',
-            'tocPosition'    => $s['toc_position'] ?? 'sticky',
-            'tocTitle'       => $s['toc_title'] ?? 'Contents',
-            'source'         => $s['source'] ?? 'auto',
-            'levels'         => array_values( $levels ),
-            'manual'         => $manual,
-            'collapseSubs'   => ( $s['collapse_subs'] ?? '' ) === 'yes',
-            'showSearch'     => ( $s['show_search'] ?? '' ) === 'yes',
-            'smooth'         => ( $s['smooth'] ?? 'yes' ) === 'yes',
-            'scrollOffset'   => isset( $s['scroll_offset'] ) ? (int) $s['scroll_offset'] : 80,
-            'readingTime'    => ( $s['reading_time'] ?? '' ) === 'yes',
-            'mobileCollapse' => ( $s['mobile_collapse'] ?? 'yes' ) === 'yes',
-            'dockAttach'     => ( $s['dock_attach'] ?? '' ) === 'yes',
-            'syncTimeline'   => sanitize_text_field( $s['sync_timeline'] ?? '' ),
-            'scope'          => sanitize_text_field( $s['content_selector'] ?? '' ),
-            'hideIfShort'    => ( $s['hide_if_short'] ?? 'yes' ) === 'yes',
+            'progress'           => $s['progress'] ?? 'both',
+            'barPosition'        => $s['bar_position'] ?? 'top',
+            'showPercent'        => ( $s['show_percent'] ?? '' ) === 'yes',
+            'clickToTop'         => ( $s['click_to_top'] ?? 'yes' ) === 'yes',
+            'tocPosition'        => $s['toc_position'] ?? 'sticky',
+            'tocTitle'           => $s['toc_title'] ?? 'Contents',
+            'tocCollapsible'     => ( $s['toc_collapsible'] ?? 'yes' ) === 'yes',
+            'source'             => $s['source'] ?? 'auto',
+            'levels'             => array_values( $levels ),
+            'manual'             => $manual,
+            'collapseSubs'       => ( $s['collapse_subs'] ?? '' ) === 'yes',
+            'showSearch'         => ( $s['show_search'] ?? '' ) === 'yes',
+            'urlHashSync'        => ( $s['url_hash_sync'] ?? 'yes' ) === 'yes',
+            'sectionReadingTime' => ( $s['section_reading_time'] ?? '' ) === 'yes',
+            'smooth'             => ( $s['smooth'] ?? 'yes' ) === 'yes',
+            'scrollOffset'       => isset( $s['scroll_offset'] ) ? (int) $s['scroll_offset'] : 80,
+            'readingTime'        => ( $s['reading_time'] ?? '' ) === 'yes',
+            'mobileCollapse'     => ( $s['mobile_collapse'] ?? 'yes' ) === 'yes',
+            'dockAttach'         => ( $s['dock_attach'] ?? '' ) === 'yes',
+            'syncTimeline'       => sanitize_text_field( $s['sync_timeline'] ?? '' ),
+            'scope'              => sanitize_text_field( $s['content_selector'] ?? '' ),
+            'hideIfShort'        => ( $s['hide_if_short'] ?? 'yes' ) === 'yes',
         ];
     }
 
@@ -305,10 +333,19 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
              style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px; --spt-ring-size: <?php echo esc_attr( (string) $ring ); ?>px;"
              data-spt="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>">
             <?php if ( 'none' !== $pos ) : ?>
-                <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $pos ); ?>" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
-                    <p class="rawnaq-spt-reading" hidden></p>
-                    <p class="rawnaq-spt-chapter" hidden></p>
-                    <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
+                <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $pos ); ?>" role="navigation" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
+                    <div class="rawnaq-spt-header-wrap">
+                        <p class="rawnaq-spt-reading" hidden></p>
+                        <p class="rawnaq-spt-chapter" hidden></p>
+                        <div class="rawnaq-spt-title-row">
+                            <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
+                            <?php if ( ! empty( $cfg['tocCollapsible'] ) ) : ?>
+                                <button type="button" class="rawnaq-spt-toggle-btn" aria-expanded="true" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'rawnaq' ); ?>">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                     <ul class="rawnaq-spt-list"></ul>
                 </nav>
             <?php endif; ?>
