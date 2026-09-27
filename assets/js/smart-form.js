@@ -904,6 +904,129 @@
                 syncStepUi(form, Math.max(0, idx - 1), 'backward');
             });
         }
+
+        applyUrlPrefill(form);
+    }
+
+    function prefillFormWithData(form, data, options) {
+        options = options || {};
+        if (!form || !data) return;
+        var fieldsFound = false;
+
+        for (var key in data) {
+            if (!data.hasOwnProperty(key)) continue;
+            var val = data[key];
+            if (val === undefined || val === null || val === '') continue;
+
+            var field = form.querySelector('.rawnaq-sf-field[data-field="' + key + '"]') ||
+                        form.querySelector('.rawnaq-sf-field[data-field="' + key.toLowerCase() + '"]');
+            
+            var input = field ? field.querySelector('input, textarea, select') : (form.querySelector('[name="sf_' + key + '"]') || form.querySelector('[name="' + key + '"]'));
+            
+            if (!input && !field) {
+                if (key === 'projectTitle' || key === 'title' || key === 'subject') {
+                    input = form.querySelector('[name="sf_project_overview"], [name="sf_project_details"], [name="sf_project_description"], [name="sf_message"], [name="sf_subject"]');
+                } else if (key === 'service' || key === 'services') {
+                    input = form.querySelector('[name="sf_service"], [name="sf_project_type"]');
+                } else if (key === 'budget') {
+                    input = form.querySelector('[name="sf_budget"], [name="sf_budget_tier"]');
+                }
+            }
+
+            if (input) {
+                var fWrap = input.closest('.rawnaq-sf-field');
+                if (input.type === 'checkbox') {
+                    input.checked = !!val && val !== '0' && val !== 'false';
+                } else if (input.type === 'radio') {
+                    var targetRadio = form.querySelector('input[name="' + input.name + '"][value="' + val + '"]');
+                    if (targetRadio) {
+                        targetRadio.checked = true;
+                        var cardOpt = targetRadio.closest('.rawnaq-sf-card-option');
+                        if (cardOpt) cardOpt.classList.add('is-selected');
+                    }
+                } else if (input.tagName === 'SELECT') {
+                    var matched = false;
+                    for (var i = 0; i < input.options.length; i++) {
+                        if (input.options[i].value === val || input.options[i].text.toLowerCase() === String(val).toLowerCase()) {
+                            input.selectedIndex = i;
+                            matched = true;
+                            break;
+                        }
+                    }
+                    if (!matched && typeof val === 'string') {
+                        for (var j = 0; j < input.options.length; j++) {
+                            if (input.options[j].text.toLowerCase().indexOf(val.toLowerCase()) !== -1) {
+                                input.selectedIndex = j;
+                                matched = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    if (input.tagName === 'TEXTAREA' && input.value && options.append) {
+                        input.value += '\n' + String(val);
+                    } else {
+                        input.value = String(val);
+                    }
+                }
+                if (fWrap) {
+                    validateField(fWrap, { silent: true });
+                }
+                fieldsFound = true;
+            }
+        }
+
+        applyConditionals(form);
+
+        if (fieldsFound && options.scroll) {
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            var targetToFocus = form.querySelector('input:not([type="hidden"]):not([disabled]), textarea:not([disabled])');
+            if (targetToFocus) {
+                setTimeout(function () { targetToFocus.focus(); }, 400);
+            }
+        }
+    }
+
+    function applyUrlPrefill(form) {
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var data = {};
+            params.forEach(function (val, key) {
+                var cleanKey = key.replace(/^sf_/, '');
+                data[cleanKey] = val;
+            });
+            if (Object.keys(data).length > 0) {
+                prefillFormWithData(form, data, { scroll: false });
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    function setupBridgeListeners() {
+        document.addEventListener('rawnaq:case-study:discuss', function (e) {
+            var detail = (e && e.detail) || {};
+            var project = detail.project || {};
+            var forms = document.querySelectorAll('.rawnaq-smart-form form');
+            if (!forms.length) return;
+            var targetForm = forms[0];
+
+            var prefillData = {
+                subject: 'Inquiry regarding ' + (project.title || 'Case Study'),
+                project_details: 'I am interested in discussing a project similar to "' + (project.title || '') + '"' + (project.client ? ' (Client: ' + project.client + ')' : '') + '.',
+                message: 'Inquiry regarding ' + (project.title || 'Case Study') + (project.client ? ' for ' + project.client : '') + '.',
+                service: Array.isArray(project.services) ? project.services[0] : (project.services || ''),
+                budget: project.budget || ''
+            };
+
+            prefillFormWithData(targetForm, prefillData, { scroll: true });
+        });
+
+        document.addEventListener('rawnaq:smart_form:prefill', function (e) {
+            var detail = (e && e.detail) || {};
+            var targetId = detail.formId || detail.targetId;
+            var form = targetId ? document.querySelector('#' + targetId + ' form, form[data-form-id="' + targetId + '"]') : document.querySelector('.rawnaq-smart-form form');
+            if (!form) return;
+            prefillFormWithData(form, detail.data || detail, { scroll: detail.scroll !== false });
+        });
     }
 
     function initAll() {
@@ -922,6 +1045,7 @@
     }
 
     function boot() {
+        setupBridgeListeners();
         initAll();
         hookElementor();
     }
