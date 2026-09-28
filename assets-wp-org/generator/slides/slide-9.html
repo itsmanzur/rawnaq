@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Screenshot 9</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 1280px; height: 720px; overflow: hidden; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        :root {
+            --brand-primary: #6366f1;
+            --brand-secondary: #f59e0b;
+            --brand-dark: #0f172a;
+            --brand-slate: #475569;
+            --bg-dot: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0b0f17;
+            color: #f1f5f9;
+            padding: 30px;
+        }
+
+        .header-bar {
+            max-width: 1300px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            background: #1e293b;
+            border-radius: 16px;
+            border: 1px solid #334155;
+        }
+
+        .header-title h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: #6366f1; color: #fff; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-outline { background: #334155; color: #e2e8f0; }
+
+        .previews-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            max-width: 1300px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .screenshot-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .screenshot-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .screenshot-meta code {
+            font-family: 'JetBrains Mono', monospace;
+            color: #38bdf8;
+            background: #1e293b;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        /* ── THE 1280x720 CANVAS CONTAINER ── */
+        .wp-screenshot-canvas {
+            width: 1280px;
+            height: 720px;
+            min-width: 1280px;
+            min-height: 720px;
+            max-width: 1280px;
+            max-height: 720px;
+            position: relative;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(#cbd5e1 1.25px, transparent 1.25px),
+                radial-gradient(circle at 90% 15%, rgba(99, 102, 241, 0.09) 0%, transparent 55%),
+                radial-gradient(circle at 10% 85%, rgba(245, 158, 11, 0.08) 0%, transparent 45%);
+            background-size: 24px 24px, 100% 100%, 100% 100%;
+            border-radius: 0;
+            overflow: hidden;
+            display: flex;
+            padding: 60px 70px;
+            box-sizing: border-box;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            color: #0f172a;
+        }
+
+        /* ── BRAND HEADER (TOP-LEFT) ── */
+        .brand-badge {
+            position: absolute;
+            top: 50px;
+            left: 70px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .brand-logo-icon {
+            width: 44px;
+            height: 44px;
+            background: #0f172a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f59e0b;
+            font-size: 22px;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.25);
+        }
+
+        .brand-logo-text {
+            font-size: 28px;
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-logo-text span { color: #6366f1; }
+
+        /* ── LEFT CONTENT COLUMN ── */
+        .slide-content {
+            width: 440px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+            padding-right: 20px;
+        }
+
+        .module-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #d97706;
+            margin-bottom: 18px;
+        }
+
+        .module-eyebrow::before {
+            content: '';
+            width: 28px;
+            height: 3.5px;
+            background: #d97706;
+            border-radius: 2px;
+        }
+
+        .slide-title {
+            font-size: 46px;
+            font-weight: 900;
+            line-height: 1.12;
+            letter-spacing: -0.04em;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .slide-title .highlight { color: #d97706; display: block; }
+        .slide-title .highlight-indigo { color: #6366f1; display: block; }
+        .slide-title .highlight-teal { color: #0d9488; display: block; }
+
+        .slide-desc {
+            font-size: 17.5px;
+            line-height: 1.55;
+            color: #475569;
+            margin-bottom: 26px;
+            font-weight: 450;
+        }
+
+        .feature-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .f-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+
+        .f-pill .dot-accent {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #6366f1;
+        }
+
+        /* ── RIGHT VISUAL MOCKUP STAGE ── */
+        .slide-stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            perspective: 1200px;
+        }
+
+        .mockup-window {
+            width: 100%;
+            max-width: 660px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 
+                0 30px 60px -15px rgba(15, 23, 42, 0.12),
+                0 0 0 1px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
+            position: relative;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        /* ── 1. 3D Tilt Card Mockup ── */
+        .stage-tilt {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .mock-tilt-card {
+            width: 275px;
+            height: 380px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+            transform-style: preserve-3d;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .mock-tilt-card.tilt-1 {
+            background: linear-gradient(180deg, rgba(15,23,42,0.2) 0%, rgba(15,23,42,0.92) 100%), linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            transform: rotateX(8deg) rotateY(-12deg) scale(1.02);
+        }
+
+        .mock-tilt-card.tilt-2 {
+            background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+            transform: rotateX(-6deg) rotateY(10deg) scale(0.96);
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .mock-tilt-glare {
+            position: absolute;
+            top: 15%;
+            left: 25%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+        }
+
+        .mock-tilt-badge {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mock-tilt-icon {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .mock-tilt-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1.25;
+        }
+
+        .mock-tilt-desc {
+            font-size: 12.5px;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.45;
+            margin-bottom: 14px;
+        }
+
+        .mock-tilt-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 18px;
+            background: #6366f1;
+            color: #fff;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            width: fit-content;
+            box-shadow: 0 4px 14px rgba(99,102,241,0.5);
+        }
+
+        /* ── 2. Bento Grid Mockup ── */
+        .mock-bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            width: 100%;
+        }
+
+        .bento-cell {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bento-cell.col-2 { grid-column: span 2; }
+        .bento-cell.row-2 { grid-row: span 2; }
+
+        .bento-cell.featured {
+            background: linear-gradient(135deg, #0f766e 0%, #134e4a 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 12px 24px rgba(15, 118, 110, 0.25);
+        }
+
+        .bento-cell.featured .bento-tag {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        .bento-cell.featured h4 { color: #fff; }
+        .bento-cell.featured p { color: rgba(255,255,255,0.85); }
+
+        .bento-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            background: #e2e8f0;
+            color: #475569;
+            width: fit-content;
+            margin-bottom: 12px;
+        }
+
+        .bento-stat {
+            font-size: 38px;
+            font-weight: 900;
+            color: #0f766e;
+            line-height: 1;
+        }
+
+        .bento-image-cell {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: #fff;
+            border: none;
+        }
+
+        /* ── 3. Smart Form Mockup ── */
+        .mock-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .mock-form-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .mock-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .mock-step.active { color: #0d9488; }
+
+        .mock-step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #475569;
+        }
+
+        .mock-step.active .mock-step-num {
+            background: #0d9488;
+            color: #fff;
+        }
+
+        .mock-calc-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mock-calc-total {
+            font-size: 26px;
+            font-weight: 900;
+            color: #0d9488;
+        }
+
+        .mock-signature-pad {
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 12px;
+            height: 65px;
+            background: #fff;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mock-signature-line {
+            font-style: italic;
+            font-size: 24px;
+            font-weight: 700;
+            color: #334155;
+            letter-spacing: 0.05em;
+            transform: rotate(-2deg);
+        }
+
+        /* ── 4. Scroll Timeline Mockup ── */
+        .mock-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            padding-left: 36px;
+        }
+
+        .mock-timeline-line {
+            position: absolute;
+            left: 14px;
+            top: 10px;
+            bottom: 10px;
+            width: 3.5px;
+            background: linear-gradient(180deg, #6366f1 65%, #e2e8f0 65%);
+            border-radius: 2px;
+        }
+
+        .mock-timeline-node {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+        }
+
+        .mock-timeline-bullet {
+            position: absolute;
+            left: -36px;
+            top: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid #6366f1;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.2);
+        }
+
+        .mock-timeline-bullet.inactive {
+            border-color: #cbd5e1;
+            box-shadow: none;
+        }
+
+        .mock-timeline-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px 18px;
+        }
+
+        /* ── 5. Floating Dock Mockup ── */
+        .mock-dock-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .mock-dock-wa-banner {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .mock-dock-wa-avatar {
+            width: 40px;
+            height: 40px;
+            background: #25d366;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .mock-dock-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1.5px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+        }
+
+        .mock-dock-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #475569;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            position: relative;
+            font-weight: 800;
+        }
+
+        .mock-dock-icon.magnified {
+            width: 68px;
+            height: 68px;
+            font-size: 30px;
+            background: #25d366;
+            color: #fff;
+            border: none;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.45);
+        }
+
+        .mock-dock-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 999px;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+        }
+
+        /* ── 6. Hub Diagram Mockup ── */
+        .mock-hub-stage {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mock-hub-center {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            text-align: center;
+            box-shadow: 0 0 0 10px rgba(99, 102, 241, 0.15), 0 12px 30px rgba(99, 102, 241, 0.35);
+            z-index: 5;
+        }
+
+        .mock-hub-satellite {
+            position: absolute;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            z-index: 4;
+        }
+
+        .sat-1 { top: 30px; left: 60px; }
+        .sat-2 { top: 30px; right: 60px; }
+        .sat-3 { bottom: 40px; left: 70px; }
+        .sat-4 { bottom: 40px; right: 70px; }
+        .sat-5 { top: 165px; left: 15px; }
+        .sat-6 { top: 165px; right: 15px; }
+
+        .mock-hub-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* ── 7. Flow Chart Mockup ── */
+        .mock-flow-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .mock-flow-node {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .mock-flow-node.start { background: #f0fdf4; border-color: #86efac; color: #166534; }
+        .mock-flow-node.decision { background: #fefce8; border-color: #fde047; color: #854d0e; }
+
+        .mock-flow-arrow { color: #94a3b8; font-size: 14px; font-weight: 900; }
+
+        .mock-flow-row {
+            display: flex;
+            gap: 18px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* ── 8. Scroll Story Mockup ── */
+        .mock-story-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .mock-story-pin {
+            border-radius: 16px;
+            overflow: hidden;
+            height: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            color: #ffffff;
+            justify-content: space-between;
+        }
+
+        .mock-story-badge {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(6px);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .mock-story-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mock-story-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .mock-story-card.active {
+            background: #ffffff;
+            border-color: #0d9488;
+            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.12);
+        }
+
+        /* ── 9. TOC & Progress Mockup ── */
+        .mock-toc-preview {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .mock-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mock-progress-fill {
+            width: 68%;
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #f59e0b);
+            border-radius: 999px;
+        }
+
+        .mock-toc-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .mock-toc-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .mock-toc-item.active {
+            background: #ffffff;
+            color: #6366f1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-left: 3px solid #6366f1;
+        }
+
+        /* ── 10. Case Study Mockup ── */
+        .mock-cs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .mock-cs-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mock-cs-img {
+            height: 130px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .mock-cs-body {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mock-metric-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: #ecfdf5;
+            color: #059669;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 6px;
+            width: fit-content;
+        }
+    
+        .wp-screenshot-canvas { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; width: 1280px !important; height: 720px !important; }
+    </style>
+</head>
+<body style="margin:0; padding:0; overflow:hidden;">
+    <div class="wp-screenshot-canvas" id="canvas-9">
+        
+                <div class="brand-badge">
+                    <div class="brand-logo-icon">✦</div>
+                    <div class="brand-logo-text">Rawnaq<span>.</span></div>
+                </div>
+                <div class="slide-content">
+                    <div class="module-eyebrow">09 · Scroll Progress & TOC</div>
+                    <h2 class="slide-title">Reading Progress & <span class="highlight-indigo">Floating TOC</span></h2>
+                    <p class="slide-desc">Boost long-form blog and documentation UX with sticky gradient scroll meters and auto-scanned interactive tables of contents.</p>
+                    <div class="feature-pills">
+                        <span class="f-pill"><span class="dot-accent"></span> Auto H2/H3 Scan</span>
+                        <span class="f-pill"><span class="dot-accent"></span> Live Progress</span>
+                        <span class="f-pill"><span class="dot-accent"></span> Smooth Anchors</span>
+                    </div>
+                </div>
+                <div class="slide-stage">
+                    <div class="mockup-window" style="padding: 24px;">
+                        <div class="mock-toc-preview">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #475569;">
+                                <span>Article Reading Progress</span>
+                                <span style="color: #6366f1;">68% Completed</span>
+                            </div>
+                            <div class="mock-progress-bar">
+                                <div class="mock-progress-fill"></div>
+                            </div>
+
+                            <div class="mock-toc-box">
+                                <div style="font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px;">Table of Contents</div>
+                                <div class="mock-toc-item">✓ 1. Executive Summary</div>
+                                <div class="mock-toc-item active">➔ 2. Core Architecture & Stack</div>
+                                <div class="mock-toc-item" style="padding-left: 28px;">2.1 Zero-jQuery Strategy</div>
+                                <div class="mock-toc-item">○ 3. Performance Benchmarks
+    </div>
+</body>
+</html>
