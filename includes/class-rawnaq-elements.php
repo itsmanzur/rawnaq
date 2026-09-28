@@ -58,8 +58,10 @@ class Rawnaq_Elements {
     }
 
     private function init_hooks() {
-        // Frontend + block editor both need these handles registered.
-        add_action( 'wp_enqueue_scripts', [ $this, 'register_shared_assets' ] );
+        // Frontend + block editor both need these handles registered early (priority 5)
+        add_action( 'wp_enqueue_scripts', [ $this, 'register_shared_assets' ], 5 );
+        add_action( 'elementor/frontend/after_register_scripts', [ $this, 'register_shared_assets' ] );
+        add_action( 'elementor/frontend/after_register_styles', [ $this, 'register_shared_assets' ] );
         add_action( 'enqueue_block_editor_assets', [ $this, 'register_shared_assets' ] );
 
         add_action( 'wp_ajax_rawnaq_dock_click', [ $this, 'ajax_dock_click' ] );

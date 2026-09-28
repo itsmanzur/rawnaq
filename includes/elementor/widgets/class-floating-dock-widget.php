@@ -714,6 +714,10 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             return;
         }
 
+        wp_enqueue_style( 'rawnaq-floating-dock' );
+        wp_enqueue_script( 'rawnaq-floating-dock' );
+        wp_enqueue_script( 'rawnaq-qrcode' );
+
         $is_wa_mode    = ( $s['whatsapp_mode'] ?? '' ) === 'yes';
         $items         = $s['dock_items'] ?? [];
         $pos           = $is_wa_mode ? ( $s['position_wa'] ?? 'right' ) : ( $s['position'] ?? 'bottom' );

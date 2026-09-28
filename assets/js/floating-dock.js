@@ -867,6 +867,25 @@
             return;
         }
 
+        // On frontend (outside page editors), move the floating dock directly to document.body
+        // so parent transforms/overflow:hidden can never clip or trap the fixed dock.
+        if (!isEditorActive() && dock.parentElement && dock.parentElement !== document.body) {
+            try {
+                var computed = window.getComputedStyle(dock);
+                var offset = computed.getPropertyValue('--dock-offset');
+                var safeOffset = computed.getPropertyValue('--dock-safe-offset');
+                if (offset && offset.trim()) {
+                    dock.style.setProperty('--dock-offset', offset.trim());
+                }
+                if (safeOffset && safeOffset.trim()) {
+                    dock.style.setProperty('--dock-safe-offset', safeOffset.trim());
+                }
+                document.body.appendChild(dock);
+            } catch (e) {
+                // fallback gracefully
+            }
+        }
+
         var cfg = parseWaCfg(dock);
         if (cfg && cfg.whatsappMode) {
             setupWhatsAppDock(dock, cfg);
