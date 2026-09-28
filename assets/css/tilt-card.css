@@ -81,15 +81,33 @@
     justify-content: flex-end;
 }
 
+.rawnaq-tilt-card img.rawnaq-tilt-image,
+.rawnaq-tilt-face img.rawnaq-tilt-image,
+.rawnaq-tilt-container img.rawnaq-tilt-image,
+img.rawnaq-tilt-image,
 .rawnaq-tilt-image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    position: absolute !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
     object-fit: cover;
-    z-index: 0;
+    object-position: center;
+    z-index: 0 !important;
     transform: translateZ(0);
-    pointer-events: none;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: inherit !important;
+    display: block !important;
 }
 
 .rawnaq-tilt-overlay {

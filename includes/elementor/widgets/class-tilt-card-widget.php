@@ -26,6 +26,44 @@ class Rawnaq_Tilt_Card_Widget extends \Elementor\Widget_Base {
             'default' => [ 'url' => '' ],
         ] );
 
+        $this->add_control( 'image_fit', [
+            'label'     => esc_html__( 'Image Fit', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::SELECT,
+            'default'   => 'cover',
+            'options'   => [
+                'cover'   => esc_html__( 'Cover (Full Height & Width)', 'rawnaq' ),
+                'contain' => esc_html__( 'Contain', 'rawnaq' ),
+                'fill'    => esc_html__( 'Fill', 'rawnaq' ),
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .rawnaq-tilt-image' => 'object-fit: {{VALUE}} !important;',
+            ],
+            'condition' => [
+                'image[url]!' => '',
+            ],
+        ] );
+
+        $this->add_control( 'image_position', [
+            'label'     => esc_html__( 'Image Position', 'rawnaq' ),
+            'type'      => \Elementor\Controls_Manager::SELECT,
+            'default'   => 'center center',
+            'options'   => [
+                'center center' => esc_html__( 'Center Center', 'rawnaq' ),
+                'center top'    => esc_html__( 'Center Top', 'rawnaq' ),
+                'center bottom' => esc_html__( 'Center Bottom', 'rawnaq' ),
+                'left top'      => esc_html__( 'Left Top', 'rawnaq' ),
+                'left center'   => esc_html__( 'Left Center', 'rawnaq' ),
+                'right top'     => esc_html__( 'Right Top', 'rawnaq' ),
+                'right center'  => esc_html__( 'Right Center', 'rawnaq' ),
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .rawnaq-tilt-image' => 'object-position: {{VALUE}} !important;',
+            ],
+            'condition' => [
+                'image[url]!' => '',
+            ],
+        ] );
+
         $this->add_control( 'badge', [
             'label'       => esc_html__( 'Badge / Eyebrow', 'rawnaq' ),
             'type'        => \Elementor\Controls_Manager::TEXT,
