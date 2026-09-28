@@ -108,6 +108,7 @@ class Rawnaq_Admin_Dashboard {
             $settings = [];
         }
         $clicks  = function_exists( 'rawnaq_dock_get_clicks' ) ? rawnaq_dock_get_clicks() : [];
+        $dock_status_override = function_exists( 'rawnaq_dock_get_status_override' ) ? rawnaq_dock_get_status_override() : 'auto';
 
         // Check compatibility
         $php_version = phpversion();
@@ -1789,6 +1790,16 @@ class Rawnaq_Admin_Dashboard {
                                 <p><?php esc_html_e( 'Reset clears all counters. This cannot be undone.', 'rawnaq' ); ?></p>
                                 <button type="button" class="btn btn-save" id="btn-reset-dock-clicks"><?php esc_html_e( 'Reset Counters', 'rawnaq' ); ?></button>
                                 <span class="save-status" id="dock-stats-status"></span>
+                            </div>
+                            <div class="rawnaq-card">
+                                <h3 style="margin-top:0;"><?php esc_html_e( 'WhatsApp Status Override', 'rawnaq' ); ?></h3>
+                                <p><?php esc_html_e( 'Force the WhatsApp dock online or offline site-wide without editing the widget\'s weekly schedule.', 'rawnaq' ); ?></p>
+                                <select id="rawnaq-dock-status-override">
+                                    <option value="auto" <?php selected( $dock_status_override, 'auto' ); ?>><?php esc_html_e( 'Auto (follow weekly schedule)', 'rawnaq' ); ?></option>
+                                    <option value="online" <?php selected( $dock_status_override, 'online' ); ?>><?php esc_html_e( 'Force Online', 'rawnaq' ); ?></option>
+                                    <option value="offline" <?php selected( $dock_status_override, 'offline' ); ?>><?php esc_html_e( 'Force Offline', 'rawnaq' ); ?></option>
+                                </select>
+                                <span class="save-status" id="dock-status-override-status"></span>
                             </div>
                         </div>
 

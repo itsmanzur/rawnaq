@@ -244,6 +244,41 @@
             });
         });
 
+        $('#rawnaq-dock-status-override').on('change', function() {
+            var $select = $(this);
+            var $status = $('#dock-status-override-status');
+            var value = $select.val();
+            $select.prop('disabled', true);
+            $status.removeClass('success error').text('Saving…');
+
+            $.ajax({
+                url: rawnaq_admin_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'rawnaq_dock_set_status_override',
+                    nonce: rawnaq_admin_vars.nonce,
+                    status: value
+                },
+                success: function(response) {
+                    $select.prop('disabled', false);
+                    if (response.success) {
+                        $status.addClass('success').text('Saved.');
+                    } else {
+                        $status.addClass('error').text('Could not save.');
+                    }
+                    setTimeout(function() {
+                        $status.fadeOut(300, function() {
+                            $(this).text('').show();
+                        });
+                    }, 3000);
+                },
+                error: function() {
+                    $select.prop('disabled', false);
+                    $status.addClass('error').text('Request failed.');
+                }
+            });
+        });
+
         /* ── Documentation & Usage Guide Search / Filter / Copy / Accordion Engine ── */
         // Accordion click toggle (delegated)
         $(document).on('click', '.rawnaq-doc-card-header', function(e) {

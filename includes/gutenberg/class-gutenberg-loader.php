@@ -1149,6 +1149,7 @@ class Rawnaq_Gutenberg_Loader {
                 'triggerScroll'    => absint( $a['triggerScroll'] ),
                 'greetingText'     => sanitize_text_field( $a['greetingText'] ),
                 'trackClicks'      => $track_clicks,
+                'statusOverride'   => function_exists( 'rawnaq_dock_get_status_override' ) ? rawnaq_dock_get_status_override() : 'auto',
             ];
             $wa_attr = rawurlencode( wp_json_encode( $wa_cfg ) );
         }

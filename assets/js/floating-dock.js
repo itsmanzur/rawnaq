@@ -46,6 +46,38 @@
         return String(text || '').replace(/[&<>"']/g, function (m) { return map[m]; });
     }
 
+    var FOCUSABLE_SELECTOR =
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    function getFocusableEls(container) {
+        return Array.prototype.slice.call(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(function (el) {
+            return el.offsetParent !== null;
+        });
+    }
+
+    // Cycles Tab/Shift+Tab within `container` instead of letting focus escape
+    // to the page behind an open drawer/modal.
+    function bindFocusTrap(container) {
+        container.addEventListener('keydown', function (e) {
+            if (e.key !== 'Tab') {
+                return;
+            }
+            var focusable = getFocusableEls(container);
+            if (!focusable.length) {
+                return;
+            }
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        });
+    }
+
     function parseWaCfg(dock) {
         var raw = dock.getAttribute('data-wa-dock');
         if (!raw) {
@@ -225,9 +257,15 @@
         );
     }
 
-    function checkIsOnline(sched, timezone) {
+    function checkIsOnline(sched, timezone, statusOverride) {
         if (isEditorActive()) {
             return true;
+        }
+        if (statusOverride === 'online') {
+            return true;
+        }
+        if (statusOverride === 'offline') {
+            return false;
         }
         var localTime = getOffsetTime(timezone);
         var dayNames = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -332,6 +370,77 @@
         });
     }
 
+    var CLICK_QUEUE_KEY = 'rawnaq_dock_pending_clicks';
+    var CLICK_QUEUE_MAX = 50;
+
+    function readClickQueue() {
+        try {
+            var raw = window.localStorage.getItem(CLICK_QUEUE_KEY);
+            var parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function writeClickQueue(queue) {
+        try {
+            window.localStorage.setItem(CLICK_QUEUE_KEY, JSON.stringify(queue.slice(-CLICK_QUEUE_MAX)));
+        } catch (e) {
+            // storage unavailable (private mode / quota) — drop silently
+        }
+    }
+
+    function queueClick(type) {
+        var queue = readClickQueue();
+        queue.push(type);
+        writeClickQueue(queue);
+    }
+
+    // Sends one click type immediately; returns true only if the browser
+    // accepted the request for delivery (not a guarantee it reached the server).
+    function sendClickBeacon(type) {
+        if (typeof window.rawnaqDock === 'undefined' || !rawnaqDock.ajaxUrl || !rawnaqDock.nonce) {
+            return false;
+        }
+        try {
+            var body = new FormData();
+            body.append('action', 'rawnaq_dock_click');
+            body.append('nonce', rawnaqDock.nonce);
+            body.append('type', type);
+            if (navigator.sendBeacon) {
+                return navigator.sendBeacon(rawnaqDock.ajaxUrl, body);
+            }
+            fetch(rawnaqDock.ajaxUrl, {
+                method: 'POST',
+                body: body,
+                credentials: 'same-origin',
+                keepalive: true
+            }).catch(function () {
+                queueClick(type);
+            });
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+
+    function flushClickQueue() {
+        if (typeof window.navigator !== 'undefined' && navigator.onLine === false) {
+            return;
+        }
+        var queue = readClickQueue();
+        if (!queue.length) {
+            return;
+        }
+        writeClickQueue([]);
+        queue.forEach(function (type) {
+            if (!sendClickBeacon(type)) {
+                queueClick(type);
+            }
+        });
+    }
+
     function trackClick(type, cfgOrEnabled) {
         var enabled = true;
         if (typeof cfgOrEnabled === 'boolean') {
@@ -342,26 +451,12 @@
         if (!enabled || !type) {
             return;
         }
-        if (typeof window.rawnaqDock === 'undefined' || !rawnaqDock.ajaxUrl || !rawnaqDock.nonce) {
+        if (typeof window.navigator !== 'undefined' && navigator.onLine === false) {
+            queueClick(type);
             return;
         }
-        try {
-            var body = new FormData();
-            body.append('action', 'rawnaq_dock_click');
-            body.append('nonce', rawnaqDock.nonce);
-            body.append('type', type);
-            if (navigator.sendBeacon) {
-                navigator.sendBeacon(rawnaqDock.ajaxUrl, body);
-            } else {
-                fetch(rawnaqDock.ajaxUrl, {
-                    method: 'POST',
-                    body: body,
-                    credentials: 'same-origin',
-                    keepalive: true
-                });
-            }
-        } catch (err) {
-            // ignore tracking failures
+        if (!sendClickBeacon(type)) {
+            queueClick(type);
         }
     }
 
@@ -395,18 +490,26 @@
                 '</div>' +
                 '</div>';
             document.body.appendChild(modal);
+            bindFocusTrap(modal);
 
-            modal.querySelector('.rawnaq-wa-qr-close').addEventListener('click', function () {
+            var closeModal = function () {
                 modal.classList.remove('is-show');
-            });
+                if (modal._returnFocus && document.contains(modal._returnFocus)) {
+                    modal._returnFocus.focus();
+                }
+                modal._returnFocus = null;
+            };
+            modal._close = closeModal;
+
+            modal.querySelector('.rawnaq-wa-qr-close').addEventListener('click', closeModal);
             modal.addEventListener('click', function (e) {
                 if (e.target === modal) {
-                    modal.classList.remove('is-show');
+                    closeModal();
                 }
             });
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && modal.classList.contains('is-show')) {
-                    modal.classList.remove('is-show');
+                    closeModal();
                 }
             });
         }
@@ -421,7 +524,7 @@
         openLink.href = link;
         openLink.onclick = function () {
             trackClick('web', cfg);
-            modal.classList.remove('is-show');
+            modal._close();
         };
 
         // Track that the chooser was shown (desktop QR/Web options)
@@ -470,6 +573,7 @@
             codeContainer.innerHTML = '<p class="qr-error">QR unavailable — use the button above.</p>';
         }
 
+        modal._returnFocus = document.activeElement;
         modal.classList.add('is-show');
         openLink.focus();
     }
@@ -530,7 +634,7 @@
     }
 
     function setupWhatsAppDock(root, cfg) {
-        var isOnline = checkIsOnline(cfg.schedule || {}, cfg.timezone);
+        var isOnline = checkIsOnline(cfg.schedule || {}, cfg.timezone, cfg.statusOverride);
         var agents = Array.isArray(cfg.agents) ? cfg.agents.filter(function (a) {
             return a && (a.number || cfg.primaryChannel !== 'whatsapp');
         }) : [];
@@ -679,6 +783,7 @@
             '<div class="rawnaq-wa-lead-form" hidden></div>';
         root.appendChild(drawer);
         inst.drawer = drawer;
+        bindFocusTrap(drawer);
 
         drawer.querySelector('.rawnaq-wa-drawer-close').addEventListener('click', function (e) {
             e.stopPropagation();
@@ -755,25 +860,45 @@
         }
 
         function closePanels() {
+            var wasOpen = drawer.classList.contains('is-open') || (tray && tray.classList.contains('is-open'));
             drawer.classList.remove('is-open');
             if (tray) {
                 tray.classList.remove('is-open');
             }
             root.classList.remove('is-expanded');
             mainBtn.setAttribute('aria-expanded', 'false');
+            if (wasOpen && drawer.contains(document.activeElement)) {
+                mainBtn.focus();
+            }
         }
 
         function openPanels() {
             if (hasSec) {
                 tray.classList.add('is-open');
             }
-            if ((!isOnline && cfg.offHoursBehavior === 'lead_form') ||
-                (agents.length > 1 && (cfg.primaryChannel || 'whatsapp') === 'whatsapp')) {
+            var drawerOpened = (!isOnline && cfg.offHoursBehavior === 'lead_form') ||
+                (agents.length > 1 && (cfg.primaryChannel || 'whatsapp') === 'whatsapp');
+            if (drawerOpened) {
                 drawer.classList.add('is-open');
             }
             root.classList.add('is-expanded');
             mainBtn.setAttribute('aria-expanded', 'true');
+            if (drawerOpened) {
+                var focusable = getFocusableEls(drawer);
+                if (focusable.length) {
+                    focusable[0].focus();
+                }
+            }
         }
+
+        root.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape') {
+                return;
+            }
+            if (drawer.classList.contains('is-open') || (tray && tray.classList.contains('is-open'))) {
+                closePanels();
+            }
+        });
 
         mainBtn.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -973,6 +1098,8 @@
         initAll(true);
         hookElementor();
         observeEditor();
+        flushClickQueue();
+        window.addEventListener('online', flushClickQueue);
         if (!docClickBound) {
             document.addEventListener('click', onDocClick);
             docClickBound = true;

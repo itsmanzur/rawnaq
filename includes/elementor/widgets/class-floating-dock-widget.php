@@ -11,7 +11,10 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
     public function get_categories() { return [ 'rawnaq' ]; }
 
     public function get_style_depends()  { return [ 'rawnaq-floating-dock', 'dashicons' ]; }
-    public function get_script_depends() { return [ 'rawnaq-floating-dock', 'rawnaq-qrcode' ]; }
+    public function get_script_depends() {
+        $is_wa = ( $this->get_settings_for_display( 'whatsapp_mode' ) ?? '' ) === 'yes';
+        return $is_wa ? [ 'rawnaq-floating-dock', 'rawnaq-qrcode' ] : [ 'rawnaq-floating-dock' ];
+    }
 
     protected function register_controls() {
         $this->start_controls_section( 's_whatsapp_mode', [
@@ -714,11 +717,14 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             return;
         }
 
+        $is_wa_mode = ( $s['whatsapp_mode'] ?? '' ) === 'yes';
+
         wp_enqueue_style( 'rawnaq-floating-dock' );
         wp_enqueue_script( 'rawnaq-floating-dock' );
-        wp_enqueue_script( 'rawnaq-qrcode' );
+        if ( $is_wa_mode ) {
+            wp_enqueue_script( 'rawnaq-qrcode' );
+        }
 
-        $is_wa_mode    = ( $s['whatsapp_mode'] ?? '' ) === 'yes';
         $items         = $s['dock_items'] ?? [];
         $pos           = $is_wa_mode ? ( $s['position_wa'] ?? 'right' ) : ( $s['position'] ?? 'bottom' );
         $hide_mobile   = ( $s['hide_mobile'] ?? '' ) === 'yes';
@@ -769,6 +775,7 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
                 'triggerScroll'    => absint( $s['trigger_scroll'] ?? 0 ),
                 'greetingText'     => sanitize_text_field( $s['greeting_text'] ?? '' ),
                 'trackClicks'      => $track_clicks,
+                'statusOverride'   => function_exists( 'rawnaq_dock_get_status_override' ) ? rawnaq_dock_get_status_override() : 'auto',
             ];
             $wa_attr = rawurlencode( wp_json_encode( $wa_cfg ) );
         }
@@ -884,7 +891,8 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
                 triggerDelay: parseInt(settings.trigger_delay, 10) || 0,
                 triggerScroll: parseInt(settings.trigger_scroll, 10) || 0,
                 greetingText: settings.greeting_text || '',
-                trackClicks: trackClicks
+                trackClicks: trackClicks,
+                statusOverride: 'auto'
             };
             waDockAttr = encodeURIComponent(JSON.stringify(waCfg));
         }

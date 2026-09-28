@@ -446,6 +446,17 @@ function rawnaq_dock_is_visible( $args ) {
 }
 
 /**
+ * Site-wide manual override for the WhatsApp dock's online/offline state,
+ * so an admin can flip status without editing the widget's weekly schedule.
+ *
+ * @return string One of 'auto', 'online', 'offline'.
+ */
+function rawnaq_dock_get_status_override() {
+	$value = get_option( 'rawnaq_dock_status_override', 'auto' );
+	return in_array( $value, [ 'auto', 'online', 'offline' ], true ) ? $value : 'auto';
+}
+
+/**
  * Default click counter shape.
  *
  * @return array<string, int|string>

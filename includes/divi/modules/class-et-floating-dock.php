@@ -213,6 +213,7 @@ class Rawnaq_ET_Floating_Dock extends ET_Builder_Module {
 				'triggerScroll'    => 0,
 				'greetingText'     => '',
 				'trackClicks'      => true,
+				'statusOverride'   => function_exists( 'rawnaq_dock_get_status_override' ) ? rawnaq_dock_get_status_override() : 'auto',
 			];
 			$wa_attr = rawurlencode( wp_json_encode( $wa_cfg ) );
 		}

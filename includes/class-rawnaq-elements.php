@@ -67,6 +67,7 @@ class Rawnaq_Elements {
         add_action( 'wp_ajax_rawnaq_dock_click', [ $this, 'ajax_dock_click' ] );
         add_action( 'wp_ajax_nopriv_rawnaq_dock_click', [ $this, 'ajax_dock_click' ] );
         add_action( 'wp_ajax_rawnaq_dock_reset_clicks', [ $this, 'ajax_dock_reset_clicks' ] );
+        add_action( 'wp_ajax_rawnaq_dock_set_status_override', [ $this, 'ajax_dock_set_status_override' ] );
         add_action( 'wp_ajax_rawnaq_timeline_load_more', [ $this, 'ajax_timeline_load_more' ] );
         add_action( 'wp_ajax_nopriv_rawnaq_timeline_load_more', [ $this, 'ajax_timeline_load_more' ] );
         add_action( 'wp_ajax_rawnaq_smart_form_submit', [ $this, 'ajax_smart_form_submit' ] );
@@ -344,6 +345,22 @@ class Rawnaq_Elements {
         }
         update_option( 'rawnaq_dock_clicks', rawnaq_dock_click_defaults(), false );
         wp_send_json_success( [ 'clicks' => rawnaq_dock_get_clicks() ] );
+    }
+
+    /**
+     * Admin AJAX: set the site-wide WhatsApp dock status override.
+     */
+    public function ajax_dock_set_status_override() {
+        check_ajax_referer( 'rawnaq_admin_nonce', 'nonce' );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => 'forbidden' ], 403 );
+        }
+        $value = isset( $_POST['status'] ) ? sanitize_key( wp_unslash( $_POST['status'] ) ) : 'auto';
+        if ( ! in_array( $value, [ 'auto', 'online', 'offline' ], true ) ) {
+            wp_send_json_error( [ 'message' => 'invalid' ], 400 );
+        }
+        update_option( 'rawnaq_dock_status_override', $value, false );
+        wp_send_json_success( [ 'status' => $value ] );
     }
 
     /**
