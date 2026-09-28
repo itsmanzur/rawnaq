@@ -217,7 +217,18 @@
         return new Date(utc + (3600000 * offset));
     }
 
+    function isEditorActive() {
+        return (
+            (typeof elementor !== 'undefined' && elementor.isEditMode && elementor.isEditMode()) ||
+            (document.body && (document.body.classList.contains('elementor-editor-active') || document.body.classList.contains('elementor-editor-preview') || document.body.classList.contains('wp-admin'))) ||
+            (window.parent && window.parent.document && window.parent.document.body && window.parent.document.body.classList.contains('elementor-editor-active'))
+        );
+    }
+
     function checkIsOnline(sched, timezone) {
+        if (isEditorActive()) {
+            return true;
+        }
         var localTime = getOffsetTime(timezone);
         var dayNames = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
         var currentDay = dayNames[localTime.getDay()];
@@ -924,9 +935,25 @@
         );
     }
 
+    function observeEditor() {
+        if (typeof MutationObserver === 'undefined') return;
+        var timeout = null;
+        var observer = new MutationObserver(function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                var docks = document.querySelectorAll('.rawnaq-dock-container:not(.dock-bound)');
+                if (docks.length > 0) {
+                    docks.forEach(initDock);
+                }
+            }, 60);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
     function boot() {
         initAll(true);
         hookElementor();
+        observeEditor();
         if (!docClickBound) {
             document.addEventListener('click', onDocClick);
             docClickBound = true;

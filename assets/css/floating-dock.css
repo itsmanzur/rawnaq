@@ -1,4 +1,49 @@
 /* macOS-style Floating Dock — Professional Edition */
+.rawnaq-dock-editor-indicator {
+    display: none;
+}
+
+body.elementor-editor-active .rawnaq-dock-editor-indicator,
+.block-editor-block-list__block .rawnaq-dock-editor-indicator,
+.et-fb-root-ancestor .rawnaq-dock-editor-indicator {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 12px;
+    color: #334155;
+    font-size: 13px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.rawnaq-dock-editor-indicator .dashicons,
+.rawnaq-dock-editor-indicator svg,
+.rawnaq-dock-editor-indicator i {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: #6366f1;
+    flex-shrink: 0;
+}
+
+.rawnaq-dock-editor-indicator strong {
+    display: block;
+    font-size: 14px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.rawnaq-dock-editor-indicator .rawnaq-dock-editor-sub {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+    display: block;
+}
+
 .rawnaq-dock-container {
     --dock-offset: 20px;
     --dock-safe-offset: 0px;

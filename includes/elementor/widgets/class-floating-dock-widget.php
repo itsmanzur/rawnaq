@@ -769,6 +769,16 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             $wa_attr = rawurlencode( wp_json_encode( $wa_cfg ) );
         }
         ?>
+        <div class="rawnaq-dock-editor-indicator" aria-hidden="true">
+            <span class="dashicons dashicons-menu-alt"></span>
+            <div class="rawnaq-dock-editor-info">
+                <strong><?php echo esc_html__( 'Floating Dock Menu', 'rawnaq' ); ?></strong>
+                <span class="rawnaq-dock-editor-sub">
+                    <?php echo $is_wa_mode ? esc_html__( 'WhatsApp Contact Mode · Live floating at screen corner', 'rawnaq' ) : esc_html__( 'Fixed Navigation Dock · Live floating at ' . ucfirst( $pos ), 'rawnaq' ); ?>
+                </span>
+            </div>
+        </div>
+
         <nav class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
              aria-label="<?php echo esc_attr__( 'Floating dock', 'rawnaq' ); ?>"
              data-magnify="<?php echo $magnify ? '1' : '0'; ?>"
@@ -875,6 +885,20 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
             waDockAttr = encodeURIComponent(JSON.stringify(waCfg));
         }
         #>
+        <div class="rawnaq-dock-editor-indicator" aria-hidden="true">
+            <span class="dashicons dashicons-menu-alt"></span>
+            <div class="rawnaq-dock-editor-info">
+                <strong>Floating Dock Menu</strong>
+                <span class="rawnaq-dock-editor-sub">
+                    <# if ( isWa ) { #>
+                        WhatsApp Contact Mode · Live floating at bottom {{ pos }}
+                    <# } else { #>
+                        Fixed Navigation Dock · Live floating at {{ pos }}
+                    <# } #>
+                </span>
+            </div>
+        </div>
+
         <nav class="{{ classes }}" aria-label="Floating dock"
              data-magnify="{{ magnify ? '1' : '0' }}"
              data-max-scale="{{ maxScale }}"
