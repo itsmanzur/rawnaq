@@ -11,10 +11,7 @@ class Rawnaq_Floating_Dock_Widget extends \Elementor\Widget_Base {
     public function get_categories() { return [ 'rawnaq' ]; }
 
     public function get_style_depends()  { return [ 'rawnaq-floating-dock', 'dashicons' ]; }
-    public function get_script_depends() {
-        $is_wa = ( $this->get_settings_for_display( 'whatsapp_mode' ) ?? '' ) === 'yes';
-        return $is_wa ? [ 'rawnaq-floating-dock', 'rawnaq-qrcode' ] : [ 'rawnaq-floating-dock' ];
-    }
+    public function get_script_depends() { return [ 'rawnaq-floating-dock', 'rawnaq-qrcode' ]; }
 
     protected function register_controls() {
         $this->start_controls_section( 's_whatsapp_mode', [
