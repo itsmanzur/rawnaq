@@ -160,7 +160,7 @@
         edit: function(props) {
             var attributes = props.attributes;
             var setAttributes = props.setAttributes;
-            var uniqueId = 'editor-hub-' + (props.clientId || 'preview');
+            var hostRef = useRef(null);
             var topNodes = safeParseJson(attributes.topNodesJson, []);
             var botNodes = safeParseJson(attributes.botNodesJson, []);
 
@@ -174,27 +174,33 @@
             function renderNodeManager(nodes, updateFunc, label) {
                 var nodeElements = nodes.map(function(node, index) {
                     return el('div', {
-                        style: { background: '#f1f1f1', padding: '10px', marginBottom: '12px', borderRadius: '6px', borderLeft: '4px solid ' + (node.color || '#E8793A') },
+                        style: { background: '#f8fafc', padding: '12px', marginBottom: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', borderLeft: '4px solid ' + (node.color || '#E8793A') },
                         key: index
                     },
                         el(TextControl, {
                             label: 'Node Label', value: node.label,
                             onChange: function(newVal) { var updated = nodes.slice(); updated[index] = Object.assign({}, updated[index], { label: newVal }); updateFunc(updated); }
                         }),
-                        el(TextControl, {
-                            label: 'Bar Color', value: node.color || '#E8793A',
+                        el(ColorControl, {
+                            label: 'Bar / Accent Color',
+                            value: node.color,
+                            defaultValue: '#E8793A',
                             onChange: function(newVal) { var updated = nodes.slice(); updated[index] = Object.assign({}, updated[index], { color: newVal }); updateFunc(updated); }
                         }),
-                        el(TextControl, {
-                            label: 'Card Background', value: node.cardBg || '#ffffff',
+                        el(ColorControl, {
+                            label: 'Card Background',
+                            value: node.cardBg,
+                            defaultValue: '#ffffff',
                             onChange: function(newVal) { var updated = nodes.slice(); updated[index] = Object.assign({}, updated[index], { cardBg: newVal }); updateFunc(updated); }
                         }),
-                        el(TextControl, {
-                            label: 'Text Color', value: node.cardColor || '#1a1a1a',
+                        el(ColorControl, {
+                            label: 'Text Color',
+                            value: node.cardColor,
+                            defaultValue: '#1a1a1a',
                             onChange: function(newVal) { var updated = nodes.slice(); updated[index] = Object.assign({}, updated[index], { cardColor: newVal }); updateFunc(updated); }
                         }),
                         el(TextControl, {
-                            label: 'Dashicon Class Name', value: node.icon || '', placeholder: 'dashicons-admin-generic',
+                            label: 'Dashicon Class Name', value: node.icon || '', placeholder: 'dashicons-art',
                             onChange: function(newVal) { var updated = nodes.slice(); updated[index] = Object.assign({}, updated[index], { icon: newVal }); updateFunc(updated); }
                         }),
                         el(TextControl, {
@@ -209,7 +215,7 @@
                         el(Button, {
                             isDestructive: true, isSmall: true,
                             onClick: function() { var updated = nodes.filter(function(_, idx) { return idx !== index; }); updateFunc(updated); }
-                        }, 'Remove')
+                        }, 'Remove Node')
                     );
                 });
                 return el('div', {},
@@ -226,52 +232,62 @@
             }
 
             useEffect(function() {
-                var host = document.getElementById(uniqueId);
-                if (!host || !window.HubDiagram) return;
+                var host = hostRef.current;
+                if (!host) return;
+                var Hub = (host.ownerDocument && host.ownerDocument.defaultView && host.ownerDocument.defaultView.HubDiagram) || window.HubDiagram;
+                if (!Hub) return;
+
                 var map = function(arr) {
                     return arr.map(function(n, i) {
                         return {
                             id: 'n' + i,
-                            label: n.label,
-                            color: n.color,
-                            cardBg: n.cardBg,
-                            cardColor: n.cardColor,
-                            icon: n.icon,
-                            link: n.link,
-                            target: n.target
+                            label: n.label || '',
+                            color: n.color || '#E8793A',
+                            cardBg: n.cardBg || '#ffffff',
+                            cardColor: n.cardColor || '#1a1a1a',
+                            icon: n.icon || '',
+                            link: n.link || '',
+                            target: n.target || '_self'
                         };
                     });
                 };
                 var config = {
                     centerTitle: attributes.centerTitle,
                     centerSubtitle: attributes.centerSubtitle,
-                    lineColor: attributes.lineColor,
-                    seg1Color: attributes.seg1Color,
-                    seg2Color: attributes.seg2Color,
-                    seg3Color: attributes.seg3Color,
-                    cardShape: attributes.cardShape,
-                    lineStyle: attributes.lineStyle,
-                    glowLines: attributes.glowLines,
-                    centerStyle: attributes.centerStyle,
-                    layoutFlow: attributes.layoutFlow,
+                    centerIcon: attributes.centerIcon || '',
+                    lineColor: attributes.lineColor || '#c2c2c2',
+                    seg1Color: attributes.seg1Color || '#E8793A',
+                    seg2Color: attributes.seg2Color || '#D4A92A',
+                    seg3Color: attributes.seg3Color || '#26B8B8',
+                    cardShape: attributes.cardShape || 'rect',
+                    lineStyle: attributes.lineStyle || 'solid',
+                    lineCurve: attributes.lineCurve || 'orthogonal',
+                    glowLines: attributes.glowLines || 'no',
+                    pulseEffect: attributes.pulseEffect || 'yes',
+                    showStepNumbers: !!attributes.showStepNumbers,
+                    centerStyle: attributes.centerStyle || 'conic',
+                    layoutFlow: attributes.layoutFlow || 'horizontal',
                     export: attributes.showExport !== false,
-                    importJson: attributes.importJson,
+                    importJson: attributes.importJson || '',
                     top: map(topNodes),
                     bottom: map(botNodes)
                 };
                 host.setAttribute('data-hub', JSON.stringify(config));
-                window.HubDiagram.init(host);
+                Hub.init(host);
             }, [
-                uniqueId,
                 attributes.centerTitle,
                 attributes.centerSubtitle,
+                attributes.centerIcon,
                 attributes.lineColor,
                 attributes.seg1Color,
                 attributes.seg2Color,
                 attributes.seg3Color,
                 attributes.cardShape,
                 attributes.lineStyle,
+                attributes.lineCurve,
                 attributes.glowLines,
+                attributes.pulseEffect,
+                attributes.showStepNumbers,
                 attributes.centerStyle,
                 attributes.layoutFlow,
                 attributes.showExport,
@@ -286,6 +302,7 @@
                     el(PanelBody, { title: 'Center Circle Settings', initialOpen: true },
                         el(TextControl, { label: 'Title', value: attributes.centerTitle, onChange: function(newVal) { setAttributes({ centerTitle: newVal }); } }),
                         el(TextareaControl, { label: 'Subtitle', value: attributes.centerSubtitle, onChange: function(newVal) { setAttributes({ centerSubtitle: newVal }); } }),
+                        el(TextControl, { label: 'Center Dashicon Class (Optional)', value: attributes.centerIcon || '', placeholder: 'dashicons-admin-generic', onChange: function(newVal) { setAttributes({ centerIcon: newVal }); } }),
                         el(TextareaControl, { label: 'JSON Import Override', value: attributes.importJson, placeholder: '[{"label":"Step 1","color":"#E8793A"}]', onChange: function(newVal) { setAttributes({ importJson: newVal }); } })
                     ),
                     el(PanelBody, { title: 'Top Row / Left Col Nodes', initialOpen: false }, renderNodeManager(topNodes, updateTopNodes, 'Top Row / Left Col')),
@@ -325,33 +342,42 @@
                         el(ColorControl, {
                             label: 'Line Color',
                             value: attributes.lineColor,
-                            defaultValue: '#E2E8F0',
+                            defaultValue: '#c2c2c2',
                             onChange: function(newVal) { setAttributes({ lineColor: newVal }); }
                         }),
                         el(ColorControl, {
                             label: 'Segment 1 / Solid Color',
                             value: attributes.seg1Color,
-                            defaultValue: '#4F46E5',
+                            defaultValue: '#E8793A',
                             onChange: function(newVal) { setAttributes({ seg1Color: newVal }); }
                         }),
                         el(ColorControl, {
                             label: 'Segment 2 Color',
                             value: attributes.seg2Color,
-                            defaultValue: '#06B6D4',
+                            defaultValue: '#D4A92A',
                             onChange: function(newVal) { setAttributes({ seg2Color: newVal }); }
                         }),
                         el(ColorControl, {
                             label: 'Segment 3 Color',
                             value: attributes.seg3Color,
-                            defaultValue: '#10B981',
+                            defaultValue: '#26B8B8',
                             onChange: function(newVal) { setAttributes({ seg3Color: newVal }); }
                         })
                     )
                 ),
                 el('div', {
-                    id: uniqueId,
+                    ref: hostRef,
                     className: 'hub-diagram-host',
-                    style: { height: attributes.height + 'px', border: '1px dashed #ccc', background: '#f9f9f9' }
+                    style: {
+                        height: (attributes.height || 540) + 'px',
+                        minHeight: '300px',
+                        position: 'relative',
+                        width: '100%',
+                        background: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '12px',
+                        boxSizing: 'border-box'
+                    }
                 })
             );
         },
