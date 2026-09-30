@@ -270,7 +270,7 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 				$col_span = max( 1, min( 6, intval( $cell['col'] ?? ( $cell['span'] === 'span-2' ? 2 : 1 ) ) ) );
 				$row_span = max( 1, min( 4, intval( $cell['row'] ?? 1 ) ) );
 
-				$cell_classes = [ 'rawnaq-bento-cell', 'type-' . $type, 'span-' . $col_span ];
+				$cell_classes = [ 'rawnaq-bento-cell', 'type-' . $type, 'is-' . $type, 'span-' . $col_span ];
 				if ( $col_span > 1 ) {
 					$cell_classes[] = 'col-span-' . $col_span;
 				}
