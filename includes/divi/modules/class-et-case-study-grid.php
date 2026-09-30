@@ -46,6 +46,18 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 				'show_if'         => [ 'data_source' => 'query' ],
 				'toggle_slug'     => 'query',
 			],
+			'card_style' => [
+				'label'           => esc_html__( 'Theme Preset', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'layout',
+				'options'         => [
+					'elevated'  => esc_html__( 'Modern Elevated (Default)', 'rawnaq' ),
+					'glass'     => esc_html__( 'Minimal Glassmorphism', 'rawnaq' ),
+					'spotlight' => esc_html__( 'Editorial Spotlight', 'rawnaq' ),
+				],
+				'default'         => 'elevated',
+				'toggle_slug'     => 'layout',
+			],
 			'grid_layout' => [
 				'label'           => esc_html__( 'Grid Layout Style', 'rawnaq' ),
 				'type'            => 'select',
@@ -103,6 +115,28 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 				'default'         => 'off',
 				'toggle_slug'     => 'filters',
 			],
+			'hide_budget' => [
+				'label'           => esc_html__( 'NDA: Hide Budget Field', 'rawnaq' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => [
+					'off' => esc_html__( 'No', 'rawnaq' ),
+					'on'  => esc_html__( 'Yes', 'rawnaq' ),
+				],
+				'default'         => 'off',
+				'toggle_slug'     => 'configuration',
+			],
+			'hide_client' => [
+				'label'           => esc_html__( 'NDA: Hide Client Field', 'rawnaq' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => [
+					'off' => esc_html__( 'No', 'rawnaq' ),
+					'on'  => esc_html__( 'Yes', 'rawnaq' ),
+				],
+				'default'         => 'off',
+				'toggle_slug'     => 'configuration',
+			],
 			'click_action' => [
 				'label'           => esc_html__( 'Card Click Action', 'rawnaq' ),
 				'type'            => 'select',
@@ -132,8 +166,8 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 				'label'           => esc_html__( 'Manual Projects JSON', 'rawnaq' ),
 				'type'            => 'textarea',
 				'option_category' => 'basic_option',
-				'description'     => esc_html__( 'JSON array of projects [{title, image, sector, year, client, budget, services, excerpt, detail, link, featured, col, row}]', 'rawnaq' ),
-				'default'         => '[{"title":"Azure Horizon Waterfront Penthouse","image":"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900","sector":"Residential","size":"8,500 sq ft","budget":"$4.2M","year":"2025","client":"Private Family Office","services":"Architecture, Interior Design, Smart Automation","excerpt":"Turnkey luxury penthouse transformation featuring custom Italian marble, panoramic acoustic fluting, and smart climate controls.","featured":true,"col":2,"row":2},{"title":"Vanguard Global AI Headquarters","image":"https://images.unsplash.com/photo-1497366216548-37526070297c?w=900","sector":"Commercial","size":"45,000 sq ft","budget":"$12.5M","year":"2024","client":"Vanguard Tech","services":"Workplace Strategy, Spatial Acoustic Architecture","excerpt":"Next-gen biophilic enterprise campus optimizing employee collaboration and acoustic wellness."},{"title":"The Glass Pavilion Cultural Center","image":"https://images.unsplash.com/photo-1513694203232-719a280e022f?w=900","sector":"Public & Cultural","size":"22,000 sq ft","budget":"$8.0M","year":"2024","client":"Heritage Arts Foundation","services":"Structural Engineering, Curatorial Lighting","excerpt":"Minimalist cantilevering glass pavilion designed for daylight harvesting and high-volume exhibitions."}]',
+				'description'     => esc_html__( 'JSON array of projects [{title, image, gallery, sector, year, client, budget, services, excerpt, detail, link, featured, col, row}]', 'rawnaq' ),
+				'default'         => '[{"title":"Fintech Global App & Dashboard Redesign","image":"","gallery":[],"sector":"Fintech & SaaS","size":"+140% Conversion · $85M Vol","budget":"$85M Volume","year":"2025","client":"Stripe & Apex Financial","services":"Product Strategy, UI/UX, Design System","excerpt":"A high-performance financial operational canvas unifying multi-currency settlement and real-time risk intelligence.","detail":"End-to-end product overhaul including design system architecture, sub-50ms streaming transaction tables, and tactile mobile workflows across iOS and Android.","featured":true,"col":2,"row":2},{"title":"AI-Powered Medical Intelligence Platform","image":"","gallery":[],"sector":"HealthTech & AI","size":"1.2M Records · 99.9% Uptime","budget":"Enterprise Scope","year":"2025","client":"BioHealth Labs","services":"Cloud Architecture, Web App, AI Models","excerpt":"HIPAA-compliant diagnostic dashboard for rapid multi-modal patient record synthesis and risk prediction.","detail":"Built with zero-drift modular web components and real-time HL7/FHIR event ingestion, reducing diagnosis lookup from minutes to seconds.","featured":false,"col":1,"row":1},{"title":"Autonomous Mobility & Fleet Telemetry","image":"","gallery":[],"sector":"IoT & Automotive","size":"450k Connected Vehicles","budget":"$32M Scope","year":"2024","client":"Nova Transit Network","services":"Real-time Telemetry, Mobile App","excerpt":"Unified command center coordinating connected EV fleets, route optimization, and predictive charging.","detail":"Engineered high-concurrency WebSocket pipelines with live geospatial map clusters and automated charge-scheduling algorithms.","featured":false,"col":1,"row":1},{"title":"Luxury Sustainable Fashion Flagship","image":"","gallery":[],"sector":"E-Commerce & Brand","size":"+320% Growth · 18 Markets","budget":"Global Flagship","year":"2024","client":"Maison Aurelia","services":"Headless Shopify, Brand Identity","excerpt":"Immersive headless commerce platform delivering tactile 3D product previews and instant checkout.","detail":"Architected with global edge caching and WebGL product interactions, driving an 84% reduction in page load time and +320% global sales growth.","featured":false,"col":1,"row":1}]',
 				'show_if'         => [ 'data_source' => 'manual' ],
 				'toggle_slug'     => 'manual_data',
 			],
@@ -181,11 +215,14 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 
 		$source         = sanitize_key( $this->props['data_source'] ?? 'query' );
 		$posts_per_page = absint( $this->props['posts_per_page'] ?? 12 );
+		$card_style     = sanitize_key( $this->props['card_style'] ?? 'elevated' );
 		$layout         = sanitize_key( $this->props['grid_layout'] ?? 'bento' );
 		$columns        = max( 2, min( 4, absint( $this->props['grid_columns'] ?? 3 ) ) );
 		$show_filter    = ( $this->props['show_filter'] ?? 'on' ) === 'on';
 		$filter_year    = ( $this->props['filter_year'] ?? 'off' ) === 'on';
 		$filter_service = ( $this->props['filter_service'] ?? 'off' ) === 'on';
+		$hide_budget    = ( $this->props['hide_budget'] ?? 'off' ) === 'on';
+		$hide_client    = ( $this->props['hide_client'] ?? 'off' ) === 'on';
 		$click_action   = sanitize_key( $this->props['click_action'] ?? 'modal' );
 		$discuss_target = sanitize_key( $this->props['discuss_target'] ?? 'auto' );
 		$accent_color   = sanitize_hex_color( $this->props['accent_color'] ?? '#0f766e' ) ?: '#0f766e';
@@ -208,14 +245,15 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 			'queryOrderby'   => 'date',
 			'queryOrder'     => 'DESC',
 			'querySector'    => '',
+			'cardStyle'      => $card_style,
 			'layout'         => $layout,
 			'columns'        => $columns,
 			'showFilter'     => $show_filter,
 			'filterYear'     => $filter_year,
 			'filterService'  => $filter_service,
 			'sort'           => 'custom',
-			'hideBudget'     => false,
-			'hideClient'     => false,
+			'hideBudget'     => $hide_budget,
+			'hideClient'     => $hide_client,
 			'clickAction'    => $click_action,
 			'discussTarget'  => $discuss_target,
 			'initialVisible' => 0,
