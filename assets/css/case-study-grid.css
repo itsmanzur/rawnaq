@@ -99,13 +99,14 @@
     grid-auto-rows: minmax(180px, auto);
 }
 
-.rawnaq-cs-grid.is-uniform,
-.rawnaq-cs-grid.is-masonry {
-    grid-template-columns: repeat(var(--cs-cols), minmax(0, 1fr));
+.rawnaq-cs-grid.is-uniform {
+    grid-template-columns: repeat(var(--cs-cols, 3), minmax(0, 1fr));
 }
 
 .rawnaq-cs-grid.is-masonry {
-    grid-auto-rows: 12px;
+    display: block;
+    columns: var(--cs-cols, 3);
+    column-gap: 20px;
 }
 
 /* Cards Base */
@@ -165,7 +166,34 @@
 }
 
 .rawnaq-cs-grid.is-masonry .rawnaq-cs-card {
-    grid-row-end: span var(--cs-masonry-span, 18);
+    break-inside: avoid;
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.rawnaq-cs-grid.is-masonry .rawnaq-cs-media {
+    aspect-ratio: auto;
+}
+
+.rawnaq-cs-grid.is-masonry .rawnaq-cs-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.rawnaq-cs-grid.is-masonry .rawnaq-cs-media-fallback {
+    aspect-ratio: 16 / 10;
+}
+
+.rawnaq-cs-grid.is-masonry .rawnaq-cs-card:nth-child(4n+1) .rawnaq-cs-media-fallback {
+    aspect-ratio: 4 / 3;
+}
+
+.rawnaq-cs-grid.is-masonry .rawnaq-cs-card:nth-child(4n+3) .rawnaq-cs-media-fallback {
+    aspect-ratio: 16 / 11;
 }
 
 /* Media Stack */
@@ -668,9 +696,17 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .rawnaq-cs-grid.is-uniform,
-    .rawnaq-cs-grid.is-masonry {
+    .rawnaq-cs-grid.is-uniform {
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .rawnaq-cs-grid.is-masonry {
+        columns: 2;
+        column-gap: 16px;
+    }
+
+    .rawnaq-cs-grid.is-masonry .rawnaq-cs-card {
+        margin-bottom: 16px;
     }
 
     .rawnaq-cs-modal-dialog {
@@ -686,6 +722,19 @@
 @media (max-width: 600px) {
     .rawnaq-cs-grid.is-bento {
         grid-template-columns: 1fr;
+    }
+
+    .rawnaq-cs-grid.is-uniform {
+        grid-template-columns: 1fr;
+    }
+
+    .rawnaq-cs-grid.is-masonry {
+        columns: 1;
+        column-gap: 0;
+    }
+
+    .rawnaq-cs-grid.is-masonry .rawnaq-cs-card {
+        margin-bottom: 16px;
     }
 
     .rawnaq-cs-card.is-featured,

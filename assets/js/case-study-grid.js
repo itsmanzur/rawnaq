@@ -56,18 +56,7 @@
     }
 
     function setMasonrySpans(root) {
-        var grid = root.querySelector('.rawnaq-cs-grid.is-masonry');
-        if (!grid) {
-            return;
-        }
-        var rowH = 12;
-        var gap = 16;
-        grid.querySelectorAll('.rawnaq-cs-card:not(.is-hidden):not(.is-load-hidden)').forEach(function (card) {
-            card.style.removeProperty('--cs-masonry-span');
-            var h = card.getBoundingClientRect().height;
-            var span = Math.max(8, Math.ceil((h + gap) / (rowH + gap)));
-            card.style.setProperty('--cs-masonry-span', String(span));
-        });
+        // Native CSS Multi-Column Masonry is used for zero-layout-shift waterfall.
     }
 
     function updateLoadMoreState(root) {
@@ -628,14 +617,24 @@
     }
 
     function hookElementor() {
-        if (bound || !window.elementorFrontend || !elementorFrontend.hooks) {
+        if (!window.elementorFrontend || !elementorFrontend.hooks) {
             return;
         }
-        bound = true;
-        elementorFrontend.hooks.addAction(
-            'frontend/element_ready/rawnaq_case_study_grid.default',
-            function () { initAll(); }
-        );
+        if (!bound) {
+            bound = true;
+            elementorFrontend.hooks.addAction(
+                'frontend/element_ready/rawnaq_case_study_grid.default',
+                function ($scope) {
+                    var el = $scope && $scope[0] ? $scope[0].querySelector('.rawnaq-case-study') : null;
+                    if (el) {
+                        el.classList.remove('cs-bound');
+                        bindOne(el);
+                    } else {
+                        initAll();
+                    }
+                }
+            );
+        }
     }
 
     function boot() {
