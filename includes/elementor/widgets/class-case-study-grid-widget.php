@@ -393,17 +393,22 @@ class Rawnaq_Case_Study_Grid_Widget extends \Elementor\Widget_Base {
 		if ( 'manual' === $source ) {
 			foreach ( ( $s['projects'] ?? [] ) as $row ) {
 				$gallery = [];
-				foreach ( ( $row['gallery'] ?? [] ) as $g ) {
-					if ( ! empty( $g['url'] ) ) {
-						$gallery[] = $g['url'];
-					}
+				if ( ! empty( $row['gallery'] ) ) {
+					$gallery = rawnaq_case_study_parse_gallery( $row['gallery'] );
+				}
+
+				$image_url = '';
+				if ( ! empty( $row['image']['url'] ) ) {
+					$image_url = $row['image']['url'];
+				} elseif ( ! empty( $row['image']['id'] ) && function_exists( 'wp_get_attachment_url' ) ) {
+					$image_url = wp_get_attachment_url( (int) $row['image']['id'] );
 				}
 
 				$projects[] = [
 					'id'       => $row['project_id'] ?? '',
 					'slug'     => $row['project_slug'] ?? '',
 					'title'    => $row['title'] ?? '',
-					'image'    => ! empty( $row['image']['url'] ) ? $row['image']['url'] : '',
+					'image'    => $image_url ? $image_url : '',
 					'gallery'  => $gallery,
 					'link'     => ! empty( $row['link']['url'] ) ? $row['link']['url'] : '',
 					'sector'   => $row['sector'] ?? '',

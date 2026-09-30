@@ -325,33 +325,50 @@ function rawnaq_case_study_sample_projects() {
 }
 
 /**
- * Parse a gallery value (array, JSON string, or newline/comma separated URLs) into a clean URL list.
+ * Parse a gallery value (array of URLs or attachment objects/IDs, JSON string, or newline/comma separated URLs) into a clean URL list.
  *
  * @param mixed $raw Raw gallery value.
  * @return string[]
  */
 function rawnaq_case_study_parse_gallery( $raw ) {
 	if ( is_array( $raw ) ) {
-		$urls = $raw;
+		$items = $raw;
 	} elseif ( is_string( $raw ) && '' !== trim( $raw ) ) {
 		$trimmed = trim( $raw );
 		$decoded = json_decode( $trimmed, true );
 		if ( is_array( $decoded ) ) {
-			$urls = $decoded;
+			$items = $decoded;
 		} else {
-			$urls = preg_split( '/[\r\n,]+/', $trimmed, -1, PREG_SPLIT_NO_EMPTY );
-			$urls = is_array( $urls ) ? $urls : [];
+			$items = preg_split( '/[\r\n,]+/', $trimmed, -1, PREG_SPLIT_NO_EMPTY );
+			$items = is_array( $items ) ? $items : [];
 		}
 	} else {
-		$urls = [];
+		$items = [];
 	}
 
-	$urls = array_map(
-		static function ( $url ) {
-			return esc_url_raw( trim( (string) $url ) );
-		},
-		$urls
-	);
+	$urls = [];
+	foreach ( $items as $item ) {
+		$url = '';
+		if ( is_array( $item ) ) {
+			if ( ! empty( $item['url'] ) ) {
+				$url = (string) $item['url'];
+			} elseif ( ! empty( $item['id'] ) && function_exists( 'wp_get_attachment_url' ) ) {
+				$url = wp_get_attachment_url( (int) $item['id'] );
+			} elseif ( ! empty( $item['src'] ) ) {
+				$url = (string) $item['src'];
+			}
+		} elseif ( is_numeric( $item ) && (int) $item > 0 && function_exists( 'wp_get_attachment_url' ) ) {
+			$url = wp_get_attachment_url( (int) $item );
+		} elseif ( is_string( $item ) ) {
+			$url = $item;
+		}
+		if ( $url && is_string( $url ) ) {
+			$clean = esc_url_raw( trim( $url ) );
+			if ( $clean && ! in_array( $clean, [ 'Array', '[object Object]' ], true ) ) {
+				$urls[] = $clean;
+			}
+		}
+	}
 
 	return array_values( array_unique( array_filter( $urls ) ) );
 }

@@ -145,10 +145,36 @@
             return;
         }
 
-        var images = Array.isArray(project.gallery) ? project.gallery.filter(Boolean) : [];
-        if (!images.length && project.image) {
-            images = [project.image];
+        var rawImages = Array.isArray(project.gallery) ? project.gallery : [];
+        if (!rawImages.length && project.image) {
+            rawImages = [project.image];
         }
+
+        var images = [];
+        rawImages.forEach(function (item) {
+            if (!item) {
+                return;
+            }
+            if (typeof item === 'string') {
+                var s = item.trim();
+                if (s && s !== 'Array' && s !== '[object Object]') {
+                    images.push(s);
+                }
+            } else if (typeof item === 'object') {
+                var url = item.url || item.src || '';
+                if (url && typeof url === 'string') {
+                    var trimmed = url.trim();
+                    if (trimmed && trimmed !== 'Array' && trimmed !== '[object Object]') {
+                        images.push(trimmed);
+                    }
+                }
+            }
+        });
+
+        // Ensure unique
+        images = images.filter(function (val, idx, self) {
+            return self.indexOf(val) === idx;
+        });
 
         track.innerHTML = '';
         if (dotsWrap) {
@@ -186,7 +212,8 @@
             slide.className = 'rawnaq-cs-slide';
             var img = document.createElement('img');
             img.src = src;
-            img.alt = '';
+            img.alt = (project.title || '') + (images.length > 1 ? ' (' + (i + 1) + ')' : '');
+            img.loading = 'lazy';
             slide.appendChild(img);
             track.appendChild(slide);
 
