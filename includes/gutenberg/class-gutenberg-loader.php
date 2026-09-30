@@ -385,6 +385,8 @@ class Rawnaq_Gutenberg_Loader {
                 'style'           => 'rawnaq-bento-grid',
                 'render_callback' => [ $this, 'render_bento_grid_block' ],
                 'attributes'      => [
+                    'theme'       => [ 'type' => 'string', 'default' => 'elevated' ],
+                    'cardStyle'   => [ 'type' => 'string', 'default' => 'elevated' ],
                     'preset'      => [ 'type' => 'string', 'default' => 'featured' ],
                     'columns'     => [ 'type' => 'number', 'default' => 4 ],
                     'rowHeight'   => [ 'type' => 'number', 'default' => 140 ],
@@ -410,7 +412,7 @@ class Rawnaq_Gutenberg_Loader {
                     'ctaColor'    => [ 'type' => 'string', 'default' => '#92400e' ],
                     'cellsJson'   => [
                         'type'    => 'string',
-                        'default' => '[{"type":"featured","col":2,"row":2,"tag":"Highlight","title":"Zero-jQuery performance","subtitle":"Per-page assets, clean output","icon":"dashicons-star-filled","image":"","video":"","stat":"42","suffix":"+","prefix":"","link":""},{"type":"image","col":2,"row":1,"tag":"Showcase","title":"Project gallery","subtitle":"Client work highlights","icon":"","image":"","video":"","stat":"","suffix":"","prefix":"","link":""},{"type":"stat","col":1,"row":1,"tag":"","title":"","subtitle":"Active installs","icon":"","image":"","video":"","stat":"42","suffix":"+","prefix":"","link":""},{"type":"text","col":1,"row":1,"tag":"","title":"Fast setup","subtitle":"Ready in minutes","icon":"dashicons-performance","image":"","video":"","stat":"","suffix":"","prefix":"","link":""}]',
+                        'default' => '[{"type":"featured","col":2,"row":2,"tag":"Spatial Intelligence","title":"Autonomous Spatial Design & AI Architecture","subtitle":"End-to-end cognitive spatial modeling and real-time biometric telemetry delivering 99.8% operational precision.","icon":"dashicons-networking","image":"","video":"","stat":"","suffix":"","prefix":"","link":""},{"type":"image","col":2,"row":1,"tag":"Global Landmark","title":"Turnkey Penthouse & Commercial Flagships","subtitle":"Award-winning sustainable luxury landmarks delivered across 18 countries.","icon":"","image":"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900","video":"","stat":"","suffix":"","prefix":"","link":""},{"type":"stat","col":1,"row":1,"tag":"Growth Index","title":"","subtitle":"Average Client ROI","icon":"","image":"","video":"","stat":"240","suffix":"%","prefix":"+","link":""},{"type":"text","col":1,"row":1,"tag":"Core Tech","title":"Sub-50ms Telemetry","subtitle":"Streaming WebSocket events","icon":"dashicons-performance","image":"","video":"","stat":"","suffix":"","prefix":"","link":""}]',
                     ],
                 ],
             ] );
@@ -1523,7 +1525,12 @@ class Rawnaq_Gutenberg_Loader {
             $hover = 'lift';
         }
 
-        $classes = [ 'rawnaq-bento-grid' ];
+        $theme = sanitize_key( $a['cardStyle'] ?? ( $a['theme'] ?? 'elevated' ) );
+        if ( ! in_array( $theme, [ 'elevated', 'glass', 'obsidian', 'dark', 'spotlight' ], true ) ) {
+            $theme = 'elevated';
+        }
+
+        $classes = [ 'rawnaq-bento-grid', 'is-theme-' . $theme ];
         if ( ! empty( $a['hairline'] ) ) {
             $classes[] = 'rawnaq-bento-hairline';
         }
@@ -1565,6 +1572,7 @@ class Rawnaq_Gutenberg_Loader {
             <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
                  style="<?php echo esc_attr( $style ); ?>"
                  data-cols="<?php echo esc_attr( (string) $cols ); ?>"
+                 data-theme="<?php echo esc_attr( $theme ); ?>"
                  data-reveal="<?php echo ! empty( $a['reveal'] ) ? '1' : '0'; ?>"
                  data-hover="<?php echo esc_attr( $hover ); ?>"
                  role="list">

@@ -163,6 +163,105 @@
     box-shadow: inset 0 0 0 999px rgba(15, 118, 110, 0.05);
 }
 
+/* ==========================================================================
+   Bento Grid Theme Presets
+   ========================================================================== */
+
+/* Theme 1: Elevated (Default) */
+.rawnaq-bento-grid.is-theme-elevated .rawnaq-bento-cell {
+    background: var(--bento-panel, #ffffff);
+    border: 1px solid var(--bento-line, #d7e2dc);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+}
+.rawnaq-bento-grid.is-theme-elevated .rawnaq-bento-cell:hover {
+    box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px color-mix(in srgb, var(--bento-accent) 30%, transparent);
+}
+
+/* Theme 2: Minimal Glassmorphism */
+.rawnaq-bento-grid.is-theme-glass {
+    --bento-panel: rgba(255, 255, 255, 0.72);
+    --bento-line: rgba(255, 255, 255, 0.45);
+}
+.rawnaq-bento-grid.is-theme-glass .rawnaq-bento-cell {
+    background: var(--bento-panel);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid var(--bento-line);
+    box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.06);
+}
+.rawnaq-bento-grid.is-theme-glass .rawnaq-bento-cell:hover {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1);
+}
+
+/* Theme 3: Dark Obsidian / Cyber */
+.rawnaq-bento-grid.is-theme-obsidian,
+.rawnaq-bento-grid.is-theme-dark {
+    --bento-ink: #f8fafc;
+    --bento-muted: #94a3b8;
+    --bento-panel: #0b1120;
+    --bento-line: rgba(255, 255, 255, 0.1);
+    --bento-soft: #030712;
+    --bento-tag-bg: rgba(251, 191, 36, 0.15);
+    --bento-tag-color: #fbbf24;
+    --bento-title-color: #f8fafc;
+    --bento-sub-color: #94a3b8;
+    --bento-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    color: #f8fafc;
+}
+.rawnaq-bento-grid.is-theme-obsidian .rawnaq-bento-cell,
+.rawnaq-bento-grid.is-theme-dark .rawnaq-bento-cell {
+    background: var(--bento-panel);
+    border: 1px solid var(--bento-line);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+.rawnaq-bento-grid.is-theme-obsidian .rawnaq-bento-cell:hover,
+.rawnaq-bento-grid.is-theme-dark .rawnaq-bento-cell:hover {
+    border-color: color-mix(in srgb, var(--bento-accent) 60%, rgba(255, 255, 255, 0.3));
+    box-shadow: 0 20px 50px -10px color-mix(in srgb, var(--bento-accent) 30%, transparent);
+}
+
+/* Theme 4: Editorial Spotlight */
+.rawnaq-bento-grid.is-theme-spotlight .rawnaq-bento-cell {
+    background: var(--bento-panel, #ffffff);
+    border: 1px solid var(--bento-line, #d7e2dc);
+}
+.rawnaq-bento-grid.is-theme-spotlight .rawnaq-bento-cell:hover {
+    border-color: var(--bento-accent);
+    box-shadow: 0 24px 50px -10px color-mix(in srgb, var(--bento-accent) 25%, transparent), 0 0 0 1.5px var(--bento-accent);
+}
+
+/* Ambient Glowing Mesh Fallback */
+.rawnaq-bento-media-fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 75% 25%, color-mix(in srgb, var(--bento-accent) 30%, #090d16) 0%, #090d16 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.rawnaq-bento-fallback-glow {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--bento-accent) 55%, transparent) 0%, transparent 70%);
+    filter: blur(40px);
+    opacity: 0.7;
+    animation: bentoGlowPulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes bentoGlowPulse {
+    0% { transform: scale(0.85) translate(-10%, -10%); opacity: 0.4; }
+    100% { transform: scale(1.15) translate(10%, 10%); opacity: 0.8; }
+}
+
 /* Featured — Rawnaq teal depth + amber ring */
 .rawnaq-bento-cell.is-featured {
     border: none;

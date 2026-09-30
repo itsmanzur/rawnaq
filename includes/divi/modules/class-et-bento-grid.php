@@ -22,6 +22,19 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 
 	public function get_fields() {
 		return [
+			'bento_theme' => [
+				'label'           => esc_html__( 'Theme Preset', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'layout',
+				'options'         => [
+					'elevated'  => esc_html__( 'Modern Elevated (Default)', 'rawnaq' ),
+					'glass'     => esc_html__( 'Minimal Glassmorphism', 'rawnaq' ),
+					'obsidian'  => esc_html__( 'Dark Obsidian / Cyber', 'rawnaq' ),
+					'spotlight' => esc_html__( 'Editorial Spotlight', 'rawnaq' ),
+				],
+				'default'         => 'elevated',
+				'toggle_slug'     => 'layout',
+			],
 			'grid_preset' => [
 				'label'           => esc_html__( 'Bento Layout Preset', 'rawnaq' ),
 				'type'            => 'select',
@@ -88,7 +101,7 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 				'type'            => 'textarea',
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'JSON array of cells [{type, tag, title, subtitle, icon, image, stat, suffix, col, row, link, ctaText}]', 'rawnaq' ),
-				'default'         => '[{"type":"featured","tag":"Flagship","title":"Next-Gen Architectural Solutions","subtitle":"Precision spatial engineering for luxury residential complexes and bespoke penthouses.","col":2,"row":2,"ctaText":"Explore Portfolio","ctaLink":"#portfolio"},{"type":"stat","tag":"Proven Results","stat":"99.8","suffix":"%","title":"On-Time Delivery","subtitle":"Milestone adherence across all projects.","col":1,"row":1},{"type":"icon","icon":"dashicons-art","tag":"Design","title":"Bespoke Interiors","subtitle":"Custom acoustic fluting & marble textures.","col":1,"row":1},{"type":"media","image":"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600","tag":"VR Space","title":"3D Digital Twins","col":2,"row":1}]',
+				'default'         => '[{"type":"featured","tag":"Spatial Intelligence","title":"Autonomous Spatial Design & AI Architecture","subtitle":"End-to-end cognitive spatial modeling and real-time biometric telemetry delivering 99.8% operational precision.","col":2,"row":2,"ctaText":"Explore Architecture","ctaLink":"#portfolio"},{"type":"stat","tag":"Growth Index","stat":"240","suffix":"%","title":"","subtitle":"Average Client ROI","col":1,"row":1},{"type":"icon","icon":"dashicons-networking","tag":"Core Tech","title":"Sub-50ms Telemetry","subtitle":"Streaming WebSocket events","col":1,"row":1},{"type":"media","image":"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900","tag":"Global Landmark","title":"Turnkey Penthouse & Flagships","subtitle":"Award-winning sustainable luxury landmarks.","col":2,"row":1}]',
 				'toggle_slug'     => 'cells',
 			],
 			'row_height' => [
@@ -189,6 +202,10 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 		wp_enqueue_style( 'dashicons' );
 		wp_enqueue_script( 'rawnaq-bento-grid' );
 
+		$theme        = sanitize_key( $this->props['bento_theme'] ?? 'elevated' );
+		if ( ! in_array( $theme, [ 'elevated', 'glass', 'obsidian', 'dark', 'spotlight' ], true ) ) {
+			$theme = 'elevated';
+		}
 		$preset       = sanitize_key( $this->props['grid_preset'] ?? 'featured' );
 		$cols         = ( 'wide' === $preset ) ? 3 : ( ( 'custom' === $preset ) ? max( 2, min( 6, intval( $this->props['grid_columns'] ?? 4 ) ) ) : 4 );
 		$hover        = sanitize_key( $this->props['hover_effect'] ?? 'lift' );
@@ -205,7 +222,7 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 		$feat_from    = $this->props['featured_from'] ?? '#0f766e';
 		$feat_to      = $this->props['featured_to'] ?? '#115e59';
 
-		$classes = [ 'rawnaq-bento-grid' ];
+		$classes = [ 'rawnaq-bento-grid', 'is-theme-' . $theme ];
 		if ( $hairline ) {
 			$classes[] = 'rawnaq-bento-hairline';
 		}
@@ -231,6 +248,7 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 		<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
 			 style="<?php echo esc_attr( $style ); ?>"
 			 data-cols="<?php echo esc_attr( (string) $cols ); ?>"
+			 data-theme="<?php echo esc_attr( $theme ); ?>"
 			 data-reveal="<?php echo $reveal ? '1' : '0'; ?>"
 			 data-hover="<?php echo esc_attr( $hover ); ?>"
 			 role="list">

@@ -47,6 +47,18 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
             'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
         ] );
 
+        $this->add_control( 'card_style', [
+            'label'   => esc_html__( 'Theme Preset', 'rawnaq' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'elevated',
+            'options' => [
+                'elevated'  => esc_html__( 'Modern Elevated (Default)', 'rawnaq' ),
+                'glass'     => esc_html__( 'Minimal Glassmorphism', 'rawnaq' ),
+                'obsidian'  => esc_html__( 'Dark Obsidian / Cyber', 'rawnaq' ),
+                'spotlight' => esc_html__( 'Editorial Spotlight', 'rawnaq' ),
+            ],
+        ] );
+
         $this->add_control( 'preset', [
             'label'   => esc_html__( 'Layout Preset', 'rawnaq' ),
             'type'    => \Elementor\Controls_Manager::SELECT,
@@ -1210,17 +1222,22 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
     protected function render() {
         $s         = $this->get_settings_for_display();
         $cols      = $this->resolve_columns( $s );
+        $theme     = sanitize_key( $s['card_style'] ?? 'elevated' );
+        if ( ! in_array( $theme, [ 'elevated', 'glass', 'obsidian', 'dark', 'spotlight' ], true ) ) {
+            $theme = 'elevated';
+        }
         $reveal    = ( $s['reveal'] ?? 'yes' ) === 'yes';
         $hover     = sanitize_key( $s['hover_effect'] ?? 'lift' );
         $hairline  = ( $s['hairline'] ?? '' ) === 'yes';
         $cells     = $s['cells'] ?? [];
-        $classes   = [ 'rawnaq-bento-grid' ];
+        $classes   = [ 'rawnaq-bento-grid', 'is-theme-' . $theme ];
         if ( $hairline ) {
             $classes[] = 'rawnaq-bento-hairline';
         }
         ?>
         <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
              data-cols="<?php echo esc_attr( (string) $cols ); ?>"
+             data-theme="<?php echo esc_attr( $theme ); ?>"
              data-reveal="<?php echo $reveal ? '1' : '0'; ?>"
              data-hover="<?php echo esc_attr( $hover ); ?>"
              role="list">
@@ -1262,6 +1279,7 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
     protected function content_template() {
         ?>
         <#
+        var theme = settings.card_style || 'elevated';
         var preset = settings.preset || 'featured';
         var cols = 4;
         if ( preset === 'wide' ) { cols = 3; }
@@ -1270,8 +1288,9 @@ class Rawnaq_Bento_Grid_Widget extends \Elementor\Widget_Base {
         var hover = settings.hover_effect || 'lift';
         var hair = settings.hairline === 'yes' ? ' rawnaq-bento-hairline' : '';
         #>
-        <div class="rawnaq-bento-grid{{ hair }}"
+        <div class="rawnaq-bento-grid is-theme-{{ theme }}{{ hair }}"
              data-cols="{{ cols }}"
+             data-theme="{{ theme }}"
              data-reveal="{{ reveal ? '1' : '0' }}"
              data-hover="{{ hover }}"
              role="list">
