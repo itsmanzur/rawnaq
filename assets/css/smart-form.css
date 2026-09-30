@@ -1,4 +1,4 @@
-/* Rawnaq Smart Form — Phase 1 */
+/* Rawnaq Smart Form — Design System */
 .rawnaq-smart-form {
     --sf-accent: #fbbf24;
     --sf-accent-deep: #0f766e;
@@ -15,6 +15,145 @@
     color: var(--sf-ink);
     font-family: inherit;
     max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Smart Form Theme Presets
+   ========================================================================== */
+
+/* Theme 1: Elevated (Default) */
+.rawnaq-smart-form.is-theme-elevated {
+    --sf-panel: #ffffff;
+    --sf-line: #d7e2dc;
+    --sf-ink: #13231c;
+    --sf-muted: #5c6f66;
+    --sf-accent: #fbbf24;
+    --sf-accent-deep: #0f766e;
+    --sf-btn-text: #92400e;
+    background: var(--sf-panel);
+    border: 1px solid var(--sf-line);
+    border-radius: calc(var(--sf-radius) + 4px);
+    padding: 24px;
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+}
+
+/* Theme 2: Minimal Glassmorphism */
+.rawnaq-smart-form.is-theme-glass {
+    --sf-panel: rgba(255, 255, 255, 0.68);
+    --sf-line: rgba(255, 255, 255, 0.45);
+    --sf-ink: #0f172a;
+    --sf-muted: #475569;
+    --sf-accent: #0f766e;
+    --sf-accent-deep: #0b5c56;
+    --sf-btn-text: #ffffff;
+    background: var(--sf-panel);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid var(--sf-line);
+    border-radius: calc(var(--sf-radius) + 6px);
+    padding: 26px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-input,
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-textarea,
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-select,
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-country-code {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-input:focus,
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-textarea:focus,
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-select:focus,
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-country-code:focus {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--sf-accent-deep);
+}
+.rawnaq-smart-form.is-theme-glass .rawnaq-sf-card-option {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Theme 3: Dark Obsidian / Cyber */
+.rawnaq-smart-form.is-theme-obsidian,
+.rawnaq-smart-form.is-theme-dark {
+    --sf-panel: #0b1120;
+    --sf-line: rgba(255, 255, 255, 0.12);
+    --sf-ink: #f8fafc;
+    --sf-label: #f1f5f9;
+    --sf-muted: #94a3b8;
+    --sf-accent: #0f766e;
+    --sf-accent-deep: #14b8a6;
+    --sf-btn-text: #ffffff;
+    background: var(--sf-panel);
+    border: 1px solid var(--sf-line);
+    border-radius: calc(var(--sf-radius) + 6px);
+    padding: 26px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    color: #f8fafc;
+}
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-input,
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-textarea,
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-select,
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-country-code,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-input,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-textarea,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-select,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-country-code {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+}
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-input:focus,
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-textarea:focus,
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-select:focus,
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-country-code:focus,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-input:focus,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-textarea:focus,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-select:focus,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-country-code:focus {
+    border-color: var(--sf-accent-deep);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25);
+}
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-card-option,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-card-option {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-card-title,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-card-title {
+    color: #f8fafc;
+}
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-prev,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-prev {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+}
+
+/* Theme 4: Editorial Spotlight / Luxury Studio */
+.rawnaq-smart-form.is-theme-spotlight {
+    --sf-panel: #ffffff;
+    --sf-line: #1e293b;
+    --sf-ink: #0f172a;
+    --sf-label: #0f172a;
+    --sf-muted: #64748b;
+    --sf-accent: #0f172a;
+    --sf-accent-deep: #0f766e;
+    --sf-btn-text: #ffffff;
+    background: var(--sf-panel);
+    border: 2px solid var(--sf-line);
+    border-radius: var(--sf-radius);
+    padding: 28px;
+    box-shadow: 6px 6px 0px #0f172a;
+}
+.rawnaq-smart-form.is-theme-spotlight .rawnaq-sf-input,
+.rawnaq-smart-form.is-theme-spotlight .rawnaq-sf-textarea,
+.rawnaq-smart-form.is-theme-spotlight .rawnaq-sf-select,
+.rawnaq-smart-form.is-theme-spotlight .rawnaq-sf-country-code {
+    border: 1.5px solid #1e293b;
 }
 
 .rawnaq-smart-form-fields {

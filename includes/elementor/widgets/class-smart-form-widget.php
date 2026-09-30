@@ -31,8 +31,20 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 's_preset', [
-			'label' => esc_html__( 'Layout preset', 'rawnaq' ),
+			'label' => esc_html__( 'Layout & Theme', 'rawnaq' ),
 			'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+		] );
+
+		$this->add_control( 'form_theme', [
+			'label'   => esc_html__( 'Theme Preset', 'rawnaq' ),
+			'type'    => \Elementor\Controls_Manager::SELECT,
+			'default' => 'elevated',
+			'options' => [
+				'elevated'  => esc_html__( 'Modern Elevated (Default)', 'rawnaq' ),
+				'glass'     => esc_html__( 'Minimal Glassmorphism', 'rawnaq' ),
+				'obsidian'  => esc_html__( 'Dark Obsidian / Cyber', 'rawnaq' ),
+				'spotlight' => esc_html__( 'Editorial Spotlight', 'rawnaq' ),
+			],
 		] );
 
 		$preset_opts = [ '' => esc_html__( '— Choose —', 'rawnaq' ) ];
@@ -494,6 +506,7 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 		}
 		$size = $s['input_size'] ?? 'md';
 		return [
+			'theme'             => $s['form_theme'] ?? 'elevated',
 			'fields'            => $fields,
 			'deliveryEmail'     => ( $s['delivery_email'] ?? '' ) === 'yes',
 			'deliveryWhatsapp'  => ( $s['delivery_whatsapp'] ?? '' ) === 'yes',

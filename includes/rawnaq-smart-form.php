@@ -1183,6 +1183,11 @@ function rawnaq_smart_form_markup( $cfg, $form_id = '' ) {
 		'multiStep'         => $multi_step,
 		'fields'            => $fields,
 	];
+	$theme = sanitize_key( $cfg['theme'] ?? ( $cfg['form_theme'] ?? 'elevated' ) );
+	if ( ! in_array( $theme, [ 'elevated', 'glass', 'obsidian', 'dark', 'spotlight' ], true ) ) {
+		$theme = 'elevated';
+	}
+	$cfg_out['theme'] = $theme;
 	if ( ! in_array( $cfg_out['afterSubmit'], [ 'message', 'redirect', 'whatsapp' ], true ) ) {
 		$cfg_out['afterSubmit'] = 'message';
 	}
@@ -1229,7 +1234,7 @@ function rawnaq_smart_form_markup( $cfg, $form_id = '' ) {
 		}
 	}
 
-	$wrap_class = 'rawnaq-smart-form' . ( ! empty( $cfg_out['buttonFullWidth'] ) ? ' is-btn-full' : '' );
+	$wrap_class = 'rawnaq-smart-form is-theme-' . $theme . ( ! empty( $cfg_out['buttonFullWidth'] ) ? ' is-btn-full' : '' );
 	?>
 	<div class="<?php echo esc_attr( $wrap_class ); ?>" data-form-id="<?php echo esc_attr( $form_id ); ?>"<?php echo $style_vars ? ' style="' . esc_attr( $style_vars ) . '"' : ''; ?>>
 		<form class="rawnaq-smart-form-el" method="post" novalidate

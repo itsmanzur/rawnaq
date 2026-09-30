@@ -22,6 +22,19 @@ class Rawnaq_ET_Smart_Form extends ET_Builder_Module {
 
 	public function get_fields() {
 		return [
+			'form_theme' => [
+				'label'           => esc_html__( 'Theme Preset', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'basic_option',
+				'options'         => [
+					'elevated'  => esc_html__( 'Modern Elevated (Default)', 'rawnaq' ),
+					'glass'     => esc_html__( 'Minimal Glassmorphism', 'rawnaq' ),
+					'obsidian'  => esc_html__( 'Dark Obsidian / Cyber', 'rawnaq' ),
+					'spotlight' => esc_html__( 'Editorial Spotlight', 'rawnaq' ),
+				],
+				'default'         => 'elevated',
+				'toggle_slug'     => 'main_content',
+			],
 			'layout_preset' => [
 				'label'           => esc_html__( 'Form Preset', 'rawnaq' ),
 				'type'            => 'select',
@@ -273,6 +286,10 @@ class Rawnaq_ET_Smart_Form extends ET_Builder_Module {
 		wp_enqueue_style( 'rawnaq-smart-form' );
 		wp_enqueue_script( 'rawnaq-smart-form' );
 
+		$theme         = sanitize_key( $this->props['form_theme'] ?? 'elevated' );
+		if ( ! in_array( $theme, [ 'elevated', 'glass', 'obsidian', 'dark', 'spotlight' ], true ) ) {
+			$theme = 'elevated';
+		}
 		$preset        = sanitize_key( $this->props['layout_preset'] ?? 'quick_contact' );
 		$fields_json   = $this->props['fields_json'] ?? '';
 		$btn_text      = sanitize_text_field( $this->props['button_text'] ?? 'Send Message' );
@@ -324,6 +341,7 @@ class Rawnaq_ET_Smart_Form extends ET_Builder_Module {
 		}
 
 		$cfg = [
+			'theme'            => $theme,
 			'fields'           => $fields,
 			'deliveryEmail'    => ( 'email_wa' === $delivery_mode || 'email_only' === $delivery_mode ),
 			'deliveryWhatsapp' => ( 'email_wa' === $delivery_mode || 'wa_only' === $delivery_mode ),
