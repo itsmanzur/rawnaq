@@ -11,19 +11,27 @@
         reduceMotion = false;
     }
 
+    function padNumber(n) {
+        return n < 10 ? '0' + n : '' + n;
+    }
+
     function setActive(inst, index) {
         if (!inst || !inst.chapters.length) {
             return;
         }
-        var i = Math.max(0, Math.min(index, inst.chapters.length - 1));
+        var total = inst.chapters.length;
+        var i = Math.max(0, Math.min(index, total - 1));
         if (inst.active === i) {
             return;
         }
         inst.active = i;
 
+        // Toggle chapter states
         inst.chapters.forEach(function (ch, idx) {
             ch.classList.toggle('is-active', idx === i);
         });
+
+        // Toggle media states
         inst.medias.forEach(function (m, idx) {
             var on = idx === i;
             m.classList.toggle('is-active', on);
@@ -38,10 +46,23 @@
                 }
             }
         });
+
+        // Toggle dot states
         inst.dots.forEach(function (d, idx) {
             d.classList.toggle('is-active', idx === i);
             d.setAttribute('aria-current', idx === i ? 'true' : 'false');
         });
+
+        // Update progress counter
+        if (inst.counterCurrentEl) {
+            inst.counterCurrentEl.textContent = padNumber(i + 1);
+        }
+
+        // Update progress bar track
+        if (inst.trackerFillEl) {
+            var pct = ((i + 1) / Math.max(1, total)) * 100;
+            inst.trackerFillEl.style.width = pct + '%';
+        }
 
         // Reflect the active chapter in the URL hash for deep-linking (no scroll jump).
         var activeCh = inst.chapters[i];
@@ -59,7 +80,7 @@
         }
 
         var ch = inst.chapters[i];
-        var titleEl = ch ? ch.querySelector('h3') : null;
+        var titleEl = ch ? ch.querySelector('h3, .rawnaq-story-title') : null;
         inst.root.dispatchEvent(new CustomEvent('rawnaq:scroll:active', {
             bubbles: true,
             detail: {
@@ -94,6 +115,8 @@
         var medias = Array.prototype.slice.call(root.querySelectorAll('.rawnaq-story-media'));
         var dots = Array.prototype.slice.call(root.querySelectorAll('.rawnaq-story-dot'));
         var captionEl = root.querySelector('.rawnaq-story-caption');
+        var counterCurrentEl = root.querySelector('.rawnaq-story-counter-current');
+        var trackerFillEl = root.querySelector('.rawnaq-story-tracker-fill');
 
         if (!chapters.length) {
             return;
@@ -105,6 +128,8 @@
             medias: medias,
             dots: dots,
             captionEl: captionEl,
+            counterCurrentEl: counterCurrentEl,
+            trackerFillEl: trackerFillEl,
             active: -1,
             observer: null
         };
@@ -114,9 +139,17 @@
             if (!target) {
                 return;
             }
-            var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+            var pinTop = 96;
+            var rootPin = root.querySelector('.rawnaq-story-pin');
+            if (rootPin) {
+                var computedPinTop = window.getComputedStyle(rootPin).top;
+                if (computedPinTop && computedPinTop.indexOf('px') > -1) {
+                    pinTop = parseFloat(computedPinTop) || 96;
+                }
+            }
+            var top = target.getBoundingClientRect().top + window.pageYOffset - pinTop - 20;
             window.scrollTo({
-                top: top,
+                top: Math.max(0, top),
                 behavior: reduceMotion ? 'auto' : 'smooth'
             });
             setActive(inst, idx);
@@ -232,4 +265,10 @@
     if (window.jQuery) {
         jQuery(window).on('elementor/frontend/init', hookElementor);
     }
+
+    window.RawnaqScrollStory = {
+        init: initAll,
+        initOne: initOne,
+        destroy: destroyAll
+    };
 })();

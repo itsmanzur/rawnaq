@@ -425,11 +425,17 @@ class Rawnaq_Gutenberg_Loader {
                 'render_callback' => [ $this, 'render_scroll_story_block' ],
                 'attributes'      => [
                     'mediaSide'    => [ 'type' => 'string', 'default' => 'left' ],
+                    'cardStyle'    => [ 'type' => 'string', 'default' => 'cards' ],
+                    'mediaRatio'   => [ 'type' => 'string', 'default' => '4-5' ],
                     'accent'       => [ 'type' => 'string', 'default' => '#0f766e' ],
+                    'cardBg'       => [ 'type' => 'string', 'default' => '' ],
+                    'textColor'    => [ 'type' => 'string', 'default' => '' ],
                     'pinTop'       => [ 'type' => 'number', 'default' => 96 ],
+                    'showCounter'  => [ 'type' => 'boolean', 'default' => true ],
+                    'showProgress' => [ 'type' => 'boolean', 'default' => true ],
                     'chaptersJson' => [
                         'type'    => 'string',
-                        'default' => '[{"title":"The challenge","body":"Set the scene. What problem or opportunity opens the story?","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The approach","body":"Explain the turning point — method, insight, or decision.","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The outcome","body":"Close with the result readers should remember.","image":"","caption":"","ctaText":"","ctaUrl":""}]',
+                        'default' => '[{"kicker":"01 · Discovery & Vision","title":"Reimagining Enterprise Financial Intelligence","body":"Fragmented workflows and legacy analytics were slowing strategic decisions. We designed a cohesive operational canvas that synthesizes complex multi-currency data into actionable intelligence in real time.","image":"","caption":"Intelligent portfolio overview & predictive risk modelling.","ctaText":"View Discovery Notes","ctaUrl":"#"},{"kicker":"02 · System Architecture","title":"Sub-50ms Micro-Frontend & Event Sync","body":"Engineered with lightweight web components and streaming event-sinks. The modular dashboard dynamically coordinates multi-window widgets with zero state drift and effortless responsive adaptation.","image":"","caption":"Modular dashboard widget architecture running in real-time.","ctaText":"Explore Tech Stack","ctaUrl":"#"},{"kicker":"03 · Measurable Impact","title":"4.8x Efficiency Boost Across 120k Users","body":"Accelerated decision turnaround from 3 days to under 4 hours. Automated risk scoring and tactile interactive charts drove a 99.4% customer satisfaction score within the first quarter.","image":"","caption":"Performance analytics post-migration across 12 enterprise regions.","ctaText":"Read Full Case Study","ctaUrl":"#"}]',
                     ],
                 ],
             ] );
@@ -1934,6 +1940,7 @@ class Rawnaq_Gutenberg_Loader {
         $chapters = [];
         foreach ( $raw as $row ) {
             $chapters[] = [
+                'kicker'      => sanitize_text_field( $row['kicker'] ?? '' ),
                 'title'       => sanitize_text_field( $row['title'] ?? '' ),
                 'body'        => wp_kses_post( $row['body'] ?? '' ),
                 'image'       => esc_url_raw( $row['image'] ?? '' ),
@@ -1958,16 +1965,29 @@ class Rawnaq_Gutenberg_Loader {
         if ( ! $accent ) {
             $accent = '#0f766e';
         }
-        $pin_top = absint( $attributes['pinTop'] ?? 96 );
-        $pin_top = max( 40, min( 180, $pin_top ) );
+        $card_bg    = sanitize_text_field( $attributes['cardBg'] ?? '' );
+        $text_color = sanitize_text_field( $attributes['textColor'] ?? '' );
+        $pin_top    = absint( $attributes['pinTop'] ?? 96 );
+        $pin_top    = max( 40, min( 180, $pin_top ) );
+
+        $options = [
+            'card_style'    => $attributes['cardStyle'] ?? 'cards',
+            'media_ratio'   => $attributes['mediaRatio'] ?? '4-5',
+            'show_counter'  => ! empty( $attributes['showCounter'] ),
+            'show_progress' => ! empty( $attributes['showProgress'] ),
+        ];
+
+        $style_vars = sprintf( '--story-accent: %1$s; --story-pin-top: %2$dpx;', esc_attr( $accent ), (int) $pin_top );
+        if ( $card_bg ) {
+            $style_vars .= sprintf( ' --story-card-bg: %s;', esc_attr( $card_bg ) );
+        }
+        if ( $text_color ) {
+            $style_vars .= sprintf( ' --story-ink: %s;', esc_attr( $text_color ) );
+        }
 
         ob_start();
-        printf(
-            '<div style="--story-accent: %1$s; --story-pin-top: %2$dpx;">',
-            esc_attr( $accent ),
-            (int) $pin_top // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer cast + %d format is inherently safe.
-        );
-        rawnaq_scroll_story_markup( $chapters, $side );
+        printf( '<div style="%s">', esc_attr( $style_vars ) );
+        rawnaq_scroll_story_markup( $chapters, $side, $options );
         echo '</div>';
         return ob_get_clean();
     }

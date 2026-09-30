@@ -3047,11 +3047,17 @@
         category: 'design',
         attributes: {
             mediaSide: { type: 'string', default: 'left' },
+            cardStyle: { type: 'string', default: 'cards' },
+            mediaRatio: { type: 'string', default: '4-5' },
             accent: { type: 'string', default: '#0f766e' },
+            cardBg: { type: 'string', default: '' },
+            textColor: { type: 'string', default: '' },
             pinTop: { type: 'number', default: 96 },
+            showCounter: { type: 'boolean', default: true },
+            showProgress: { type: 'boolean', default: true },
             chaptersJson: {
                 type: 'string',
-                default: '[{"title":"The challenge","body":"Set the scene. What problem or opportunity opens the story?","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The approach","body":"Explain the turning point — method, insight, or decision.","image":"","caption":"","ctaText":"","ctaUrl":""},{"title":"The outcome","body":"Close with the result readers should remember.","image":"","caption":"","ctaText":"","ctaUrl":""}]'
+                default: '[{"kicker":"01 · Discovery & Vision","title":"Reimagining Enterprise Financial Intelligence","body":"Fragmented workflows and legacy analytics were slowing strategic decisions. We designed a cohesive operational canvas that synthesizes complex multi-currency data into actionable intelligence in real time.","image":"","caption":"Intelligent portfolio overview & predictive risk modelling.","ctaText":"View Discovery Notes","ctaUrl":"#"},{"kicker":"02 · System Architecture","title":"Sub-50ms Micro-Frontend & Event Sync","body":"Engineered with lightweight web components and streaming event-sinks. The modular dashboard dynamically coordinates multi-window widgets with zero state drift and effortless responsive adaptation.","image":"","caption":"Modular dashboard widget architecture running in real-time.","ctaText":"Explore Tech Stack","ctaUrl":"#"},{"kicker":"03 · Measurable Impact","title":"4.8x Efficiency Boost Across 120k Users","body":"Accelerated decision turnaround from 3 days to under 4 hours. Automated risk scoring and tactile interactive charts drove a 99.4% customer satisfaction score within the first quarter.","image":"","caption":"Performance analytics post-migration across 12 enterprise regions.","ctaText":"Read Full Case Study","ctaUrl":"#"}]'
             }
         },
         edit: function(props) {
@@ -3070,10 +3076,18 @@
             }
 
             var fields = chapters.map(function(ch, idx) {
+                var num = (idx + 1) < 10 ? '0' + (idx + 1) : '' + (idx + 1);
                 return el('div', {
                     key: idx,
-                    style: { background: '#f3f4f6', padding: '10px', marginBottom: '10px', borderRadius: '8px' }
+                    style: { background: '#f8fafc', border: '1px solid #e2e8f0', padding: '14px', marginBottom: '14px', borderRadius: '10px' }
                 },
+                    el('div', { style: { fontWeight: '700', fontSize: '13px', marginBottom: '8px', color: attributes.accent || '#0f766e' } }, 'Chapter ' + num),
+                    el(TextControl, {
+                        label: 'Kicker Tag / Phase',
+                        value: ch.kicker || '',
+                        placeholder: num + ' · Phase Name',
+                        onChange: function(v) { patchChapter(idx, { kicker: v }); }
+                    }),
                     el(TextControl, {
                         label: 'Title',
                         value: ch.title || '',
@@ -3150,17 +3164,55 @@
                 );
             });
 
+            var cardStyle = attributes.cardStyle || 'cards';
+            var mediaRatio = attributes.mediaRatio || '4-5';
+            var mediaSide = attributes.mediaSide || 'left';
+            var accentColor = attributes.accent || '#0f766e';
+            var showCounter = attributes.showCounter !== false;
+            var showProgress = attributes.showProgress !== false;
+            var totalCount = chapters.length;
+
             return el(Fragment, {},
                 el(InspectorControls, {},
-                    el(PanelBody, { title: 'Layout', initialOpen: true },
+                    el(PanelBody, { title: 'Layout & Options', initialOpen: true },
                         el(SelectControl, {
-                            label: 'Pinned media side',
-                            value: attributes.mediaSide || 'left',
+                            label: 'Theme Preset',
+                            value: cardStyle,
+                            options: [
+                                { label: 'Modern Cards (Elevated)', value: 'cards' },
+                                { label: 'Minimal Editorial (Clean)', value: 'minimal' },
+                                { label: 'Spotlight Glow', value: 'spotlight' }
+                            ],
+                            onChange: function(v) { setAttributes({ cardStyle: v }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Pinned Media Side',
+                            value: mediaSide,
                             options: [
                                 { label: 'Left', value: 'left' },
                                 { label: 'Right', value: 'right' }
                             ],
                             onChange: function(v) { setAttributes({ mediaSide: v }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Media Aspect Ratio',
+                            value: mediaRatio,
+                            options: [
+                                { label: 'Portrait (4:5)', value: '4-5' },
+                                { label: 'Landscape (16:10)', value: '16-10' },
+                                { label: 'Square (1:1)', value: '1-1' }
+                            ],
+                            onChange: function(v) { setAttributes({ mediaRatio: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Progress Counter',
+                            checked: showCounter,
+                            onChange: function(v) { setAttributes({ showCounter: v }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Progress Bar',
+                            checked: showProgress,
+                            onChange: function(v) { setAttributes({ showProgress: v }); }
                         }),
                         el(RangeControl, {
                             label: 'Pin offset (px)',
@@ -3168,23 +3220,35 @@
                             min: 40, max: 180,
                             help: 'Sticky top offset for the pinned media.',
                             onChange: function(v) { setAttributes({ pinTop: v || 96 }); }
-                        }),
-                        el('div', { style: { marginBottom: '12px' } },
-                            el('label', { style: { display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '600' } }, 'Accent'),
-                            el(ColorPalette, {
-                                value: attributes.accent || '#0f766e',
-                                onChange: function(v) { setAttributes({ accent: v || '#0f766e' }); }
-                            })
-                        )
+                        })
                     ),
-                    el(PanelBody, { title: 'Chapters', initialOpen: true },
+                    el(PanelBody, { title: 'Style & Colors', initialOpen: false },
+                        el(ColorControl, {
+                            label: 'Accent Color',
+                            value: accentColor,
+                            onChange: function(v) { setAttributes({ accent: v || '#0f766e' }); }
+                        }),
+                        el(ColorControl, {
+                            label: 'Card Background',
+                            value: attributes.cardBg || '',
+                            onChange: function(v) { setAttributes({ cardBg: v || '' }); }
+                        }),
+                        el(ColorControl, {
+                            label: 'Text Color',
+                            value: attributes.textColor || '',
+                            onChange: function(v) { setAttributes({ textColor: v || '' }); }
+                        })
+                    ),
+                    el(PanelBody, { title: 'Chapters (' + totalCount + ')', initialOpen: true },
                         fields,
                         el(Button, {
                             isSecondary: true,
                             onClick: function() {
+                                var nextNum = (totalCount + 1) < 10 ? '0' + (totalCount + 1) : '' + (totalCount + 1);
                                 updateChapters(chapters.concat({
-                                    title: 'New chapter',
-                                    body: '',
+                                    kicker: nextNum + ' · Phase Name',
+                                    title: 'New Story Chapter',
+                                    body: 'Describe the transformation or outcome in this chapter.',
                                     image: '',
                                     caption: '',
                                     ctaText: '',
@@ -3195,17 +3259,139 @@
                     )
                 ),
                 el('div', {
-                    className: 'rawnaq-story',
-                    style: { '--story-accent': attributes.accent || '#0f766e', border: '1px dashed #c5d0cb', borderRadius: '12px', padding: '16px' }
+                    className: 'rawnaq-story is-theme-' + cardStyle + ' is-ratio-' + mediaRatio,
+                    style: {
+                        '--story-accent': accentColor,
+                        '--story-card-bg': attributes.cardBg || '#ffffff',
+                        '--story-ink': attributes.textColor || '#0f172a',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '16px',
+                        padding: '24px',
+                        background: '#f8fafc'
+                    }
                 },
-                    el('strong', {}, 'Scroll Story Chapters'),
-                    el('p', { style: { margin: '8px 0 0', fontSize: '13px', color: '#5c6f66' } },
-                        chapters.length + ' chapter(s) · media ' + (attributes.mediaSide || 'left') + ' · frontend pins media while scrolling'
+                    el('div', {
+                        style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginBottom: '18px',
+                            paddingBottom: '12px',
+                            borderBottom: '1px solid #e2e8f0'
+                        }
+                    },
+                        el('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+                            el('strong', { style: { fontSize: '15px' } }, 'Scroll Story Chapters'),
+                            el('span', {
+                                style: {
+                                    fontSize: '11px',
+                                    padding: '2px 8px',
+                                    borderRadius: '999px',
+                                    background: accentColor,
+                                    color: '#fff',
+                                    fontWeight: '700'
+                                }
+                            }, cardStyle.toUpperCase())
+                        ),
+                        el('span', { style: { fontSize: '12px', color: '#64748b' } },
+                            totalCount + ' chapter(s) · Media ' + mediaSide + ' · Frontend pins media'
+                        )
                     ),
-                    el('ol', { style: { margin: '12px 0 0', paddingLeft: '18px', fontSize: '13px' } },
-                        chapters.map(function(ch, i) {
-                            return el('li', { key: i, style: { marginBottom: '6px' } }, ch.title || ('Chapter ' + (i + 1)));
-                        })
+                    el('div', {
+                        style: {
+                            display: 'grid',
+                            gridTemplateColumns: mediaSide === 'right' ? '1.2fr 1fr' : '1fr 1.2fr',
+                            gap: '20px',
+                            alignItems: 'start'
+                        }
+                    },
+                        mediaSide === 'right' ? null : el('div', {
+                            style: {
+                                background: '#0f172a',
+                                borderRadius: '14px',
+                                padding: '20px',
+                                color: '#fff',
+                                minHeight: '180px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between'
+                            }
+                        },
+                            el('div', {
+                                style: {
+                                    display: 'inline-flex',
+                                    padding: '3px 8px',
+                                    borderRadius: '999px',
+                                    background: 'rgba(255,255,255,0.15)',
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    alignSelf: 'flex-start'
+                                }
+                            }, chapters[0] ? (chapters[0].kicker || '01 · Chapter') : '01 · Chapter'),
+                            el('div', { style: { fontWeight: '700', fontSize: '14px' } },
+                                chapters[0] ? (chapters[0].title || 'Chapter Title') : 'Pinned Media Preview'
+                            ),
+                            el('div', { style: { fontSize: '11px', opacity: 0.7 } },
+                                'Media cross-fades synchronously on scroll'
+                            )
+                        ),
+                        el('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+                            chapters.map(function(ch, i) {
+                                var num = (i + 1) < 10 ? '0' + (i + 1) : '' + (i + 1);
+                                return el('div', {
+                                    key: i,
+                                    style: {
+                                        background: '#ffffff',
+                                        border: i === 0 ? '1.5px solid ' + accentColor : '1px solid #e2e8f0',
+                                        borderRadius: '12px',
+                                        padding: '16px',
+                                        boxShadow: i === 0 ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'
+                                    }
+                                },
+                                    el('span', {
+                                        style: {
+                                            display: 'inline-block',
+                                            fontSize: '11px',
+                                            fontWeight: '700',
+                                            color: accentColor,
+                                            marginBottom: '4px'
+                                        }
+                                    }, ch.kicker || (num + ' · Phase')),
+                                    el('div', { style: { fontWeight: '700', fontSize: '14px', marginBottom: '4px' } }, ch.title || ('Chapter ' + num)),
+                                    el('div', { style: { fontSize: '12px', color: '#64748b', lineHeight: '1.5' } }, ch.body ? ch.body.slice(0, 110) + '...' : '')
+                                );
+                            })
+                        ),
+                        mediaSide === 'right' ? el('div', {
+                            style: {
+                                background: '#0f172a',
+                                borderRadius: '14px',
+                                padding: '20px',
+                                color: '#fff',
+                                minHeight: '180px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between'
+                            }
+                        },
+                            el('div', {
+                                style: {
+                                    display: 'inline-flex',
+                                    padding: '3px 8px',
+                                    borderRadius: '999px',
+                                    background: 'rgba(255,255,255,0.15)',
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    alignSelf: 'flex-start'
+                                }
+                            }, chapters[0] ? (chapters[0].kicker || '01 · Chapter') : '01 · Chapter'),
+                            el('div', { style: { fontWeight: '700', fontSize: '14px' } },
+                                chapters[0] ? (chapters[0].title || 'Chapter Title') : 'Pinned Media Preview'
+                            ),
+                            el('div', { style: { fontSize: '11px', opacity: 0.7 } },
+                                'Media cross-fades synchronously on scroll'
+                            )
+                        ) : null
                     )
                 )
             );

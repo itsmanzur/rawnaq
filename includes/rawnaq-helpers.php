@@ -58,50 +58,113 @@ function rawnaq_default_modules() {
 /**
  * Render Scroll Story / Scrollytelling chapter markup (Elementor + Gutenberg).
  *
- * @param array  $chapters List of chapter arrays (title, body, image, caption, ctaText, ctaUrl, ctaExt, ctaNof).
+ * @param array  $chapters List of chapter arrays (title, body, kicker, image, caption, ctaText, ctaUrl, ctaExt, ctaNof).
  * @param string $side     left|right for pinned media.
+ * @param array  $options  Optional display settings (style, media_ratio, show_counter, show_progress).
  */
-function rawnaq_scroll_story_markup( $chapters, $side = 'left' ) {
+function rawnaq_scroll_story_markup( $chapters, $side = 'left', $options = [] ) {
 	if ( ! is_array( $chapters ) || ! $chapters ) {
 		return;
 	}
-	$side         = ( 'right' === $side ) ? 'right' : 'left';
+	$side          = ( 'right' === $side ) ? 'right' : 'left';
+	$theme_style   = sanitize_key( $options['card_style'] ?? ( $options['style'] ?? 'cards' ) );
+	if ( ! in_array( $theme_style, [ 'cards', 'minimal', 'spotlight' ], true ) ) {
+		$theme_style = 'cards';
+	}
+	$media_ratio   = sanitize_key( $options['media_ratio'] ?? '4-5' );
+	if ( ! in_array( $media_ratio, [ '4-5', '16-10', '1-1' ], true ) ) {
+		$media_ratio = '4-5';
+	}
+	$show_counter  = isset( $options['show_counter'] ) ? (bool) $options['show_counter'] : true;
+	$show_progress = isset( $options['show_progress'] ) ? (bool) $options['show_progress'] : true;
+	$count         = count( $chapters );
+
+	$wrapper_classes = [
+		'rawnaq-story',
+		'is-theme-' . $theme_style,
+		'is-ratio-' . $media_ratio,
+	];
 	$layout_class = 'rawnaq-story-layout' . ( 'right' === $side ? ' is-media-right' : '' );
 	?>
-	<div class="rawnaq-story">
+	<div class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-theme="<?php echo esc_attr( $theme_style ); ?>">
 		<div class="<?php echo esc_attr( $layout_class ); ?>">
 			<aside class="rawnaq-story-pin">
+				<?php if ( $show_counter || $show_progress ) : ?>
+					<div class="rawnaq-story-pin-header">
+						<?php if ( $show_counter ) : ?>
+							<div class="rawnaq-story-counter" aria-label="<?php esc_attr_e( 'Story Progress Counter', 'rawnaq' ); ?>">
+								<span class="rawnaq-story-counter-current">01</span>
+								<span class="rawnaq-story-counter-divider">/</span>
+								<span class="rawnaq-story-counter-total"><?php echo esc_html( str_pad( (string) $count, 2, '0', STR_PAD_LEFT ) ); ?></span>
+							</div>
+						<?php endif; ?>
+						<?php if ( $show_progress ) : ?>
+							<div class="rawnaq-story-tracker" aria-hidden="true">
+								<div class="rawnaq-story-tracker-fill" style="width: <?php echo esc_attr( number_format( ( 1 / max( 1, $count ) ) * 100, 1 ) ); ?>%;"></div>
+							</div>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
+
 				<div class="rawnaq-story-media-stack">
 					<?php foreach ( $chapters as $i => $ch ) : ?>
+						<?php
+						$chapter_num = str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT );
+						$fallback_kicker = ! empty( $ch['kicker'] ) ? $ch['kicker'] : sprintf( __( 'Chapter %s', 'rawnaq' ), $chapter_num );
+						?>
 						<div class="rawnaq-story-media<?php echo 0 === $i ? ' is-active' : ''; ?>" data-index="<?php echo esc_attr( (string) $i ); ?>">
 							<?php if ( ! empty( $ch['video'] ) ) : ?>
 								<video class="rawnaq-story-video" src="<?php echo esc_url( $ch['video'] ); ?>"
 									muted loop playsinline preload="metadata"
 									<?php echo ! empty( $ch['image'] ) ? 'poster="' . esc_url( $ch['image'] ) . '"' : ''; ?>></video>
 							<?php elseif ( ! empty( $ch['image'] ) ) : ?>
-								<img src="<?php echo esc_url( $ch['image'] ); ?>" alt="<?php echo esc_attr( $ch['imageAlt'] ?? '' ); ?>" loading="<?php echo 0 === $i ? 'eager' : 'lazy'; ?>" />
+								<img class="rawnaq-story-img" src="<?php echo esc_url( $ch['image'] ); ?>" alt="<?php echo esc_attr( $ch['imageAlt'] ?? '' ); ?>" loading="<?php echo 0 === $i ? 'eager' : 'lazy'; ?>" />
 							<?php else : ?>
-								<div class="rawnaq-story-media-fallback"><?php echo esc_html( $ch['title'] ?: ( 'Chapter ' . ( $i + 1 ) ) ); ?></div>
+								<div class="rawnaq-story-media-fallback">
+									<div class="rawnaq-story-fallback-canvas">
+										<div class="rawnaq-story-fallback-glow"></div>
+										<div class="rawnaq-story-fallback-badge">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+											<span><?php echo esc_html( $fallback_kicker ); ?></span>
+										</div>
+										<h4 class="rawnaq-story-fallback-title"><?php echo esc_html( ! empty( $ch['title'] ) ? $ch['title'] : sprintf( __( 'Chapter %s', 'rawnaq' ), $chapter_num ) ); ?></h4>
+										<div class="rawnaq-story-fallback-wireframe">
+											<div class="rawnaq-story-wire-chip"></div>
+											<div class="rawnaq-story-wire-lines">
+												<span></span>
+												<span></span>
+												<span class="short"></span>
+											</div>
+										</div>
+									</div>
+								</div>
 							<?php endif; ?>
 						</div>
 					<?php endforeach; ?>
 				</div>
+
 				<p class="rawnaq-story-caption"<?php echo empty( $chapters[0]['caption'] ) ? ' hidden' : ''; ?>><?php echo esc_html( $chapters[0]['caption'] ?? '' ); ?></p>
-				<ol class="rawnaq-story-dots" aria-label="<?php echo esc_attr__( 'Story progress', 'rawnaq' ); ?>">
+
+				<ol class="rawnaq-story-dots" aria-label="<?php echo esc_attr__( 'Story navigation', 'rawnaq' ); ?>">
 					<?php foreach ( $chapters as $i => $ch ) : ?>
 						<li>
 							<button type="button"
 								class="rawnaq-story-dot<?php echo 0 === $i ? ' is-active' : ''; ?>"
 								aria-label="<?php echo esc_attr( sprintf( /* translators: %d: chapter number */ __( 'Go to chapter %d', 'rawnaq' ), $i + 1 ) ); ?>"
-								aria-current="<?php echo 0 === $i ? 'true' : 'false'; ?>"></button>
+								aria-current="<?php echo 0 === $i ? 'true' : 'false'; ?>">
+								<span class="rawnaq-story-dot-num"><?php echo esc_html( str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
+							</button>
 						</li>
 					<?php endforeach; ?>
 				</ol>
 			</aside>
+
 			<div class="rawnaq-story-chapters">
 				<?php foreach ( $chapters as $i => $ch ) : ?>
 					<?php
+					$chapter_num = str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT );
 					$anchor = ! empty( $ch['anchor'] ) ? sanitize_title( $ch['anchor'] ) : ( ! empty( $ch['title'] ) ? sanitize_title( $ch['title'] ) : 'chapter-' . ( $i + 1 ) );
+					$kicker = ! empty( $ch['kicker'] ) ? $ch['kicker'] : sprintf( __( 'Chapter %s', 'rawnaq' ), $chapter_num );
 					?>
 					<section class="rawnaq-story-chapter<?php echo 0 === $i ? ' is-active' : ''; ?>"
 						id="<?php echo esc_attr( $anchor ); ?>"
@@ -114,37 +177,46 @@ function rawnaq_scroll_story_markup( $chapters, $side = 'left' ) {
 						<?php if ( ! empty( $ch['projectSlug'] ) ) : ?>
 							data-project-slug="<?php echo esc_attr( (string) $ch['projectSlug'] ); ?>"
 						<?php endif; ?>>
-						<span class="rawnaq-story-kicker"><?php echo esc_html( sprintf( /* translators: %d: chapter number */ __( 'Chapter %d', 'rawnaq' ), $i + 1 ) ); ?></span>
-						<?php if ( ! empty( $ch['title'] ) ) : ?>
-							<h3><?php echo esc_html( $ch['title'] ); ?></h3>
-						<?php endif; ?>
-						<?php if ( ! empty( $ch['body'] ) ) : ?>
-							<?php
-							// Allow safe rich HTML (links, emphasis, lists) in chapter body.
-							$body_html = $ch['body'];
-							if ( false === strpos( $body_html, '<' ) ) {
-								$body_html = wpautop( esc_html( $body_html ) );
-							} else {
-								$body_html = wp_kses_post( $body_html );
-							}
-							echo '<div class="rawnaq-story-body">' . $body_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via wp_kses_post / esc_html above.
-							?>
-						<?php endif; ?>
-						<?php if ( ! empty( $ch['ctaText'] ) && ! empty( $ch['ctaUrl'] ) ) : ?>
-							<?php
-							$rel = [];
-							if ( ! empty( $ch['ctaExt'] ) ) {
-								$rel[] = 'noopener';
-							}
-							if ( ! empty( $ch['ctaNof'] ) ) {
-								$rel[] = 'nofollow';
-							}
-							?>
-							<a class="rawnaq-story-cta" href="<?php echo esc_url( $ch['ctaUrl'] ); ?>"
-								<?php echo ! empty( $ch['ctaExt'] ) ? ' target="_blank"' : ''; ?>
-								<?php echo $rel ? ' rel="' . esc_attr( implode( ' ', $rel ) ) . '"' : ''; ?>
-							><?php echo esc_html( $ch['ctaText'] ); ?></a>
-						<?php endif; ?>
+						<div class="rawnaq-story-card-inner">
+							<div class="rawnaq-story-kicker-wrap">
+								<span class="rawnaq-story-kicker"><?php echo esc_html( $kicker ); ?></span>
+							</div>
+							<?php if ( ! empty( $ch['title'] ) ) : ?>
+								<h3 class="rawnaq-story-title"><?php echo esc_html( $ch['title'] ); ?></h3>
+							<?php endif; ?>
+							<?php if ( ! empty( $ch['body'] ) ) : ?>
+								<?php
+								// Allow safe rich HTML (links, emphasis, lists) in chapter body.
+								$body_html = $ch['body'];
+								if ( false === strpos( $body_html, '<' ) ) {
+									$body_html = wpautop( esc_html( $body_html ) );
+								} else {
+									$body_html = wp_kses_post( $body_html );
+								}
+								echo '<div class="rawnaq-story-body">' . $body_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized via wp_kses_post / esc_html above.
+								?>
+							<?php endif; ?>
+							<?php if ( ! empty( $ch['ctaText'] ) && ! empty( $ch['ctaUrl'] ) ) : ?>
+								<?php
+								$rel = [];
+								if ( ! empty( $ch['ctaExt'] ) ) {
+									$rel[] = 'noopener';
+								}
+								if ( ! empty( $ch['ctaNof'] ) ) {
+									$rel[] = 'nofollow';
+								}
+								?>
+								<div class="rawnaq-story-cta-wrap">
+									<a class="rawnaq-story-cta" href="<?php echo esc_url( $ch['ctaUrl'] ); ?>"
+										<?php echo ! empty( $ch['ctaExt'] ) ? ' target="_blank"' : ''; ?>
+										<?php echo $rel ? ' rel="' . esc_attr( implode( ' ', $rel ) ) . '"' : ''; ?>
+									>
+										<span><?php echo esc_html( $ch['ctaText'] ); ?></span>
+										<svg class="rawnaq-story-cta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+									</a>
+								</div>
+							<?php endif; ?>
+						</div>
 					</section>
 				<?php endforeach; ?>
 			</div>
