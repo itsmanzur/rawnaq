@@ -4,7 +4,7 @@ Tags: elementor, gutenberg, divi, timeline, diagram, performance
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,14 @@ Source code: https://github.com/itsmanzur/rawnaq
 
 == Changelog ==
 
+= 1.2.0 =
+* Floating Dock: DST-aware IANA business timezones (legacy fixed UTC offsets still supported).
+* Editor parity: Gutenberg now exposes Hub Diagram export toggle, Flow Chart zoom/pan toggle, Scroll Story pin offset, and Scroll Progress content-selector + hide-on-short-page controls to match Elementor.
+* Accessibility: Case-Study modal focus trap, focus return, and aria-modal; arrow-key gallery navigation; Scroll Story progress dots support arrow/Home/End keys; safer link handling on Flow Chart nodes.
+* Polish: corrected mis-encoded characters in Scroll Timeline presets and shared strings.
+* 3D Tilt Card: optional flip / back-face with hover or click trigger, back title/description/CTA, and back styling.
+* Flow Chart: per-node connector (edge) labels and swimlane bands, included in PNG/SVG export.
+
 = 1.1.0 =
 * Added Divi Visual Builder support — all 10 free modules now include dedicated Divi modules.
 * Updated plugin title for clarity.
@@ -107,21 +115,3 @@ Source code: https://github.com/itsmanzur/rawnaq
 * Initial public release on WordPress.org.
 * Modular Elementor + Gutenberg library: Hub Diagram, 3D Tilt Card, Scroll Sync Timeline, Floating Dock (WhatsApp mode), Flow Chart, Scroll Progress + TOC, Bento Grid, Scroll Story Chapters, Smart Form, Case-Study Grid.
 * On-demand assets, vanilla JS frontend, Elements Manager, WPML config, and documented optional third-party services (Fonts, reCAPTCHA, WhatsApp, webhooks).
-* Floating Dock: DST-aware IANA business timezones (legacy fixed UTC offsets still supported).
-* Editor parity: Gutenberg now exposes Hub Diagram export toggle, Flow Chart zoom/pan toggle, Scroll Story pin offset, and Scroll Progress content-selector + hide-on-short-page controls to match Elementor.
-* Accessibility: Case-Study modal focus trap, focus return, and aria-modal; arrow-key gallery navigation; Scroll Story progress dots support arrow/Home/End keys; safer link handling on Flow Chart nodes.
-* Polish: corrected mis-encoded characters in Scroll Timeline presets and shared strings.
-* 3D Tilt Card: optional flip / back-face with hover or click trigger, back title/description/CTA, and back styling.
-* Flow Chart: per-node connector (edge) labels and swimlane bands, included in PNG/SVG export.
-* Smart Form: branded HTML email receipts and CRM/ESP delivery — built-in Mailchimp subscribe plus a `rawnaq_smart_form_submission` hook for Zapier/HubSpot/custom.
-* Performance: every module's CSS/JS now ships a minified `.min` build alongside the readable source; production requests load the minified file automatically, falling back to the unminified source whenever `SCRIPT_DEBUG` is enabled.
-* Privacy: Smart Form submissions are now wired into WordPress's built-in Export/Erase Personal Data tools (`wp_privacy_personal_data_exporters`/`erasers`).
-* Added a "Settings" quick link on the Plugins list page.
-* Case-Study Grid: server-filtered AJAX pagination for the CPT source (sector/year/service + paging on the server).
-* Scroll Story: rich-text chapters, per-chapter video, and #anchor deep-linking with active-chapter hash sync.
-* SEO: JSON-LD schema pack — CreativeWork ItemList for CPT case studies, ItemList for query-based timelines, and auto Review/AggregateRating from Bento testimonial cells (all filterable).
-* Smart Form: HubSpot CRM delivery (portal ID + per-form GUID) alongside Mailchimp and the generic hook.
-* Flow Chart: true swimlanes in process mode — nodes are banded by lane on the cross axis.
-* Case-Study: hardened AJAX pagination (server perPage aligned, no hidden-card conflict, empty-state message).
-* Privacy: Smart Form entries now integrate with WordPress Export/Erase Personal Data tools; added a Privacy section to this readme.
-* Admin: "Settings" link on the Plugins list row.
