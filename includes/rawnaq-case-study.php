@@ -254,69 +254,69 @@ function rawnaq_case_study_save_meta( $post_id ) {
 function rawnaq_case_study_sample_projects() {
 	return [
 		[
-			'title'    => __( 'Riverfront Civic Center', 'rawnaq' ),
+			'title'    => __( 'Fintech Global App & Dashboard Redesign', 'rawnaq' ),
 			'image'    => '',
 			'gallery'  => [],
 			'link'     => '',
-			'sector'   => __( 'Civic', 'rawnaq' ),
-			'size'     => '120,000 sq ft',
-			'budget'   => '$45–60M',
-			'year'     => '2024',
-			'client'   => __( 'City Planning Board', 'rawnaq' ),
-			'services' => __( 'Architecture, Structural, MEP', 'rawnaq' ),
-			'excerpt'  => __( 'A mixed-use civic hub along the waterfront with public plazas and performance halls.', 'rawnaq' ),
-			'detail'   => __( 'Full scope included schematic design through CA. Passive focus on flood resilience, public access, and phased construction while the existing marina remained operational.', 'rawnaq' ),
+			'sector'   => __( 'Fintech & SaaS', 'rawnaq' ),
+			'size'     => '+140% Conversion · $85M Vol',
+			'budget'   => '$85M Volume',
+			'year'     => '2025',
+			'client'   => __( 'Stripe & Apex Financial', 'rawnaq' ),
+			'services' => __( 'Product Strategy, UI/UX, Design System', 'rawnaq' ),
+			'excerpt'  => __( 'A high-performance financial operational canvas unifying multi-currency settlement and real-time risk intelligence.', 'rawnaq' ),
+			'detail'   => __( 'End-to-end product overhaul including design system architecture, sub-50ms streaming transaction tables, and tactile mobile workflows across iOS and Android.', 'rawnaq' ),
 			'featured' => true,
 			'col'      => 2,
 			'row'      => 2,
 		],
 		[
-			'title'    => __( 'Northline Transit Hub', 'rawnaq' ),
+			'title'    => __( 'AI-Powered Medical Intelligence Platform', 'rawnaq' ),
 			'image'    => '',
 			'gallery'  => [],
 			'link'     => '',
-			'sector'   => __( 'Infrastructure', 'rawnaq' ),
-			'size'     => '18 platforms',
-			'budget'   => '$28M',
-			'year'     => '2023',
-			'client'   => __( 'Regional Transit Authority', 'rawnaq' ),
-			'services' => __( 'Civil, Structural', 'rawnaq' ),
-			'excerpt'  => __( 'Intermodal station upgrade with canopy systems and accessible passenger flow.', 'rawnaq' ),
-			'detail'   => __( 'Coordinated with active rail operations. Delivered canopy steel packages, platform widening, and wayfinding integration under a compressed weekend outage schedule.', 'rawnaq' ),
-			'featured' => false,
-			'col'      => 1,
-			'row'      => 1,
-		],
-		[
-			'title'    => __( 'Oakridge Adaptive Reuse', 'rawnaq' ),
-			'image'    => '',
-			'gallery'  => [],
-			'link'     => '',
-			'sector'   => __( 'Adaptive Reuse', 'rawnaq' ),
-			'size'     => '64 units',
-			'budget'   => '$12M',
-			'year'     => '2022',
-			'client'   => __( 'Private Developer', 'rawnaq' ),
-			'services' => __( 'Architecture, Interior', 'rawnaq' ),
-			'excerpt'  => __( 'Mill building converted to housing with retained brick shell and new mezzanines.', 'rawnaq' ),
-			'detail'   => __( 'Historic fabric retained where feasible. New cores, acoustic upgrades, and courtyard daylighting strategies unlocked density without altering the street elevation.', 'rawnaq' ),
-			'featured' => false,
-			'col'      => 1,
-			'row'      => 1,
-		],
-		[
-			'title'    => __( 'Summit Laboratory Annex', 'rawnaq' ),
-			'image'    => '',
-			'gallery'  => [],
-			'link'     => '',
-			'sector'   => __( 'Science & Tech', 'rawnaq' ),
-			'size'     => '42,000 sq ft',
-			'budget'   => '$22M',
+			'sector'   => __( 'HealthTech & AI', 'rawnaq' ),
+			'size'     => '1.2M Records · 99.9% Uptime',
+			'budget'   => 'Enterprise Scope',
 			'year'     => '2025',
-			'client'   => __( 'University Facilities', 'rawnaq' ),
-			'services' => __( 'Architecture, Lab Planning, MEP', 'rawnaq' ),
-			'excerpt'  => __( 'Flexible wet-lab annex with vibration-sensitive floors and modular casework.', 'rawnaq' ),
-			'detail'   => __( 'Designed for future reconfiguration. Includes dedicated service corridors, chemical storage, and a rooftop mechanical strategy that keeps the research floors clear.', 'rawnaq' ),
+			'client'   => __( 'BioHealth Labs', 'rawnaq' ),
+			'services' => __( 'Cloud Architecture, Web App, AI Models', 'rawnaq' ),
+			'excerpt'  => __( 'HIPAA-compliant diagnostic dashboard for rapid multi-modal patient record synthesis and risk prediction.', 'rawnaq' ),
+			'detail'   => __( 'Built with zero-drift modular web components and real-time HL7/FHIR event ingestion, reducing diagnosis lookup from minutes to seconds.', 'rawnaq' ),
+			'featured' => false,
+			'col'      => 1,
+			'row'      => 1,
+		],
+		[
+			'title'    => __( 'Autonomous Mobility & Fleet Telemetry', 'rawnaq' ),
+			'image'    => '',
+			'gallery'  => [],
+			'link'     => '',
+			'sector'   => __( 'IoT & Automotive', 'rawnaq' ),
+			'size'     => '450k Connected Vehicles',
+			'budget'   => '$32M Scope',
+			'year'     => '2024',
+			'client'   => __( 'Nova Transit Network', 'rawnaq' ),
+			'services' => __( 'Real-time Telemetry, Mobile App', 'rawnaq' ),
+			'excerpt'  => __( 'Unified command center coordinating connected EV fleets, route optimization, and predictive charging.', 'rawnaq' ),
+			'detail'   => __( 'Engineered high-concurrency WebSocket pipelines with live geospatial map clusters and automated charge-scheduling algorithms.', 'rawnaq' ),
+			'featured' => false,
+			'col'      => 1,
+			'row'      => 1,
+		],
+		[
+			'title'    => __( 'Luxury Sustainable Fashion Flagship', 'rawnaq' ),
+			'image'    => '',
+			'gallery'  => [],
+			'link'     => '',
+			'sector'   => __( 'E-Commerce & Brand', 'rawnaq' ),
+			'size'     => '+320% Growth · 18 Markets',
+			'budget'   => 'Global Flagship',
+			'year'     => '2024',
+			'client'   => __( 'Maison Aurelia', 'rawnaq' ),
+			'services' => __( 'Headless Shopify, Brand Identity', 'rawnaq' ),
+			'excerpt'  => __( 'Immersive headless commerce platform delivering tactile 3D product previews and instant checkout.', 'rawnaq' ),
+			'detail'   => __( 'Architected with global edge caching and WebGL product interactions, driving an 84% reduction in page load time and +320% global sales growth.', 'rawnaq' ),
 			'featured' => false,
 			'col'      => 1,
 			'row'      => 1,
@@ -849,6 +849,11 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		] );
 	}
 
+	$theme = sanitize_key( $cfg['cardStyle'] ?? ( $cfg['theme'] ?? 'elevated' ) );
+	if ( ! in_array( $theme, [ 'elevated', 'glass', 'spotlight' ], true ) ) {
+		$theme = 'elevated';
+	}
+
 	$style = '';
 	if ( ! empty( $cfg['accent'] ) ) {
 		$style .= '--cs-accent:' . esc_attr( $cfg['accent'] ) . ';';
@@ -863,6 +868,11 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		$style .= '--cs-radius:' . esc_attr( absint( $cfg['radius'] ) ) . 'px;';
 	}
 
+	$wrapper_classes = [
+		'rawnaq-case-study',
+		'is-theme-' . $theme,
+	];
+
 	$grid_class = 'rawnaq-cs-grid is-' . $layout;
 	$total      = count( $projects );
 	if ( $cs_ajax ) {
@@ -873,8 +883,9 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		$has_load_more = $initial_visible > 0 && $initial_visible < $total;
 	}
 	?>
-	<div class="rawnaq-case-study" id="<?php echo esc_attr( $uid ); ?>"
+	<div class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" id="<?php echo esc_attr( $uid ); ?>"
 		data-cs="<?php echo esc_attr( wp_json_encode( $cfg_out ) ); ?>"
+		data-theme="<?php echo esc_attr( $theme ); ?>"
 		<?php if ( $cs_ajax ) : ?>
 		data-cs-ajax="1"
 		data-cs-uid="<?php echo esc_attr( $uid ); ?>"
@@ -1052,9 +1063,20 @@ function rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_clie
 	?>
 	<div class="rawnaq-cs-media">
 		<?php if ( $project['image'] ) : ?>
-			<img src="<?php echo esc_url( $project['image'] ); ?>" alt="" loading="lazy" />
+			<img class="rawnaq-cs-img" src="<?php echo esc_url( $project['image'] ); ?>" alt="<?php echo esc_attr( $project['title'] ); ?>" loading="lazy" />
 		<?php else : ?>
-			<div class="rawnaq-cs-media-fallback" aria-hidden="true"><?php echo esc_html( mb_substr( (string) $project['title'], 0, 1 ) ); ?></div>
+			<div class="rawnaq-cs-media-fallback" aria-hidden="true">
+				<div class="rawnaq-cs-fallback-mesh">
+					<div class="rawnaq-cs-fallback-glow"></div>
+					<div class="rawnaq-cs-fallback-icon">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+					</div>
+					<div class="rawnaq-cs-fallback-lines">
+						<span></span>
+						<span class="short"></span>
+					</div>
+				</div>
+			</div>
 		<?php endif; ?>
 		<?php if ( $project['sector'] ) : ?>
 			<span class="rawnaq-cs-badge"><?php echo esc_html( $project['sector'] ); ?></span>
@@ -1067,24 +1089,29 @@ function rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_clie
 		<?php endif; ?>
 		<ul class="rawnaq-cs-meta">
 			<?php if ( $project['year'] ) : ?>
-				<li><span><?php esc_html_e( 'Year', 'rawnaq' ); ?></span> <?php echo esc_html( $project['year'] ); ?></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">⚡</span><span><?php echo esc_html( $project['year'] ); ?></span></li>
 			<?php endif; ?>
 			<?php if ( $project['size'] ) : ?>
-				<li><span><?php esc_html_e( 'Scope', 'rawnaq' ); ?></span> <?php echo esc_html( $project['size'] ); ?></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">🎯</span><span><?php echo esc_html( $project['size'] ); ?></span></li>
 			<?php endif; ?>
 			<?php if ( ! $hide_budget && $project['budget'] ) : ?>
-				<li><span><?php esc_html_e( 'Budget', 'rawnaq' ); ?></span> <?php echo esc_html( $project['budget'] ); ?></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">📈</span><span><?php echo esc_html( $project['budget'] ); ?></span></li>
 			<?php endif; ?>
 			<?php if ( ! $hide_client && $project['client'] ) : ?>
-				<li><span><?php esc_html_e( 'Client', 'rawnaq' ); ?></span> <?php echo esc_html( $project['client'] ); ?></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">💼</span><span><?php echo esc_html( $project['client'] ); ?></span></li>
 			<?php endif; ?>
 		</ul>
-		<span class="rawnaq-cs-view"><?php esc_html_e( 'View case study', 'rawnaq' ); ?></span>
-		<?php if ( $show_discuss ) : ?>
-			<button type="button" class="rawnaq-cs-discuss rawnaq-cs-discuss-card" data-cs-discuss>
-				<?php esc_html_e( 'Discuss this project', 'rawnaq' ); ?>
-			</button>
-		<?php endif; ?>
+		<div class="rawnaq-cs-footer">
+			<span class="rawnaq-cs-view">
+				<span><?php esc_html_e( 'View case study', 'rawnaq' ); ?></span>
+				<svg class="rawnaq-cs-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+			</span>
+			<?php if ( $show_discuss ) : ?>
+				<button type="button" class="rawnaq-cs-discuss rawnaq-cs-discuss-card" data-cs-discuss>
+					<?php esc_html_e( 'Discuss project', 'rawnaq' ); ?>
+				</button>
+			<?php endif; ?>
+		</div>
 	</div>
 	<?php
 }

@@ -3822,10 +3822,10 @@
     }
 
     var defaultCaseStudyProjects = [
-        { title: 'Riverfront Civic Center', image: '', gallery: [], sector: 'Civic', size: '120,000 sq ft', budget: '$45–60M', year: '2024', client: 'City Planning Board', services: 'Architecture, Structural, MEP', excerpt: 'A mixed-use civic hub along the waterfront.', detail: 'Full scope included schematic design through CA.', link: '', featured: true, col: 2, row: 2 },
-        { title: 'Northline Transit Hub', image: '', gallery: [], sector: 'Infrastructure', size: '18 platforms', budget: '$28M', year: '2023', client: 'Regional Transit Authority', services: 'Civil, Structural', excerpt: 'Intermodal station upgrade.', detail: 'Coordinated with active rail operations.', link: '', featured: false, col: 1, row: 1 },
-        { title: 'Oakridge Adaptive Reuse', image: '', gallery: [], sector: 'Adaptive Reuse', size: '64 units', budget: '$12M', year: '2022', client: 'Private Developer', services: 'Architecture, Interior', excerpt: 'Mill building converted to housing.', detail: 'Historic fabric retained where feasible.', link: '', featured: false, col: 1, row: 1 },
-        { title: 'Summit Laboratory Annex', image: '', gallery: [], sector: 'Science & Tech', size: '42,000 sq ft', budget: '$22M', year: '2025', client: 'University Facilities', services: 'Architecture, Lab Planning, MEP', excerpt: 'Flexible wet-lab annex.', detail: 'Designed for future reconfiguration.', link: '', featured: false, col: 1, row: 1 }
+        { title: 'Fintech Global App & Dashboard Redesign', image: '', gallery: [], sector: 'Fintech & SaaS', size: '+140% Conversion · $85M Vol', budget: '$85M Volume', year: '2025', client: 'Stripe & Apex Financial', services: 'Product Strategy, UI/UX, Design System', excerpt: 'A high-performance financial operational canvas unifying multi-currency settlement and real-time risk intelligence.', detail: 'End-to-end product overhaul including design system architecture, sub-50ms streaming transaction tables, and tactile mobile workflows across iOS and Android.', link: '', featured: true, col: 2, row: 2 },
+        { title: 'AI-Powered Medical Intelligence Platform', image: '', gallery: [], sector: 'HealthTech & AI', size: '1.2M Records · 99.9% Uptime', budget: 'Enterprise Scope', year: '2025', client: 'BioHealth Labs', services: 'Cloud Architecture, Web App, AI Models', excerpt: 'HIPAA-compliant diagnostic dashboard for rapid multi-modal patient record synthesis and risk prediction.', detail: 'Built with zero-drift modular web components and real-time HL7/FHIR event ingestion, reducing diagnosis lookup from minutes to seconds.', link: '', featured: false, col: 1, row: 1 },
+        { title: 'Autonomous Mobility & Fleet Telemetry', image: '', gallery: [], sector: 'IoT & Automotive', size: '450k Connected Vehicles', budget: '$32M Scope', year: '2024', client: 'Nova Transit Network', services: 'Real-time Telemetry, Mobile App', excerpt: 'Unified command center coordinating connected EV fleets, route optimization, and predictive charging.', detail: 'Engineered high-concurrency WebSocket pipelines with live geospatial map clusters and automated charge-scheduling algorithms.', link: '', featured: false, col: 1, row: 1 },
+        { title: 'Luxury Sustainable Fashion Flagship', image: '', gallery: [], sector: 'E-Commerce & Brand', size: '+320% Growth · 18 Markets', budget: 'Global Flagship', year: '2024', client: 'Maison Aurelia', services: 'Headless Shopify, Brand Identity', excerpt: 'Immersive headless commerce platform delivering tactile 3D product previews and instant checkout.', detail: 'Architected with global edge caching and WebGL product interactions, driving an 84% reduction in page load time and +320% global sales growth.', link: '', featured: false, col: 1, row: 1 }
     ];
 
     registerBlockType('rawnaq/case-study-card', {
@@ -3995,6 +3995,7 @@
             querySector: { type: 'string', default: '' },
             layout: { type: 'string', default: 'bento' },
             columns: { type: 'number', default: 3 },
+            cardStyle: { type: 'string', default: 'elevated' },
             showFilter: { type: 'boolean', default: true },
             filterYear: { type: 'boolean', default: true },
             filterService: { type: 'boolean', default: true },
@@ -4005,9 +4006,10 @@
             discussTarget: { type: 'string', default: 'auto' },
             initialVisible: { type: 'number', default: 0 },
             loadChunk: { type: 'number', default: 6 },
-            accent: { type: 'string', default: '#fbbf24' },
+            accent: { type: 'string', default: '#0f766e' },
             cardBg: { type: 'string', default: '#ffffff' },
-            cardBorder: { type: 'string', default: '#d7e2dc' },
+            cardBorder: { type: 'string', default: 'rgba(0,0,0,0.08)' },
+            textColor: { type: 'string', default: '' },
             radius: { type: 'number', default: 18 }
         },
         edit: function(props) {
@@ -4039,6 +4041,8 @@
             }, [clientId, attributes.source, innerInfo.count]);
 
             var isQuery = (attributes.source || 'manual') === 'query';
+            var cardStyle = attributes.cardStyle || 'elevated';
+            var accentColor = attributes.accent || '#0f766e';
 
             return el(Fragment, {},
                 el(InspectorControls, {},
@@ -4087,9 +4091,19 @@
                             'Add Case-Study Card blocks inside the canvas. Each card is one project.'
                         )
                     ),
-                    el(PanelBody, { title: 'Layout & filters', initialOpen: true },
+                    el(PanelBody, { title: 'Layout & Filters', initialOpen: true },
                         el(SelectControl, {
-                            label: 'Layout',
+                            label: 'Theme Preset',
+                            value: cardStyle,
+                            options: [
+                                { label: 'Modern Elevated (Default)', value: 'elevated' },
+                                { label: 'Minimal Glassmorphism', value: 'glass' },
+                                { label: 'Editorial Spotlight', value: 'spotlight' }
+                            ],
+                            onChange: function(v) { setAttributes({ cardStyle: v }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Grid Layout',
                             value: attributes.layout || 'bento',
                             options: [
                                 { label: 'Bento (asymmetric)', value: 'bento' },
@@ -4106,17 +4120,17 @@
                             onChange: function(v) { setAttributes({ columns: v || 3 }); }
                         }),
                         el(ToggleControl, {
-                            label: 'Sector filter',
+                            label: 'Sector filter bar',
                             checked: attributes.showFilter !== false,
                             onChange: function(v) { setAttributes({ showFilter: !!v }); }
                         }),
                         el(ToggleControl, {
-                            label: 'Year filter',
+                            label: 'Year filter bar',
                             checked: attributes.filterYear !== false,
                             onChange: function(v) { setAttributes({ filterYear: !!v }); }
                         }),
                         el(ToggleControl, {
-                            label: 'Service filter',
+                            label: 'Service filter bar',
                             checked: attributes.filterService !== false,
                             onChange: function(v) { setAttributes({ filterService: !!v }); }
                         }),
@@ -4178,40 +4192,79 @@
                             onChange: function(v) { setAttributes({ loadChunk: v || 6 }); }
                         })
                     ),
-                    el(PanelBody, { title: 'Style', initialOpen: false },
-                        el('div', { style: { marginBottom: '10px' } },
-                            el('label', { style: { display: 'block', marginBottom: '6px', fontWeight: 600 } }, 'Accent'),
-                            el(ColorPalette, {
-                                value: attributes.accent || '#fbbf24',
-                                onChange: function(v) { setAttributes({ accent: v || '#fbbf24' }); }
-                            })
-                        ),
+                    el(PanelBody, { title: 'Style & Colors', initialOpen: false },
+                        el(ColorControl, {
+                            label: 'Accent Color',
+                            value: accentColor,
+                            onChange: function(v) { setAttributes({ accent: v || '#0f766e' }); }
+                        }),
+                        el(ColorControl, {
+                            label: 'Card Background',
+                            value: attributes.cardBg || '#ffffff',
+                            onChange: function(v) { setAttributes({ cardBg: v || '#ffffff' }); }
+                        }),
+                        el(ColorControl, {
+                            label: 'Card Border',
+                            value: attributes.cardBorder || 'rgba(0,0,0,0.08)',
+                            onChange: function(v) { setAttributes({ cardBorder: v || 'rgba(0,0,0,0.08)' }); }
+                        }),
+                        el(ColorControl, {
+                            label: 'Text Color',
+                            value: attributes.textColor || '',
+                            onChange: function(v) { setAttributes({ textColor: v || '' }); }
+                        }),
                         el(RangeControl, {
-                            label: 'Card radius',
+                            label: 'Card radius (px)',
                             value: attributes.radius || 18,
                             min: 0,
-                            max: 32,
+                            max: 36,
                             onChange: function(v) { setAttributes({ radius: v || 0 }); }
                         })
                     )
                 ),
                 el('div', {
+                    className: 'rawnaq-case-study is-theme-' + cardStyle,
                     style: {
-                        border: '1px dashed #c5d0cb',
-                        borderRadius: '12px',
-                        padding: '16px',
-                        background: '#fafcfb'
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '16px',
+                        padding: '24px',
+                        background: '#f8fafc',
+                        '--cs-accent': accentColor,
+                        '--cs-card-bg': attributes.cardBg || '#ffffff',
+                        '--cs-card-border': attributes.cardBorder || 'rgba(0,0,0,0.08)'
                     }
                 },
-                    el('strong', {}, 'Case-Study Grid'),
-                    el('p', { style: { margin: '8px 0 12px', fontSize: '13px', color: '#5c6f66' } },
-                        isQuery
-                            ? ('CPT query · up to ' + (attributes.queryNumber || 12) + ' · ' + (attributes.layout || 'bento'))
-                            : (innerInfo.count + ' card(s) · ' + (attributes.layout || 'bento') +
-                                (attributes.showFilter !== false ? ' · multi-filter' : ''))
+                    el('div', {
+                        style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginBottom: '16px',
+                            paddingBottom: '12px',
+                            borderBottom: '1px solid #e2e8f0'
+                        }
+                    },
+                        el('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+                            el('strong', { style: { fontSize: '15px' } }, 'Case-Study Grid'),
+                            el('span', {
+                                style: {
+                                    fontSize: '11px',
+                                    padding: '2px 8px',
+                                    borderRadius: '999px',
+                                    background: accentColor,
+                                    color: '#fff',
+                                    fontWeight: '700'
+                                }
+                            }, cardStyle.toUpperCase())
+                        ),
+                        el('span', { style: { fontSize: '12px', color: '#64748b' } },
+                            isQuery
+                                ? ('CPT query · up to ' + (attributes.queryNumber || 12) + ' · ' + (attributes.layout || 'bento'))
+                                : (innerInfo.count + ' card(s) · ' + (attributes.layout || 'bento'))
+                        )
                     ),
                     isQuery
-                        ? el('p', { style: { fontSize: '13px', color: '#5c6f66', margin: 0 } },
+                        ? el('p', { style: { fontSize: '13px', color: '#64748b', margin: 0 } },
                             'Projects load from Case Studies under Rawnaq. Publish posts there — no cards needed in the editor.'
                         )
                         : el(InnerBlocks, {

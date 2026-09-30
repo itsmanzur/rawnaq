@@ -559,9 +559,10 @@ class Rawnaq_Gutenberg_Loader {
                     'discussTarget'  => [ 'type' => 'string', 'default' => 'auto' ],
                     'initialVisible' => [ 'type' => 'number', 'default' => 0 ],
                     'loadChunk'      => [ 'type' => 'number', 'default' => 6 ],
-                    'accent'         => [ 'type' => 'string', 'default' => '#fbbf24' ],
+                    'cardStyle'      => [ 'type' => 'string', 'default' => 'elevated' ],
+                    'accent'         => [ 'type' => 'string', 'default' => '#0f766e' ],
                     'cardBg'         => [ 'type' => 'string', 'default' => '#ffffff' ],
-                    'cardBorder'     => [ 'type' => 'string', 'default' => '#d7e2dc' ],
+                    'cardBorder'     => [ 'type' => 'string', 'default' => 'rgba(0,0,0,0.08)' ],
                     'radius'         => [ 'type' => 'number', 'default' => 18 ],
                 ],
             ] );
@@ -2111,9 +2112,10 @@ class Rawnaq_Gutenberg_Loader {
             'discussTarget'  => $attributes['discussTarget'] ?? 'auto',
             'initialVisible' => isset( $attributes['initialVisible'] ) ? absint( $attributes['initialVisible'] ) : 0,
             'loadChunk'      => absint( $attributes['loadChunk'] ?? 6 ),
-            'accent'         => sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '#fbbf24',
-            'cardBg'         => sanitize_hex_color( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
-            'cardBorder'     => sanitize_hex_color( $attributes['cardBorder'] ?? '' ) ?: '#d7e2dc',
+            'cardStyle'      => sanitize_key( $attributes['cardStyle'] ?? 'elevated' ),
+            'accent'         => sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '#0f766e',
+            'cardBg'         => sanitize_text_field( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
+            'cardBorder'     => sanitize_text_field( $attributes['cardBorder'] ?? '' ) ?: 'rgba(0,0,0,0.08)',
             'radius'         => isset( $attributes['radius'] ) ? absint( $attributes['radius'] ) : 18,
         ];
 

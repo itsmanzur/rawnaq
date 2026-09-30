@@ -335,29 +335,46 @@ class Rawnaq_Case_Study_Grid_Widget extends \Elementor\Widget_Base {
 			'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
 		] );
 
+		$this->add_control( 'card_style', [
+			'label'   => esc_html__( 'Theme Preset', 'rawnaq' ),
+			'type'    => \Elementor\Controls_Manager::SELECT,
+			'default' => 'elevated',
+			'options' => [
+				'elevated'  => esc_html__( 'Modern Elevated (Default)', 'rawnaq' ),
+				'glass'     => esc_html__( 'Minimal Glassmorphism', 'rawnaq' ),
+				'spotlight' => esc_html__( 'Editorial Spotlight', 'rawnaq' ),
+			],
+		] );
+
 		$this->add_control( 'accent', [
-			'label'     => esc_html__( 'Accent (sector badge)', 'rawnaq' ),
+			'label'     => esc_html__( 'Accent Color', 'rawnaq' ),
 			'type'      => \Elementor\Controls_Manager::COLOR,
-			'default'   => '#fbbf24',
+			'default'   => '#0f766e',
 			'selectors' => [ '{{WRAPPER}} .rawnaq-case-study' => '--cs-accent: {{VALUE}};' ],
 		] );
 		$this->add_control( 'card_bg', [
-			'label'     => esc_html__( 'Card background', 'rawnaq' ),
+			'label'     => esc_html__( 'Card Background', 'rawnaq' ),
 			'type'      => \Elementor\Controls_Manager::COLOR,
 			'default'   => '#ffffff',
 			'selectors' => [ '{{WRAPPER}} .rawnaq-case-study' => '--cs-card-bg: {{VALUE}};' ],
 		] );
 		$this->add_control( 'card_border', [
-			'label'     => esc_html__( 'Card border', 'rawnaq' ),
+			'label'     => esc_html__( 'Card Border', 'rawnaq' ),
 			'type'      => \Elementor\Controls_Manager::COLOR,
-			'default'   => '#d7e2dc',
+			'default'   => 'rgba(0, 0, 0, 0.08)',
 			'selectors' => [ '{{WRAPPER}} .rawnaq-case-study' => '--cs-card-border: {{VALUE}};' ],
 		] );
+		$this->add_control( 'text_color', [
+			'label'     => esc_html__( 'Text Color', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::COLOR,
+			'default'   => '',
+			'selectors' => [ '{{WRAPPER}} .rawnaq-case-study' => '--cs-ink: {{VALUE}};' ],
+		] );
 		$this->add_control( 'radius', [
-			'label'      => esc_html__( 'Card radius', 'rawnaq' ),
+			'label'      => esc_html__( 'Card Radius', 'rawnaq' ),
 			'type'       => \Elementor\Controls_Manager::SLIDER,
 			'size_units' => [ 'px' ],
-			'range'      => [ 'px' => [ 'min' => 0, 'max' => 32 ] ],
+			'range'      => [ 'px' => [ 'min' => 0, 'max' => 36 ] ],
 			'default'    => [ 'size' => 18 ],
 			'selectors'  => [ '{{WRAPPER}} .rawnaq-case-study' => '--cs-radius: {{SIZE}}{{UNIT}};' ],
 		] );
@@ -424,10 +441,11 @@ class Rawnaq_Case_Study_Grid_Widget extends \Elementor\Widget_Base {
 			'clickAction'    => $s['click_action'] ?? 'modal',
 			'discussTarget'  => $s['discuss_target'] ?? 'auto',
 			'initialVisible' => max( 0, $initial_visible ),
-			'loadChunk'      => max( 1, isset( $s['load_chunk'] ) ? (int) $s['load_chunk'] : 3 ),
+			'cardStyle'      => $s['card_style'] ?? 'elevated',
 			'accent'         => $s['accent'] ?? '',
 			'cardBg'         => $s['card_bg'] ?? '',
 			'cardBorder'     => $s['card_border'] ?? '',
+			'textColor'      => $s['text_color'] ?? '',
 			'radius'         => isset( $s['radius']['size'] ) ? $s['radius']['size'] : 18,
 		];
 	}
