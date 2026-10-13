@@ -48,9 +48,13 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 		] );
 
 		$preset_opts = [ '' => esc_html__( '— Choose —', 'rawnaq' ) ];
-		if ( function_exists( 'rawnaq_smart_form_presets' ) ) {
+		if ( function_exists( 'rawnaq_smart_form_preset_options' ) ) {
+			$preset_opts = array_merge( $preset_opts, rawnaq_smart_form_preset_options() );
+		} elseif ( function_exists( 'rawnaq_smart_form_presets' ) ) {
 			foreach ( rawnaq_smart_form_presets() as $key => $pack ) {
-				$preset_opts[ $key ] = $pack['label'];
+				if ( empty( $pack['internal'] ) ) {
+					$preset_opts[ $key ] = $pack['label'];
+				}
 			}
 		}
 
@@ -143,6 +147,22 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'default'      => '',
 			'condition'    => [ 'type' => 'phone' ],
 		] );
+		$repeater->add_control( 'phone_min', [
+			'label'     => esc_html__( 'Minimum phone digits', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::NUMBER,
+			'default'   => 6,
+			'min'       => 3,
+			'max'       => 20,
+			'condition' => [ 'type' => 'phone' ],
+		] );
+		$repeater->add_control( 'phone_max', [
+			'label'     => esc_html__( 'Maximum phone digits', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::NUMBER,
+			'default'   => 16,
+			'min'       => 6,
+			'max'       => 30,
+			'condition' => [ 'type' => 'phone' ],
+		] );
 		$repeater->add_control( 'label', [
 			'label'   => esc_html__( 'Label', 'rawnaq' ),
 			'type'    => \Elementor\Controls_Manager::TEXT,
@@ -153,15 +173,29 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'type'    => \Elementor\Controls_Manager::TEXT,
 			'default' => '',
 		] );
+		$repeater->add_control( 'help_text', [
+			'label'       => esc_html__( 'Help text', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => '',
+			'description' => esc_html__( 'Accessible helper text displayed beneath the field.', 'rawnaq' ),
+		] );
 		$repeater->add_control( 'required', [
 			'label'        => esc_html__( 'Required', 'rawnaq' ),
 			'type'         => \Elementor\Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		] );
+		$repeater->add_control( 'optin_mailchimp', [
+			'label'        => esc_html__( 'Newsletter opt-in (Mailchimp)', 'rawnaq' ),
+			'type'         => \Elementor\Controls_Manager::SWITCHER,
+			'return_value' => 'yes',
+			'default'      => '',
+			'condition'    => [ 'type' => 'checkbox' ],
+		] );
 		$repeater->add_control( 'options', [
-			'label'       => esc_html__( 'Options (comma-separated, or Title | Subtitle)', 'rawnaq' ),
-			'type'        => \Elementor\Controls_Manager::TEXT,
+			'label'       => esc_html__( 'Options', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXTAREA,
+			'description' => esc_html__( 'One option per line (Title | Subtitle for cards)', 'rawnaq' ),
 			'default'     => '',
 			'condition'   => [ 'type' => [ 'select', 'cards' ] ],
 			'label_block' => true,
@@ -278,28 +312,45 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'condition'    => [ 'delivery_email' => 'yes' ],
 		] );
 
-		$default_wa = function_exists( 'rawnaq_get_default_wa_number' ) ? rawnaq_get_default_wa_number() : '';
-		$this->add_control( 'delivery_whatsapp', [
-			'label'        => esc_html__( 'WhatsApp delivery (redirect)', 'rawnaq' ),
+		$this->add_control( 'auto_responder_enabled', [
+			'label'        => esc_html__( 'Send confirmation email', 'rawnaq' ),
 			'type'         => \Elementor\Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
-			'default'      => 'yes',
-			'description'  => esc_html__( 'Opens wa.me with a prefilled message. Blank number uses site default (Rawnaq settings).', 'rawnaq' ),
+			'default'      => '',
+			'description'  => esc_html__( 'Sends an automated confirmation email to the submitter.', 'rawnaq' ),
 		] );
-		$this->add_control( 'wa_number', [
-			'label'       => esc_html__( 'WhatsApp number', 'rawnaq' ),
+		$this->add_control( 'auto_responder_subject', [
+			'label'       => esc_html__( 'Confirmation email subject', 'rawnaq' ),
 			'type'        => \Elementor\Controls_Manager::TEXT,
-			'default'     => $default_wa,
-			'placeholder' => $default_wa ? $default_wa : '8801XXXXXXXXX',
-			'condition'   => [ 'delivery_whatsapp' => 'yes' ],
-			'description' => esc_html__( 'Leave blank to use the shared site default number.', 'rawnaq' ),
+			'default'     => esc_html__( 'We received your message', 'rawnaq' ),
+			'condition'   => [ 'auto_responder_enabled' => 'yes' ],
 		] );
-		$this->add_control( 'wa_template', [
-			'label'       => esc_html__( 'WhatsApp message template', 'rawnaq' ),
+		$this->add_control( 'auto_responder_message', [
+			'label'       => esc_html__( 'Confirmation email message', 'rawnaq' ),
 			'type'        => \Elementor\Controls_Manager::TEXTAREA,
-			'default'     => "New inquiry:\nName: {name}\nPhone: {phone}\nEmail: {email}\nMessage: {message}\nPage: {pageTitle}\nURL: {url}",
-			'condition'   => [ 'delivery_whatsapp' => 'yes' ],
-			'description' => esc_html__( '{field_id} plus {pageTitle}, {url}, {siteTitle}, {date}, {time}.', 'rawnaq' ),
+			'default'     => "Hi {first_name},\n\nThank you for reaching out to us. We have received your submission and will get back to you shortly.\n\nBest regards,\n{site_title}",
+			'condition'   => [ 'auto_responder_enabled' => 'yes' ],
+			'description' => esc_html__( '{name}, {first_name}, {last_name}, {email}, {phone}, {form_title}, {site_title}, {date}.', 'rawnaq' ),
+		] );
+		$this->add_control( 'auto_responder_from_name', [
+			'label'       => esc_html__( 'Confirmation From Name', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => '',
+			'placeholder' => get_bloginfo( 'name' ),
+			'condition'   => [ 'auto_responder_enabled' => 'yes' ],
+			'description' => esc_html__( 'Leave blank to use the site title.', 'rawnaq' ),
+		] );
+		$this->add_control( 'form_label', [
+			'label'       => esc_html__( 'Form Label (Admin)', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => '',
+			'description' => esc_html__( 'Friendly label for this form in submissions list.', 'rawnaq' ),
+		] );
+
+		$default_wa = function_exists( 'rawnaq_get_default_wa_number' ) ? rawnaq_get_default_wa_number() : '';
+		$this->add_control( 'delivery_whatsapp', [
+			'type'    => \Elementor\Controls_Manager::HIDDEN,
+			'default' => '',
 		] );
 
 		$this->add_control( 'after_submit', [
@@ -317,6 +368,21 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'type'        => \Elementor\Controls_Manager::URL,
 			'condition'   => [ 'after_submit' => 'redirect' ],
 			'placeholder' => 'https://',
+		] );
+		$this->add_control( 'wa_number', [
+			'label'       => esc_html__( 'WhatsApp number', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXT,
+			'default'     => $default_wa,
+			'placeholder' => $default_wa ? $default_wa : '8801XXXXXXXXX',
+			'condition'   => [ 'after_submit' => 'whatsapp' ],
+			'description' => esc_html__( 'Leave blank to use the shared site default number.', 'rawnaq' ),
+		] );
+		$this->add_control( 'wa_template', [
+			'label'       => esc_html__( 'WhatsApp message template', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::TEXTAREA,
+			'default'     => "New inquiry:\nName: {name}\nPhone: {phone}\nEmail: {email}\nMessage: {message}\nPage: {pageTitle}\nURL: {url}",
+			'condition'   => [ 'after_submit' => 'whatsapp' ],
+			'description' => esc_html__( '{field_id} plus {pageTitle}, {url}, {siteTitle}, {date}, {time}.', 'rawnaq' ),
 		] );
 
 		$this->add_control( 'submit_label', [
@@ -352,6 +418,39 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'type'         => \Elementor\Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'default'      => 'yes',
+		] );
+		$this->add_control( 'celebration_effect', [
+			'label'        => esc_html__( 'Confetti Celebration Effect', 'rawnaq' ),
+			'type'         => \Elementor\Controls_Manager::SWITCHER,
+			'return_value' => 'yes',
+			'default'      => '',
+			'description'  => esc_html__( 'Show celebration confetti on successful submission (disabled if user prefers reduced motion).', 'rawnaq' ),
+		] );
+		$this->add_control( 'url_prefill', [
+			'label'        => esc_html__( 'Allow URL Prefill', 'rawnaq' ),
+			'type'         => \Elementor\Controls_Manager::SWITCHER,
+			'return_value' => 'yes',
+			'default'      => '',
+			'description'  => esc_html__( 'Prefill field values from URL query parameters (e.g. ?name=John). Hidden fields are never prefilled.', 'rawnaq' ),
+		] );
+		$this->add_control( 'estimator', [
+			'label'        => esc_html__( 'Price Estimator', 'rawnaq' ),
+			'type'         => \Elementor\Controls_Manager::SWITCHER,
+			'return_value' => 'yes',
+			'default'      => '',
+			'description'  => esc_html__( 'Calculate and display estimated total from selected options.', 'rawnaq' ),
+		] );
+		$this->add_control( 'estimator_label', [
+			'label'     => esc_html__( 'Estimator Label', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::TEXT,
+			'default'   => esc_html__( 'Estimated total', 'rawnaq' ),
+			'condition' => [ 'estimator' => 'yes' ],
+		] );
+		$this->add_control( 'estimator_currency', [
+			'label'     => esc_html__( 'Currency Symbol', 'rawnaq' ),
+			'type'      => \Elementor\Controls_Manager::TEXT,
+			'default'   => '$',
+			'condition' => [ 'estimator' => 'yes' ],
 		] );
 
 		$this->add_control( 'recaptcha_enabled', [
@@ -393,6 +492,16 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'default'     => '',
 			'condition'   => [ 'crm_provider' => 'mailchimp' ],
 			'label_block' => true,
+		] );
+		$this->add_control( 'mailchimp_status', [
+			'label'       => esc_html__( 'Subscriber status', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::SELECT,
+			'default'     => 'pending',
+			'options'     => [
+				'pending'    => esc_html__( 'Pending (double opt-in)', 'rawnaq' ),
+				'subscribed' => esc_html__( 'Subscribed (single opt-in)', 'rawnaq' ),
+			],
+			'condition'   => [ 'crm_provider' => 'mailchimp' ],
 		] );
 		$this->add_control( 'crm_audience_hs', [
 			'label'       => esc_html__( 'HubSpot Form GUID', 'rawnaq' ),
@@ -487,6 +596,7 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 				'id'            => $row['field_id'] ?? '',
 				'type'          => $row['type'] ?? 'text',
 				'label'         => $row['label'] ?? '',
+				'help_text'     => $row['help_text'] ?? '',
 				'placeholder'   => $row['placeholder'] ?? '',
 				'required'      => ( $row['required'] ?? '' ) === 'yes',
 				'options'       => $row['options'] ?? '',
@@ -494,10 +604,19 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 				'step'          => $row['step'] ?? 1,
 				'show_if'       => $row['show_if'] ?? '',
 				'show_if_value' => $row['show_if_value'] ?? '',
-				'default_value' => $row['default_value'] ?? '',
-				'max_mb'        => $row['max_mb'] ?? 5,
-				'accept'        => $row['accept'] ?? '',
-				'rating_max'    => $row['rating_max'] ?? 5,
+				'default_value'  => $row['default_value'] ?? '',
+				'max_mb'         => $row['max_mb'] ?? 5,
+				'accept'         => $row['accept'] ?? '',
+				'rating_max'     => $row['rating_max'] ?? 5,
+				'country_picker' => $row['country_picker'] ?? '',
+				'phone_min'      => isset( $row['phone_min'] ) ? absint( $row['phone_min'] ) : 6,
+				'phone_max'      => isset( $row['phone_max'] ) ? absint( $row['phone_max'] ) : 16,
+				'optin_mailchimp' => ( $row['optin_mailchimp'] ?? '' ) === 'yes',
+				'min'            => isset( $row['slider_min'] ) ? (int) $row['slider_min'] : 0,
+				'max'            => isset( $row['slider_max'] ) ? (int) $row['slider_max'] : 100,
+				'step_val'       => isset( $row['slider_step'] ) ? (int) $row['slider_step'] : 1,
+				'unit_prefix'    => $row['unit_prefix'] ?? '',
+				'unit_suffix'    => $row['unit_suffix'] ?? '',
 			];
 		}
 		$redirect = '';
@@ -505,11 +624,14 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			$redirect = $s['redirect_url']['url'];
 		}
 		$size = $s['input_size'] ?? 'md';
+		$has_wa_number = ! empty( $s['wa_number'] );
+		$wa_active     = ( ( $s['after_submit'] ?? '' ) === 'whatsapp' ) || ( ( $s['delivery_whatsapp'] ?? '' ) === 'yes' && $has_wa_number );
+
 		return [
 			'theme'             => $s['form_theme'] ?? 'elevated',
 			'fields'            => $fields,
 			'deliveryEmail'     => ( $s['delivery_email'] ?? '' ) === 'yes',
-			'deliveryWhatsapp'  => ( $s['delivery_whatsapp'] ?? '' ) === 'yes',
+			'deliveryWhatsapp'  => $wa_active,
 			'emailTo'           => $s['email_to'] ?? '',
 			'emailSubject'      => $s['email_subject'] ?? '',
 			'waNumber'          => $s['wa_number'] ?? '',
@@ -522,6 +644,8 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'consentEnabled'    => ( $s['consent_enabled'] ?? '' ) === 'yes',
 			'consentText'       => $s['consent_text'] ?? '',
 			'logSubmissions'    => ( $s['log_submissions'] ?? 'yes' ) === 'yes',
+			'celebrationEffect' => isset( $s['celebration_effect'] ) ? ( ( $s['celebration_effect'] ?? '' ) === 'yes' ) : true,
+			'urlPrefill'        => ( $s['url_prefill'] ?? '' ) === 'yes',
 			'recaptchaEnabled'  => ( $s['recaptcha_enabled'] ?? '' ) === 'yes',
 			'webhookEnabled'    => ( $s['webhook_enabled'] ?? '' ) === 'yes',
 			'webhookUrl'        => $s['webhook_url'] ?? '',
@@ -530,6 +654,12 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'crmAudience'       => ( ( $s['crm_provider'] ?? 'none' ) === 'hubspot' )
 				? ( $s['crm_audience_hs'] ?? '' )
 				: ( $s['crm_audience'] ?? '' ),
+			'mailchimpStatus'   => $s['mailchimp_status'] ?? 'pending',
+			'autoResponderEnabled'  => ( $s['auto_responder_enabled'] ?? '' ) === 'yes',
+			'autoResponderSubject'  => $s['auto_responder_subject'] ?? '',
+			'autoResponderMessage'  => $s['auto_responder_message'] ?? '',
+			'autoResponderFromName' => $s['auto_responder_from_name'] ?? '',
+			'formLabel'             => ! empty( $s['form_label'] ) ? sanitize_text_field( $s['form_label'] ) : ( get_the_title() . ' (Elementor)' ),
 			'buttonFullWidth'   => ( $s['button_full_width'] ?? '' ) === 'yes',
 			'inputSize'         => $size,
 			'labelColor'        => $s['label_color'] ?? '',
@@ -538,12 +668,18 @@ class Rawnaq_Smart_Form_Widget extends \Elementor\Widget_Base {
 			'inputText'         => $s['input_text'] ?? '',
 			'buttonBg'          => $s['accent'] ?? '',
 			'buttonText'        => $s['button_text'] ?? '',
+			'estimator'         => ( $s['estimator'] ?? '' ) === 'yes',
+			'estimatorLabel'    => $s['estimator_label'] ?? __( 'Estimated total', 'rawnaq' ),
+			'estimatorCurrency' => $s['estimator_currency'] ?? '$',
 		];
 	}
 
 	protected function render() {
-		$s   = $this->get_settings_for_display();
-		$cfg = $this->build_cfg( $s );
-		rawnaq_smart_form_markup( $cfg, 'el-' . $this->get_id() );
+		$s       = $this->get_settings_for_display();
+		$cfg     = $this->build_cfg( $s );
+		$form_id = function_exists( 'rawnaq_smart_form_make_form_id' )
+			? rawnaq_smart_form_make_form_id( 'el', $cfg, $this->get_id() )
+			: ( 'el-' . $this->get_id() );
+		rawnaq_smart_form_markup( $cfg, $form_id );
 	}
 }

@@ -6,6 +6,9 @@
 .gitignore
 .distignore
 .cursor
+.claude
+*.map
+*.zip
 *.md
 docs
 bin
@@ -31,3 +34,4 @@ webpack.config.js
 dist
 assets-wp-org
 .wordpress-org
+scratch

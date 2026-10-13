@@ -20,10 +20,11 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
         ] );
 
         $this->add_control( 'progress', [
-            'label'   => esc_html__( 'Progress Style', 'rawnaq' ),
-            'type'    => \Elementor\Controls_Manager::SELECT,
-            'default' => 'both',
-            'options' => [
+            'label'       => esc_html__( 'Progress Style', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::SELECT,
+            'default'     => 'both',
+            'description' => esc_html__( 'Fixed progress bar and scroll ring are displayed once per page. If multiple widgets are added, the first instance takes precedence.', 'rawnaq' ),
+            'options'     => [
                 'bar'  => esc_html__( 'Top / Bottom bar', 'rawnaq' ),
                 'ring' => esc_html__( 'Circular ring', 'rawnaq' ),
                 'both' => esc_html__( 'Bar + Ring', 'rawnaq' ),
@@ -40,6 +41,29 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
                 'bottom' => esc_html__( 'Bottom', 'rawnaq' ),
             ],
             'condition' => [ 'progress' => [ 'bar', 'both' ] ],
+        ] );
+
+        $this->add_control( 'progress_target', [
+            'label'       => esc_html__( 'Progress based on', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::SELECT,
+            'default'     => 'page',
+            'options'     => [
+                'page'    => esc_html__( 'Whole page', 'rawnaq' ),
+                'article' => esc_html__( 'Article / content area', 'rawnaq' ),
+                'custom'  => esc_html__( 'Custom CSS selector', 'rawnaq' ),
+            ],
+            'condition'   => [ 'progress!' => 'none' ],
+        ] );
+
+        $this->add_control( 'progress_selector', [
+            'label'       => esc_html__( 'Progress CSS Selector', 'rawnaq' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'placeholder' => '.entry-content',
+            'description' => esc_html__( 'CSS selector of the content container to calculate scroll progress against.', 'rawnaq' ),
+            'condition'   => [
+                'progress!'       => 'none',
+                'progress_target' => 'custom',
+            ],
         ] );
 
         $this->add_control( 'show_percent', [
@@ -212,7 +236,7 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'label'        => esc_html__( 'Sync URL Hash on Scroll', 'rawnaq' ),
             'type'         => \Elementor\Controls_Manager::SWITCHER,
             'return_value' => 'yes',
-            'default'      => 'yes',
+            'default'      => '',
             'condition'    => [ 'toc_position!' => 'none' ],
         ] );
 
@@ -294,6 +318,8 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
         return [
             'progress'           => $s['progress'] ?? 'both',
             'barPosition'        => $s['bar_position'] ?? 'top',
+            'progressTarget'     => $s['progress_target'] ?? 'page',
+            'progressSelector'   => $s['progress_selector'] ?? '',
             'showPercent'        => ( $s['show_percent'] ?? '' ) === 'yes',
             'clickToTop'         => ( $s['click_to_top'] ?? 'yes' ) === 'yes',
             'tocPosition'        => $s['toc_position'] ?? 'sticky',
@@ -304,7 +330,7 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
             'manual'             => $manual,
             'collapseSubs'       => ( $s['collapse_subs'] ?? '' ) === 'yes',
             'showSearch'         => ( $s['show_search'] ?? '' ) === 'yes',
-            'urlHashSync'        => ( $s['url_hash_sync'] ?? 'yes' ) === 'yes',
+            'urlHashSync'        => ( $s['url_hash_sync'] ?? '' ) === 'yes',
             'sectionReadingTime' => ( $s['section_reading_time'] ?? '' ) === 'yes',
             'smooth'             => ( $s['smooth'] ?? 'yes' ) === 'yes',
             'scrollOffset'       => isset( $s['scroll_offset'] ) ? (int) $s['scroll_offset'] : 80,
@@ -319,37 +345,22 @@ class Rawnaq_Scroll_Progress_Toc_Widget extends \Elementor\Widget_Base {
 
     protected function render() {
         $s   = $this->get_settings_for_display();
-        $cfg = $this->build_cfg( $s );
-        $pos = $cfg['tocPosition'];
-        $ring = isset( $s['ring_size']['size'] ) ? (int) $s['ring_size']['size'] : 56;
-        if ( $ring < 40 ) {
-            $ring = 40;
+        $raw = $this->build_cfg( $s );
+        $cfg = function_exists( 'rawnaq_spt_cfg_sanitize' ) ? rawnaq_spt_cfg_sanitize( $raw ) : $raw;
+
+        $ring = isset( $s['ring_size']['size'] ) ? (int) $s['ring_size']['size'] : ( $cfg['ringSize'] ?? 56 );
+        $cfg['ringSize'] = max( 40, min( 96, $ring ) );
+
+        $style_vars = [];
+        if ( ! empty( $s['accent'] ) ) {
+            $style_vars['--spt-accent'] = $s['accent'];
         }
-        if ( $ring > 96 ) {
-            $ring = 96;
+        if ( ! empty( $s['accent_deep'] ) ) {
+            $style_vars['--spt-accent-deep'] = $s['accent_deep'];
         }
-        ?>
-        <div class="rawnaq-spt"
-             style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px; --spt-ring-size: <?php echo esc_attr( (string) $ring ); ?>px;"
-             data-spt="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>">
-            <?php if ( 'none' !== $pos ) : ?>
-                <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $pos ); ?>" role="navigation" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
-                    <div class="rawnaq-spt-header-wrap">
-                        <p class="rawnaq-spt-reading" hidden></p>
-                        <p class="rawnaq-spt-chapter" hidden></p>
-                        <div class="rawnaq-spt-title-row">
-                            <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
-                            <?php if ( ! empty( $cfg['tocCollapsible'] ) ) : ?>
-                                <button type="button" class="rawnaq-spt-toggle-btn" aria-expanded="true" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'rawnaq' ); ?>">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <ul class="rawnaq-spt-list"></ul>
-                </nav>
-            <?php endif; ?>
-        </div>
-        <?php
+
+        if ( function_exists( 'rawnaq_spt_markup' ) ) {
+            echo rawnaq_spt_markup( $cfg, $style_vars ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        }
     }
 }

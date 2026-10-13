@@ -2,7 +2,7 @@
 .rawnaq-smart-form {
     --sf-accent: #fbbf24;
     --sf-accent-deep: #0f766e;
-    --sf-btn-text: #92400e;
+    --sf-btn-text: #78350f;
     --sf-ink: #13231c;
     --sf-label: var(--sf-ink);
     --sf-muted: #5c6f66;
@@ -18,6 +18,12 @@
     box-sizing: border-box;
 }
 
+/* Explicit Placeholder Contrast (WCAG 2.2 AA) */
+.rawnaq-smart-form ::placeholder {
+    color: #526071;
+    opacity: 1;
+}
+
 /* ==========================================================================
    Smart Form Theme Presets
    ========================================================================== */
@@ -30,7 +36,7 @@
     --sf-muted: #5c6f66;
     --sf-accent: #fbbf24;
     --sf-accent-deep: #0f766e;
-    --sf-btn-text: #92400e;
+    --sf-btn-text: #78350f;
     background: var(--sf-panel);
     border: 1px solid var(--sf-line);
     border-radius: calc(var(--sf-radius) + 4px);
@@ -84,6 +90,7 @@
     --sf-ink: #f8fafc;
     --sf-label: #f1f5f9;
     --sf-muted: #94a3b8;
+    --sf-danger: #f87171;
     --sf-accent: #0f766e;
     --sf-accent-deep: #14b8a6;
     --sf-btn-text: #ffffff;
@@ -93,6 +100,11 @@
     padding: 26px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
     color: #f8fafc;
+}
+.rawnaq-smart-form.is-theme-obsidian ::placeholder,
+.rawnaq-smart-form.is-theme-dark ::placeholder {
+    color: #94a3b8;
+    opacity: 1;
 }
 .rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-input,
 .rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-textarea,
@@ -139,7 +151,7 @@
     --sf-line: #1e293b;
     --sf-ink: #0f172a;
     --sf-label: #0f172a;
-    --sf-muted: #64748b;
+    --sf-muted: #475569;
     --sf-accent: #0f172a;
     --sf-accent-deep: #0f766e;
     --sf-btn-text: #ffffff;
@@ -168,6 +180,22 @@
     min-width: 0;
 }
 
+.rawnaq-sf-fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-inline-size: 0;
+}
+
+.rawnaq-sf-fieldset > legend.rawnaq-sf-label {
+    display: table;
+    float: inline-start;
+    max-width: 100%;
+    margin-block-end: 8px;
+    padding: 0;
+    white-space: normal;
+}
+
 .rawnaq-sf-field[data-width="75"] { grid-column: span 9; }
 .rawnaq-sf-field[data-width="66"] { grid-column: span 8; }
 .rawnaq-sf-field[data-width="50"] { grid-column: span 6; }
@@ -189,7 +217,7 @@
 
 .rawnaq-sf-label .req {
     color: var(--sf-accent-deep);
-    margin-left: 2px;
+    margin-inline-start: 2px;
 }
 
 .rawnaq-sf-input,
@@ -221,6 +249,13 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-accent) 45%, transparent);
 }
 
+.rawnaq-sf-input:focus-visible,
+.rawnaq-sf-textarea:focus-visible,
+.rawnaq-sf-select:focus-visible {
+    outline: 2px solid var(--sf-accent-deep);
+    outline-offset: 1px;
+}
+
 .rawnaq-sf-field.is-invalid .rawnaq-sf-input,
 .rawnaq-sf-field.is-invalid .rawnaq-sf-textarea,
 .rawnaq-sf-field.is-invalid .rawnaq-sf-select {
@@ -236,6 +271,24 @@
 
 .rawnaq-sf-field.is-invalid .rawnaq-sf-error {
     display: block;
+}
+
+.rawnaq-sf-help,
+.rawnaq-sf-hint {
+    margin: 4px 0 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--sf-muted);
+}
+
+.rawnaq-sf-help.rawnaq-sf-consent-subtext {
+    margin-top: 4px;
+    padding-left: 26px;
+}
+
+[dir="rtl"] .rawnaq-sf-help.rawnaq-sf-consent-subtext {
+    padding-left: 0;
+    padding-right: 26px;
 }
 
 .rawnaq-sf-check {
@@ -290,6 +343,11 @@
     transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
 }
 
+.rawnaq-sf-submit:focus-visible {
+    outline: 2px solid var(--sf-ink);
+    outline-offset: 3px;
+}
+
 .rawnaq-sf-prev,
 .rawnaq-sf-next {
     appearance: none;
@@ -304,19 +362,27 @@
     cursor: pointer;
 }
 
+.rawnaq-sf-prev:focus-visible,
+.rawnaq-sf-next:focus-visible {
+    outline: 2px solid var(--sf-accent-deep);
+    outline-offset: 2px;
+}
+
 .rawnaq-sf-steps {
     position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    padding: 0 4px;
+    list-style: none;
+    margin: 0;
+    margin-block-end: 24px;
+    padding: 0;
+    padding-inline: 4px;
 }
 
 .rawnaq-sf-progress-track {
     position: absolute;
-    left: 16px;
-    right: 16px;
+    inset-inline: 16px;
     top: 50%;
     transform: translateY(-50%);
     height: 3px;
@@ -348,6 +414,8 @@
     color: var(--sf-muted);
     transition: all 0.3s ease;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    list-style: none;
+    margin: 0;
 }
 
 .rawnaq-sf-step-dot.is-active {
@@ -450,7 +518,7 @@
 
 .rawnaq-sf-live-badge {
     position: absolute;
-    right: 12px;
+    inset-inline-end: 12px;
     top: 50%;
     transform: translateY(-50%);
     width: 18px;
@@ -516,6 +584,12 @@
     border-color: var(--sf-accent-deep);
     transform: translateY(-2px);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.rawnaq-sf-card-option:has(input[type="radio"]:focus-visible),
+.rawnaq-sf-card-option.has-focus-visible {
+    outline: 2px solid var(--sf-accent-deep);
+    outline-offset: 2px;
 }
 
 .rawnaq-sf-card-option input[type="radio"] {
@@ -712,15 +786,46 @@
     border-color: var(--sf-accent-deep);
 }
 
+.rawnaq-sf-signature-type-wrap {
+    width: 100%;
+}
+
+.rawnaq-sf-signature-type-input {
+    font-family: 'Brush Script MT', 'Caveat', 'Segoe Script', cursive, sans-serif;
+    font-size: 1.5rem;
+    padding: 12px 14px;
+    min-height: 70px;
+}
+
 .rawnaq-sf-signature-tools {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .rawnaq-sf-signature-hint {
     font-size: 0.8rem;
     color: var(--sf-muted);
+}
+
+.rawnaq-sf-signature-toggle-mode {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--sf-accent-deep);
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: opacity 0.15s ease;
+}
+
+.rawnaq-sf-signature-toggle-mode:hover {
+    opacity: 0.8;
 }
 
 .rawnaq-sf-signature-clear {
@@ -740,6 +845,12 @@
     border-color: var(--sf-danger);
     color: var(--sf-danger);
     background: #fef2f2;
+}
+
+.rawnaq-sf-signature-toggle-mode:focus-visible,
+.rawnaq-sf-signature-clear:focus-visible {
+    outline: 2px solid var(--sf-accent-deep);
+    outline-offset: 2px;
 }
 
 /* Live Price / Quote Estimator Card */
@@ -795,6 +906,11 @@
     transform: translateY(-1px);
 }
 
+.rawnaq-sf-dropzone:focus-visible {
+    outline: 2px solid var(--sf-accent-deep);
+    outline-offset: 3px;
+}
+
 .rawnaq-sf-dropzone-icon {
     width: 32px;
     height: 32px;
@@ -826,7 +942,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 8px;
+    margin-block-start: 8px;
 }
 
 .rawnaq-sf-preview-chip {
@@ -861,6 +977,12 @@
 
 .rawnaq-sf-preview-remove:hover {
     color: var(--sf-danger);
+}
+
+.rawnaq-sf-preview-remove:focus-visible {
+    outline: 2px solid var(--sf-danger);
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
 /* Confetti Celebration Particle Layer */
@@ -916,10 +1038,10 @@
     color: var(--sf-accent);
 }
 
-.rawnaq-sf-hint {
-    margin: 0;
-    font-size: 0.75rem;
-    color: var(--sf-muted);
+.rawnaq-sf-star:focus-visible {
+    outline: 2px solid var(--sf-accent-deep);
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
 .rawnaq-sf-file {
@@ -942,8 +1064,8 @@
 .rawnaq-sf-spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(146, 64, 14, 0.25);
-    border-top-color: #92400e;
+    border: 2px solid rgba(120, 53, 15, 0.25);
+    border-top-color: #78350f;
     border-radius: 50%;
     animation: rawnaq-sf-spin 0.7s linear infinite;
     display: none;
@@ -967,6 +1089,12 @@
     animation: rawnaq-sf-fade-in 0.3s ease forwards;
 }
 
+.rawnaq-sf-status:focus,
+.rawnaq-sf-status:focus-visible {
+    outline: 2px solid var(--sf-accent-deep);
+    outline-offset: 2px;
+}
+
 @keyframes rawnaq-sf-fade-in {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
@@ -985,6 +1113,13 @@
     background: #fef2f2;
     color: var(--sf-danger);
     border: 1px solid #fecaca;
+}
+
+.rawnaq-smart-form.is-theme-obsidian .rawnaq-sf-status.is-error,
+.rawnaq-smart-form.is-theme-dark .rawnaq-sf-status.is-error {
+    background: rgba(185, 28, 28, 0.15);
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
 }
 
 .rawnaq-sf-success-mark {
@@ -1016,12 +1151,81 @@
     to { stroke-dashoffset: 0; }
 }
 
+/* Screen Reader Only Utility */
+.rawnaq-sf-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ==========================================================================
+   RTL & Typography Adaptations
+   ========================================================================== */
+
+[dir="rtl"] .rawnaq-smart-form,
+.rtl .rawnaq-smart-form {
+    text-align: start;
+}
+
+[dir="rtl"] .rawnaq-sf-progress-fill,
+.rtl .rawnaq-sf-progress-fill {
+    transform-origin: right center;
+}
+
+[dir="rtl"] .rawnaq-sf-step-panel.is-active.is-slide-forward,
+.rtl .rawnaq-sf-step-panel.is-active.is-slide-forward {
+    animation-name: rawnaq-sf-slide-forward-rtl;
+}
+
+[dir="rtl"] .rawnaq-sf-step-panel.is-active.is-slide-backward,
+.rtl .rawnaq-sf-step-panel.is-active.is-slide-backward {
+    animation-name: rawnaq-sf-slide-backward-rtl;
+}
+
+@keyframes rawnaq-sf-slide-forward-rtl {
+    from { opacity: 0; transform: translateX(-18px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes rawnaq-sf-slide-backward-rtl {
+    from { opacity: 0; transform: translateX(18px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Bengali Typography (Matra and Diacritic Protection) */
+:lang(bn) .rawnaq-smart-form,
+.rawnaq-smart-form :lang(bn),
+[lang="bn"] .rawnaq-smart-form,
+.rawnaq-smart-form [lang="bn"],
+:lang(bn) .rawnaq-sf-label,
+:lang(bn) .rawnaq-sf-input,
+:lang(bn) .rawnaq-sf-textarea,
+:lang(bn) .rawnaq-sf-select,
+:lang(bn) .rawnaq-sf-card-title,
+:lang(bn) .rawnaq-sf-card-desc,
+:lang(bn) .rawnaq-sf-submit,
+:lang(bn) .rawnaq-sf-status,
+:lang(bn) .rawnaq-sf-dropzone-text {
+    line-height: 1.6 !important;
+    letter-spacing: normal !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .rawnaq-sf-spinner,
     .rawnaq-sf-success-mark path,
     .rawnaq-sf-submit,
     .rawnaq-sf-confetti-particle,
-    .rawnaq-sf-field.is-invalid.is-shake {
+    .rawnaq-sf-field.is-invalid.is-shake,
+    .rawnaq-sf-step-panel.is-active.is-slide-forward,
+    .rawnaq-sf-step-panel.is-active.is-slide-backward,
+    .rawnaq-sf-summary-card,
+    .rawnaq-sf-status {
         animation: none !important;
         transition: none !important;
     }

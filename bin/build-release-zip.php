@@ -60,10 +60,12 @@ if ( file_exists( $zip_path ) ) {
 }
 
 $zip = new ZipArchive();
-if ( true !== $zip->open( $zip_path, ZipArchive::CREATE ) ) {
+if ( true !== $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE ) ) {
 	fwrite( STDERR, "Cannot create zip\n" );
 	exit( 1 );
 }
+
+$zip->addEmptyDir( $slug );
 
 $iterator = new RecursiveIteratorIterator(
 	new RecursiveDirectoryIterator( $root, FilesystemIterator::SKIP_DOTS )
@@ -88,4 +90,20 @@ foreach ( $iterator as $file ) {
 }
 
 $zip->close();
-echo "Created {$zip_path} ({$count} files)\n";
+
+$root_zip = $root . '/' . $slug . '-' . $ver . '.zip';
+copy( $zip_path, $root_zip );
+
+echo "Created {$zip_path} and {$root_zip} ({$count} files)\n";
+
+// Verify first 20 entries.
+$verify_zip = new ZipArchive();
+if ( true === $verify_zip->open( $zip_path ) ) {
+	$total = $verify_zip->numFiles;
+	echo "\nTotal entries in archive: {$total}\nFirst 20 entries:\n";
+	for ( $i = 0; $i < min( 20, $total ); $i++ ) {
+		$stat = $verify_zip->statIndex( $i );
+		echo "  " . ( $i + 1 ) . ". " . $stat['name'] . "\n";
+	}
+	$verify_zip->close();
+}

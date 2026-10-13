@@ -30,6 +30,16 @@
     bottom: 0;
 }
 
+/* WordPress Admin Bar Offsets */
+.admin-bar .rawnaq-spt-bar:not(.is-bottom) {
+    top: 32px;
+}
+@media screen and (max-width: 782px) {
+    .admin-bar .rawnaq-spt-bar:not(.is-bottom) {
+        top: 46px;
+    }
+}
+
 .rawnaq-spt-bar-fill {
     display: block;
     height: 100%;
@@ -162,6 +172,16 @@
     top: var(--spt-offset);
 }
 
+.admin-bar .rawnaq-spt-toc.is-sticky {
+    top: calc(var(--spt-offset) + 32px);
+}
+
+@media screen and (max-width: 782px) {
+    .admin-bar .rawnaq-spt-toc.is-sticky {
+        top: calc(var(--spt-offset) + 46px);
+    }
+}
+
 .rawnaq-spt-toc.is-floating {
     position: fixed;
     right: 20px;
@@ -229,9 +249,15 @@
     transform: rotate(-90deg);
 }
 
+.rawnaq-spt-toc.is-toc-collapsed .rawnaq-spt-list-wrap,
 .rawnaq-spt-toc.is-toc-collapsed .rawnaq-spt-list,
 .rawnaq-spt-toc.is-toc-collapsed .rawnaq-spt-search-wrap {
     display: none !important;
+}
+
+/* TOC List Wrapper */
+.rawnaq-spt-list-wrap {
+    position: relative;
 }
 
 /* TOC List with Sliding Glow Indicator */

@@ -314,9 +314,15 @@ class Rawnaq_Gutenberg_Loader {
                 'editor_style'    => 'rawnaq-scroll-progress-toc',
                 'style'           => 'rawnaq-scroll-progress-toc',
                 'render_callback' => [ $this, 'render_scroll_progress_toc_block' ],
+                'supports'        => [
+                    'align'  => [ 'wide', 'full' ],
+                    'anchor' => true,
+                ],
                 'attributes'      => [
                     'progress'           => [ 'type' => 'string', 'default' => 'both' ],
                     'barPosition'        => [ 'type' => 'string', 'default' => 'top' ],
+                    'progressTarget'     => [ 'type' => 'string', 'default' => 'page' ],
+                    'progressSelector'   => [ 'type' => 'string', 'default' => '' ],
                     'clickToTop'         => [ 'type' => 'boolean', 'default' => true ],
                     'tocPosition'        => [ 'type' => 'string', 'default' => 'sticky' ],
                     'tocTitle'           => [ 'type' => 'string', 'default' => 'Contents' ],
@@ -333,7 +339,7 @@ class Rawnaq_Gutenberg_Loader {
                     'manualJson'         => [ 'type' => 'string', 'default' => '[]' ],
                     'collapseSubs'       => [ 'type' => 'boolean', 'default' => false ],
                     'showSearch'         => [ 'type' => 'boolean', 'default' => false ],
-                    'urlHashSync'        => [ 'type' => 'boolean', 'default' => true ],
+                    'urlHashSync'        => [ 'type' => 'boolean', 'default' => false ],
                     'sectionReadingTime' => [ 'type' => 'boolean', 'default' => false ],
                     'dockAttach'         => [ 'type' => 'boolean', 'default' => false ],
                     'syncTimeline'       => [ 'type' => 'string', 'default' => '' ],
@@ -458,16 +464,16 @@ class Rawnaq_Gutenberg_Loader {
                     'deliveryEmail'      => [ 'type' => 'boolean', 'default' => true ],
                     'deliveryWhatsapp'   => [ 'type' => 'boolean', 'default' => true ],
                     'emailTo'            => [ 'type' => 'string', 'default' => '' ],
-                    'emailSubject'       => [ 'type' => 'string', 'default' => 'New website inquiry' ],
+                    'emailSubject'       => [ 'type' => 'string', 'default' => __( 'New website inquiry', 'rawnaq' ) ],
                     'waNumber'           => [ 'type' => 'string', 'default' => '' ],
                     'waTemplate'         => [ 'type' => 'string', 'default' => "New inquiry:\nName: {name}\nPhone: {phone}\nEmail: {email}\nMessage: {message}\nPage: {pageTitle}\nURL: {url}" ],
                     'afterSubmit'        => [ 'type' => 'string', 'default' => 'message' ],
                     'redirectUrl'        => [ 'type' => 'string', 'default' => '' ],
-                    'submitLabel'        => [ 'type' => 'string', 'default' => 'Send message' ],
-                    'successMessage'     => [ 'type' => 'string', 'default' => 'Message sent successfully.' ],
-                    'errorMessage'       => [ 'type' => 'string', 'default' => 'Please fill in the required fields correctly.' ],
+                    'submitLabel'        => [ 'type' => 'string', 'default' => __( 'Send message', 'rawnaq' ) ],
+                    'successMessage'     => [ 'type' => 'string', 'default' => __( 'Message sent successfully.', 'rawnaq' ) ],
+                    'errorMessage'       => [ 'type' => 'string', 'default' => __( 'Please fill in the required fields correctly.', 'rawnaq' ) ],
                     'consentEnabled'     => [ 'type' => 'boolean', 'default' => false ],
-                    'consentText'        => [ 'type' => 'string', 'default' => 'I agree to the processing of my data.' ],
+                    'consentText'        => [ 'type' => 'string', 'default' => __( 'I agree to the processing of my data.', 'rawnaq' ) ],
                     'logSubmissions'     => [ 'type' => 'boolean', 'default' => true ],
                     'recaptchaEnabled'   => [ 'type' => 'boolean', 'default' => false ],
                     'webhookEnabled'     => [ 'type' => 'boolean', 'default' => false ],
@@ -475,13 +481,29 @@ class Rawnaq_Gutenberg_Loader {
                     'emailHtml'          => [ 'type' => 'boolean', 'default' => true ],
                     'crmProvider'        => [ 'type' => 'string', 'default' => 'none' ],
                     'crmAudience'        => [ 'type' => 'string', 'default' => '' ],
+                    'mailchimpStatus'    => [ 'type' => 'string', 'default' => 'pending' ],
                     'buttonFullWidth'    => [ 'type' => 'boolean', 'default' => false ],
+                    'celebrationEffect'  => [ 'type' => 'boolean', 'default' => false ],
+                    'urlPrefill'         => [ 'type' => 'boolean', 'default' => false ],
+                    'estimator'          => [ 'type' => 'boolean', 'default' => false ],
+                    'estimatorLabel'     => [ 'type' => 'string', 'default' => __( 'Estimated total', 'rawnaq' ) ],
+                    'estimatorCurrency'  => [ 'type' => 'string', 'default' => '$' ],
                     'accent'             => [ 'type' => 'string', 'default' => '#fbbf24' ],
                     'accentDeep'         => [ 'type' => 'string', 'default' => '#0f766e' ],
                     'buttonText'         => [ 'type' => 'string', 'default' => '#92400e' ],
                     'labelColor'         => [ 'type' => 'string', 'default' => '' ],
                     'inputBg'            => [ 'type' => 'string', 'default' => '' ],
                     'inputBorder'        => [ 'type' => 'string', 'default' => '' ],
+                    'inputText'          => [ 'type' => 'string', 'default' => '' ],
+                    'theme'              => [ 'type' => 'string', 'default' => 'elevated' ],
+                    'inputSize'          => [ 'type' => 'string', 'default' => 'md' ],
+                    'radius'             => [ 'type' => 'string', 'default' => '12px' ],
+                    'autoResponderEnabled'  => [ 'type' => 'boolean', 'default' => false ],
+                    'autoResponderSubject'  => [ 'type' => 'string', 'default' => __( 'We received your message', 'rawnaq' ) ],
+                    'autoResponderMessage'  => [ 'type' => 'string', 'default' => '' ],
+                    'autoResponderFromName' => [ 'type' => 'string', 'default' => '' ],
+                    'formLabel'          => [ 'type' => 'string', 'default' => '' ],
+                    'preset'             => [ 'type' => 'string', 'default' => '' ],
                 ],
             ] );
         }
@@ -1399,84 +1421,25 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_style( 'rawnaq-scroll-progress-toc' );
         wp_enqueue_script( 'rawnaq-scroll-progress-toc' );
 
-        $levels_raw = $attributes['levels'] ?? 'h2,h3';
-        $levels     = array_values( array_filter( array_map( 'trim', explode( ',', $levels_raw ) ) ) );
-        $manual     = json_decode( $attributes['manualJson'] ?? '[]', true );
-        if ( ! is_array( $manual ) ) {
-            $manual = [];
-        }
-        $manual_clean = [];
-        foreach ( $manual as $item ) {
-            $manual_clean[] = [
-                'title' => sanitize_text_field( $item['title'] ?? '' ),
-                'id'    => sanitize_title( $item['id'] ?? '' ),
-                'level' => sanitize_text_field( $item['level'] ?? '2' ),
-            ];
+        $raw           = $attributes;
+        $raw['manual'] = json_decode( $attributes['manualJson'] ?? '[]', true );
+        $raw['scope']  = $attributes['contentSelector'] ?? '';
+
+        $cfg = function_exists( 'rawnaq_spt_cfg_sanitize' ) ? rawnaq_spt_cfg_sanitize( $raw ) : $raw;
+
+        $wrapper_attrs = [];
+        if ( function_exists( 'get_block_wrapper_attributes' ) ) {
+            $w_str = get_block_wrapper_attributes();
+            if ( preg_match( '/\bclass=[\'"]([^\'"]+)[\'"]/', $w_str, $cm ) ) {
+                $wrapper_attrs['class'] = $cm[1];
+            }
         }
 
-        $cfg = [
-            'progress'           => sanitize_key( $attributes['progress'] ?? 'both' ),
-            'barPosition'        => sanitize_key( $attributes['barPosition'] ?? 'top' ),
-            'showPercent'        => ! empty( $attributes['showPercent'] ),
-            'clickToTop'         => ! isset( $attributes['clickToTop'] ) || ! empty( $attributes['clickToTop'] ),
-            'tocPosition'        => sanitize_key( $attributes['tocPosition'] ?? 'sticky' ),
-            'tocTitle'           => sanitize_text_field( $attributes['tocTitle'] ?? 'Contents' ),
-            'tocCollapsible'     => ! isset( $attributes['tocCollapsible'] ) || ! empty( $attributes['tocCollapsible'] ),
-            'source'             => sanitize_key( $attributes['source'] ?? 'auto' ),
-            'levels'             => $levels ?: [ 'h2', 'h3' ],
-            'manual'             => $manual_clean,
-            'collapseSubs'       => ! empty( $attributes['collapseSubs'] ),
-            'showSearch'         => ! empty( $attributes['showSearch'] ),
-            'urlHashSync'        => ! isset( $attributes['urlHashSync'] ) || ! empty( $attributes['urlHashSync'] ),
-            'sectionReadingTime' => ! empty( $attributes['sectionReadingTime'] ),
-            'smooth'             => ! empty( $attributes['smooth'] ),
-            'scrollOffset'       => absint( $attributes['scrollOffset'] ?? 80 ),
-            'readingTime'        => ! empty( $attributes['readingTime'] ),
-            'mobileCollapse'     => ! empty( $attributes['mobileCollapse'] ),
-            'dockAttach'         => ! empty( $attributes['dockAttach'] ),
-            'syncTimeline'       => sanitize_text_field( $attributes['syncTimeline'] ?? '' ),
-            'scope'              => sanitize_text_field( $attributes['contentSelector'] ?? '' ),
-            'hideIfShort'        => ! isset( $attributes['hideIfShort'] ) || ! empty( $attributes['hideIfShort'] ),
-        ];
-        $ring_size = absint( $attributes['ringSize'] ?? 56 );
-        if ( $ring_size < 40 ) {
-            $ring_size = 40;
-        }
-        if ( $ring_size > 96 ) {
-            $ring_size = 96;
-        }
-        if ( ! in_array( $cfg['progress'], [ 'bar', 'ring', 'both', 'none' ], true ) ) {
-            $cfg['progress'] = 'both';
-        }
-        if ( ! in_array( $cfg['tocPosition'], [ 'sticky', 'floating', 'inline', 'none' ], true ) ) {
-            $cfg['tocPosition'] = 'sticky';
+        if ( function_exists( 'rawnaq_spt_markup' ) ) {
+            return rawnaq_spt_markup( $cfg, [], $wrapper_attrs );
         }
 
-        ob_start();
-        ?>
-        <div class="rawnaq-spt"
-             style="--spt-offset: <?php echo esc_attr( (string) $cfg['scrollOffset'] ); ?>px; --spt-ring-size: <?php echo esc_attr( (string) $ring_size ); ?>px;"
-             data-spt="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>">
-            <?php if ( 'none' !== $cfg['tocPosition'] ) : ?>
-                <nav class="rawnaq-spt-toc is-<?php echo esc_attr( $cfg['tocPosition'] ); ?>" role="navigation" aria-label="<?php echo esc_attr( $cfg['tocTitle'] ); ?>">
-                    <div class="rawnaq-spt-header-wrap">
-                        <p class="rawnaq-spt-reading" hidden></p>
-                        <p class="rawnaq-spt-chapter" hidden></p>
-                        <div class="rawnaq-spt-title-row">
-                            <h3 class="rawnaq-spt-title"><?php echo esc_html( $cfg['tocTitle'] ); ?></h3>
-                            <?php if ( ! empty( $cfg['tocCollapsible'] ) ) : ?>
-                                <button type="button" class="rawnaq-spt-toggle-btn" aria-expanded="true" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'rawnaq' ); ?>">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <ul class="rawnaq-spt-list"></ul>
-                </nav>
-            <?php endif; ?>
-        </div>
-        <?php
-        return ob_get_clean();
+        return '';
     }
 
     public function render_bento_grid_block( $attributes, $content = '' ) {
@@ -2017,42 +1980,67 @@ class Rawnaq_Gutenberg_Loader {
         }
 
         $cfg = [
-            'fields'            => $fields,
-            'deliveryEmail'     => ! empty( $attributes['deliveryEmail'] ),
-            'deliveryWhatsapp'  => ! empty( $attributes['deliveryWhatsapp'] ),
-            'emailTo'           => $attributes['emailTo'] ?? '',
-            'emailSubject'      => $attributes['emailSubject'] ?? '',
-            'waNumber'          => $attributes['waNumber'] ?? '',
-            'waTemplate'        => $attributes['waTemplate'] ?? '',
-            'afterSubmit'       => $attributes['afterSubmit'] ?? 'message',
-            'redirectUrl'       => $attributes['redirectUrl'] ?? '',
-            'submitLabel'       => $attributes['submitLabel'] ?? '',
-            'successMessage'    => $attributes['successMessage'] ?? '',
-            'errorMessage'      => $attributes['errorMessage'] ?? '',
-            'consentEnabled'    => ! empty( $attributes['consentEnabled'] ),
-            'consentText'       => $attributes['consentText'] ?? '',
-            'logSubmissions'    => ! isset( $attributes['logSubmissions'] ) || ! empty( $attributes['logSubmissions'] ),
-            'recaptchaEnabled'  => ! empty( $attributes['recaptchaEnabled'] ),
-            'webhookEnabled'    => ! empty( $attributes['webhookEnabled'] ),
-            'webhookUrl'        => $attributes['webhookUrl'] ?? '',
-            'emailHtml'         => ! isset( $attributes['emailHtml'] ) || ! empty( $attributes['emailHtml'] ),
-            'crmProvider'       => sanitize_key( $attributes['crmProvider'] ?? 'none' ),
-            'crmAudience'       => sanitize_text_field( $attributes['crmAudience'] ?? '' ),
-            'buttonFullWidth'   => ! empty( $attributes['buttonFullWidth'] ),
-            'labelColor'        => sanitize_hex_color( $attributes['labelColor'] ?? '' ) ?: '',
-            'inputBg'           => sanitize_hex_color( $attributes['inputBg'] ?? '' ) ?: '',
-            'inputBorder'       => sanitize_hex_color( $attributes['inputBorder'] ?? '' ) ?: '',
-            'buttonBg'          => sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '',
-            'buttonText'        => sanitize_hex_color( $attributes['buttonText'] ?? '' ) ?: '',
+            'theme'                 => sanitize_key( $attributes['formTheme'] ?? ( $attributes['theme'] ?? 'elevated' ) ),
+            'fields'                => $fields,
+            'deliveryEmail'         => ! empty( $attributes['deliveryEmail'] ),
+            'deliveryWhatsapp'      => ! empty( $attributes['deliveryWhatsapp'] ),
+            'emailTo'               => sanitize_email( $attributes['emailTo'] ?? '' ),
+            'emailSubject'          => sanitize_text_field( $attributes['emailSubject'] ?? '' ),
+            'waNumber'              => sanitize_text_field( $attributes['waNumber'] ?? '' ),
+            'waTemplate'            => sanitize_textarea_field( $attributes['waTemplate'] ?? '' ),
+            'afterSubmit'           => sanitize_key( $attributes['afterSubmit'] ?? 'message' ),
+            'redirectUrl'           => esc_url_raw( $attributes['redirectUrl'] ?? '' ),
+            'submitLabel'           => sanitize_text_field( $attributes['submitLabel'] ?? '' ),
+            'successMessage'        => sanitize_text_field( $attributes['successMessage'] ?? '' ),
+            'errorMessage'          => sanitize_text_field( $attributes['errorMessage'] ?? '' ),
+            'consentEnabled'        => ! empty( $attributes['consentEnabled'] ),
+            'consentText'           => sanitize_text_field( $attributes['consentText'] ?? '' ),
+            'logSubmissions'        => ! isset( $attributes['logSubmissions'] ) || ! empty( $attributes['logSubmissions'] ),
+            'celebrationEffect'     => isset( $attributes['celebrationEffect'] ) ? ! empty( $attributes['celebrationEffect'] ) : false,
+            'urlPrefill'            => ! empty( $attributes['urlPrefill'] ),
+            'recaptchaEnabled'      => ! empty( $attributes['recaptchaEnabled'] ),
+            'webhookEnabled'        => ! empty( $attributes['webhookEnabled'] ),
+            'webhookUrl'            => esc_url_raw( $attributes['webhookUrl'] ?? '' ),
+            'emailHtml'             => ! isset( $attributes['emailHtml'] ) || ! empty( $attributes['emailHtml'] ),
+            'crmProvider'           => sanitize_key( $attributes['crmProvider'] ?? 'none' ),
+            'crmAudience'           => sanitize_text_field( $attributes['crmAudience'] ?? '' ),
+            'mailchimpStatus'       => sanitize_key( $attributes['mailchimpStatus'] ?? 'pending' ),
+            'buttonFullWidth'       => ! empty( $attributes['buttonFullWidth'] ),
+            'inputSize'             => sanitize_key( $attributes['inputSize'] ?? 'md' ),
+            'labelColor'            => sanitize_hex_color( $attributes['labelColor'] ?? '' ) ?: '',
+            'inputBg'               => sanitize_hex_color( $attributes['inputBg'] ?? '' ) ?: '',
+            'inputBorder'           => sanitize_hex_color( $attributes['inputBorder'] ?? '' ) ?: '',
+            'inputText'             => sanitize_hex_color( $attributes['inputText'] ?? '' ) ?: '',
+            'buttonBg'              => sanitize_hex_color( $attributes['accent'] ?? ( $attributes['buttonBg'] ?? '' ) ) ?: '',
+            'buttonText'            => sanitize_hex_color( $attributes['buttonText'] ?? '' ) ?: '',
+            'radius'                => sanitize_text_field( $attributes['radius'] ?? '12px' ),
+            'formLabel'             => sanitize_text_field( $attributes['formLabel'] ?? '' ),
+            'autoResponderEnabled'  => ! empty( $attributes['autoResponderEnabled'] ),
+            'autoResponderSubject'  => sanitize_text_field( $attributes['autoResponderSubject'] ?? '' ),
+            'autoResponderMessage'  => sanitize_textarea_field( $attributes['autoResponderMessage'] ?? '' ),
+            'autoResponderFromName' => sanitize_text_field( $attributes['autoResponderFromName'] ?? '' ),
+            'estimator'             => ! empty( $attributes['estimator'] ),
+            'estimatorLabel'        => sanitize_text_field( $attributes['estimatorLabel'] ?? __( 'Estimated total', 'rawnaq' ) ),
+            'estimatorCurrency'     => sanitize_text_field( $attributes['estimatorCurrency'] ?? '$' ),
         ];
 
-        $accent = sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '#fbbf24';
-        $deep   = sanitize_hex_color( $attributes['accentDeep'] ?? '' ) ?: '#0f766e';
-        $btn    = sanitize_hex_color( $attributes['buttonText'] ?? '' ) ?: '#92400e';
+        $accent     = sanitize_hex_color( $attributes['accent'] ?? ( $attributes['buttonBg'] ?? '' ) ) ?: '#fbbf24';
+        $deep       = sanitize_hex_color( $attributes['accentDeep'] ?? '' ) ?: '#0f766e';
+        $btn        = sanitize_hex_color( $attributes['buttonText'] ?? '' ) ?: '#92400e';
+        $radius     = sanitize_text_field( $attributes['radius'] ?? '12px' );
+        $input_size = sanitize_key( $attributes['inputSize'] ?? 'md' );
+        $pad_map    = [ 'sm' => '10px 12px', 'md' => '12px 14px', 'lg' => '14px 16px' ];
+        $pad        = $pad_map[ $input_size ] ?? '12px 14px';
+
+        $container_styles = '--sf-accent:' . esc_attr( $accent ) . ';--sf-accent-deep:' . esc_attr( $deep ) . ';--sf-btn-text:' . esc_attr( $btn ) . ';--sf-radius:' . esc_attr( $radius ) . ';--sf-input-pad:' . esc_attr( $pad ) . ';';
+        if ( ! empty( $cfg['inputText'] ) ) {
+            $container_styles .= '--sf-ink:' . esc_attr( $cfg['inputText'] ) . ';';
+        }
 
         ob_start();
-        echo '<div style="--sf-accent:' . esc_attr( $accent ) . ';--sf-accent-deep:' . esc_attr( $deep ) . ';--sf-btn-text:' . esc_attr( $btn ) . ';">';
-        rawnaq_smart_form_markup( $cfg, 'gb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 12 ) );
+        echo '<div style="' . esc_attr( $container_styles ) . '">';
+        $form_id = 'gb-' . absint( get_queried_object_id() ) . '-' . substr( md5( wp_json_encode( $attributes ) ), 0, 12 );
+        rawnaq_smart_form_markup( $cfg, $form_id );
         echo '</div>';
         return ob_get_clean();
     }

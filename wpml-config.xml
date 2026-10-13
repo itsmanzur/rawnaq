@@ -16,6 +16,23 @@
 			<xpath>//*[contains(@class, 'rawnaq-bento-cta')]</xpath>
 			<key name="cellsJson" />
 		</gutenberg-block>
+		<gutenberg-block type="rawnaq/smart-form" translate="1">
+			<key name="submitLabel" />
+			<key name="successMessage" />
+			<key name="errorMessage" />
+			<key name="consentText" />
+			<key name="emailSubject" />
+			<key name="estimatorLabel" />
+			<key name="autoResponderSubject" />
+			<key name="autoResponderMessage" />
+			<key name="autoResponderFromName" />
+			<key name="formLabel" />
+			<key name="fieldsJson" />
+		</gutenberg-block>
+		<gutenberg-block type="rawnaq/scroll-progress-toc" translate="1">
+			<xpath>//*[contains(@class, 'rawnaq-spt-title')]</xpath>
+			<key name="tocTitle" />
+		</gutenberg-block>
 	</gutenberg-blocks>
 	<admin-texts>
 		<key name="rawnaq_settings" />

@@ -1825,3 +1825,8 @@ function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $sh
 require_once RAWNAQ_PATH . 'includes/rawnaq-smart-form.php';
 require_once RAWNAQ_PATH . 'includes/rawnaq-case-study.php';
 require_once RAWNAQ_PATH . 'includes/rawnaq-schema.php';
+
+if ( rawnaq_is_module_enabled( 'scroll-progress-toc' ) ) {
+	require_once RAWNAQ_PATH . 'includes/rawnaq-scroll-progress-toc.php';
+}
+

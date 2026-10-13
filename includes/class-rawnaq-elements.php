@@ -72,6 +72,8 @@ class Rawnaq_Elements {
         add_action( 'wp_ajax_nopriv_rawnaq_timeline_load_more', [ $this, 'ajax_timeline_load_more' ] );
         add_action( 'wp_ajax_rawnaq_smart_form_submit', [ $this, 'ajax_smart_form_submit' ] );
         add_action( 'wp_ajax_nopriv_rawnaq_smart_form_submit', [ $this, 'ajax_smart_form_submit' ] );
+        add_action( 'wp_ajax_rawnaq_sf_token', [ $this, 'ajax_sf_token' ] );
+        add_action( 'wp_ajax_nopriv_rawnaq_sf_token', [ $this, 'ajax_sf_token' ] );
         if ( function_exists( 'rawnaq_case_study_ajax_query' ) ) {
             add_action( 'wp_ajax_rawnaq_cs_query', 'rawnaq_case_study_ajax_query' );
             add_action( 'wp_ajax_nopriv_rawnaq_cs_query', 'rawnaq_case_study_ajax_query' );
@@ -105,6 +107,26 @@ class Rawnaq_Elements {
     }
 
     /**
+     * Public AJAX: fetch fresh nonce and signed timestamp for cached pages.
+     */
+    public function ajax_sf_token() {
+        nocache_headers();
+        $form_id = isset( $_REQUEST['form_id'] ) ? sanitize_html_class( wp_unslash( $_REQUEST['form_id'] ) ) : '';
+        if ( ! $form_id ) {
+            wp_send_json_error( [ 'message' => __( 'Missing form identifier.', 'rawnaq' ) ], 400 );
+        }
+        $nonce = wp_create_nonce( 'rawnaq_smart_form' );
+        $ts    = function_exists( 'rawnaq_smart_form_create_ts_token' )
+            ? rawnaq_smart_form_create_ts_token( $form_id )
+            : time() . '.' . hash_hmac( 'sha256', (string) $form_id . '|' . time(), wp_salt( 'auth' ) );
+
+        wp_send_json_success( [
+            'nonce' => $nonce,
+            'ts'    => $ts,
+        ] );
+    }
+
+    /**
      * Public AJAX: Smart Form submit (email, WA redirect, files, webhook, recaptcha).
      */
     public function ajax_smart_form_submit() {
@@ -112,18 +134,39 @@ class Rawnaq_Elements {
 
         $hp = isset( $_POST['rawnaq_hp'] ) ? sanitize_text_field( wp_unslash( $_POST['rawnaq_hp'] ) ) : '';
         if ( '' !== $hp ) {
-            wp_send_json_error( [ 'message' => 'spam' ], 400 );
+            wp_send_json_error( [ 'message' => __( 'Spam check failed. Please try again.', 'rawnaq' ) ], 400 );
         }
 
-        $ts  = isset( $_POST['rawnaq_ts'] ) ? absint( wp_unslash( $_POST['rawnaq_ts'] ) ) : 0;
-        $now = time();
-        if ( ! $ts || ( $now - $ts ) < 2 || ( $now - $ts ) > WEEK_IN_SECONDS ) {
-            wp_send_json_error( [ 'message' => __( 'Please wait a moment and try again.', 'rawnaq' ) ], 400 );
+        $form_id = isset( $_POST['form_id'] ) ? sanitize_html_class( wp_unslash( $_POST['form_id'] ) ) : '';
+        if ( ! $form_id ) {
+            wp_send_json_error( [ 'message' => __( 'Missing form identifier.', 'rawnaq' ) ], 400 );
+        }
+
+        // Signed timestamp verification (3 seconds <= age <= 7 days)
+        $raw_ts   = isset( $_POST['rawnaq_ts'] ) ? sanitize_text_field( wp_unslash( $_POST['rawnaq_ts'] ) ) : '';
+        $ts_check = function_exists( 'rawnaq_smart_form_verify_ts_token' )
+            ? rawnaq_smart_form_verify_ts_token( $raw_ts, $form_id )
+            : ( ( time() - absint( $raw_ts ) ) >= 2 && ( time() - absint( $raw_ts ) ) <= WEEK_IN_SECONDS ? true : 'expired' );
+
+        if ( true !== $ts_check ) {
+            if ( 'too_fast' === $ts_check ) {
+                wp_send_json_error( [ 'message' => __( 'Please wait a moment and try again.', 'rawnaq' ) ], 400 );
+            } else {
+                wp_send_json_error( [ 'message' => __( 'Security check expired. Please reload the page and try again.', 'rawnaq' ) ], 400 );
+            }
+        }
+
+        // Rate limit: 5 / 10 min / form, 30 / hour / site
+        $client_ip = function_exists( 'rawnaq_smart_form_get_client_ip' )
+            ? rawnaq_smart_form_get_client_ip()
+            : ( ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '127.0.0.1' );
+
+        if ( function_exists( 'rawnaq_smart_form_check_rate_limit' ) && ! rawnaq_smart_form_check_rate_limit( $client_ip, $form_id ) ) {
+            wp_send_json_error( [ 'message' => __( 'Too many submissions. Please wait a few minutes and try again.', 'rawnaq' ) ], 429 );
         }
 
         // Load trusted config from server store — never trust client-posted delivery settings.
-        $form_id = isset( $_POST['form_id'] ) ? sanitize_text_field( wp_unslash( $_POST['form_id'] ) ) : '';
-        $cfg     = function_exists( 'rawnaq_smart_form_get_stored_config' )
+        $cfg = function_exists( 'rawnaq_smart_form_get_stored_config' )
             ? rawnaq_smart_form_get_stored_config( $form_id )
             : null;
         if ( ! is_array( $cfg ) || empty( $cfg['fields'] ) ) {
@@ -148,87 +191,184 @@ class Rawnaq_Elements {
             $posted = map_deep( wp_unslash( $_POST['fields'] ), 'sanitize_text_field' );
         }
 
-        $values = [];
-        foreach ( $fields_cfg as $field ) {
-            if ( 'file' === $field['type'] ) {
-                continue;
-            }
-            // Skip conditional fields that are empty and not visible (client may omit).
-            $id  = $field['id'];
-            $raw = isset( $posted[ $id ] ) ? $posted[ $id ] : '';
-            if ( is_array( $raw ) ) {
-                $raw = implode( ', ', $raw );
-            }
-            $val = sanitize_text_field( (string) $raw );
-            if ( 'textarea' === $field['type'] ) {
-                $val = sanitize_textarea_field( (string) $raw );
-            } elseif ( 'email' === $field['type'] ) {
-                $val = sanitize_email( (string) $raw );
-            } elseif ( 'url' === $field['type'] ) {
-                $val = esc_url_raw( (string) $raw );
-            } elseif ( 'number' === $field['type'] || 'rating' === $field['type'] ) {
-                $val = is_numeric( $raw ) ? (string) $raw : '';
-            } elseif ( 'hidden' === $field['type'] && '' === $val ) {
-                $val = sanitize_text_field( $field['defaultValue'] ?? '' );
-            }
-
-            $conditional_hidden = false;
-            if ( ! empty( $field['showIf'] ) ) {
-                $dep = isset( $posted[ $field['showIf'] ] ) ? sanitize_text_field( (string) $posted[ $field['showIf'] ] ) : '';
-                $want = (string) ( $field['showIfValue'] ?? '' );
-                if ( '' !== $want && $dep !== $want ) {
-                    $conditional_hidden = true;
-                }
-            }
-            if ( $conditional_hidden ) {
-                continue;
-            }
-
-            if ( ! empty( $field['required'] ) && '' === $val ) {
-                wp_send_json_error( [
-                    'message' => sanitize_text_field( $cfg['errorMessage'] ?? __( 'Please fill in the required fields correctly.', 'rawnaq' ) ),
-                ], 400 );
-            }
-            if ( 'email' === $field['type'] && $val && ! is_email( $val ) ) {
-                wp_send_json_error( [
-                    'message' => sanitize_text_field( $cfg['errorMessage'] ?? __( 'Please fill in the required fields correctly.', 'rawnaq' ) ),
-                ], 400 );
-            }
-            if ( 'url' === $field['type'] && $val && ! filter_var( $val, FILTER_VALIDATE_URL ) ) {
-                wp_send_json_error( [
-                    'message' => sanitize_text_field( $cfg['errorMessage'] ?? __( 'Please fill in the required fields correctly.', 'rawnaq' ) ),
-                ], 400 );
-            }
-            $values[ $id ] = $val;
+        // Server-side validation
+        if ( function_exists( 'rawnaq_smart_form_validate_submission' ) ) {
+            $validation = rawnaq_smart_form_validate_submission( $fields_cfg, $posted, $cfg );
+            $values     = $validation['values'];
+            $errors     = $validation['errors'];
+        } else {
+            $values = [];
+            $errors = [];
         }
 
-        $upload = function_exists( 'rawnaq_smart_form_handle_uploads' )
+        // File uploads
+        $created_files = [];
+        $upload        = function_exists( 'rawnaq_smart_form_handle_uploads' )
             ? rawnaq_smart_form_handle_uploads( $fields_cfg )
-            : [ 'values' => [], 'attachments' => [], 'errors' => [] ];
+            : [ 'values' => [], 'attachments' => [], 'files_meta' => [], 'errors' => [] ];
+        if ( ! empty( $upload['attachments'] ) ) {
+            $created_files = array_merge( $created_files, $upload['attachments'] );
+        }
         if ( ! empty( $upload['errors'] ) ) {
-            wp_send_json_error( [
-                'message' => __( 'File upload failed. Check size and type, then try again.', 'rawnaq' ),
-            ], 400 );
+            foreach ( $upload['errors'] as $err_id ) {
+                $errors[ $err_id ] = __( 'File upload failed. Check size and type, then try again.', 'rawnaq' );
+            }
         }
         foreach ( $upload['values'] as $k => $v ) {
             $values[ $k ] = $v;
         }
         $attachments = $upload['attachments'] ?? [];
+        $files_meta  = $upload['files_meta'] ?? [];
 
+        // Signatures as files
+        foreach ( $fields_cfg as $field ) {
+            if ( 'signature' !== $field['type'] ) {
+                continue;
+            }
+            $sig_id = $field['id'];
+            if ( ! empty( $values[ $sig_id ] ) && 0 === strpos( $values[ $sig_id ], 'data:image/png;base64,' ) ) {
+                $sig_res = function_exists( 'rawnaq_smart_form_save_signature' )
+                    ? rawnaq_smart_form_save_signature( $values[ $sig_id ], $sig_id )
+                    : new WP_Error( 'sig_save_unavailable', __( 'Signature processing unavailable.', 'rawnaq' ) );
+                if ( is_wp_error( $sig_res ) ) {
+                    $errors[ $sig_id ] = $sig_res->get_error_message();
+                } else {
+                    $values[ $sig_id ]     = 'signature.png'; // Never keep base64 in values/meta/email/webhook/CSV.
+                    $files_meta[ $sig_id ] = [
+                        'path'          => $sig_res['filename'],
+                        'original_name' => 'signature.png',
+                        'name'          => 'signature.png',
+                        'mime'          => 'image/png',
+                        'size'          => $sig_res['size'],
+                    ];
+                    $attachments[]   = $sig_res['full_path'];
+                    $created_files[] = $sig_res['full_path'];
+                }
+            }
+        }
+
+        // Consent checkbox
+        $consent_meta = null;
         if ( ! empty( $cfg['consentEnabled'] ) ) {
             $consent = isset( $posted['consent'] ) ? sanitize_text_field( (string) $posted['consent'] ) : '';
             if ( '1' !== $consent ) {
-                wp_send_json_error( [
-                    'message' => __( 'Please accept the consent checkbox.', 'rawnaq' ),
-                ], 400 );
+                $errors['consent'] = __( 'Please accept the consent checkbox.', 'rawnaq' );
+            } else {
+                $values['consent'] = 'yes';
+                $consent_text      = ! empty( $cfg['consentText'] ) ? sanitize_text_field( $cfg['consentText'] ) : __( 'I agree to the processing of my data.', 'rawnaq' );
+                $consent_meta      = [
+                    'text'      => $consent_text,
+                    'timestamp' => time(),
+                ];
             }
-            $values['consent'] = 'yes';
+        }
+
+        // Return field-level errors if any failed validation
+        if ( ! empty( $errors ) ) {
+            if ( function_exists( 'rawnaq_smart_form_discard_files' ) ) {
+                rawnaq_smart_form_discard_files( $created_files );
+            }
+            if ( function_exists( 'rawnaq_smart_form_bump_rate_limit' ) ) {
+                rawnaq_smart_form_bump_rate_limit( $client_ip, $form_id, true );
+            }
+            wp_send_json_error( [
+                'message' => sanitize_text_field( $cfg['errorMessage'] ?? __( 'Please fix the errors below and try again.', 'rawnaq' ) ),
+                'fields'  => $errors,
+            ], 400 );
+        }
+
+        // Duplicate guard: hash of form_id + all field values (within 60 seconds)
+        if ( function_exists( 'rawnaq_smart_form_is_duplicate' ) && rawnaq_smart_form_is_duplicate( $form_id, $values ) ) {
+            if ( function_exists( 'rawnaq_smart_form_discard_files' ) ) {
+                rawnaq_smart_form_discard_files( $created_files );
+            }
+            $already_msg = sanitize_text_field( apply_filters(
+                'rawnaq_smart_form_duplicate_message',
+                __( 'We already received your submission. Thank you!', 'rawnaq' )
+            ) );
+            wp_send_json_success( [
+                'message'      => $already_msg,
+                'duplicate'    => true,
+                'whatsappUrl'  => '',
+                'openWhatsapp' => false,
+                'redirectUrl'  => '',
+            ] );
+        }
+
+        // Rate limit check before logging/sending
+        if ( function_exists( 'rawnaq_smart_form_check_rate_limit' ) && ! rawnaq_smart_form_check_rate_limit( $client_ip, $form_id ) ) {
+            if ( function_exists( 'rawnaq_smart_form_discard_files' ) ) {
+                rawnaq_smart_form_discard_files( $created_files );
+            }
+            wp_send_json_error( [ 'message' => __( 'Too many submissions. Please wait a few minutes and try again.', 'rawnaq' ) ], 429 );
+        }
+
+        // Record duplicate transient and record rate limit hits
+        if ( function_exists( 'rawnaq_smart_form_record_duplicate' ) ) {
+            rawnaq_smart_form_record_duplicate( $form_id, $values );
+        }
+        if ( function_exists( 'rawnaq_smart_form_bump_rate_limit' ) ) {
+            rawnaq_smart_form_bump_rate_limit( $client_ip, $form_id );
+        }
+
+        $page_ctx = $cfg['pageCtx'] ?? [];
+        if ( empty( $page_ctx ) || empty( $page_ctx['url'] ) ) {
+            // Only if pageCtx is empty: accept the posted landing_page URL when its host equals the site host.
+            $posted_landing = isset( $posted['landing_page'] ) ? esc_url_raw( wp_unslash( $posted['landing_page'] ) ) : '';
+            if ( $posted_landing ) {
+                $site_host = wp_parse_url( home_url(), PHP_URL_HOST );
+                $land_host = wp_parse_url( $posted_landing, PHP_URL_HOST );
+                if ( $site_host && $land_host && strtolower( $site_host ) === strtolower( $land_host ) ) {
+                    if ( ! is_array( $page_ctx ) ) {
+                        $page_ctx = [];
+                    }
+                    $page_ctx['url'] = $posted_landing;
+                    $landing_post_id = url_to_postid( $posted_landing );
+                    if ( $landing_post_id ) {
+                        $page_ctx['postId']    = (string) $landing_post_id;
+                        $page_ctx['pageTitle'] = get_the_title( $landing_post_id );
+                    }
+                }
+            }
         }
 
         $tpl_vals = function_exists( 'rawnaq_smart_form_template_values' )
-            ? rawnaq_smart_form_template_values( $values )
+            ? rawnaq_smart_form_template_values( $values, $page_ctx )
             : $values;
 
+        // Attachment size threshold check (default 10 MB, filterable)
+        $total_att_size = 0;
+        foreach ( $attachments as $att_path ) {
+            if ( file_exists( $att_path ) ) {
+                $total_att_size += filesize( $att_path );
+            }
+        }
+        $max_attach_size = function_exists( 'rawnaq_smart_form_max_attachments_size' )
+            ? rawnaq_smart_form_max_attachments_size()
+            : 10 * MB_IN_BYTES;
+        $links_only = ( $total_att_size > $max_attach_size );
+
+        // Log entry before email send if logging enabled, files uploaded, or links required
+        $log_enabled   = ! empty( $cfg['logSubmissions'] );
+        $has_files     = ! empty( $files_meta );
+        $need_log      = $log_enabled || $has_files;
+        $entry_id      = 0;
+
+        if ( $need_log && function_exists( 'rawnaq_smart_form_log_submission' ) ) {
+            $entry_id = rawnaq_smart_form_log_submission( $form_id, $values, $cfg, $files_meta, $consent_meta );
+        }
+
+        $delivery_results = [
+            'email'         => 'off',
+            'webhook'       => 'off',
+            'crm'           => 'off',
+            'whatsapp'      => 'off',
+            'autoresponder' => 'off',
+            'errors'        => [],
+        ];
+        $delivery_errors = [];
+
+        // 1. Email Delivery
         $mail_ok = true;
         if ( ! empty( $cfg['deliveryEmail'] ) ) {
             $to = sanitize_email( $cfg['emailTo'] ?? '' );
@@ -242,15 +382,27 @@ class Rawnaq_Elements {
             if ( function_exists( 'rawnaq_smart_form_fill_template' ) ) {
                 $subject = rawnaq_smart_form_fill_template( $subject, $tpl_vals );
             }
+            $subject = sanitize_text_field( $subject );
             $use_html = ( ! isset( $cfg['emailHtml'] ) || ! empty( $cfg['emailHtml'] ) )
                 && function_exists( 'rawnaq_smart_form_email_html' );
             if ( $use_html ) {
-                $body    = rawnaq_smart_form_email_html( $values, $tpl_vals, $cfg );
+                $body    = rawnaq_smart_form_email_html( $values, $tpl_vals, $cfg, $files_meta, $entry_id, $links_only );
                 $headers = [ 'Content-Type: text/html; charset=UTF-8' ];
             } else {
                 $body_lines = [];
                 foreach ( $values as $k => $v ) {
-                    $body_lines[] = $k . ': ' . $v;
+                    if ( isset( $files_meta[ $k ] ) && 'signature.png' === ( $files_meta[ $k ]['name'] ?? '' ) ) {
+                        $display_val = __( 'Signature attached', 'rawnaq' );
+                    } elseif ( isset( $files_meta[ $k ] ) ) {
+                        $display_val = $files_meta[ $k ]['name'] ?? (string) $v;
+                    } else {
+                        $display_val = is_array( $v ) ? implode( ', ', $v ) : (string) $v;
+                    }
+                    if ( $links_only && isset( $files_meta[ $k ] ) && $entry_id && function_exists( 'rawnaq_smart_form_get_download_url' ) ) {
+                        $dl_url       = rawnaq_smart_form_get_download_url( $entry_id, $k );
+                        $display_val .= ' (' . __( 'Download', 'rawnaq' ) . ': ' . $dl_url . ')';
+                    }
+                    $body_lines[] = $k . ': ' . $display_val;
                 }
                 $body_lines[] = '';
                 $body_lines[] = 'Page: ' . ( $tpl_vals['pageTitle'] ?? '' );
@@ -258,22 +410,41 @@ class Rawnaq_Elements {
                 $body    = implode( "\n", $body_lines );
                 $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
             }
-            if ( ! empty( $values['email'] ) && is_email( $values['email'] ) ) {
-                $headers[] = 'Reply-To: ' . $values['email'];
+            $contact = function_exists( 'rawnaq_smart_form_resolve_contact' )
+                ? rawnaq_smart_form_resolve_contact( $values, $fields_cfg )
+                : [ 'email' => $values['email'] ?? '', 'first_name' => '', 'last_name' => '', 'phone' => '' ];
+
+            if ( ! empty( $contact['email'] ) && is_email( $contact['email'] ) ) {
+                $reply_name = trim( $contact['first_name'] . ' ' . $contact['last_name'] );
+                if ( $reply_name ) {
+                    $headers[] = 'Reply-To: ' . $reply_name . ' <' . $contact['email'] . '>';
+                } else {
+                    $headers[] = 'Reply-To: ' . $contact['email'];
+                }
             }
-            $mail_ok = wp_mail( $to, $subject, $body, $headers, $attachments );
+
+            $mail_err_msg   = '';
+            $mail_failed_cb = function( $wp_error ) use ( &$mail_err_msg ) {
+                if ( is_wp_error( $wp_error ) ) {
+                    $mail_err_msg = $wp_error->get_error_message();
+                }
+            };
+            add_action( 'wp_mail_failed', $mail_failed_cb );
+            $mail_attachments = $links_only ? [] : $attachments;
+            $mail_ok = wp_mail( $to, $subject, $body, $headers, $mail_attachments );
+            remove_action( 'wp_mail_failed', $mail_failed_cb );
+
+            if ( $mail_ok ) {
+                $delivery_results['email'] = 'ok';
+            } else {
+                $delivery_results['email'] = 'fail';
+                $delivery_errors[]         = 'Email: ' . ( $mail_err_msg ?: __( 'wp_mail returned false.', 'rawnaq' ) );
+            }
         }
 
-        if ( ! empty( $cfg['logSubmissions'] ) && function_exists( 'rawnaq_smart_form_log_submission' ) ) {
-            rawnaq_smart_form_log_submission( $form_id, $values, $cfg );
-        }
-
-        if ( function_exists( 'rawnaq_smart_form_dispatch_crm' ) ) {
-            rawnaq_smart_form_dispatch_crm( $values, $tpl_vals, $cfg, $form_id );
-        }
-
+        // 2. Webhook Delivery
         if ( ! empty( $cfg['webhookEnabled'] ) && ! empty( $cfg['webhookUrl'] ) && function_exists( 'rawnaq_smart_form_send_webhook' ) ) {
-            rawnaq_smart_form_send_webhook(
+            $wh_res = rawnaq_smart_form_send_webhook(
                 $cfg['webhookUrl'],
                 [
                     'subject' => $cfg['emailSubject'] ?? 'Smart Form',
@@ -285,8 +456,28 @@ class Rawnaq_Elements {
                     ],
                 ]
             );
+            if ( is_wp_error( $wh_res ) ) {
+                $delivery_results['webhook'] = 'fail';
+                $delivery_errors[]           = 'Webhook: ' . $wh_res->get_error_message();
+            } else {
+                $delivery_results['webhook'] = 'ok';
+            }
         }
 
+        // 3. CRM Delivery
+        if ( function_exists( 'rawnaq_smart_form_dispatch_crm' ) ) {
+            $crm_res = rawnaq_smart_form_dispatch_crm( $values, $tpl_vals, $cfg, $form_id );
+            if ( is_wp_error( $crm_res ) ) {
+                $delivery_results['crm'] = 'fail';
+                $delivery_errors[]       = 'CRM: ' . $crm_res->get_error_message();
+            } elseif ( true === $crm_res ) {
+                $delivery_results['crm'] = 'ok';
+            } elseif ( is_string( $crm_res ) ) {
+                $delivery_results['crm'] = $crm_res;
+            }
+        }
+
+        // 4. WhatsApp
         $wa_url = '';
         $wa_num = function_exists( 'rawnaq_smart_form_resolve_wa_number' )
             ? rawnaq_smart_form_resolve_wa_number( $cfg['waNumber'] ?? '' )
@@ -302,6 +493,37 @@ class Rawnaq_Elements {
                 ? rawnaq_smart_form_fill_template( $tpl, $tpl_vals )
                 : $tpl;
             $wa_url = rawnaq_smart_form_wa_url( $wa_num, $text );
+            if ( $wa_url ) {
+                $delivery_results['whatsapp'] = 'link';
+            }
+        }
+
+        // 5. Auto-responder
+        if ( ! empty( $cfg['autoResponderEnabled'] ) && function_exists( 'rawnaq_smart_form_send_auto_responder' ) ) {
+            $ar_res = rawnaq_smart_form_send_auto_responder( $values, $cfg, $fields_cfg );
+            if ( is_wp_error( $ar_res ) ) {
+                $delivery_results['autoresponder'] = 'fail';
+                $delivery_errors[]                 = 'Auto-responder: ' . $ar_res->get_error_message();
+            } elseif ( true === $ar_res ) {
+                $delivery_results['autoresponder'] = 'ok';
+            } else {
+                $delivery_results['autoresponder'] = (string) $ar_res;
+            }
+        }
+
+        $delivery_results['errors'] = $delivery_errors;
+
+        // Never lose a lead: store entry if logging enabled OR if email failed / off
+        $need_fallback = ! $log_enabled && ( empty( $cfg['deliveryEmail'] ) || ! $mail_ok );
+        if ( ! $entry_id && $need_fallback && function_exists( 'rawnaq_smart_form_log_submission' ) ) {
+            $entry_id = rawnaq_smart_form_log_submission( $form_id, $values, $cfg, $files_meta, $consent_meta );
+        }
+
+        if ( $entry_id ) {
+            update_post_meta( $entry_id, '_rawnaq_sf_delivery', $delivery_results );
+            if ( $need_fallback || ( ! empty( $cfg['deliveryEmail'] ) && ! $mail_ok ) ) {
+                update_post_meta( $entry_id, '_rawnaq_sf_fallback', '1' );
+            }
         }
 
         $after    = sanitize_key( $cfg['afterSubmit'] ?? 'message' );
@@ -312,7 +534,15 @@ class Rawnaq_Elements {
         $open_wa = ( 'whatsapp' === $after );
 
         if ( ! empty( $cfg['deliveryEmail'] ) && ! $mail_ok && ! $wa_url ) {
-            wp_send_json_error( [ 'message' => __( 'Could not send email. Please try again later.', 'rawnaq' ) ], 500 );
+            if ( ! $entry_id ) {
+                if ( function_exists( 'rawnaq_smart_form_discard_files' ) ) {
+                    rawnaq_smart_form_discard_files( $created_files );
+                }
+                if ( function_exists( 'rawnaq_smart_form_forget_duplicate' ) ) {
+                    rawnaq_smart_form_forget_duplicate( $form_id, $values );
+                }
+                wp_send_json_error( [ 'message' => __( 'Could not send email. Please try again later.', 'rawnaq' ) ], 500 );
+            }
         }
 
         wp_send_json_success( [
@@ -552,6 +782,26 @@ class Rawnaq_Elements {
             RAWNAQ_VERSION,
             true
         );
+        wp_localize_script( 'rawnaq-scroll-progress-toc', 'rawnaqSPT', [
+            'i18n' => [
+                'minRead'           => __( '%s min read', 'rawnaq' ),
+                'minLeft'           => __( '%s min left', 'rawnaq' ),
+                'finishedReading'   => __( 'Finished reading', 'rawnaq' ),
+                'secBadge'          => __( '~%sm', 'rawnaq' ),
+                'secTitle'          => __( 'Estimated %s min section', 'rawnaq' ),
+                'searchPlaceholder' => __( 'Search headings...', 'rawnaq' ),
+                'searchAriaLabel'   => __( 'Search headings', 'rawnaq' ),
+                'toggleToc'         => __( 'Toggle Table of Contents', 'rawnaq' ),
+                'scrollToTop'       => __( 'Scroll to top of page', 'rawnaq' ),
+                'backToTop'         => __( 'Back to top', 'rawnaq' ),
+                'copyLink'          => __( 'Copy page link', 'rawnaq' ),
+                'linkCopied'        => __( 'Link Copied!', 'rawnaq' ),
+                'chapterN'          => __( 'Chapter %s', 'rawnaq' ),
+                'chapterNTitle'     => __( 'Chapter %1$s: %2$s', 'rawnaq' ),
+                'contents'          => __( 'Contents', 'rawnaq' ),
+                'toggleNavActions'  => __( 'Toggle Navigation Actions', 'rawnaq' ),
+            ],
+        ] );
 
         // 7. Bento Grid
         wp_register_style(
@@ -598,9 +848,45 @@ class Rawnaq_Elements {
             true
         );
         wp_localize_script( 'rawnaq-smart-form', 'rawnaqSmartForm', [
-            'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
-            'nonce'           => wp_create_nonce( 'rawnaq_smart_form' ),
-            'recaptchaSiteKey'=> function_exists( 'rawnaq_smart_form_recaptcha_keys' ) ? rawnaq_smart_form_recaptcha_keys()['site'] : '',
+            'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+            'nonce'            => wp_create_nonce( 'rawnaq_smart_form' ),
+            'recaptchaSiteKey' => function_exists( 'rawnaq_smart_form_recaptcha_keys' ) ? rawnaq_smart_form_recaptcha_keys()['site'] : '',
+            'i18n'             => [
+                'errorRequired'           => __( 'Please fill in the required fields correctly.', 'rawnaq' ),
+                'errorRequiredField'      => __( 'This field is required.', 'rawnaq' ),
+                'errorInvalidEmail'       => __( 'Please enter a valid email address.', 'rawnaq' ),
+                'errorInvalidPhone'       => __( 'Please enter a valid phone number.', 'rawnaq' ),
+                'errorInvalidUrl'         => __( 'Please enter a valid website URL.', 'rawnaq' ),
+                'errorFileTooLarge'       => __( 'File exceeds maximum size of %s MB.', 'rawnaq' ),
+                'errorFileType'           => __( 'File type not allowed. Accepted: %s', 'rawnaq' ),
+                'errorRatingRequired'     => __( 'Please select a rating.', 'rawnaq' ),
+                'errorNumberMin'          => __( 'Value must be at least %s.', 'rawnaq' ),
+                'errorNumberMax'          => __( 'Value must not exceed %s.', 'rawnaq' ),
+                'errorNumberRange'        => __( 'Value must be between %1$s and %2$s.', 'rawnaq' ),
+                'errorGeneric'            => __( 'Something went wrong. Please try again.', 'rawnaq' ),
+                'successDefault'          => __( 'Message sent successfully.', 'rawnaq' ),
+                'removeFile'              => __( 'Remove file', 'rawnaq' ),
+                'removeFileWithName'      => __( 'Remove file: %s', 'rawnaq' ),
+                'fileAttached'            => __( 'File selected: %1$s (%2$s)', 'rawnaq' ),
+                'reviewSubmission'        => __( 'Review Your Submission', 'rawnaq' ),
+                'stepOf'                  => __( 'Step %1$d of %2$d', 'rawnaq' ),
+                'stepAnnounce'            => __( 'Step %1$d of %2$d', 'rawnaq' ),
+                'ratingStar'              => __( '%1$d out of %2$d stars', 'rawnaq' ),
+                'typeSignature'           => __( 'Type your name instead', 'rawnaq' ),
+                'drawSignature'           => __( 'Draw signature instead', 'rawnaq' ),
+                'clearSignature'          => __( 'Clear signature', 'rawnaq' ),
+                'typeSignaturePlaceholder'=> __( 'Type your full name here...', 'rawnaq' ),
+                'signaturePad'            => __( 'Signature pad', 'rawnaq' ),
+                'fileMb'                  => __( 'MB', 'rawnaq' ),
+                'fileKb'                  => __( 'KB', 'rawnaq' ),
+                'inquiryRegarding'        => __( 'Inquiry regarding %s', 'rawnaq' ),
+                'caseStudy'               => __( 'Case Study', 'rawnaq' ),
+                'projectDiscuss'          => __( 'I am interested in discussing a project similar to "%s"%s.', 'rawnaq' ),
+                'clientLabel'             => __( ' (Client: %s)', 'rawnaq' ),
+                'forClient'               => __( ' for %s', 'rawnaq' ),
+                'sessionExpired'          => __( 'Your session expired. Please reload the page and try again.', 'rawnaq' ),
+                'estimatedTotal'          => __( 'Estimated total', 'rawnaq' ),
+            ],
         ] );
 
         // 10. Case-Study Grid

@@ -26,6 +26,7 @@ class Rawnaq_ET_Scroll_Progress_TOC extends ET_Builder_Module {
 				'label'           => esc_html__( 'Progress Style', 'rawnaq' ),
 				'type'            => 'select',
 				'option_category' => 'basic_option',
+				'description'     => esc_html__( 'Fixed progress bar and scroll ring are displayed once per page. If multiple widgets are added, the first instance takes precedence.', 'rawnaq' ),
 				'options'         => [
 					'both' => esc_html__( 'Bar + Ring', 'rawnaq' ),
 					'bar'  => esc_html__( 'Top / Bottom Bar', 'rawnaq' ),
@@ -33,6 +34,36 @@ class Rawnaq_ET_Scroll_Progress_TOC extends ET_Builder_Module {
 					'none' => esc_html__( 'None', 'rawnaq' ),
 				],
 				'default'         => 'both',
+				'toggle_slug'     => 'main_content',
+			],
+			'bar_position' => [
+				'label'           => esc_html__( 'Bar Position', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'basic_option',
+				'options'         => [
+					'top'    => esc_html__( 'Top', 'rawnaq' ),
+					'bottom' => esc_html__( 'Bottom', 'rawnaq' ),
+				],
+				'default'         => 'top',
+				'toggle_slug'     => 'main_content',
+			],
+			'progress_target' => [
+				'label'           => esc_html__( 'Progress based on', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'basic_option',
+				'options'         => [
+					'page'    => esc_html__( 'Whole Page', 'rawnaq' ),
+					'article' => esc_html__( 'Article / Content Area', 'rawnaq' ),
+					'custom'  => esc_html__( 'Custom CSS Selector', 'rawnaq' ),
+				],
+				'default'         => 'page',
+				'toggle_slug'     => 'main_content',
+			],
+			'progress_selector' => [
+				'label'           => esc_html__( 'Progress Selector', 'rawnaq' ),
+				'type'            => 'text',
+				'option_category' => 'basic_option',
+				'default'         => '',
 				'toggle_slug'     => 'main_content',
 			],
 			'toc_position' => [
@@ -55,11 +86,60 @@ class Rawnaq_ET_Scroll_Progress_TOC extends ET_Builder_Module {
 				'default'         => 'Contents',
 				'toggle_slug'     => 'main_content',
 			],
+			'source' => [
+				'label'           => esc_html__( 'TOC Source', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'basic_option',
+				'options'         => [
+					'auto'   => esc_html__( 'Auto-detect headings', 'rawnaq' ),
+					'manual' => esc_html__( 'Manual entries', 'rawnaq' ),
+				],
+				'default'         => 'auto',
+				'toggle_slug'     => 'main_content',
+			],
+			'levels' => [
+				'label'           => esc_html__( 'Heading Levels', 'rawnaq' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'default'         => 'h2,h3',
+				'description'     => esc_html__( 'Comma-separated heading levels, e.g. h2,h3,h4', 'rawnaq' ),
+				'toggle_slug'     => 'settings',
+			],
+			'manual_items' => [
+				'label'           => esc_html__( 'Manual Entries', 'rawnaq' ),
+				'type'            => 'textarea',
+				'option_category' => 'configuration',
+				'default'         => '',
+				'description'     => esc_html__( 'One item per line: Title|anchor|level (e.g. Introduction|intro|2)', 'rawnaq' ),
+				'toggle_slug'     => 'settings',
+			],
 			'target_selector' => [
 				'label'           => esc_html__( 'Content Scope (CSS Selector)', 'rawnaq' ),
 				'type'            => 'text',
 				'option_category' => 'configuration',
 				'default'         => '.entry-content, main, article, .et_pb_section',
+				'toggle_slug'     => 'settings',
+			],
+			'collapse_subs' => [
+				'label'           => esc_html__( 'Collapse Sub-headings', 'rawnaq' ),
+				'type'            => 'yes_no_button',
+				'options'         => [
+					'on'  => esc_html__( 'Yes', 'rawnaq' ),
+					'off' => esc_html__( 'No', 'rawnaq' ),
+				],
+				'default'         => 'off',
+				'toggle_slug'     => 'settings',
+			],
+			'scroll_offset' => [
+				'label'           => esc_html__( 'Scroll Offset (px)', 'rawnaq' ),
+				'type'            => 'range',
+				'option_category' => 'configuration',
+				'default'         => '80',
+				'range_settings'  => [
+					'min'  => '0',
+					'max'  => '400',
+					'step' => '5',
+				],
 				'toggle_slug'     => 'settings',
 			],
 			'reading_time' => [
@@ -92,6 +172,16 @@ class Rawnaq_ET_Scroll_Progress_TOC extends ET_Builder_Module {
 				'default'         => 'on',
 				'toggle_slug'     => 'settings',
 			],
+			'url_hash_sync' => [
+				'label'           => esc_html__( 'Sync URL Hash on Scroll', 'rawnaq' ),
+				'type'            => 'yes_no_button',
+				'options'         => [
+					'on'  => esc_html__( 'Yes', 'rawnaq' ),
+					'off' => esc_html__( 'No', 'rawnaq' ),
+				],
+				'default'         => 'off',
+				'toggle_slug'     => 'settings',
+			],
 			'click_to_top' => [
 				'label'           => esc_html__( 'Click Ring for Back to Top', 'rawnaq' ),
 				'type'            => 'yes_no_button',
@@ -101,6 +191,35 @@ class Rawnaq_ET_Scroll_Progress_TOC extends ET_Builder_Module {
 				],
 				'default'         => 'on',
 				'toggle_slug'     => 'settings',
+			],
+			'dock_attach' => [
+				'label'           => esc_html__( 'Attach to Floating Dock', 'rawnaq' ),
+				'type'            => 'yes_no_button',
+				'options'         => [
+					'on'  => esc_html__( 'Yes', 'rawnaq' ),
+					'off' => esc_html__( 'No', 'rawnaq' ),
+				],
+				'default'         => 'off',
+				'toggle_slug'     => 'settings',
+			],
+			'sync_timeline' => [
+				'label'           => esc_html__( 'Sync Timeline Chapter ID', 'rawnaq' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'default'         => '',
+				'toggle_slug'     => 'settings',
+			],
+			'ring_size' => [
+				'label'           => esc_html__( 'Progress Ring Size (px)', 'rawnaq' ),
+				'type'            => 'range',
+				'option_category' => 'configuration',
+				'default'         => '56',
+				'range_settings'  => [
+					'min'  => '40',
+					'max'  => '96',
+					'step' => '2',
+				],
+				'toggle_slug'     => 'style',
 			],
 			'accent_color' => [
 				'label'        => esc_html__( 'Accent Color', 'rawnaq' ),
@@ -123,66 +242,47 @@ class Rawnaq_ET_Scroll_Progress_TOC extends ET_Builder_Module {
 		wp_enqueue_style( 'rawnaq-scroll-progress-toc' );
 		wp_enqueue_script( 'rawnaq-scroll-progress-toc' );
 
-		$progress        = sanitize_key( $this->props['progress'] ?? 'both' );
-		$toc_position    = sanitize_key( $this->props['toc_position'] ?? 'sticky' );
-		$title           = sanitize_text_field( $this->props['toc_title'] ?? 'Contents' );
-		$target_selector = sanitize_text_field( $this->props['target_selector'] ?? '.entry-content, main, article, .et_pb_section' );
-		$reading_time    = ( $this->props['reading_time'] ?? 'on' ) === 'on';
-		$show_search     = ( $this->props['show_search'] ?? 'off' ) === 'on';
-		$toc_collapsible = ( $this->props['toc_collapsible'] ?? 'on' ) === 'on';
-		$click_to_top    = ( $this->props['click_to_top'] ?? 'on' ) === 'on';
-		$accent_color    = sanitize_hex_color( $this->props['accent_color'] ?? '#FBBF24' ) ?: '#FBBF24';
-		$accent_deep     = sanitize_hex_color( $this->props['accent_deep'] ?? '#4338CA' ) ?: '#4338CA';
-
-		$cfg = [
-			'progress'           => $progress,
-			'barPosition'        => 'top',
+		$raw = [
+			'progress'           => $this->props['progress'] ?? 'both',
+			'barPosition'        => $this->props['bar_position'] ?? 'top',
+			'progressTarget'     => $this->props['progress_target'] ?? 'page',
+			'progressSelector'   => $this->props['progress_selector'] ?? '',
 			'showPercent'        => true,
-			'clickToTop'         => $click_to_top,
-			'tocPosition'        => $toc_position,
-			'tocTitle'           => $title,
-			'tocCollapsible'     => $toc_collapsible,
-			'source'             => 'auto',
-			'levels'             => [ 'h2', 'h3' ],
-			'manual'             => [],
-			'collapseSubs'       => false,
-			'showSearch'         => $show_search,
-			'urlHashSync'        => true,
+			'clickToTop'         => ( $this->props['click_to_top'] ?? 'on' ) === 'on',
+			'tocPosition'        => $this->props['toc_position'] ?? 'sticky',
+			'tocTitle'           => $this->props['toc_title'] ?? 'Contents',
+			'tocCollapsible'     => ( $this->props['toc_collapsible'] ?? 'on' ) === 'on',
+			'source'             => $this->props['source'] ?? 'auto',
+			'levels'             => $this->props['levels'] ?? 'h2,h3',
+			'manual'             => $this->props['manual_items'] ?? '',
+			'collapseSubs'       => ( $this->props['collapse_subs'] ?? 'off' ) === 'on',
+			'showSearch'         => ( $this->props['show_search'] ?? 'off' ) === 'on',
+			'urlHashSync'        => ( $this->props['url_hash_sync'] ?? 'off' ) === 'on',
 			'sectionReadingTime' => false,
 			'smooth'             => true,
-			'scrollOffset'       => 80,
-			'readingTime'        => $reading_time,
+			'scrollOffset'       => isset( $this->props['scroll_offset'] ) ? (int) $this->props['scroll_offset'] : 80,
+			'readingTime'        => ( $this->props['reading_time'] ?? 'on' ) === 'on',
 			'mobileCollapse'     => true,
-			'dockAttach'         => false,
-			'syncTimeline'       => '',
-			'scope'              => $target_selector,
+			'dockAttach'         => ( $this->props['dock_attach'] ?? 'off' ) === 'on',
+			'syncTimeline'       => $this->props['sync_timeline'] ?? '',
+			'scope'              => $this->props['target_selector'] ?? '',
 			'hideIfShort'        => true,
+			'ringSize'           => isset( $this->props['ring_size'] ) ? (int) $this->props['ring_size'] : 56,
 		];
 
-		ob_start();
-		?>
-		<div class="rawnaq-spt"
-		     style="--spt-accent: <?php echo esc_attr( $accent_color ); ?>; --spt-accent-deep: <?php echo esc_attr( $accent_deep ); ?>; --spt-offset: 80px; --spt-ring-size: 56px;"
-		     data-spt="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>">
-			<?php if ( 'none' !== $toc_position ) : ?>
-				<nav class="rawnaq-spt-toc is-<?php echo esc_attr( $toc_position ); ?>" role="navigation" aria-label="<?php echo esc_attr( $title ); ?>">
-					<div class="rawnaq-spt-header-wrap">
-						<p class="rawnaq-spt-reading" hidden></p>
-						<p class="rawnaq-spt-chapter" hidden></p>
-						<div class="rawnaq-spt-title-row">
-							<h3 class="rawnaq-spt-title"><?php echo esc_html( $title ); ?></h3>
-							<?php if ( $toc_collapsible ) : ?>
-								<button type="button" class="rawnaq-spt-toggle-btn" aria-expanded="true" aria-label="<?php esc_attr_e( 'Toggle Table of Contents', 'rawnaq' ); ?>">
-									<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-								</button>
-							<?php endif; ?>
-						</div>
-					</div>
-					<ul class="rawnaq-spt-list"></ul>
-				</nav>
-			<?php endif; ?>
-		</div>
-		<?php
-		return ob_get_clean();
+		$cfg = function_exists( 'rawnaq_spt_cfg_sanitize' ) ? rawnaq_spt_cfg_sanitize( $raw ) : $raw;
+
+		$accent_color = sanitize_hex_color( $this->props['accent_color'] ?? '#FBBF24' ) ?: '#FBBF24';
+		$accent_deep  = sanitize_hex_color( $this->props['accent_deep'] ?? '#4338CA' ) ?: '#4338CA';
+		$style_vars   = [
+			'--spt-accent'      => $accent_color,
+			'--spt-accent-deep' => $accent_deep,
+		];
+
+		if ( function_exists( 'rawnaq_spt_markup' ) ) {
+			return rawnaq_spt_markup( $cfg, $style_vars );
+		}
+
+		return '';
 	}
 }

@@ -10,6 +10,9 @@ class Rawnaq_Admin_Dashboard {
         add_action( 'admin_menu', [ $this, 'prioritize_dashboard_submenu' ], 999 );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
         add_action( 'wp_ajax_rawnaq_save_modules', [ $this, 'save_modules_via_ajax' ] );
+        add_action( 'wp_ajax_rawnaq_sf_test_mailchimp', [ $this, 'ajax_test_mailchimp' ] );
+        add_action( 'wp_ajax_rawnaq_sf_test_email', [ $this, 'ajax_test_email' ] );
+        add_action( 'wp_ajax_rawnaq_sf_test_webhook', [ $this, 'ajax_test_webhook' ] );
     }
 
     public function add_menu_page() {
@@ -538,16 +541,19 @@ class Rawnaq_Admin_Dashboard {
                                 </div>
                                 <div class="rawnaq-integrations-body" id="rawnaq-integrations-body">
                                     <?php
-                                    $sf_settings = is_array( $settings ) ? $settings : [];
-                                    $default_wa  = sanitize_text_field( $sf_settings['default_wa_number'] ?? '' );
-                                    $rc_site     = sanitize_text_field( $sf_settings['recaptcha_site_key'] ?? '' );
-                                    $rc_secret   = sanitize_text_field( $sf_settings['recaptcha_secret_key'] ?? '' );
-                                    $mc_key      = sanitize_text_field( $sf_settings['mailchimp_api_key'] ?? '' );
-                                    $hs_portal   = sanitize_text_field( $sf_settings['hubspot_portal_id'] ?? '' );
-                                    $max_up      = isset( $sf_settings['sf_max_upload_mb'] ) ? absint( $sf_settings['sf_max_upload_mb'] ) : 5;
+                                    $sf_settings    = is_array( $settings ) ? $settings : [];
+                                    $default_wa     = sanitize_text_field( $sf_settings['default_wa_number'] ?? '' );
+                                    $rc_site        = sanitize_text_field( $sf_settings['recaptcha_site_key'] ?? '' );
+                                    $rc_secret      = sanitize_text_field( $sf_settings['recaptcha_secret_key'] ?? '' );
+                                    $mc_key         = sanitize_text_field( $sf_settings['mailchimp_api_key'] ?? '' );
+                                    $hs_portal      = sanitize_text_field( $sf_settings['hubspot_portal_id'] ?? '' );
+                                    $max_up         = isset( $sf_settings['sf_max_upload_mb'] ) ? absint( $sf_settings['sf_max_upload_mb'] ) : 5;
                                     if ( $max_up < 1 ) {
                                         $max_up = 5;
                                     }
+                                    $del_files      = isset( $sf_settings['sf_delete_files_days'] ) ? absint( $sf_settings['sf_delete_files_days'] ) : 0;
+                                    $del_entries    = isset( $sf_settings['sf_delete_entries_days'] ) ? absint( $sf_settings['sf_delete_entries_days'] ) : 0;
+                                    $webhook_secret = function_exists( 'rawnaq_smart_form_webhook_secret' ) ? rawnaq_smart_form_webhook_secret() : '';
                                     ?>
                                     <div class="integrations-grid">
                                         <div class="integration-field">
@@ -561,24 +567,103 @@ class Rawnaq_Admin_Dashboard {
                                             <span class="field-hint"><?php esc_html_e( 'Maximum allowable file size per attachment (1 - 25 MB).', 'rawnaq' ); ?></span>
                                         </div>
                                         <div class="integration-field">
+                                            <label for="rawnaq-sf-del-files"><strong><?php esc_html_e( 'Delete Uploaded Files After (Days)', 'rawnaq' ); ?></strong></label>
+                                            <input type="number" min="0" max="365" id="rawnaq-sf-del-files" name="sf_delete_files_days" value="<?php echo esc_attr( (string) $del_files ); ?>" />
+                                            <span class="field-hint"><?php esc_html_e( 'Auto-delete uploaded files after N days (0 to keep indefinitely).', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-sf-del-entries"><strong><?php esc_html_e( 'Delete Form Entries After (Days)', 'rawnaq' ); ?></strong></label>
+                                            <input type="number" min="0" max="365" id="rawnaq-sf-del-entries" name="sf_delete_entries_days" value="<?php echo esc_attr( (string) $del_entries ); ?>" />
+                                            <span class="field-hint"><?php esc_html_e( 'Auto-delete stored form submissions after N days (0 to keep indefinitely).', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
                                             <label for="rawnaq-rc-site"><strong><?php esc_html_e( 'Google reCAPTCHA v3 Site Key', 'rawnaq' ); ?></strong></label>
                                             <input type="text" class="regular-text" id="rawnaq-rc-site" name="recaptcha_site_key" value="<?php echo esc_attr( $rc_site ); ?>" placeholder="6LeIxacbAAAAA..." />
                                             <span class="field-hint"><?php esc_html_e( 'Public site key for invisible spam verification score.', 'rawnaq' ); ?></span>
                                         </div>
                                         <div class="integration-field">
                                             <label for="rawnaq-rc-secret"><strong><?php esc_html_e( 'Google reCAPTCHA v3 Secret Key', 'rawnaq' ); ?></strong></label>
-                                            <input type="password" class="regular-text" id="rawnaq-rc-secret" name="recaptcha_secret_key" value="<?php echo esc_attr( $rc_secret ); ?>" autocomplete="off" />
+                                            <div class="secret-field-wrapper" data-field="recaptcha_secret_key">
+                                                <?php if ( $rc_secret ) : ?>
+                                                    <div class="secret-masked-view" style="display:flex;gap:8px;align-items:center;">
+                                                        <input type="text" class="regular-text" value="••••••••••••••••" disabled readonly style="letter-spacing:2px;font-family:monospace;background:#f0f0f1;" />
+                                                        <button type="button" class="button button-secondary btn-toggle-secret-edit"><?php esc_html_e( 'Change', 'rawnaq' ); ?></button>
+                                                    </div>
+                                                    <div class="secret-edit-view" style="display:none;gap:8px;align-items:center;">
+                                                        <input type="password" class="regular-text secret-input" id="rawnaq-rc-secret" name="recaptcha_secret_key" value="" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Enter new secret key', 'rawnaq' ); ?>" />
+                                                        <button type="button" class="button button-secondary btn-cancel-secret-edit"><?php esc_html_e( 'Cancel', 'rawnaq' ); ?></button>
+                                                    </div>
+                                                <?php else : ?>
+                                                    <div class="secret-edit-view" style="display:flex;gap:8px;align-items:center;">
+                                                        <input type="password" class="regular-text secret-input" id="rawnaq-rc-secret" name="recaptcha_secret_key" value="" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Enter secret key', 'rawnaq' ); ?>" />
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
                                             <span class="field-hint"><?php esc_html_e( 'Private server validation key.', 'rawnaq' ); ?></span>
                                         </div>
                                         <div class="integration-field">
                                             <label for="rawnaq-mc-key"><strong><?php esc_html_e( 'Mailchimp API Key', 'rawnaq' ); ?></strong></label>
-                                            <input type="password" class="regular-text" id="rawnaq-mc-key" name="mailchimp_api_key" value="<?php echo esc_attr( $mc_key ); ?>" autocomplete="off" placeholder="xxxxxxxx-us21" />
+                                            <div class="secret-field-wrapper" data-field="mailchimp_api_key">
+                                                <?php if ( $mc_key ) : ?>
+                                                    <div class="secret-masked-view" style="display:flex;gap:8px;align-items:center;">
+                                                        <input type="text" class="regular-text" value="••••••••••••••••" disabled readonly style="letter-spacing:2px;font-family:monospace;background:#f0f0f1;" />
+                                                        <button type="button" class="button button-secondary btn-toggle-secret-edit"><?php esc_html_e( 'Change', 'rawnaq' ); ?></button>
+                                                    </div>
+                                                    <div class="secret-edit-view" style="display:none;gap:8px;align-items:center;">
+                                                        <input type="password" class="regular-text secret-input" id="rawnaq-mc-key" name="mailchimp_api_key" value="" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Enter new API key (e.g. xxxxxxxx-us21)', 'rawnaq' ); ?>" />
+                                                        <button type="button" class="button button-secondary btn-cancel-secret-edit"><?php esc_html_e( 'Cancel', 'rawnaq' ); ?></button>
+                                                    </div>
+                                                <?php else : ?>
+                                                    <div class="secret-edit-view" style="display:flex;gap:8px;align-items:center;">
+                                                        <input type="password" class="regular-text secret-input" id="rawnaq-mc-key" name="mailchimp_api_key" value="" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Enter API key (e.g. xxxxxxxx-us21)', 'rawnaq' ); ?>" />
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                                <button type="button" class="button button-secondary" id="btn-test-mailchimp">
+                                                    <span class="dashicons dashicons-update" style="vertical-align:middle;font-size:16px;"></span> <?php esc_html_e( 'Test Connection', 'rawnaq' ); ?>
+                                                </button>
+                                                <span class="test-feedback" id="mailchimp-test-status" style="font-size:12px;"></span>
+                                            </div>
                                             <span class="field-hint"><?php esc_html_e( 'Required when Smart Form CRM routing is set to Mailchimp.', 'rawnaq' ); ?></span>
                                         </div>
                                         <div class="integration-field">
                                             <label for="rawnaq-hs-portal"><strong><?php esc_html_e( 'HubSpot Portal ID', 'rawnaq' ); ?></strong></label>
                                             <input type="text" class="regular-text" id="rawnaq-hs-portal" name="hubspot_portal_id" value="<?php echo esc_attr( $hs_portal ); ?>" placeholder="1234567" />
                                             <span class="field-hint"><?php esc_html_e( 'Required when Smart Form CRM routing is set to HubSpot.', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label><strong><?php esc_html_e( 'Test Email Delivery', 'rawnaq' ); ?></strong></label>
+                                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                                <button type="button" class="button button-secondary" id="btn-test-email">
+                                                    <span class="dashicons dashicons-email-alt" style="vertical-align:middle;font-size:16px;"></span> <?php esc_html_e( 'Send Test Email', 'rawnaq' ); ?>
+                                                </button>
+                                                <span class="test-feedback" id="email-test-status" style="font-size:12px;"></span>
+                                            </div>
+                                            <span class="field-hint"><?php echo esc_html( sprintf( /* translators: %s: admin email address */ __( 'Sends a test email to default recipient (%s).', 'rawnaq' ), get_option( 'admin_email' ) ) ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-webhook-secret"><strong><?php esc_html_e( 'Webhook Secret (HMAC-SHA256)', 'rawnaq' ); ?></strong></label>
+                                            <div style="display:flex;gap:8px;align-items:center;">
+                                                <input type="text" class="regular-text" id="rawnaq-webhook-secret" value="<?php echo esc_attr( $webhook_secret ); ?>" readonly style="background:#f0f0f1;font-family:monospace;" />
+                                                <button type="button" class="button button-secondary rawnaq-copy-badge" data-copy="<?php echo esc_attr( $webhook_secret ); ?>">
+                                                    <span class="dashicons dashicons-admin-page" style="vertical-align:middle;font-size:16px;"></span> <?php esc_html_e( 'Copy', 'rawnaq' ); ?>
+                                                </button>
+                                            </div>
+                                            <span class="field-hint"><?php esc_html_e( 'Secret key sent in X-Rawnaq-Signature header on webhook requests.', 'rawnaq' ); ?></span>
+                                        </div>
+                                        <div class="integration-field">
+                                            <label for="rawnaq-test-webhook-url"><strong><?php esc_html_e( 'Test Webhook Endpoint', 'rawnaq' ); ?></strong></label>
+                                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                                <input type="url" class="regular-text" id="rawnaq-test-webhook-url" placeholder="https://hooks.slack.com/... or https://..." style="flex:1;min-width:220px;" />
+                                                <button type="button" class="button button-secondary" id="btn-test-webhook">
+                                                    <span class="dashicons dashicons-rest-api" style="vertical-align:middle;font-size:16px;"></span> <?php esc_html_e( 'Test Webhook', 'rawnaq' ); ?>
+                                                </button>
+                                            </div>
+                                            <div style="margin-top:4px;">
+                                                <span class="test-feedback" id="webhook-test-status" style="font-size:12px;"></span>
+                                            </div>
+                                            <span class="field-hint"><?php esc_html_e( 'Dispatches sample payload with unique delivery ID and HMAC signature.', 'rawnaq' ); ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1908,12 +1993,154 @@ class Rawnaq_Admin_Dashboard {
         $settings['modules'] = $sanitized_modules;
         $settings['default_wa_number']    = isset( $form_data['default_wa_number'] ) ? sanitize_text_field( $form_data['default_wa_number'] ) : '';
         $settings['recaptcha_site_key']   = isset( $form_data['recaptcha_site_key'] ) ? sanitize_text_field( $form_data['recaptcha_site_key'] ) : '';
-        $settings['recaptcha_secret_key'] = isset( $form_data['recaptcha_secret_key'] ) ? sanitize_text_field( $form_data['recaptcha_secret_key'] ) : '';
-        $settings['mailchimp_api_key']    = isset( $form_data['mailchimp_api_key'] ) ? sanitize_text_field( $form_data['mailchimp_api_key'] ) : '';
-        $settings['hubspot_portal_id']    = isset( $form_data['hubspot_portal_id'] ) ? sanitize_text_field( $form_data['hubspot_portal_id'] ) : '';
-        $settings['sf_max_upload_mb']     = isset( $form_data['sf_max_upload_mb'] ) ? max( 1, min( 25, absint( $form_data['sf_max_upload_mb'] ) ) ) : 5;
+
+        // Only update secret key if non-empty submitted; otherwise keep old value untouched.
+        if ( isset( $form_data['recaptcha_secret_key'] ) && '' !== trim( (string) $form_data['recaptcha_secret_key'] ) ) {
+            $settings['recaptcha_secret_key'] = sanitize_text_field( trim( (string) $form_data['recaptcha_secret_key'] ) );
+        }
+
+        // Only update Mailchimp API key if non-empty submitted; otherwise keep old value untouched.
+        if ( isset( $form_data['mailchimp_api_key'] ) && '' !== trim( (string) $form_data['mailchimp_api_key'] ) ) {
+            $settings['mailchimp_api_key'] = sanitize_text_field( trim( (string) $form_data['mailchimp_api_key'] ) );
+        }
+
+        $settings['hubspot_portal_id']      = isset( $form_data['hubspot_portal_id'] ) ? sanitize_text_field( $form_data['hubspot_portal_id'] ) : '';
+        $settings['sf_max_upload_mb']       = isset( $form_data['sf_max_upload_mb'] ) ? max( 1, min( 25, absint( $form_data['sf_max_upload_mb'] ) ) ) : 5;
+        $settings['sf_delete_files_days']   = isset( $form_data['sf_delete_files_days'] ) ? absint( $form_data['sf_delete_files_days'] ) : 0;
+        $settings['sf_delete_entries_days'] = isset( $form_data['sf_delete_entries_days'] ) ? absint( $form_data['sf_delete_entries_days'] ) : 0;
         update_option( 'rawnaq_settings', $settings );
 
         wp_send_json_success( esc_html__( 'Settings saved successfully!', 'rawnaq' ) );
+    }
+
+    /**
+     * AJAX: Test Mailchimp API connection via GET /ping.
+     */
+    public function ajax_test_mailchimp() {
+        check_ajax_referer( 'rawnaq_admin_nonce', 'security' );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Unauthorized user request.', 'rawnaq' ) ] );
+        }
+
+        $key = function_exists( 'rawnaq_smart_form_mailchimp_key' ) ? rawnaq_smart_form_mailchimp_key() : '';
+        if ( ! empty( $_POST['key'] ) ) {
+            $key = sanitize_text_field( wp_unslash( $_POST['key'] ) );
+        }
+
+        if ( ! $key ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Mailchimp API key is not configured.', 'rawnaq' ) ] );
+        }
+
+        $parts = explode( '-', $key );
+        $dc    = end( $parts );
+        if ( ! $dc || $dc === $key ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid Mailchimp API key format (missing datacenter suffix, e.g. -us21).', 'rawnaq' ) ] );
+        }
+
+        $url = 'https://' . rawurlencode( $dc ) . '.api.mailchimp.com/3.0/ping';
+        $res = wp_remote_get(
+            $url,
+            [
+                'timeout' => 8,
+                'headers' => [
+                    'Authorization' => 'apikey ' . $key,
+                ],
+            ]
+        );
+
+        if ( is_wp_error( $res ) ) {
+            wp_send_json_error( [ 'message' => sprintf( /* translators: %s: error message */ esc_html__( 'Connection failed: %s', 'rawnaq' ), $res->get_error_message() ) ] );
+        }
+
+        $code = wp_remote_retrieve_response_code( $res );
+        $body = json_decode( wp_remote_retrieve_body( $res ), true );
+
+        if ( 200 === $code && ! empty( $body['health_status'] ) ) {
+            wp_send_json_success( [ 'message' => sprintf( /* translators: %s: health status message */ esc_html__( 'Mailchimp connected! (%s)', 'rawnaq' ), sanitize_text_field( $body['health_status'] ) ) ] );
+        }
+
+        $msg = $body['detail'] ?? ( $body['title'] ?? sprintf( /* translators: %d: HTTP status code */ esc_html__( 'HTTP %d response', 'rawnaq' ), $code ) );
+        wp_send_json_error( [ 'message' => sprintf( /* translators: %s: error detail */ esc_html__( 'Mailchimp error: %s', 'rawnaq' ), sanitize_text_field( (string) $msg ) ) ] );
+    }
+
+    /**
+     * AJAX: Send a test email to default recipient (admin_email).
+     */
+    public function ajax_test_email() {
+        check_ajax_referer( 'rawnaq_admin_nonce', 'security' );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Unauthorized user request.', 'rawnaq' ) ] );
+        }
+
+        $to = sanitize_email( get_option( 'admin_email' ) );
+        if ( ! $to ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'No admin email address configured in WordPress.', 'rawnaq' ) ] );
+        }
+
+        $subject = sprintf( /* translators: %s: site name */ __( '[%s] Smart Form Test Email', 'rawnaq' ), get_bloginfo( 'name' ) );
+        $message = sprintf(
+            /* translators: 1: site name, 2: formatted time */
+            __( "Hello,\n\nThis is a test notification from %1\$s Smart Form sent at %2\$s.\n\nIf you received this message, your WordPress email delivery configuration is working correctly.", 'rawnaq' ),
+            get_bloginfo( 'name' ),
+            wp_date( 'Y-m-d H:i:s' )
+        );
+
+        $mail_err = '';
+        $cb       = function( $wp_err ) use ( &$mail_err ) {
+            if ( is_wp_error( $wp_err ) ) {
+                $mail_err = $wp_err->get_error_message();
+            }
+        };
+        add_action( 'wp_mail_failed', $cb );
+        $sent = wp_mail( $to, $subject, $message, [ 'Content-Type: text/plain; charset=UTF-8' ] );
+        remove_action( 'wp_mail_failed', $cb );
+
+        if ( $sent ) {
+            wp_send_json_success( [ 'message' => sprintf( /* translators: %s: email address */ esc_html__( 'Test email sent successfully to %s!', 'rawnaq' ), $to ) ] );
+        } else {
+            $err = $mail_err ?: __( 'wp_mail returned false. Please check your mail server configuration.', 'rawnaq' );
+            wp_send_json_error( [ 'message' => sprintf( /* translators: %s: error message */ esc_html__( 'Email delivery failed: %s', 'rawnaq' ), esc_html( $err ) ) ] );
+        }
+    }
+
+    /**
+     * AJAX: Send a sample webhook payload with delivery ID and signature.
+     */
+    public function ajax_test_webhook() {
+        check_ajax_referer( 'rawnaq_admin_nonce', 'security' );
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Unauthorized user request.', 'rawnaq' ) ] );
+        }
+
+        $url = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
+        if ( ! $url ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Please enter a webhook URL to test.', 'rawnaq' ) ] );
+        }
+
+        if ( ! function_exists( 'rawnaq_smart_form_send_webhook' ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Smart Form webhook handler not found.', 'rawnaq' ) ] );
+        }
+
+        $sample_payload = [
+            'subject' => __( '[Test] Rawnaq Smart Form Webhook Test', 'rawnaq' ),
+            'form_id' => 'test-webhook-ping',
+            'test'    => true,
+            'fields'  => [
+                'name'    => 'Rawnaq Test User',
+                'email'   => 'test@example.com',
+                'message' => 'This is a test webhook payload sent from Rawnaq settings dashboard.',
+            ],
+            'page'    => [
+                'title' => get_bloginfo( 'name' ) . ' Settings',
+                'url'   => admin_url( 'admin.php?page=rawnaq' ),
+            ],
+        ];
+
+        $res = rawnaq_smart_form_send_webhook( $url, $sample_payload );
+        if ( is_wp_error( $res ) ) {
+            wp_send_json_error( [ 'message' => sprintf( /* translators: %s: error message */ esc_html__( 'Webhook test failed: %s', 'rawnaq' ), $res->get_error_message() ) ] );
+        } else {
+            wp_send_json_success( [ 'message' => esc_html__( 'Webhook delivered successfully! (HTTP 200)', 'rawnaq' ) ] );
+        }
     }
 }

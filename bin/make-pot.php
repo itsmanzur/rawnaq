@@ -51,7 +51,11 @@ $esc = static function ( $s ) {
 $out  = '# Copyright (C) ' . gmdate( 'Y' ) . " Rawnaq\n";
 $out .= "# This file is distributed under the same license as the Rawnaq plugin.\n";
 $out .= "msgid \"\"\nmsgstr \"\"\n";
-$out .= "\"Project-Id-Version: Rawnaq 1.17.5\\n\"\n";
+$ver = '1.3.0';
+if ( file_exists( $dir . '/rawnaq.php' ) && preg_match( '/Version:\s*([0-9.]+)/', file_get_contents( $dir . '/rawnaq.php' ), $m ) ) {
+	$ver = $m[1];
+}
+$out .= "\"Project-Id-Version: Rawnaq {$ver}\\n\"\n";
 $out .= "\"Report-Msgid-Bugs-To: https://github.com/itsmanzur/rawnaq/issues\\n\"\n";
 $out .= '"POT-Creation-Date: ' . gmdate( 'Y-m-d H:iO' ) . "\\n\"\n";
 $out .= "\"MIME-Version: 1.0\\n\"\n";

@@ -56,6 +56,8 @@ function Create-NormalizedZipArchive {
     $zipStream = [System.IO.File]::Open($ZipDestination, [System.IO.FileMode]::Create)
     $archive = New-Object System.IO.Compression.ZipArchive($zipStream, [System.IO.Compression.ZipArchiveMode]::Create)
 
+    $archive.CreateEntry($RootPrefix + '/') | Out-Null
+
     $count = 0
     Get-ChildItem -Path $SourceDir -Recurse | ForEach-Object {
         if (-not $_.PSIsContainer) {
@@ -84,20 +86,31 @@ function Create-NormalizedZipArchive {
 
 # 1. Build Rawnaq (Free) using .distignore
 $freeSource    = Join-Path $pluginsDir "rawnaq"
-$freeDistZip   = Join-Path $distDir "rawnaq-1.2.0.zip"
-$freeDeskZip   = Join-Path $desktop "rawnaq-1.2.0.zip"
+$version       = '1.3.0'
+$mainPhp       = Join-Path $freeSource "rawnaq.php"
+if (Test-Path $mainPhp) {
+    $content = Get-Content $mainPhp -Raw
+    if ($content -match 'Version:\s*([0-9.]+)') {
+        $version = $matches[1]
+    }
+}
+
+$freeDistZip   = Join-Path $distDir "rawnaq-$version.zip"
+$freeRootZip   = Join-Path $freeSource "rawnaq-$version.zip"
+$freeDeskZip   = Join-Path $desktop "rawnaq-$version.zip"
 $distignorePath = Join-Path $freeSource ".distignore"
 
 $freePatterns = @()
 if (Test-Path $distignorePath) {
     $freePatterns = Get-Content $distignorePath
 }
-$freePatterns += @('.git*', '*.zip', 'dist*', 'tmp_*')
+$freePatterns += @('.git*', '*.zip', 'dist*', 'tmp_*', '.claude*')
 
 Create-NormalizedZipArchive -SourceDir $freeSource -ZipDestination $freeDistZip -RootPrefix 'rawnaq' -Patterns $freePatterns
-Copy-Item -Path $freeDistZip -Destination $freeDeskZip -Force
-Copy-Item -Path $freeDistZip -Destination (Join-Path $distDir "rawnaq-1.1.0.zip") -Force
-Copy-Item -Path $freeDistZip -Destination (Join-Path $desktop "rawnaq-1.1.0.zip") -Force
+Copy-Item -Path $freeDistZip -Destination $freeRootZip -Force
+if (Test-Path $desktop) {
+    Copy-Item -Path $freeDistZip -Destination $freeDeskZip -Force
+}
 
 # 2. Build Rawnaq Pro
 $proSource   = Join-Path $pluginsDir "rawnaq-pro"
