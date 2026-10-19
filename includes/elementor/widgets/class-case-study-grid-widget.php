@@ -55,17 +55,18 @@ class Rawnaq_Case_Study_Grid_Widget extends \Elementor\Widget_Base {
 			'condition' => [ 'source' => 'query' ],
 		] );
 		$this->add_control( 'query_orderby', [
-			'label'     => esc_html__( 'Order by', 'rawnaq' ),
-			'type'      => \Elementor\Controls_Manager::SELECT,
-			'default'   => 'date',
-			'options'   => [
+			'label'       => esc_html__( 'Order by', 'rawnaq' ),
+			'type'        => \Elementor\Controls_Manager::SELECT,
+			'default'     => 'date',
+			'options'     => [
 				'date'       => esc_html__( 'Date', 'rawnaq' ),
 				'title'      => esc_html__( 'Title', 'rawnaq' ),
 				'menu_order' => esc_html__( 'Menu order', 'rawnaq' ),
 				'modified'   => esc_html__( 'Last modified', 'rawnaq' ),
 				'rand'       => esc_html__( 'Random', 'rawnaq' ),
 			],
-			'condition' => [ 'source' => 'query' ],
+			'description' => esc_html__( 'Order by field. Note: Random order is treated as Date in paginated queries to avoid duplicates.', 'rawnaq' ),
+			'condition'   => [ 'source' => 'query' ],
 		] );
 		$this->add_control( 'query_order', [
 			'label'     => esc_html__( 'Order', 'rawnaq' ),
@@ -446,6 +447,7 @@ class Rawnaq_Case_Study_Grid_Widget extends \Elementor\Widget_Base {
 			'clickAction'    => $s['click_action'] ?? 'modal',
 			'discussTarget'  => $s['discuss_target'] ?? 'auto',
 			'initialVisible' => max( 0, $initial_visible ),
+			'loadChunk'      => max( 1, (int) ( $s['load_chunk'] ?? 3 ) ),
 			'cardStyle'      => $s['card_style'] ?? 'elevated',
 			'accent'         => $s['accent'] ?? '',
 			'cardBg'         => $s['card_bg'] ?? '',
@@ -458,6 +460,6 @@ class Rawnaq_Case_Study_Grid_Widget extends \Elementor\Widget_Base {
 	protected function render() {
 		$s   = $this->get_settings_for_display();
 		$cfg = $this->build_cfg( $s );
-		rawnaq_case_study_markup( $cfg, 'el-' . $this->get_id() );
+		rawnaq_case_study_markup( $cfg, 'rawnaq-cs-el-' . $this->get_id() );
 	}
 }

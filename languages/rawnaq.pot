@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Rawnaq plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Rawnaq 1.4.0\n"
+"Project-Id-Version: Rawnaq 1.5.0\n"
 "Report-Msgid-Bugs-To: https://github.com/itsmanzur/rawnaq/issues\n"
-"POT-Creation-Date: 2026-10-13 13:41+0000\n"
+"POT-Creation-Date: 2026-10-19 12:40+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -48,7 +48,7 @@ msgid "%d older form attachment(s) could not be moved into the protected folder 
 msgstr ""
 
 #: includes/elementor/widgets/class-bento-grid-widget.php:896
-#: includes/gutenberg/class-gutenberg-loader.php:1789
+#: includes/gutenberg/class-gutenberg-loader.php:1790
 msgid "%d out of 5 stars"
 msgstr ""
 
@@ -123,11 +123,15 @@ msgstr ""
 msgid "0 = show all. Otherwise hide remaining steps behind Load More."
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:221
+msgid "0 displays all cards initially with no load more button."
+msgstr ""
+
 #: includes/elementor/widgets/class-bento-grid-widget.php:321
 msgid "0 hides stars."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:320
+#: includes/elementor/widgets/class-case-study-grid-widget.php:321
 msgid "0 shows all cards with no \"Load more\" button."
 msgstr ""
 
@@ -397,7 +401,7 @@ msgid "Accent / Connector Highlight"
 msgstr ""
 
 #: includes/divi/modules/class-et-scroll-progress-toc.php:225
-#: includes/elementor/widgets/class-case-study-grid-widget.php:350
+#: includes/elementor/widgets/class-case-study-grid-widget.php:351
 #: includes/elementor/widgets/class-hub-diagram-widget.php:70
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:260
 #: includes/elementor/widgets/class-scroll-story-widget.php:205
@@ -412,7 +416,7 @@ msgstr ""
 msgid "Accent Deep Color"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:175
+#: includes/divi/modules/class-et-case-study-grid.php:237
 msgid "Accent Glow & Badge Color"
 msgstr ""
 
@@ -583,15 +587,15 @@ msgstr ""
 msgid "All Statuses"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:916
+#: includes/rawnaq-case-study.php:1176
 msgid "All sectors"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:934
+#: includes/rawnaq-case-study.php:1198
 msgid "All services"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:925
+#: includes/rawnaq-case-study.php:1189
 msgid "All years"
 msgstr ""
 
@@ -692,7 +696,8 @@ msgstr ""
 msgid "Article / content area"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:76
+#: includes/divi/modules/class-et-case-study-grid.php:71
+#: includes/elementor/widgets/class-case-study-grid-widget.php:77
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:227
 msgid "Ascending"
 msgstr ""
@@ -737,7 +742,7 @@ msgstr ""
 msgid "Authority · Pro"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:307
+#: includes/elementor/widgets/class-case-study-grid-widget.php:308
 msgid "Auto (Smart Form → Dock WA)"
 msgstr ""
 
@@ -753,7 +758,7 @@ msgstr ""
 msgid "Auto-delete uploaded files after N days (0 to keep indefinitely)."
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:157
+#: includes/divi/modules/class-et-case-study-grid.php:194
 msgid "Auto-detect (Smart Form or Floating Dock)"
 msgstr ""
 
@@ -913,7 +918,7 @@ msgstr ""
 msgid "Base Row Height (px)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:239
+#: includes/elementor/widgets/class-case-study-grid-widget.php:240
 msgid "Bento (asymmetric)"
 msgstr ""
 
@@ -938,15 +943,15 @@ msgstr ""
 msgid "Bento Row Span"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:66
+#: includes/divi/modules/class-et-case-study-grid.php:103
 msgid "Bento Showcase (Featured Cards Span 2 Cols)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:180
+#: includes/elementor/widgets/class-case-study-grid-widget.php:181
 msgid "Bento column span"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:188
+#: includes/elementor/widgets/class-case-study-grid-widget.php:189
 msgid "Bento row span"
 msgstr ""
 
@@ -1024,11 +1029,15 @@ msgstr ""
 msgid "Briefly describe what you need..."
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:914
+msgid "Budget"
+msgstr ""
+
 #: includes/rawnaq-case-study.php:154
 msgid "Budget Range"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:143
+#: includes/elementor/widgets/class-case-study-grid-widget.php:144
 msgid "Budget range"
 msgstr ""
 
@@ -1176,34 +1185,34 @@ msgstr ""
 msgid "Card 3D Hover Tilt"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:356
+#: includes/elementor/widgets/class-case-study-grid-widget.php:357
 #: includes/elementor/widgets/class-hub-diagram-widget.php:75
 #: includes/elementor/widgets/class-scroll-story-widget.php:212
 msgid "Card Background"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:182
+#: includes/divi/modules/class-et-case-study-grid.php:244
 #: includes/divi/modules/class-et-scroll-timeline.php:122
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:444
 #: includes/elementor/widgets/class-tilt-card-widget.php:310
 msgid "Card Background Color"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:362
+#: includes/elementor/widgets/class-case-study-grid-widget.php:363
 msgid "Card Border"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:189
+#: includes/divi/modules/class-et-case-study-grid.php:251
 msgid "Card Border Color"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:196
+#: includes/divi/modules/class-et-case-study-grid.php:265
 #: includes/divi/modules/class-et-scroll-timeline.php:136
 #: includes/divi/modules/class-et-tilt-card.php:207
 msgid "Card Border Radius (px)"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:141
+#: includes/divi/modules/class-et-case-study-grid.php:178
 msgid "Card Click Action"
 msgstr ""
 
@@ -1231,7 +1240,7 @@ msgstr ""
 msgid "Card Link (stretch)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:374
+#: includes/elementor/widgets/class-case-study-grid-widget.php:375
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:466
 msgid "Card Radius"
 msgstr ""
@@ -1253,11 +1262,11 @@ msgstr ""
 msgid "Card Title"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:293
+#: includes/elementor/widgets/class-case-study-grid-widget.php:294
 msgid "Card click action"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:164
+#: includes/elementor/widgets/class-case-study-grid-widget.php:165
 msgid "Card excerpt"
 msgstr ""
 
@@ -1482,7 +1491,7 @@ msgstr ""
 msgid "Circular ring"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:135
+#: includes/elementor/widgets/class-case-study-grid-widget.php:136
 msgid "Civic"
 msgstr ""
 
@@ -1520,7 +1529,8 @@ msgstr ""
 msgid "Clickable surface hotspots on photoreal room perspectives to live-swap luxury marble, timber & millwork finishes."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:153
+#: includes/class-rawnaq-elements.php:915
+#: includes/elementor/widgets/class-case-study-grid-widget.php:154
 #: includes/rawnaq-case-study.php:165
 msgid "Client"
 msgstr ""
@@ -1533,7 +1543,8 @@ msgstr ""
 msgid "Client project portal, overall completion gauge, weekly on-site photo stream & PM direct connect."
 msgstr ""
 
-#: includes/rawnaq-case-study.php:963
+#: includes/class-rawnaq-elements.php:921
+#: includes/rawnaq-case-study.php:1230
 msgid "Close"
 msgstr ""
 
@@ -1583,7 +1594,7 @@ msgid "Column Span"
 msgstr ""
 
 #: includes/elementor/widgets/class-bento-grid-widget.php:87
-#: includes/elementor/widgets/class-case-study-grid-widget.php:245
+#: includes/elementor/widgets/class-case-study-grid-widget.php:246
 msgid "Columns"
 msgstr ""
 
@@ -1809,6 +1820,10 @@ msgstr ""
 msgid "Corner rounding for form inputs and cards."
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:919
+msgid "Could not load projects. Please try again."
+msgstr ""
+
 #: includes/rawnaq-smart-form.php:1610
 msgid "Could not save signature file."
 msgstr ""
@@ -1833,11 +1848,11 @@ msgstr ""
 msgid "Cover (crop)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:99
+#: includes/elementor/widgets/class-case-study-grid-widget.php:100
 msgid "Cover image"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:153
+#: includes/divi/modules/class-et-case-study-grid.php:190
 msgid "Cross-Module \"Discuss Similar Project\" Target"
 msgstr ""
 
@@ -1907,7 +1922,7 @@ msgstr ""
 msgid "Custom columns"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:275
+#: includes/elementor/widgets/class-case-study-grid-widget.php:276
 msgid "Custom order"
 msgstr ""
 
@@ -1977,6 +1992,7 @@ msgid "Data Source"
 msgstr ""
 
 #: includes/class-rawnaq-smart-form-admin.php:50
+#: includes/divi/modules/class-et-case-study-grid.php:54
 #: includes/elementor/widgets/class-case-study-grid-widget.php:62
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:212
 #: includes/elementor/widgets/class-smart-form-widget.php:102
@@ -2048,7 +2064,8 @@ msgstr ""
 msgid "Delivery status"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:75
+#: includes/divi/modules/class-et-case-study-grid.php:70
+#: includes/elementor/widgets/class-case-study-grid-widget.php:76
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:226
 msgid "Descending"
 msgstr ""
@@ -2085,7 +2102,7 @@ msgstr ""
 msgid "Desktop Chat Action"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:74
+#: includes/divi/modules/class-et-case-study-grid.php:111
 msgid "Desktop Columns"
 msgstr ""
 
@@ -2093,7 +2110,7 @@ msgstr ""
 msgid "Desktop chooser shown (QR + Web)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:169
+#: includes/elementor/widgets/class-case-study-grid-widget.php:170
 msgid "Detail (modal)"
 msgstr ""
 
@@ -2148,7 +2165,7 @@ msgstr ""
 msgid "Disable All"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:160
+#: includes/divi/modules/class-et-case-study-grid.php:197
 msgid "Disable Discuss Button"
 msgstr ""
 
@@ -2160,12 +2177,12 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1128
+#: includes/rawnaq-case-study.php:1413
 msgid "Discuss project"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:303
-#: includes/rawnaq-case-study.php:984
+#: includes/elementor/widgets/class-case-study-grid-widget.php:304
+#: includes/rawnaq-case-study.php:1251
 msgid "Discuss this project"
 msgstr ""
 
@@ -2313,10 +2330,10 @@ msgid "Editorial Cards (Default)"
 msgstr ""
 
 #: includes/divi/modules/class-et-bento-grid.php:33
-#: includes/divi/modules/class-et-case-study-grid.php:56
+#: includes/divi/modules/class-et-case-study-grid.php:93
 #: includes/divi/modules/class-et-smart-form.php:33
 #: includes/elementor/widgets/class-bento-grid-widget.php:58
-#: includes/elementor/widgets/class-case-study-grid-widget.php:345
+#: includes/elementor/widgets/class-case-study-grid-widget.php:346
 #: includes/elementor/widgets/class-smart-form-widget.php:46
 #: includes/rawnaq-smart-form.php:505
 msgid "Editorial Spotlight"
@@ -2476,6 +2493,10 @@ msgstr ""
 msgid "Enter JSON array of nodes with id, parent, title, role, icon, detail, link etc."
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:81
+msgid "Enter a Sector term slug to restrict query results. Leave blank for all."
+msgstr ""
+
 #: includes/class-rawnaq-admin-dashboard.php:613
 msgid "Enter new API key (e.g. xxxxxxxx-us21)"
 msgstr ""
@@ -2526,7 +2547,7 @@ msgstr ""
 #: includes/elementor/widgets/class-smart-form-widget.php:446
 #: includes/elementor/widgets/class-smart-form-widget.php:672
 #: includes/gutenberg/class-gutenberg-loader.php:489
-#: includes/gutenberg/class-gutenberg-loader.php:2023
+#: includes/gutenberg/class-gutenberg-loader.php:2024
 #: includes/rawnaq-smart-form.php:628
 msgid "Estimated total"
 msgstr ""
@@ -2617,7 +2638,7 @@ msgstr ""
 msgid "Featured (accent)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:174
+#: includes/elementor/widgets/class-case-study-grid-widget.php:175
 msgid "Featured (larger in bento)"
 msgstr ""
 
@@ -2698,15 +2719,15 @@ msgstr ""
 msgid "Filter by Role"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:915
+#: includes/rawnaq-case-study.php:1175
 msgid "Filter by sector"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:933
+#: includes/rawnaq-case-study.php:1197
 msgid "Filter by service"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:924
+#: includes/rawnaq-case-study.php:1188
 msgid "Filter by year"
 msgstr ""
 
@@ -2751,7 +2772,7 @@ msgstr ""
 
 #: includes/divi/modules/class-et-tilt-card.php:274
 #: includes/elementor/widgets/class-tilt-card-widget.php:514
-#: includes/gutenberg/class-gutenberg-loader.php:812
+#: includes/gutenberg/class-gutenberg-loader.php:813
 msgid "Flip card"
 msgstr ""
 
@@ -2765,7 +2786,7 @@ msgstr ""
 msgid "Floating Dock Stats"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:309
+#: includes/elementor/widgets/class-case-study-grid-widget.php:310
 msgid "Floating Dock WhatsApp"
 msgstr ""
 
@@ -2775,7 +2796,7 @@ msgstr ""
 
 #: includes/divi/modules/class-et-floating-dock.php:225
 #: includes/elementor/widgets/class-floating-dock-widget.php:791
-#: includes/gutenberg/class-gutenberg-loader.php:1192
+#: includes/gutenberg/class-gutenberg-loader.php:1193
 msgid "Floating dock"
 msgstr ""
 
@@ -2944,7 +2965,7 @@ msgstr ""
 msgid "Gallery URLs"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:104
+#: includes/elementor/widgets/class-case-study-grid-widget.php:105
 msgid "Gallery images"
 msgstr ""
 
@@ -3004,7 +3025,7 @@ msgstr ""
 msgid "Go to chapter %d"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:298
+#: includes/elementor/widgets/class-case-study-grid-widget.php:299
 msgid "Go to project link"
 msgstr ""
 
@@ -3060,12 +3081,8 @@ msgstr ""
 msgid "Grid Layout"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:62
+#: includes/divi/modules/class-et-case-study-grid.php:99
 msgid "Grid Layout Style"
-msgstr ""
-
-#: includes/rawnaq-case-study.php:735
-msgid "Grid context expired. Please reload."
 msgstr ""
 
 #: includes/elementor/widgets/class-flow-chart-widget.php:171
@@ -3147,7 +3164,7 @@ msgstr ""
 msgid "Hidden (progress only)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:310
+#: includes/elementor/widgets/class-case-study-grid-widget.php:311
 msgid "Hide CTA"
 msgstr ""
 
@@ -3314,6 +3331,10 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:916
+msgid "Image %1$d of %2$d"
+msgstr ""
+
 #: includes/elementor/widgets/class-bento-grid-widget.php:431
 msgid "Image Cover (Dark Gradient Overlay)"
 msgstr ""
@@ -3367,7 +3388,11 @@ msgstr ""
 msgid "Initial status for new subscribers."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:315
+#: includes/divi/modules/class-et-case-study-grid.php:212
+msgid "Initially Visible Cards"
+msgstr ""
+
+#: includes/elementor/widgets/class-case-study-grid-widget.php:316
 msgid "Initially visible cards"
 msgstr ""
 
@@ -3513,6 +3538,18 @@ msgstr ""
 msgid "Invalid or unsafe webhook URL."
 msgstr ""
 
+#: includes/rawnaq-case-study.php:955
+msgid "Invalid query context payload."
+msgstr ""
+
+#: includes/rawnaq-case-study.php:949
+msgid "Invalid query context signature."
+msgstr ""
+
+#: includes/rawnaq-case-study.php:943
+msgid "Invalid query context token format."
+msgstr ""
+
 #: includes/rawnaq-smart-form.php:1572
 msgid "Invalid signature data."
 msgstr ""
@@ -3577,7 +3614,7 @@ msgstr ""
 msgid "JSON array of milestones [{title, desc, meta, icon, link, ctaText}]"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:169
+#: includes/divi/modules/class-et-case-study-grid.php:206
 msgid "JSON array of projects [{title, image, gallery, sector, year, client, budget, services, excerpt, detail, link, featured, col, row}]"
 msgstr ""
 
@@ -3662,6 +3699,10 @@ msgstr ""
 msgid "Large"
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:57
+msgid "Last Modified"
+msgstr ""
+
 #: includes/rawnaq-smart-form.php:385
 #: includes/rawnaq-smart-form.php:452
 msgid "Last Name"
@@ -3690,7 +3731,7 @@ msgstr ""
 msgid "Layout & Theme"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:230
+#: includes/elementor/widgets/class-case-study-grid-widget.php:231
 msgid "Layout & filter"
 msgstr ""
 
@@ -3708,7 +3749,7 @@ msgstr ""
 msgid "Layout Preset"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:235
+#: includes/elementor/widgets/class-case-study-grid-widget.php:236
 msgid "Layout mode"
 msgstr ""
 
@@ -3800,7 +3841,11 @@ msgstr ""
 msgid "Lightweight lead generation form with multi-step support, conditional logic, and WhatsApp template delivery."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:85
+#: includes/divi/modules/class-et-case-study-grid.php:78
+msgid "Limit to Sector Slug (Query Mode)"
+msgstr ""
+
+#: includes/elementor/widgets/class-case-study-grid-widget.php:86
 msgid "Limit to a single Case Study Sector term slug. Leave blank for all sectors."
 msgstr ""
 
@@ -3841,6 +3886,7 @@ msgstr ""
 msgid "Live dynamic area slider, 3-tier comparative matrix, real-time scope allocation breakdown bars, and seamless Get Quote bridge."
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:225
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:360
 msgid "Load More Chunk Size"
 msgstr ""
@@ -3852,16 +3898,16 @@ msgstr ""
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:371
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:686
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:687
-#: includes/gutenberg/class-gutenberg-loader.php:937
 #: includes/gutenberg/class-gutenberg-loader.php:938
+#: includes/gutenberg/class-gutenberg-loader.php:939
 msgid "Load more"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:323
+#: includes/elementor/widgets/class-case-study-grid-widget.php:324
 msgid "Load more chunk size"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:954
+#: includes/rawnaq-case-study.php:1220
 msgid "Load more projects"
 msgstr ""
 
@@ -3961,7 +4007,7 @@ msgstr ""
 msgid "Manual Projects (JSON Config)"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:166
+#: includes/divi/modules/class-et-case-study-grid.php:203
 msgid "Manual Projects JSON"
 msgstr ""
 
@@ -3996,11 +4042,11 @@ msgstr ""
 msgid "Mark as unread"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:241
+#: includes/elementor/widgets/class-case-study-grid-widget.php:242
 msgid "Masonry"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:68
+#: includes/divi/modules/class-et-case-study-grid.php:105
 msgid "Masonry Waterfall Grid"
 msgstr ""
 
@@ -4085,6 +4131,10 @@ msgstr ""
 msgid "Medium (Default)"
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:56
+msgid "Menu Order"
+msgstr ""
+
 #: includes/elementor/widgets/class-case-study-grid-widget.php:64
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:214
 msgid "Menu order"
@@ -4138,10 +4188,10 @@ msgid "Minimal Editorial (Clean)"
 msgstr ""
 
 #: includes/divi/modules/class-et-bento-grid.php:31
-#: includes/divi/modules/class-et-case-study-grid.php:55
+#: includes/divi/modules/class-et-case-study-grid.php:92
 #: includes/divi/modules/class-et-smart-form.php:31
 #: includes/elementor/widgets/class-bento-grid-widget.php:56
-#: includes/elementor/widgets/class-case-study-grid-widget.php:344
+#: includes/elementor/widgets/class-case-study-grid-widget.php:345
 #: includes/elementor/widgets/class-smart-form-widget.php:44
 #: includes/rawnaq-smart-form.php:503
 msgid "Minimal Glassmorphism"
@@ -4169,6 +4219,10 @@ msgstr ""
 msgid "Missing form identifier."
 msgstr ""
 
+#: includes/rawnaq-case-study.php:938
+msgid "Missing query context token."
+msgstr ""
+
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:212
 msgid "Mobile FAB for TOC"
 msgstr ""
@@ -4186,10 +4240,10 @@ msgid "Modern Cards (Elevated)"
 msgstr ""
 
 #: includes/divi/modules/class-et-bento-grid.php:30
-#: includes/divi/modules/class-et-case-study-grid.php:54
+#: includes/divi/modules/class-et-case-study-grid.php:91
 #: includes/divi/modules/class-et-smart-form.php:30
 #: includes/elementor/widgets/class-bento-grid-widget.php:55
-#: includes/elementor/widgets/class-case-study-grid-widget.php:343
+#: includes/elementor/widgets/class-case-study-grid-widget.php:344
 #: includes/elementor/widgets/class-smart-form-widget.php:43
 #: includes/rawnaq-smart-form.php:502
 msgid "Modern Elevated (Default)"
@@ -4231,19 +4285,19 @@ msgstr ""
 msgid "Multi-tier contract deliverable comparison table with milestone phases, tooltips & quote prefill."
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:119
+#: includes/divi/modules/class-et-case-study-grid.php:156
 msgid "NDA: Hide Budget Field"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:130
+#: includes/divi/modules/class-et-case-study-grid.php:167
 msgid "NDA: Hide Client Field"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:281
+#: includes/elementor/widgets/class-case-study-grid-widget.php:282
 msgid "NDA: hide budget"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:287
+#: includes/elementor/widgets/class-case-study-grid-widget.php:288
 msgid "NDA: hide client"
 msgstr ""
 
@@ -4278,7 +4332,7 @@ msgstr ""
 msgid "Native animation-timeline path with JS fallback and horizontal layouts."
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:146
+#: includes/divi/modules/class-et-case-study-grid.php:183
 msgid "Navigate Directly to Project URL"
 msgstr ""
 
@@ -4321,17 +4375,17 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:968
+#: includes/rawnaq-case-study.php:1235
 msgid "Next image"
 msgstr ""
 
 #: includes/divi/modules/class-et-bento-grid.php:83
 #: includes/divi/modules/class-et-bento-grid.php:93
-#: includes/divi/modules/class-et-case-study-grid.php:91
-#: includes/divi/modules/class-et-case-study-grid.php:101
-#: includes/divi/modules/class-et-case-study-grid.php:112
-#: includes/divi/modules/class-et-case-study-grid.php:123
-#: includes/divi/modules/class-et-case-study-grid.php:134
+#: includes/divi/modules/class-et-case-study-grid.php:128
+#: includes/divi/modules/class-et-case-study-grid.php:138
+#: includes/divi/modules/class-et-case-study-grid.php:149
+#: includes/divi/modules/class-et-case-study-grid.php:160
+#: includes/divi/modules/class-et-case-study-grid.php:171
 #: includes/divi/modules/class-et-floating-dock.php:70
 msgid "No"
 msgstr ""
@@ -4368,7 +4422,7 @@ msgstr ""
 msgid "No matching elements found"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:910
+#: includes/class-rawnaq-elements.php:918
 msgid "No matching projects."
 msgstr ""
 
@@ -4525,7 +4579,7 @@ msgstr ""
 msgid "Only selected pages"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:159
+#: includes/divi/modules/class-et-case-study-grid.php:196
 msgid "Open Floating Dock WhatsApp Channel"
 msgstr ""
 
@@ -4533,11 +4587,11 @@ msgstr ""
 msgid "Open Link In New Tab"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:147
+#: includes/divi/modules/class-et-case-study-grid.php:184
 msgid "Open Modal with Direct Link CTA"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:145
+#: includes/divi/modules/class-et-case-study-grid.php:182
 msgid "Open Rich 3D Project Modal"
 msgstr ""
 
@@ -4558,17 +4612,17 @@ msgstr ""
 msgid "Open WhatsApp Web directly"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:297
+#: includes/elementor/widgets/class-case-study-grid-widget.php:298
 msgid "Open detail modal"
 msgstr ""
 
 #: includes/divi/modules/class-et-tilt-card.php:358
 #: includes/elementor/widgets/class-tilt-card-widget.php:557
-#: includes/gutenberg/class-gutenberg-loader.php:850
+#: includes/gutenberg/class-gutenberg-loader.php:851
 msgid "Open link"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:299
+#: includes/elementor/widgets/class-case-study-grid-widget.php:300
 msgid "Open modal (with link CTA)"
 msgstr ""
 
@@ -4580,7 +4634,7 @@ msgstr ""
 msgid "Optional CSS scroll-timeline name. Leave empty for auto (rawnaq-tl-{id}). Paste the same ID into Bento cells to sync."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:125
+#: includes/elementor/widgets/class-case-study-grid-widget.php:126
 msgid "Optional id for Timeline/Story sync (e.g. post-123 or custom slug key)."
 msgstr ""
 
@@ -4628,7 +4682,7 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:71
+#: includes/elementor/widgets/class-case-study-grid-widget.php:72
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:222
 msgid "Order"
 msgstr ""
@@ -4649,8 +4703,20 @@ msgstr ""
 msgid "Order By"
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:50
+msgid "Order By (Query Mode)"
+msgstr ""
+
 #: includes/elementor/widgets/class-case-study-grid-widget.php:58
 msgid "Order by"
+msgstr ""
+
+#: includes/divi/modules/class-et-case-study-grid.php:61
+msgid "Order by field. Note: Random order falls back to Date in AJAX pagination to prevent duplicate cards."
+msgstr ""
+
+#: includes/elementor/widgets/class-case-study-grid-widget.php:68
+msgid "Order by field. Note: Random order is treated as Date in paginated queries to avoid duplicates."
 msgstr ""
 
 #: includes/elementor/widgets/class-flow-chart-widget.php:27
@@ -4938,7 +5004,7 @@ msgstr ""
 msgid "Prefilled Message"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:312
+#: includes/elementor/widgets/class-case-study-grid-widget.php:313
 msgid "Prefills Smart Form message or opens Dock WhatsApp with project context."
 msgstr ""
 
@@ -4958,7 +5024,7 @@ msgstr ""
 msgid "Preset applied — steps updated."
 msgstr ""
 
-#: includes/rawnaq-case-study.php:966
+#: includes/rawnaq-case-study.php:1233
 msgid "Previous image"
 msgstr ""
 
@@ -5052,7 +5118,7 @@ msgstr ""
 msgid "Project %d"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:122
+#: includes/elementor/widgets/class-case-study-grid-widget.php:123
 msgid "Project ID (sync)"
 msgstr ""
 
@@ -5060,7 +5126,7 @@ msgstr ""
 msgid "Project Overview & Goals"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:110
+#: includes/elementor/widgets/class-case-study-grid-widget.php:111
 msgid "Project link"
 msgstr ""
 
@@ -5068,16 +5134,16 @@ msgstr ""
 msgid "Project schedule acceleration velocity against resource allocation and net economic value."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:128
+#: includes/elementor/widgets/class-case-study-grid-widget.php:129
 msgid "Project slug (sync)"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:119
+#: includes/elementor/widgets/class-case-study-grid-widget.php:120
 msgid "Project title"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:92
-#: includes/elementor/widgets/class-case-study-grid-widget.php:220
+#: includes/elementor/widgets/class-case-study-grid-widget.php:93
+#: includes/elementor/widgets/class-case-study-grid-widget.php:221
 msgid "Projects"
 msgstr ""
 
@@ -5146,6 +5212,7 @@ msgstr ""
 msgid "Radial (360° Circular)"
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:58
 #: includes/elementor/widgets/class-case-study-grid-widget.php:66
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:216
 msgid "Random"
@@ -5340,6 +5407,10 @@ msgstr ""
 msgid "Reset clears all counters. This cannot be undone."
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:920
+msgid "Retry"
+msgstr ""
+
 #: includes/class-rawnaq-smart-form-admin.php:760
 msgid "Retry delivery"
 msgstr ""
@@ -5490,11 +5561,15 @@ msgstr ""
 msgid "Scale & Partners"
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:913
+msgid "Scope"
+msgstr ""
+
 #: includes/divi/modules/class-et-floating-dock.php:26
 msgid "Screen Dock Position"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:158
+#: includes/divi/modules/class-et-case-study-grid.php:195
 msgid "Scroll & Prefill Smart Form"
 msgstr ""
 
@@ -5586,19 +5661,19 @@ msgstr ""
 msgid "Sector"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:133
+#: includes/elementor/widgets/class-case-study-grid-widget.php:134
 msgid "Sector / category"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:277
+#: includes/elementor/widgets/class-case-study-grid-widget.php:278
 msgid "Sector A–Z"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:253
+#: includes/elementor/widgets/class-case-study-grid-widget.php:254
 msgid "Sector filter bar"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:81
+#: includes/elementor/widgets/class-case-study-grid-widget.php:82
 msgid "Sector slug (optional)"
 msgstr ""
 
@@ -5743,7 +5818,7 @@ msgstr ""
 msgid "Service Required"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:265
+#: includes/elementor/widgets/class-case-study-grid-widget.php:266
 msgid "Service filter bar"
 msgstr ""
 
@@ -5751,7 +5826,7 @@ msgstr ""
 msgid "Services & Pricing Calculator"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:158
+#: includes/elementor/widgets/class-case-study-grid-widget.php:159
 msgid "Services (comma-separated)"
 msgstr ""
 
@@ -5847,11 +5922,11 @@ msgstr ""
 msgid "Show Search Filter"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:86
+#: includes/divi/modules/class-et-case-study-grid.php:123
 msgid "Show Sector / Category Filter Tabs"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:108
+#: includes/divi/modules/class-et-case-study-grid.php:145
 msgid "Show Service Facet Dropdown"
 msgstr ""
 
@@ -5871,7 +5946,7 @@ msgstr ""
 msgid "Show Success Message"
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:97
+#: includes/divi/modules/class-et-case-study-grid.php:134
 msgid "Show Year Facet Dropdown"
 msgstr ""
 
@@ -5937,7 +6012,11 @@ msgstr ""
 msgid "Showcase · Pro"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:107
+#: includes/class-rawnaq-elements.php:917
+msgid "Showing %d projects"
+msgstr ""
+
+#: includes/elementor/widgets/class-case-study-grid-widget.php:108
 msgid "Shown in the detail-modal slider alongside the cover image."
 msgstr ""
 
@@ -6009,7 +6088,7 @@ msgstr ""
 msgid "Size / Scope"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:138
+#: includes/elementor/widgets/class-case-study-grid-widget.php:139
 msgid "Size / scope"
 msgstr ""
 
@@ -6040,7 +6119,7 @@ msgstr ""
 msgid "Smart Form is Rawnaq’s lightweight lead capture form for agency and SMB sites. Submissions are delivered via email (wp_mail) and/or open WhatsApp with a prefilled message template."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:308
+#: includes/elementor/widgets/class-case-study-grid-widget.php:309
 msgid "Smart Form only"
 msgstr ""
 
@@ -6079,8 +6158,12 @@ msgstr ""
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:271
+#: includes/elementor/widgets/class-case-study-grid-widget.php:272
 msgid "Sort"
+msgstr ""
+
+#: includes/divi/modules/class-et-case-study-grid.php:66
+msgid "Sort Order (Query Mode)"
 msgstr ""
 
 #: includes/elementor/widgets/class-case-study-grid-widget.php:34
@@ -6278,7 +6361,7 @@ msgstr ""
 msgid "Structured portfolio showcase for AEC firms, agencies, and studios. Source projects from the built-in Case Studies CPT or manual repeaters."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:334
+#: includes/elementor/widgets/class-case-study-grid-widget.php:335
 #: includes/elementor/widgets/class-flow-chart-widget.php:252
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:255
 #: includes/elementor/widgets/class-smart-form-widget.php:518
@@ -6554,7 +6637,8 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:368
+#: includes/divi/modules/class-et-case-study-grid.php:258
+#: includes/elementor/widgets/class-case-study-grid-widget.php:369
 #: includes/elementor/widgets/class-scroll-story-widget.php:219
 msgid "Text Color"
 msgstr ""
@@ -6596,11 +6680,11 @@ msgid "The essential presale and leasing tool for high-rise residential towers, 
 msgstr ""
 
 #: includes/divi/modules/class-et-bento-grid.php:26
-#: includes/divi/modules/class-et-case-study-grid.php:50
+#: includes/divi/modules/class-et-case-study-grid.php:87
 #: includes/divi/modules/class-et-scroll-story.php:26
 #: includes/divi/modules/class-et-smart-form.php:26
 #: includes/elementor/widgets/class-bento-grid-widget.php:51
-#: includes/elementor/widgets/class-case-study-grid-widget.php:339
+#: includes/elementor/widgets/class-case-study-grid-widget.php:340
 #: includes/elementor/widgets/class-scroll-story-widget.php:39
 #: includes/elementor/widgets/class-smart-form-widget.php:39
 msgid "Theme Preset"
@@ -6647,8 +6731,9 @@ msgstr ""
 msgid "Tint"
 msgstr ""
 
+#: includes/divi/modules/class-et-case-study-grid.php:55
 #: includes/elementor/widgets/class-case-study-grid-widget.php:63
-#: includes/elementor/widgets/class-case-study-grid-widget.php:117
+#: includes/elementor/widgets/class-case-study-grid-widget.php:118
 #: includes/elementor/widgets/class-flow-chart-widget.php:146
 #: includes/elementor/widgets/class-hub-diagram-widget.php:23
 #: includes/elementor/widgets/class-scroll-story-widget.php:98
@@ -6820,11 +6905,11 @@ msgstr ""
 msgid "Unified command center coordinating connected EV fleets, route optimization, and predictive charging."
 msgstr ""
 
-#: includes/divi/modules/class-et-case-study-grid.php:67
+#: includes/divi/modules/class-et-case-study-grid.php:104
 msgid "Uniform Equal Grid"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:240
+#: includes/elementor/widgets/class-case-study-grid-widget.php:241
 msgid "Uniform grid"
 msgstr ""
 
@@ -6870,7 +6955,7 @@ msgstr ""
 msgid "Use -1 to show all published case studies."
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:114
+#: includes/elementor/widgets/class-case-study-grid-widget.php:115
 msgid "Used by \"Link\" / \"Both\" click actions and the modal CTA."
 msgstr ""
 
@@ -6956,15 +7041,11 @@ msgstr ""
 msgid "View Discovery Notes"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1123
+#: includes/rawnaq-case-study.php:1408
 msgid "View case study"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1036
-msgid "View case study: %s"
-msgstr ""
-
-#: includes/rawnaq-case-study.php:979
+#: includes/rawnaq-case-study.php:1246
 msgid "View full page"
 msgstr ""
 
@@ -7170,7 +7251,11 @@ msgstr ""
 msgid "Work Email"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:276
+#: includes/class-rawnaq-elements.php:912
+msgid "Year"
+msgstr ""
+
+#: includes/elementor/widgets/class-case-study-grid-widget.php:277
 msgid "Year (newest first)"
 msgstr ""
 
@@ -7178,21 +7263,21 @@ msgstr ""
 msgid "Year Completed"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:148
+#: includes/elementor/widgets/class-case-study-grid-widget.php:149
 msgid "Year completed"
 msgstr ""
 
-#: includes/elementor/widgets/class-case-study-grid-widget.php:259
+#: includes/elementor/widgets/class-case-study-grid-widget.php:260
 msgid "Year filter bar"
 msgstr ""
 
 #: includes/divi/modules/class-et-bento-grid.php:82
 #: includes/divi/modules/class-et-bento-grid.php:94
-#: includes/divi/modules/class-et-case-study-grid.php:90
-#: includes/divi/modules/class-et-case-study-grid.php:102
-#: includes/divi/modules/class-et-case-study-grid.php:113
-#: includes/divi/modules/class-et-case-study-grid.php:124
-#: includes/divi/modules/class-et-case-study-grid.php:135
+#: includes/divi/modules/class-et-case-study-grid.php:127
+#: includes/divi/modules/class-et-case-study-grid.php:139
+#: includes/divi/modules/class-et-case-study-grid.php:150
+#: includes/divi/modules/class-et-case-study-grid.php:161
+#: includes/divi/modules/class-et-case-study-grid.php:172
 #: includes/divi/modules/class-et-floating-dock.php:69
 msgid "Yes"
 msgstr ""

@@ -46,6 +46,43 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 				'show_if'         => [ 'data_source' => 'query' ],
 				'toggle_slug'     => 'query',
 			],
+			'posts_orderby' => [
+				'label'           => esc_html__( 'Order By (Query Mode)', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'configuration',
+				'options'         => [
+					'date'       => esc_html__( 'Date', 'rawnaq' ),
+					'title'      => esc_html__( 'Title', 'rawnaq' ),
+					'menu_order' => esc_html__( 'Menu Order', 'rawnaq' ),
+					'modified'   => esc_html__( 'Last Modified', 'rawnaq' ),
+					'rand'       => esc_html__( 'Random', 'rawnaq' ),
+				],
+				'default'         => 'date',
+				'description'     => esc_html__( 'Order by field. Note: Random order falls back to Date in AJAX pagination to prevent duplicate cards.', 'rawnaq' ),
+				'show_if'         => [ 'data_source' => 'query' ],
+				'toggle_slug'     => 'query',
+			],
+			'posts_order' => [
+				'label'           => esc_html__( 'Sort Order (Query Mode)', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'configuration',
+				'options'         => [
+					'DESC' => esc_html__( 'Descending', 'rawnaq' ),
+					'ASC'  => esc_html__( 'Ascending', 'rawnaq' ),
+				],
+				'default'         => 'DESC',
+				'show_if'         => [ 'data_source' => 'query' ],
+				'toggle_slug'     => 'query',
+			],
+			'query_sector' => [
+				'label'           => esc_html__( 'Limit to Sector Slug (Query Mode)', 'rawnaq' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'description'     => esc_html__( 'Enter a Sector term slug to restrict query results. Leave blank for all.', 'rawnaq' ),
+				'default'         => '',
+				'show_if'         => [ 'data_source' => 'query' ],
+				'toggle_slug'     => 'query',
+			],
 			'card_style' => [
 				'label'           => esc_html__( 'Theme Preset', 'rawnaq' ),
 				'type'            => 'select',
@@ -171,6 +208,31 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 				'show_if'         => [ 'data_source' => 'manual' ],
 				'toggle_slug'     => 'manual_data',
 			],
+			'initial_visible' => [
+				'label'           => esc_html__( 'Initially Visible Cards', 'rawnaq' ),
+				'type'            => 'range',
+				'option_category' => 'layout',
+				'default'         => '0',
+				'range_settings'  => [
+					'min'  => 0,
+					'max'  => 48,
+					'step' => 1,
+				],
+				'description'     => esc_html__( '0 displays all cards initially with no load more button.', 'rawnaq' ),
+				'toggle_slug'     => 'layout',
+			],
+			'load_chunk' => [
+				'label'           => esc_html__( 'Load More Chunk Size', 'rawnaq' ),
+				'type'            => 'range',
+				'option_category' => 'layout',
+				'default'         => '3',
+				'range_settings'  => [
+					'min'  => 1,
+					'max'  => 24,
+					'step' => 1,
+				],
+				'toggle_slug'     => 'layout',
+			],
 			'accent_color' => [
 				'label'        => esc_html__( 'Accent Glow & Badge Color', 'rawnaq' ),
 				'type'         => 'color-alpha',
@@ -190,6 +252,13 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 				'type'         => 'color-alpha',
 				'custom_color' => true,
 				'default'      => '#e2e8f0',
+				'toggle_slug'  => 'style',
+			],
+			'text_color' => [
+				'label'        => esc_html__( 'Text Color', 'rawnaq' ),
+				'type'         => 'color-alpha',
+				'custom_color' => true,
+				'default'      => '',
 				'toggle_slug'  => 'style',
 			],
 			'card_radius' => [
@@ -213,22 +282,28 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 		wp_enqueue_script( 'rawnaq-case-study-grid' );
 		wp_enqueue_script( 'rawnaq-bridge' );
 
-		$source         = sanitize_key( $this->props['data_source'] ?? 'query' );
-		$posts_per_page = absint( $this->props['posts_per_page'] ?? 12 );
-		$card_style     = sanitize_key( $this->props['card_style'] ?? 'elevated' );
-		$layout         = sanitize_key( $this->props['grid_layout'] ?? 'bento' );
-		$columns        = max( 2, min( 4, absint( $this->props['grid_columns'] ?? 3 ) ) );
-		$show_filter    = ( $this->props['show_filter'] ?? 'on' ) === 'on';
-		$filter_year    = ( $this->props['filter_year'] ?? 'off' ) === 'on';
-		$filter_service = ( $this->props['filter_service'] ?? 'off' ) === 'on';
-		$hide_budget    = ( $this->props['hide_budget'] ?? 'off' ) === 'on';
-		$hide_client    = ( $this->props['hide_client'] ?? 'off' ) === 'on';
-		$click_action   = sanitize_key( $this->props['click_action'] ?? 'modal' );
-		$discuss_target = sanitize_key( $this->props['discuss_target'] ?? 'auto' );
-		$accent_color   = sanitize_hex_color( $this->props['accent_color'] ?? '#0f766e' ) ?: '#0f766e';
-		$card_bg        = sanitize_hex_color( $this->props['card_bg'] ?? '#ffffff' ) ?: '#ffffff';
-		$card_border    = sanitize_hex_color( $this->props['card_border'] ?? '#e2e8f0' ) ?: '#e2e8f0';
-		$card_radius    = absint( $this->props['card_radius'] ?? 18 );
+		$source          = sanitize_key( $this->props['data_source'] ?? 'query' );
+		$posts_per_page  = absint( $this->props['posts_per_page'] ?? 12 );
+		$query_orderby   = sanitize_key( $this->props['posts_orderby'] ?? 'date' );
+		$query_order     = ( 'ASC' === strtoupper( (string) ( $this->props['posts_order'] ?? 'DESC' ) ) ) ? 'ASC' : 'DESC';
+		$query_sector    = sanitize_title( (string) ( $this->props['query_sector'] ?? '' ) );
+		$card_style      = sanitize_key( $this->props['card_style'] ?? 'elevated' );
+		$layout          = sanitize_key( $this->props['grid_layout'] ?? 'bento' );
+		$columns         = max( 2, min( 4, absint( $this->props['grid_columns'] ?? 3 ) ) );
+		$show_filter     = ( $this->props['show_filter'] ?? 'on' ) === 'on';
+		$filter_year     = ( $this->props['filter_year'] ?? 'off' ) === 'on';
+		$filter_service  = ( $this->props['filter_service'] ?? 'off' ) === 'on';
+		$hide_budget     = ( $this->props['hide_budget'] ?? 'off' ) === 'on';
+		$hide_client     = ( $this->props['hide_client'] ?? 'off' ) === 'on';
+		$click_action    = sanitize_key( $this->props['click_action'] ?? 'modal' );
+		$discuss_target  = sanitize_key( $this->props['discuss_target'] ?? 'auto' );
+		$initial_visible = absint( $this->props['initial_visible'] ?? 0 );
+		$load_chunk      = max( 1, absint( $this->props['load_chunk'] ?? 3 ) );
+		$accent_color    = $this->props['accent_color'] ?? '#0f766e';
+		$card_bg         = $this->props['card_bg'] ?? '#ffffff';
+		$card_border     = $this->props['card_border'] ?? '#e2e8f0';
+		$text_color      = $this->props['text_color'] ?? '';
+		$card_radius     = absint( $this->props['card_radius'] ?? 18 );
 
 		$projects = [];
 		if ( 'manual' === $source ) {
@@ -242,9 +317,9 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 			'source'         => $source,
 			'projects'       => $projects,
 			'queryNumber'    => $posts_per_page,
-			'queryOrderby'   => 'date',
-			'queryOrder'     => 'DESC',
-			'querySector'    => '',
+			'queryOrderby'   => $query_orderby,
+			'queryOrder'     => $query_order,
+			'querySector'    => $query_sector,
 			'cardStyle'      => $card_style,
 			'layout'         => $layout,
 			'columns'        => $columns,
@@ -256,15 +331,16 @@ class Rawnaq_ET_Case_Study_Grid extends ET_Builder_Module {
 			'hideClient'     => $hide_client,
 			'clickAction'    => $click_action,
 			'discussTarget'  => $discuss_target,
-			'initialVisible' => 0,
-			'loadChunk'      => 3,
+			'initialVisible' => $initial_visible,
+			'loadChunk'      => $load_chunk,
 			'accent'         => $accent_color,
 			'cardBg'         => $card_bg,
 			'cardBorder'     => $card_border,
+			'textColor'      => $text_color,
 			'radius'         => $card_radius,
 		];
 
-		$unique_id = 'divi-cs-' . wp_unique_id();
+		$unique_id = 'rawnaq-cs-divi-' . wp_unique_id();
 
 		ob_start();
 		rawnaq_case_study_markup( $cfg, $unique_id );

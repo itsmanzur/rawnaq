@@ -36,7 +36,7 @@ function rawnaq_case_study_register_cpt() {
 				'show_ui'         => true,
 				'show_in_menu'    => 'rawnaq',
 				'menu_icon'       => 'dashicons-portfolio',
-				'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail' ],
+				'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'page-attributes' ],
 				'rewrite'         => [ 'slug' => 'case-study' ],
 				'capability_type' => 'post',
 				'map_meta_cap'    => true,
@@ -430,7 +430,8 @@ function rawnaq_case_study_normalize_projects( $projects ) {
 			'image'    => $image,
 			'gallery'  => $gallery,
 			'link'     => esc_url_raw( $p['link'] ?? ( $p['url'] ?? '' ) ),
-			'sector'   => sanitize_text_field( $p['sector'] ?? '' ),
+			'sector'     => sanitize_text_field( $p['sector'] ?? '' ),
+			'sectorSlug' => sanitize_title( (string) ( $p['sectorSlug'] ?? '' ) ),
 			'size'     => sanitize_text_field( $p['size'] ?? '' ),
 			'budget'   => sanitize_text_field( $p['budget'] ?? '' ),
 			'year'     => sanitize_text_field( $p['year'] ?? '' ),
@@ -459,10 +460,14 @@ function rawnaq_case_study_project_from_post( $post ) {
 	}
 	$post_id = $post->ID;
 
-	$sector = '';
-	$terms  = get_the_terms( $post_id, 'rawnaq_cs_sector' );
+	$is_pw_required = post_password_required( $post );
+
+	$sector      = '';
+	$sector_slug = '';
+	$terms       = get_the_terms( $post_id, 'rawnaq_cs_sector' );
 	if ( is_array( $terms ) && ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-		$sector = $terms[0]->name;
+		$sector      = $terms[0]->name;
+		$sector_slug = $terms[0]->slug;
 	}
 
 	$services_raw = get_post_meta( $post_id, '_rawnaq_cs_services', true );
@@ -476,9 +481,15 @@ function rawnaq_case_study_project_from_post( $post ) {
 		array_unshift( $gallery, $image );
 	}
 
-	$excerpt = has_excerpt( $post_id )
-		? get_the_excerpt( $post_id )
-		: wp_trim_words( wp_strip_all_tags( (string) $post->post_content ), 24 );
+	if ( $is_pw_required ) {
+		$excerpt = '';
+		$detail  = '';
+	} else {
+		$excerpt = has_excerpt( $post_id )
+			? get_the_excerpt( $post_id )
+			: wp_trim_words( wp_strip_all_tags( (string) $post->post_content ), 24 );
+		$detail  = wp_trim_words( wp_strip_all_tags( strip_shortcodes( (string) $post->post_content ) ), 120, '…' );
+	}
 
 	$featured = '1' === (string) get_post_meta( $post_id, '_rawnaq_cs_featured', true );
 	$col      = absint( get_post_meta( $post_id, '_rawnaq_cs_col', true ) );
@@ -491,24 +502,25 @@ function rawnaq_case_study_project_from_post( $post ) {
 	}
 
 	return [
-		'id'       => 'post-' . $post_id,
-		'postId'   => $post_id,
-		'slug'     => sanitize_title( (string) $post->post_name ),
-		'title'    => get_the_title( $post_id ),
-		'image'    => $image,
-		'gallery'  => $gallery,
-		'link'     => get_permalink( $post_id ),
-		'sector'   => sanitize_text_field( $sector ),
-		'size'     => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_size', true ) ),
-		'budget'   => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_budget', true ) ),
-		'year'     => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_year', true ) ),
-		'client'   => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_client', true ) ),
-		'services' => $services,
-		'excerpt'  => wp_strip_all_tags( (string) $excerpt ),
-		'detail'   => wp_strip_all_tags( (string) $post->post_content ),
-		'featured' => $featured,
-		'col'      => max( 1, min( 4, $col ) ),
-		'row'      => max( 1, min( 3, $row ) ),
+		'id'         => 'post-' . $post_id,
+		'postId'     => $post_id,
+		'slug'       => sanitize_title( (string) $post->post_name ),
+		'title'      => get_the_title( $post_id ),
+		'image'      => $image,
+		'gallery'    => $gallery,
+		'link'       => get_permalink( $post_id ),
+		'sector'     => sanitize_text_field( $sector ),
+		'sectorSlug' => sanitize_title( $sector_slug ),
+		'size'       => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_size', true ) ),
+		'budget'     => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_budget', true ) ),
+		'year'       => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_year', true ) ),
+		'client'     => sanitize_text_field( (string) get_post_meta( $post_id, '_rawnaq_cs_client', true ) ),
+		'services'   => $services,
+		'excerpt'    => wp_strip_all_tags( (string) $excerpt ),
+		'detail'     => $detail,
+		'featured'   => $featured,
+		'col'        => max( 1, min( 4, $col ) ),
+		'row'        => max( 1, min( 3, $row ) ),
 	];
 }
 
@@ -533,6 +545,9 @@ function rawnaq_case_study_query_projects( $args = [] ) {
 	if ( ! in_array( $orderby, [ 'date', 'title', 'menu_order', 'rand', 'modified' ], true ) ) {
 		$orderby = 'date';
 	}
+	if ( 'rand' === $orderby && isset( $args['paged'] ) && (int) $args['paged'] > 1 ) {
+		$orderby = 'date';
+	}
 	$order = ( 'ASC' === strtoupper( (string) ( $args['order'] ?? 'DESC' ) ) ) ? 'ASC' : 'DESC';
 	$paged = isset( $args['paged'] ) ? max( 1, (int) $args['paged'] ) : 1;
 
@@ -542,6 +557,7 @@ function rawnaq_case_study_query_projects( $args = [] ) {
 		'posts_per_page'      => $per_page,
 		'orderby'             => $orderby,
 		'order'               => $order,
+		'has_password'        => false,
 		'ignore_sticky_posts' => true,
 		'no_found_rows'       => false,
 	];
@@ -710,60 +726,278 @@ function rawnaq_case_study_resolve_projects( $cfg ) {
 }
 
 /**
- * Store the server-render context for a grid so AJAX pagination can reuse
- * NDA/layout settings without trusting the client.
+ * Bump the facets cache version on case study CPT/term updates.
  *
- * @param string $uid Instance id.
- * @param array  $ctx Context (layout, click, nda flags, query args).
  * @return void
  */
-function rawnaq_case_study_store_ctx( $uid, $ctx ) {
-	set_transient( 'rawnaq_cs_ctx_' . $uid, $ctx, 12 * HOUR_IN_SECONDS );
+function rawnaq_case_study_bump_facets_version() {
+	$ver = (int) get_option( 'rawnaq_cs_facets_ver', 1 );
+	update_option( 'rawnaq_cs_facets_ver', $ver + 1, false );
+}
+add_action( 'save_post_rawnaq_case_study', 'rawnaq_case_study_bump_facets_version' );
+add_action( 'deleted_post', static function ( $post_id ) {
+	if ( 'rawnaq_case_study' === get_post_type( $post_id ) ) {
+		rawnaq_case_study_bump_facets_version();
+	}
+} );
+add_action( 'set_object_terms', static function ( $object_id, $terms, $tt_ids, $taxonomy ) {
+	if ( 'rawnaq_cs_sector' === $taxonomy ) {
+		rawnaq_case_study_bump_facets_version();
+	}
+}, 10, 4 );
+add_action( 'edited_rawnaq_cs_sector', 'rawnaq_case_study_bump_facets_version' );
+add_action( 'created_rawnaq_cs_sector', 'rawnaq_case_study_bump_facets_version' );
+add_action( 'delete_rawnaq_cs_sector', 'rawnaq_case_study_bump_facets_version' );
+
+/**
+ * Query all matching published CPT posts to compute global facet filter lists.
+ *
+ * @param string $querySector Optional sector term slug constraint.
+ * @return array{sectors: array<int, array{key: string, label: string}>, years: string[], services: string[]}
+ */
+function rawnaq_case_study_query_facets( $querySector = '' ) {
+	$query_sector = sanitize_title( (string) $querySector );
+	$ver          = (int) get_option( 'rawnaq_cs_facets_ver', 1 );
+	$cache_key    = 'rq_cs_fct_' . md5( $query_sector . '|' . $ver );
+	$cached       = get_transient( $cache_key );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$query_args = [
+		'post_type'           => 'rawnaq_case_study',
+		'post_status'         => 'publish',
+		'posts_per_page'      => 300,
+		'has_password'        => false,
+		'ignore_sticky_posts' => true,
+		'no_found_rows'       => true,
+		'fields'              => 'ids',
+	];
+	if ( $query_sector && taxonomy_exists( 'rawnaq_cs_sector' ) ) {
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+		$query_args['tax_query'] = [
+			[
+				'taxonomy' => 'rawnaq_cs_sector',
+				'field'    => 'slug',
+				'terms'    => $query_sector,
+			],
+		];
+	}
+
+	$q        = new WP_Query( $query_args );
+	$post_ids = is_array( $q->posts ) ? $q->posts : [];
+	wp_reset_postdata();
+
+	if ( ! empty( $post_ids ) && function_exists( 'update_postmeta_cache' ) ) {
+		update_postmeta_cache( $post_ids );
+	}
+
+	$sectors      = [];
+	$seen_sectors = [];
+	if ( ! empty( $post_ids ) && taxonomy_exists( 'rawnaq_cs_sector' ) ) {
+		$terms = wp_get_object_terms( $post_ids, 'rawnaq_cs_sector' );
+		if ( is_array( $terms ) && ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				if ( ! isset( $seen_sectors[ $term->slug ] ) ) {
+					$seen_sectors[ $term->slug ] = true;
+					$sectors[]                   = [
+						'key'   => $term->slug,
+						'label' => $term->name,
+					];
+				}
+			}
+		}
+	}
+
+	$seen_years    = [];
+	$seen_services = [];
+	$years         = [];
+	$services      = [];
+
+	foreach ( $post_ids as $pid ) {
+		$y = trim( (string) get_post_meta( $pid, '_rawnaq_cs_year', true ) );
+		if ( '' !== $y && ! isset( $seen_years[ $y ] ) ) {
+			$seen_years[ $y ] = true;
+			$years[]          = $y;
+		}
+		$s_raw   = get_post_meta( $pid, '_rawnaq_cs_services', true );
+		$s_parts = array_filter( array_map( 'trim', explode( ',', (string) $s_raw ) ) );
+		foreach ( $s_parts as $sp ) {
+			if ( '' !== $sp && ! isset( $seen_services[ $sp ] ) ) {
+				$seen_services[ $sp ] = true;
+				$services[]           = $sp;
+			}
+		}
+	}
+
+	usort(
+		$years,
+		static function ( $a, $b ) {
+			return strcmp( $b, $a );
+		}
+	);
+
+	$facets = [
+		'sectors'  => $sectors,
+		'years'    => $years,
+		'services' => $services,
+	];
+
+	set_transient( $cache_key, $facets, 12 * HOUR_IN_SECONDS );
+	return $facets;
+}
+
+/**
+ * Base64url encode without padding.
+ *
+ * @param string $data Data to encode.
+ * @return string
+ */
+function rawnaq_case_study_base64url_encode( $data ) {
+	return rtrim( strtr( base64_encode( (string) $data ), '+/', '-_' ), '=' );
+}
+
+/**
+ * Base64url decode with padding restoration.
+ *
+ * @param string $data Data to decode.
+ * @return string|false
+ */
+function rawnaq_case_study_base64url_decode( $data ) {
+	$data = (string) $data;
+	$rem  = strlen( $data ) % 4;
+	if ( $rem ) {
+		$data .= str_repeat( '=', 4 - $rem );
+	}
+	return base64_decode( strtr( $data, '-_', '+/' ) );
+}
+
+/**
+ * Sanitize CSS color values strictly: #hex (3/4/6/8), rgb(), rgba(), hsl(), hsla(),
+ * var(--name), transparent, currentColor.
+ * Reject ; { } < > " ' url( expression( @import or backslashes.
+ *
+ * @param mixed  $value   Input CSS color string.
+ * @param string $default Fallback value if invalid.
+ * @return string Valid CSS color string or $default.
+ */
+function rawnaq_cs_sanitize_css_color( $value, $default = '' ) {
+	if ( ! is_string( $value ) ) {
+		return $default;
+	}
+	$value = trim( $value );
+	if ( '' === $value ) {
+		return $default;
+	}
+
+	// Reject dangerous characters or directives.
+	if ( preg_match( '/[;{}<>"\'\\\\]/i', $value ) ) {
+		return $default;
+	}
+	if ( preg_match( '/(?:url|expression|@import)\s*\(/i', $value ) ) {
+		return $default;
+	}
+
+	// 1. Keywords: transparent, currentColor
+	if ( preg_match( '/^(?:transparent|currentcolor)$/i', $value ) ) {
+		return $value;
+	}
+
+	// 2. Hex colors (3, 4, 6, 8 hex digits)
+	if ( preg_match( '/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/', $value ) ) {
+		return $value;
+	}
+
+	// 3. rgb() and rgba()
+	if ( preg_match( '/^rgba?\(\s*[\d.]+%?(?:[\s,]+[\d.]+%?){2}(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i', $value ) ) {
+		return $value;
+	}
+
+	// 4. hsl() and hsla()
+	if ( preg_match( '/^hsla?\(\s*[\d.]+(?:deg|turn|rad)?(?:[\s,]+[\d.]+%?){2}(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i', $value ) ) {
+		return $value;
+	}
+
+	// 5. CSS custom properties var(--custom-name)
+	if ( preg_match( '/^var\(\s*--[a-zA-Z0-9_-]+\s*\)$/', $value ) ) {
+		return $value;
+	}
+
+	return $default;
 }
 
 /**
  * AJAX: filtered + paginated case-study cards (CPT source).
+ * Verified via stateless signed HMAC token without database transients or nonces.
  *
  * @return void
  */
 function rawnaq_case_study_ajax_query() {
-	check_ajax_referer( 'rawnaq_cs_query', 'nonce' );
-
-	$uid = isset( $_POST['uid'] ) ? sanitize_html_class( wp_unslash( $_POST['uid'] ) ) : '';
-	$ctx = $uid ? get_transient( 'rawnaq_cs_ctx_' . $uid ) : false;
-	if ( ! is_array( $ctx ) ) {
-		wp_send_json_error( [ 'message' => __( 'Grid context expired. Please reload.', 'rawnaq' ) ], 400 );
+	$raw_token = isset( $_POST['ctx'] ) ? trim( (string) wp_unslash( $_POST['ctx'] ) ) : '';
+	if ( '' === $raw_token ) {
+		wp_send_json_error( [ 'message' => __( 'Missing query context token.', 'rawnaq' ) ], 400 );
 	}
 
-	$paged   = isset( $_POST['paged'] ) ? max( 1, absint( $_POST['paged'] ) ) : 1;
-	$sector  = isset( $_POST['sector'] ) ? sanitize_text_field( wp_unslash( $_POST['sector'] ) ) : '';
-	$year    = isset( $_POST['year'] ) ? sanitize_text_field( wp_unslash( $_POST['year'] ) ) : '';
-	$service = isset( $_POST['service'] ) ? sanitize_text_field( wp_unslash( $_POST['service'] ) ) : '';
+	$parts = explode( '.', $raw_token, 2 );
+	if ( 2 !== count( $parts ) ) {
+		wp_send_json_error( [ 'message' => __( 'Invalid query context token format.', 'rawnaq' ) ], 400 );
+	}
+
+	list( $payload, $sig ) = $parts;
+	$expected_sig          = hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) );
+	if ( ! hash_equals( $expected_sig, $sig ) ) {
+		wp_send_json_error( [ 'message' => __( 'Invalid query context signature.', 'rawnaq' ) ], 400 );
+	}
+
+	$decoded_json = rawnaq_case_study_base64url_decode( $payload );
+	$ctx          = json_decode( (string) $decoded_json, true );
+	if ( ! is_array( $ctx ) || empty( $ctx['v'] ) ) {
+		wp_send_json_error( [ 'message' => __( 'Invalid query context payload.', 'rawnaq' ) ], 400 );
+	}
+
+	$paged         = isset( $_POST['paged'] ) ? max( 1, min( 500, absint( $_POST['paged'] ) ) ) : 1;
+	$client_sector = isset( $_POST['sector'] ) ? substr( sanitize_text_field( wp_unslash( $_POST['sector'] ) ), 0, 100 ) : '';
+	$year          = isset( $_POST['year'] ) ? substr( sanitize_text_field( wp_unslash( $_POST['year'] ) ), 0, 100 ) : '';
+	$service       = isset( $_POST['service'] ) ? substr( sanitize_text_field( wp_unslash( $_POST['service'] ) ), 0, 100 ) : '';
+
+	// If querySector is set in ctx it ALWAYS wins; never allow client sector to widen the restriction.
+	$forced_sector = ! empty( $ctx['querySector'] ) ? sanitize_title( (string) $ctx['querySector'] ) : '';
+	$sector        = '' !== $forced_sector ? $forced_sector : sanitize_title( $client_sector );
 
 	$per_page = max( 1, absint( $ctx['perPage'] ?? 12 ) );
-	$result   = rawnaq_case_study_query_projects( [
+	$orderby  = sanitize_key( $ctx['orderby'] ?? 'date' );
+	if ( 'rand' === $orderby || ! in_array( $orderby, [ 'date', 'title', 'menu_order', 'modified' ], true ) ) {
+		$orderby = 'date';
+	}
+	$order = ( 'ASC' === strtoupper( (string) ( $ctx['order'] ?? 'DESC' ) ) ) ? 'ASC' : 'DESC';
+
+	$result = rawnaq_case_study_query_projects( [
 		'posts_per_page' => $per_page,
-		'orderby'        => $ctx['orderby'] ?? 'date',
-		'order'          => $ctx['order'] ?? 'DESC',
+		'orderby'        => $orderby,
+		'order'          => $order,
 		'sector'         => $sector,
 		'year'           => $year,
 		'service'        => $service,
 		'paged'          => $paged,
 	] );
 
-	$projects = rawnaq_case_study_normalize_projects( $result['projects'] );
-	$layout   = $ctx['layout'] ?? 'bento';
+	$projects     = $result['projects'];
+	$layout       = sanitize_key( $ctx['layout'] ?? 'bento' );
+	$hide_budget  = ! empty( $ctx['hideBudget'] );
+	$hide_client  = ! empty( $ctx['hideClient'] );
+	$click_action = sanitize_key( $ctx['clickAction'] ?? 'modal' );
+	$show_discuss = ! empty( $ctx['showDiscuss'] );
 
 	ob_start();
 	foreach ( $projects as $project ) {
 		rawnaq_case_study_render_card(
 			$project,
 			$layout,
-			! empty( $ctx['hideBudget'] ),
-			! empty( $ctx['hideClient'] ),
-			$ctx['clickAction'] ?? 'modal',
+			$hide_budget,
+			$hide_client,
+			$click_action,
 			false,
-			! empty( $ctx['showDiscuss'] )
+			$show_discuss
 		);
 	}
 	$html = ob_get_clean();
@@ -785,6 +1019,7 @@ function rawnaq_case_study_ajax_query() {
  */
 function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 	$cfg      = is_array( $cfg ) ? $cfg : [];
+	$source   = sanitize_key( $cfg['source'] ?? 'manual' );
 	$projects = rawnaq_case_study_resolve_projects( $cfg );
 
 	$layout = sanitize_key( $cfg['layout'] ?? 'bento' );
@@ -797,7 +1032,9 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 	if ( ! in_array( $sort, [ 'custom', 'year_desc', 'sector' ], true ) ) {
 		$sort = 'custom';
 	}
-	$projects = rawnaq_case_study_sort_projects( $projects, $sort );
+	if ( 'query' !== $source ) {
+		$projects = rawnaq_case_study_sort_projects( $projects, $sort );
+	}
 
 	$show_filter    = ! empty( $cfg['showFilter'] );
 	$filter_year    = ! empty( $cfg['filterYear'] );
@@ -818,11 +1055,21 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 	$initial_visible = isset( $cfg['initialVisible'] ) ? absint( $cfg['initialVisible'] ) : 0;
 	$load_chunk      = max( 1, absint( $cfg['loadChunk'] ?? 3 ) );
 
-	$sectors  = ( $show_filter ) ? rawnaq_case_study_facets( $projects, 'sector' ) : [];
-	$years    = ( $filter_year ) ? rawnaq_case_study_facets( $projects, 'year' ) : [];
-	$services = ( $filter_service ) ? rawnaq_case_study_facets( $projects, 'services' ) : [];
+	if ( 'query' === $source ) {
+		$facets   = rawnaq_case_study_query_facets( $cfg['querySector'] ?? '' );
+		$sectors  = $show_filter ? $facets['sectors'] : [];
+		$years    = $filter_year ? $facets['years'] : [];
+		$services = $filter_service ? $facets['services'] : [];
+	} else {
+		$sectors  = $show_filter ? rawnaq_case_study_facets( $projects, 'sector' ) : [];
+		$years    = $filter_year ? rawnaq_case_study_facets( $projects, 'year' ) : [];
+		$services = $filter_service ? rawnaq_case_study_facets( $projects, 'services' ) : [];
+	}
 
-	$uid = $uid ? sanitize_html_class( $uid ) : ( 'cs-' . wp_unique_id() );
+	$uid = $uid ? sanitize_html_class( $uid ) : ( 'rawnaq-cs-' . wp_unique_id() );
+	if ( 0 !== strpos( $uid, 'rawnaq-cs-' ) ) {
+		$uid = 'rawnaq-cs-' . $uid;
+	}
 
 	$show_modal   = ( 'link' !== $click_action ) || ( 'off' !== $discuss_target );
 	$show_discuss = ( 'off' !== $discuss_target );
@@ -843,27 +1090,34 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 	];
 
 	// Server-side pagination is available for the CPT (query) source.
-	$source   = sanitize_key( $cfg['source'] ?? 'manual' );
-	$cs_ajax  = ( 'query' === $source );
+	$cs_ajax = ( 'query' === $source );
 
 	// JSON-LD (CreativeWork ItemList) for real CPT-backed portfolios.
 	if ( 'query' === $source && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_case_studies' ) ) {
 		rawnaq_schema_print( rawnaq_schema_case_studies( $projects ), 'case-study' );
 	}
-	$cs_nonce = '';
+
+	$cs_token   = '';
 	$cs_per_page = max( 1, absint( $cfg['queryNumber'] ?? 12 ) );
 	if ( $cs_ajax ) {
-		$cs_nonce = wp_create_nonce( 'rawnaq_cs_query' );
-		rawnaq_case_study_store_ctx( $uid, [
+		$ctx_orderby = sanitize_key( $cfg['queryOrderby'] ?? 'date' );
+		if ( 'rand' === $ctx_orderby ) {
+			$ctx_orderby = 'date';
+		}
+		$ctx = [
+			'v'           => 1,
 			'layout'      => $layout,
 			'clickAction' => $click_action,
-			'hideBudget'  => $hide_budget,
-			'hideClient'  => $hide_client,
-			'showDiscuss' => $show_discuss,
+			'hideBudget'  => (bool) $hide_budget,
+			'hideClient'  => (bool) $hide_client,
+			'showDiscuss' => (bool) $show_discuss,
 			'perPage'     => $cs_per_page,
-			'orderby'     => sanitize_key( $cfg['queryOrderby'] ?? 'date' ),
+			'orderby'     => $ctx_orderby,
 			'order'       => ( 'ASC' === strtoupper( (string) ( $cfg['queryOrder'] ?? 'DESC' ) ) ) ? 'ASC' : 'DESC',
-		] );
+			'querySector' => sanitize_title( (string) ( $cfg['querySector'] ?? '' ) ),
+		];
+		$payload  = rawnaq_case_study_base64url_encode( wp_json_encode( $ctx ) );
+		$cs_token = $payload . '.' . hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) );
 	}
 
 	$theme = sanitize_key( $cfg['cardStyle'] ?? ( $cfg['theme'] ?? 'elevated' ) );
@@ -871,15 +1125,22 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		$theme = 'elevated';
 	}
 
-	$style = '';
-	if ( ! empty( $cfg['accent'] ) ) {
-		$style .= '--cs-accent:' . esc_attr( $cfg['accent'] ) . ';';
+	$style       = '';
+	$accent      = rawnaq_cs_sanitize_css_color( $cfg['accent'] ?? '', '' );
+	if ( '' !== $accent ) {
+		$style .= '--cs-accent:' . esc_attr( $accent ) . ';';
 	}
-	if ( ! empty( $cfg['cardBg'] ) ) {
-		$style .= '--cs-card-bg:' . esc_attr( $cfg['cardBg'] ) . ';';
+	$card_bg = rawnaq_cs_sanitize_css_color( $cfg['cardBg'] ?? '', '' );
+	if ( '' !== $card_bg ) {
+		$style .= '--cs-card-bg:' . esc_attr( $card_bg ) . ';';
 	}
-	if ( ! empty( $cfg['cardBorder'] ) ) {
-		$style .= '--cs-card-border:' . esc_attr( $cfg['cardBorder'] ) . ';';
+	$card_border = rawnaq_cs_sanitize_css_color( $cfg['cardBorder'] ?? '', '' );
+	if ( '' !== $card_border ) {
+		$style .= '--cs-card-border:' . esc_attr( $card_border ) . ';';
+	}
+	$text_color = rawnaq_cs_sanitize_css_color( $cfg['textColor'] ?? '', '' );
+	if ( '' !== $text_color ) {
+		$style .= '--cs-ink:' . esc_attr( $text_color ) . ';';
 	}
 	if ( isset( $cfg['radius'] ) && '' !== $cfg['radius'] && null !== $cfg['radius'] ) {
 		$style .= '--cs-radius:' . esc_attr( absint( $cfg['radius'] ) ) . 'px;';
@@ -905,56 +1166,62 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		data-theme="<?php echo esc_attr( $theme ); ?>"
 		<?php if ( $cs_ajax ) : ?>
 		data-cs-ajax="1"
-		data-cs-uid="<?php echo esc_attr( $uid ); ?>"
-		data-cs-nonce="<?php echo esc_attr( $cs_nonce ); ?>"
-		data-cs-empty="<?php esc_attr_e( 'No matching projects.', 'rawnaq' ); ?>"
+		data-cs-ctx="<?php echo esc_attr( $cs_token ); ?>"
 		<?php endif; ?>
 		style="<?php echo esc_attr( $style . '--cs-cols:' . $columns ); ?>">
 
-		<?php if ( $show_filter && $sectors ) : ?>
-			<div class="rawnaq-cs-filters" data-filter="sector" role="tablist" aria-label="<?php esc_attr_e( 'Filter by sector', 'rawnaq' ); ?>">
-				<button type="button" class="rawnaq-cs-chip is-active" data-sector="" role="tab" aria-selected="true"><?php esc_html_e( 'All sectors', 'rawnaq' ); ?></button>
-				<?php foreach ( $sectors as $sector ) : ?>
-					<button type="button" class="rawnaq-cs-chip" data-sector="<?php echo esc_attr( $sector ); ?>" role="tab" aria-selected="false"><?php echo esc_html( $sector ); ?></button>
-				<?php endforeach; ?>
-			</div>
-		<?php endif; ?>
+		<div class="rawnaq-cs-stage">
+			<?php if ( $show_filter && $sectors ) : ?>
+				<div class="rawnaq-cs-filters" data-filter="sector" role="group" aria-label="<?php esc_attr_e( 'Filter by sector', 'rawnaq' ); ?>">
+					<button type="button" class="rawnaq-cs-chip is-active" data-sector="" aria-pressed="true"><?php esc_html_e( 'All sectors', 'rawnaq' ); ?></button>
+					<?php
+					foreach ( $sectors as $sector_item ) :
+						$s_val   = is_array( $sector_item ) ? $sector_item['key'] : $sector_item;
+						$s_label = is_array( $sector_item ) ? $sector_item['label'] : $sector_item;
+						?>
+						<button type="button" class="rawnaq-cs-chip" data-sector="<?php echo esc_attr( $s_val ); ?>" aria-pressed="false"><?php echo esc_html( $s_label ); ?></button>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 
-		<?php if ( $filter_year && $years ) : ?>
-			<div class="rawnaq-cs-filters rawnaq-cs-filters-year" data-filter="year" role="tablist" aria-label="<?php esc_attr_e( 'Filter by year', 'rawnaq' ); ?>">
-				<button type="button" class="rawnaq-cs-chip is-active" data-year="" role="tab" aria-selected="true"><?php esc_html_e( 'All years', 'rawnaq' ); ?></button>
-				<?php foreach ( $years as $year ) : ?>
-					<button type="button" class="rawnaq-cs-chip" data-year="<?php echo esc_attr( $year ); ?>" role="tab" aria-selected="false"><?php echo esc_html( $year ); ?></button>
-				<?php endforeach; ?>
-			</div>
-		<?php endif; ?>
+			<?php if ( $filter_year && $years ) : ?>
+				<div class="rawnaq-cs-filters rawnaq-cs-filters-year" data-filter="year" role="group" aria-label="<?php esc_attr_e( 'Filter by year', 'rawnaq' ); ?>">
+					<button type="button" class="rawnaq-cs-chip is-active" data-year="" aria-pressed="true"><?php esc_html_e( 'All years', 'rawnaq' ); ?></button>
+					<?php foreach ( $years as $year ) : ?>
+						<button type="button" class="rawnaq-cs-chip" data-year="<?php echo esc_attr( $year ); ?>" aria-pressed="false"><?php echo esc_html( $year ); ?></button>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 
-		<?php if ( $filter_service && $services ) : ?>
-			<div class="rawnaq-cs-filters rawnaq-cs-filters-service" data-filter="service" role="tablist" aria-label="<?php esc_attr_e( 'Filter by service', 'rawnaq' ); ?>">
-				<button type="button" class="rawnaq-cs-chip is-active" data-service="" role="tab" aria-selected="true"><?php esc_html_e( 'All services', 'rawnaq' ); ?></button>
-				<?php foreach ( $services as $service ) : ?>
-					<button type="button" class="rawnaq-cs-chip" data-service="<?php echo esc_attr( $service ); ?>" role="tab" aria-selected="false"><?php echo esc_html( $service ); ?></button>
-				<?php endforeach; ?>
-			</div>
-		<?php endif; ?>
+			<?php if ( $filter_service && $services ) : ?>
+				<div class="rawnaq-cs-filters rawnaq-cs-filters-service" data-filter="service" role="group" aria-label="<?php esc_attr_e( 'Filter by service', 'rawnaq' ); ?>">
+					<button type="button" class="rawnaq-cs-chip is-active" data-service="" aria-pressed="true"><?php esc_html_e( 'All services', 'rawnaq' ); ?></button>
+					<?php foreach ( $services as $service ) : ?>
+						<button type="button" class="rawnaq-cs-chip" data-service="<?php echo esc_attr( $service ); ?>" aria-pressed="false"><?php echo esc_html( $service ); ?></button>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 
-		<div class="<?php echo esc_attr( $grid_class ); ?>">
-			<?php
-			foreach ( $projects as $i => $project ) :
-				// In AJAX mode every fetched card is visible (paging is server-side).
-				$load_hidden = ! $cs_ajax && $has_load_more && $i >= $initial_visible;
-				rawnaq_case_study_render_card( $project, $layout, $hide_budget, $hide_client, $click_action, $load_hidden, $show_discuss );
-			endforeach;
-			?>
+			<div class="rawnaq-cs-status screen-reader-text" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
+
+			<div class="<?php echo esc_attr( $grid_class ); ?>">
+				<?php
+				foreach ( $projects as $i => $project ) :
+					// In AJAX mode every fetched card is visible (paging is server-side).
+					$load_hidden = ! $cs_ajax && $has_load_more && $i >= $initial_visible;
+					rawnaq_case_study_render_card( $project, $layout, $hide_budget, $hide_client, $click_action, $load_hidden, $show_discuss );
+				endforeach;
+				?>
+			</div>
+
+			<?php if ( $has_load_more ) : ?>
+				<div class="rawnaq-cs-load-more-wrap">
+					<button type="button" class="rawnaq-cs-load-more" data-load-chunk="<?php echo esc_attr( (string) $load_chunk ); ?>">
+						<?php esc_html_e( 'Load more projects', 'rawnaq' ); ?>
+					</button>
+				</div>
+			<?php endif; ?>
 		</div>
-
-		<?php if ( $has_load_more ) : ?>
-			<div class="rawnaq-cs-load-more-wrap">
-				<button type="button" class="rawnaq-cs-load-more" data-load-chunk="<?php echo esc_attr( (string) $load_chunk ); ?>">
-					<?php esc_html_e( 'Load more projects', 'rawnaq' ); ?>
-				</button>
-			</div>
-		<?php endif; ?>
 
 		<?php if ( $show_modal ) : ?>
 			<div class="rawnaq-cs-modal" hidden>
@@ -1008,61 +1275,70 @@ function rawnaq_case_study_render_card( $project, $layout, $hide_budget, $hide_c
 	$link = $project['link'] ?? '';
 
 	$payload = [
-		'id'       => $project['id'] ?? '',
-		'postId'   => absint( $project['postId'] ?? 0 ),
-		'slug'     => $project['slug'] ?? '',
-		'title'    => $project['title'],
-		'image'    => $project['image'],
-		'gallery'  => $project['gallery'] ?? [],
-		'sector'   => $project['sector'],
-		'size'     => $project['size'],
-		'budget'   => $hide_budget ? '' : $project['budget'],
-		'year'     => $project['year'],
-		'client'   => $hide_client ? '' : $project['client'],
-		'services' => $project['services'],
-		'detail'   => $project['detail'] ?: $project['excerpt'],
-		'link'     => $link,
+		'id'         => $project['id'] ?? '',
+		'postId'     => absint( $project['postId'] ?? 0 ),
+		'slug'       => $project['slug'] ?? '',
+		'title'      => $project['title'],
+		'image'      => $project['image'],
+		'gallery'    => $project['gallery'] ?? [],
+		'sector'     => $project['sector'],
+		'sectorSlug' => $project['sectorSlug'] ?? '',
+		'size'       => $project['size'],
+		'budget'     => $hide_budget ? '' : $project['budget'],
+		'year'       => $project['year'],
+		'client'     => $hide_client ? '' : $project['client'],
+		'services'   => $project['services'],
+		'detail'     => $project['detail'] ?: $project['excerpt'],
+		'link'       => $link,
 	];
 
-	$span_style = '';
-	if ( 'bento' === $layout ) {
-		$span_style = 'grid-column: span ' . (int) $project['col'] . '; grid-row: span ' . (int) $project['row'] . ';';
-	}
+	$col = max( 1, min( 4, (int) ( $project['col'] ?? 1 ) ) );
+	$row = max( 1, min( 3, (int) ( $project['row'] ?? 1 ) ) );
 
+	$card_classes = [ 'rawnaq-cs-card' ];
+	if ( 'bento' === $layout ) {
+		$card_classes[] = 'is-col-' . $col;
+		$card_classes[] = 'is-row-' . $row;
+	}
+	if ( ! empty( $project['featured'] ) ) {
+		$card_classes[] = 'is-featured';
+	}
+	if ( $load_hidden ) {
+		$card_classes[] = 'is-load-hidden';
+	}
+	$card_class = implode( ' ', $card_classes );
+
+	$card_sector   = ! empty( $project['sectorSlug'] ) ? $project['sectorSlug'] : ( $project['sector'] ?? '' );
 	$services_attr = implode( ',', array_map( 'sanitize_text_field', (array) ( $project['services'] ?? [] ) ) );
-	$card_class    = 'rawnaq-cs-card' . ( $project['featured'] ? ' is-featured' : '' ) . ( $load_hidden ? ' is-load-hidden' : '' );
 	// Prefer article when discuss CTA is needed so we can nest a button safely.
-	$use_link      = ( 'link' === $click_action && $link && ! $show_discuss );
-	$aria_label    = sprintf( /* translators: %s: project title */ __( 'View case study: %s', 'rawnaq' ), $project['title'] );
+	$use_link = ( 'link' === $click_action && $link && ! $show_discuss );
 	?>
 	<?php if ( $use_link ) : ?>
 		<a href="<?php echo esc_url( $link ); ?>"
 			class="<?php echo esc_attr( $card_class ); ?>"
 			data-project-id="<?php echo esc_attr( (string) ( $project['id'] ?? '' ) ); ?>"
 			data-project-slug="<?php echo esc_attr( (string) ( $project['slug'] ?? '' ) ); ?>"
-			data-sector="<?php echo esc_attr( $project['sector'] ); ?>"
+			data-sector="<?php echo esc_attr( $card_sector ); ?>"
 			data-year="<?php echo esc_attr( $project['year'] ); ?>"
 			data-services="<?php echo esc_attr( $services_attr ); ?>"
-			data-link="<?php echo esc_attr( $link ); ?>"
-			data-project="<?php echo esc_attr( wp_json_encode( $payload ) ); ?>"
-			style="<?php echo esc_attr( $span_style ); ?>">
-			<?php rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_client, false ); ?>
+			data-link="<?php echo esc_url( $link ); ?>"
+			data-project="<?php echo esc_attr( wp_json_encode( $payload ) ); ?>">
+			<?php rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_client, false, 'none' ); ?>
 		</a>
 	<?php else : ?>
+		<?php
+		$trigger_type = ( 'link' === $click_action && $link ) ? 'link' : 'button';
+		?>
 		<article
 			class="<?php echo esc_attr( $card_class ); ?>"
 			data-project-id="<?php echo esc_attr( (string) ( $project['id'] ?? '' ) ); ?>"
 			data-project-slug="<?php echo esc_attr( (string) ( $project['slug'] ?? '' ) ); ?>"
-			data-sector="<?php echo esc_attr( $project['sector'] ); ?>"
+			data-sector="<?php echo esc_attr( $card_sector ); ?>"
 			data-year="<?php echo esc_attr( $project['year'] ); ?>"
 			data-services="<?php echo esc_attr( $services_attr ); ?>"
-			data-link="<?php echo esc_attr( $link ); ?>"
-			data-project="<?php echo esc_attr( wp_json_encode( $payload ) ); ?>"
-			style="<?php echo esc_attr( $span_style ); ?>"
-			tabindex="0"
-			role="button"
-			aria-label="<?php echo esc_attr( $aria_label ); ?>">
-			<?php rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_client, $show_discuss && 'link' === $click_action ); ?>
+			data-link="<?php echo esc_url( $link ); ?>"
+			data-project="<?php echo esc_attr( wp_json_encode( $payload ) ); ?>">
+			<?php rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_client, $show_discuss && 'link' === $click_action, $trigger_type ); ?>
 		</article>
 	<?php endif; ?>
 	<?php
@@ -1071,12 +1347,13 @@ function rawnaq_case_study_render_card( $project, $layout, $hide_budget, $hide_c
 /**
  * Shared card body (media + text) reused by both the <a> and <article> card wrappers.
  *
- * @param array $project      Normalized project.
- * @param bool  $hide_budget  Suppress budget field.
- * @param bool  $hide_client  Suppress client field.
- * @param bool  $show_discuss Show inline discuss CTA (link-only cards).
+ * @param array  $project      Normalized project.
+ * @param bool   $hide_budget  Suppress budget field.
+ * @param bool   $hide_client  Suppress client field.
+ * @param bool   $show_discuss Show inline discuss CTA (link-only cards).
+ * @param string $trigger      'button'|'link'|'none'.
  */
-function rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_client, $show_discuss = false ) {
+function rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_client, $show_discuss = false, $trigger = 'button' ) {
 	?>
 	<div class="rawnaq-cs-media">
 		<?php if ( $project['image'] ) : ?>
@@ -1100,22 +1377,30 @@ function rawnaq_case_study_render_card_inner( $project, $hide_budget, $hide_clie
 		<?php endif; ?>
 	</div>
 	<div class="rawnaq-cs-body">
-		<h3 class="rawnaq-cs-title"><?php echo esc_html( $project['title'] ); ?></h3>
+		<h3 class="rawnaq-cs-title">
+			<?php if ( 'button' === $trigger ) : ?>
+				<button type="button" class="rawnaq-cs-card-trigger" aria-haspopup="dialog"><?php echo esc_html( $project['title'] ); ?></button>
+			<?php elseif ( 'link' === $trigger && ! empty( $project['link'] ) ) : ?>
+				<a href="<?php echo esc_url( $project['link'] ); ?>" class="rawnaq-cs-card-trigger"><?php echo esc_html( $project['title'] ); ?></a>
+			<?php else : ?>
+				<?php echo esc_html( $project['title'] ); ?>
+			<?php endif; ?>
+		</h3>
 		<?php if ( ! empty( $project['excerpt'] ) ) : ?>
 			<p class="rawnaq-cs-excerpt"><?php echo esc_html( $project['excerpt'] ); ?></p>
 		<?php endif; ?>
 		<ul class="rawnaq-cs-meta">
 			<?php if ( $project['year'] ) : ?>
-				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">⚡</span><span><?php echo esc_html( $project['year'] ); ?></span></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span><span><?php echo esc_html( $project['year'] ); ?></span></li>
 			<?php endif; ?>
 			<?php if ( $project['size'] ) : ?>
-				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">🎯</span><span><?php echo esc_html( $project['size'] ); ?></span></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></span><span><?php echo esc_html( $project['size'] ); ?></span></li>
 			<?php endif; ?>
 			<?php if ( ! $hide_budget && $project['budget'] ) : ?>
-				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">📈</span><span><?php echo esc_html( $project['budget'] ); ?></span></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span><span><?php echo esc_html( $project['budget'] ); ?></span></li>
 			<?php endif; ?>
 			<?php if ( ! $hide_client && $project['client'] ) : ?>
-				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true">💼</span><span><?php echo esc_html( $project['client'] ); ?></span></li>
+				<li class="rawnaq-cs-chip-meta"><span class="rawnaq-cs-meta-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span><span><?php echo esc_html( $project['client'] ); ?></span></li>
 			<?php endif; ?>
 		</ul>
 		<div class="rawnaq-cs-footer">

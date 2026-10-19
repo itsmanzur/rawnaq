@@ -4,7 +4,7 @@ Tags: elementor addons, gutenberg blocks, divi modules, contact form, timeline
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -132,6 +132,27 @@ Source code: https://github.com/itsmanzur/rawnaq
 
 == Changelog ==
 
+= 1.5.0 =
+* Security: Replaced transient/nonce AJAX context with a stateless HMAC-SHA256 signed token (`data-cs-ctx`) using `wp_salt('auth')`, ensuring tamper-proof display filters and privacy controls without breaking full-page caching.
+* Security: Enforced server-side `querySector` constraints in AJAX queries to prevent unauthorized sector enumeration.
+* Security: Excluded password-protected case studies from queries and automatically redacted excerpts and details.
+* Security: Sanitized custom CSS color properties against invalid characters, delimiter breaking, and script injection.
+* Fixed: Bento grid layout overflow at narrow viewports resolved with explicit column and row span mapping per container breakpoint.
+* Fixed: Eliminated duplicate dialog roles on modal wrappers and ensured full screen-reader compliance with dialog semantics on the inner dialog.
+* Fixed: Corrected random order pagination anomalies by enforcing deterministic date order fallback on paged queries.
+* Fixed: Restored modal scroll lock CSS with overflow hidden on html and body and dynamic scrollbar width compensation (`--rawnaq-cs-sbw`).
+* Improved: Upgraded Case-Study Grid to modern container queries (`@container rawnaqcs`) with container-type isolated on a stage wrapper to prevent modal containment traps.
+* Improved: Enhanced keyboard and screen reader accessibility (WCAG 2.2 AA) by replacing clickable articles with real card trigger buttons or links inside headings.
+* Improved: Touch swipe gestures on modal gallery slider via pointer events (40px threshold) with polite live slide announcements and eager loading for initial images.
+* Improved: Client-side filtering automatically reveals matching hidden projects up to chunk size so filtered results never look empty.
+* Improved: Replaced card emoji meta icons with clean, accessible inline SVGs.
+* Improved: Internationalized all frontend messages and status strings via `rawnaqCaseStudy.i18n` with support for live counts and empty states.
+* Improved: Comprehensive `prefers-reduced-motion` support across card hover, animations, modal backdrops, and gallery sliders.
+* Added: Introduced `.rawnaq-cs-stage` container element providing isolated inline-size containment.
+* Added: Polite live status region (`.rawnaq-cs-status`) announcing visible project counts and empty search states.
+* Added: Inline AJAX error alert container with a localized Retry button.
+* Added: Full builder parity across Gutenberg and Divi with controls for orderby, order, query sector, load chunk, and text color.
+
 = 1.4.0 =
 * Security: Sanitized Floating Dock and mobile action trigger tooltip and label construction against potential HTML/script injection from custom TOC titles.
 * Security: Rebuilt mobile floating action buttons using standard DOM creation and strict attribute assignment, avoiding HTML string concatenation with localized text.
@@ -220,6 +241,9 @@ Source code: https://github.com/itsmanzur/rawnaq
 * On-demand assets, vanilla JS frontend, Elements Manager, WPML config, and documented optional third-party services (Fonts, reCAPTCHA, WhatsApp, webhooks).
 
 == Upgrade Notice ==
+
+= 1.5.0 =
+Major performance, security, and accessibility release for Case-Study Grid: stateless signed tokens, container-aware responsive layouts, WCAG 2.2 accessibility, and touch swipe galleries.
 
 = 1.4.0 =
 Features server-side rendered TOC (SSR) with zero layout shift, plus key fixes for TOC heading self-listing, resilient active-section scrollspy tracking, Unicode anchors, and WCAG accessibility.

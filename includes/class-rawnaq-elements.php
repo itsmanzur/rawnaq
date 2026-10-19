@@ -908,6 +908,18 @@ class Rawnaq_Elements {
             'rawnaqCaseStudy',
             [
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+                'i18n'    => [
+                    'year'      => __( 'Year', 'rawnaq' ),
+                    'scope'     => __( 'Scope', 'rawnaq' ),
+                    'budget'    => __( 'Budget', 'rawnaq' ),
+                    'client'    => __( 'Client', 'rawnaq' ),
+                    'imageOf'   => __( 'Image %1$d of %2$d', 'rawnaq' ),
+                    'showing'   => __( 'Showing %d projects', 'rawnaq' ),
+                    'noResults' => __( 'No matching projects.', 'rawnaq' ),
+                    'loadError' => __( 'Could not load projects. Please try again.', 'rawnaq' ),
+                    'retry'     => __( 'Retry', 'rawnaq' ),
+                    'close'     => __( 'Close', 'rawnaq' ),
+                ],
             ]
         );
 

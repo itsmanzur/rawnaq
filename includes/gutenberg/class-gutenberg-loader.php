@@ -587,6 +587,7 @@ class Rawnaq_Gutenberg_Loader {
                     'accent'         => [ 'type' => 'string', 'default' => '#0f766e' ],
                     'cardBg'         => [ 'type' => 'string', 'default' => '#ffffff' ],
                     'cardBorder'     => [ 'type' => 'string', 'default' => 'rgba(0,0,0,0.08)' ],
+                    'textColor'      => [ 'type' => 'string', 'default' => '' ],
                     'radius'         => [ 'type' => 'number', 'default' => 18 ],
                 ],
             ] );
@@ -2112,11 +2113,12 @@ class Rawnaq_Gutenberg_Loader {
             'accent'         => sanitize_hex_color( $attributes['accent'] ?? '' ) ?: '#0f766e',
             'cardBg'         => sanitize_text_field( $attributes['cardBg'] ?? '' ) ?: '#ffffff',
             'cardBorder'     => sanitize_text_field( $attributes['cardBorder'] ?? '' ) ?: 'rgba(0,0,0,0.08)',
+            'textColor'      => $attributes['textColor'] ?? '',
             'radius'         => isset( $attributes['radius'] ) ? absint( $attributes['radius'] ) : 18,
         ];
 
         ob_start();
-        rawnaq_case_study_markup( $cfg, 'gb-' . wp_unique_id() );
+        rawnaq_case_study_markup( $cfg, 'rawnaq-cs-gb-' . wp_unique_id() );
         return ob_get_clean();
     }
 }

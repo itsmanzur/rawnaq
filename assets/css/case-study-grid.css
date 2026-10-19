@@ -8,6 +8,18 @@
     font-size: 0.95rem;
 }
 
+.rawnaq-cs-status {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
 .rawnaq-case-study.is-cs-loading {
     opacity: 0.6;
     pointer-events: none;
@@ -36,6 +48,14 @@
 }
 
 .rawnaq-case-study * {
+    box-sizing: border-box;
+}
+
+/* Stage Container (container-type isolated from fixed modal) */
+.rawnaq-cs-stage {
+    container-type: inline-size;
+    container-name: rawnaqcs;
+    width: 100%;
     box-sizing: border-box;
 }
 
@@ -70,8 +90,12 @@
     font-size: 0.84rem;
     font-weight: 600;
     padding: 7px 16px;
+    min-height: 44px;
     border-radius: 999px;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -88,19 +112,20 @@
     color: var(--cs-ink);
 }
 
-/* Grid Layouts */
+/* Grid Layouts Base */
 .rawnaq-cs-grid {
     display: grid;
     gap: 20px;
+    width: 100%;
 }
 
 .rawnaq-cs-grid.is-bento {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--cs-grid-cols, 4), minmax(0, 1fr));
     grid-auto-rows: minmax(180px, auto);
 }
 
 .rawnaq-cs-grid.is-uniform {
-    grid-template-columns: repeat(var(--cs-cols, 3), minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
 }
 
 .rawnaq-cs-grid.is-masonry {
@@ -118,7 +143,6 @@
     border-radius: var(--cs-radius);
     overflow: hidden;
     min-width: 0;
-    cursor: pointer;
     text-decoration: none !important;
     color: inherit;
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
@@ -126,11 +150,49 @@
     position: relative;
 }
 
-.rawnaq-cs-card:hover,
-.rawnaq-cs-card:focus-visible {
+.rawnaq-cs-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px color-mix(in srgb, var(--cs-accent) 30%, transparent);
-    outline: none;
+}
+
+/* Stretched Card Trigger */
+.rawnaq-cs-card-trigger {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    cursor: pointer;
+    display: inline;
+    text-decoration: none !important;
+}
+
+.rawnaq-cs-card-trigger::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+/* Focus-visible rings using var(--cs-accent) */
+.rawnaq-cs-chip:focus-visible,
+.rawnaq-cs-card-trigger:focus-visible,
+.rawnaq-cs-slider-prev:focus-visible,
+.rawnaq-cs-slider-next:focus-visible,
+.rawnaq-cs-slider-dot:focus-visible,
+.rawnaq-cs-modal-close:focus-visible,
+.rawnaq-cs-load-more:focus-visible,
+.rawnaq-cs-discuss:focus-visible,
+.rawnaq-cs-retry:focus-visible {
+    outline: 2px solid var(--cs-accent, #0f766e);
+    outline-offset: 2px;
+}
+
+.rawnaq-cs-card:focus-within {
+    box-shadow: 0 0 0 2px var(--cs-accent, #0f766e), 0 20px 40px -12px rgba(15, 23, 42, 0.12);
 }
 
 /* Theme 1: Elevated (Default) */
@@ -205,7 +267,8 @@
 }
 
 .rawnaq-cs-card.is-featured .rawnaq-cs-media,
-.rawnaq-cs-grid.is-bento .rawnaq-cs-card[style*="span 2"] .rawnaq-cs-media {
+.rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-2 .rawnaq-cs-media,
+.rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-3 .rawnaq-cs-media {
     aspect-ratio: auto;
     min-height: 200px;
     flex: 1;
@@ -367,7 +430,18 @@
 }
 
 .rawnaq-cs-meta-icon {
-    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.rawnaq-cs-meta-icon svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2;
+    display: block;
 }
 
 /* Card Footer & View CTA */
@@ -409,6 +483,8 @@
     padding: 6px 14px;
     border-radius: 999px;
     cursor: pointer;
+    position: relative;
+    z-index: 2;
     transition: all 0.2s ease;
 }
 
@@ -433,6 +509,7 @@
     font-size: 0.9rem;
     font-weight: 700;
     padding: 12px 28px;
+    min-height: 44px;
     border-radius: 999px;
     cursor: pointer;
     box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
@@ -447,8 +524,66 @@
     box-shadow: 0 8px 24px color-mix(in srgb, var(--cs-accent) 30%, transparent);
 }
 
+/* AJAX Error Alert Box & Retry */
+.rawnaq-cs-error {
+    grid-column: 1 / -1;
+    margin: 16px 0;
+    padding: 16px 20px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--cs-radius, 12px);
+    text-align: center;
+    color: #b91c1c;
+    font-size: 0.92rem;
+}
+
+.rawnaq-cs-error-msg {
+    margin: 0 0 10px;
+    font-weight: 500;
+}
+
+.rawnaq-cs-retry {
+    appearance: none;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: #b91c1c;
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    padding: 6px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rawnaq-cs-retry:hover {
+    background: #b91c1c;
+    color: #ffffff;
+}
+
+/* Scroll Lock Classes */
+html.rawnaq-cs-modal-open,
+body.rawnaq-cs-modal-open {
+    overflow: hidden;
+}
+
+body.rawnaq-cs-modal-open {
+    padding-right: var(--rawnaq-cs-sbw, 0);
+}
+
 /* Detail Modal */
 .rawnaq-cs-modal {
+    --cs-accent: #0f766e;
+    --cs-accent-deep: #115e59;
+    --cs-ink: #0f172a;
+    --cs-muted: #64748b;
+    --cs-line: rgba(0, 0, 0, 0.08);
+    --cs-card-bg: #ffffff;
+    --cs-radius: 18px;
     position: fixed;
     inset: 0;
     z-index: 99999;
@@ -474,10 +609,11 @@
     position: relative;
     z-index: 2;
     background: #ffffff;
-    border-radius: 20px;
+    border-radius: var(--cs-radius, 20px);
     max-width: 880px;
     width: 100%;
-    max-height: 90vh;
+    max-height: min(90vh, 90dvh);
+    overscroll-behavior: contain;
     display: grid;
     grid-template-columns: 1.1fr 1fr;
     overflow: hidden;
@@ -489,19 +625,22 @@
     right: 14px;
     top: 14px;
     z-index: 10;
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 999px;
     border: 0;
     background: rgba(15, 23, 42, 0.6);
     color: #ffffff;
-    font-size: 20px;
+    font-size: 24px;
     line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     transition: background 0.2s ease;
 }
 
@@ -526,6 +665,7 @@
     display: flex;
     align-items: center;
     overflow: hidden;
+    touch-action: pan-y;
 }
 
 .rawnaq-cs-slider-track {
@@ -574,19 +714,22 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 999px;
     background: rgba(15, 23, 42, 0.6);
     color: #ffffff;
     border: 0;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 5;
     backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .rawnaq-cs-slider-prev { left: 10px; }
@@ -611,6 +754,7 @@
     border: 0;
     padding: 0;
     cursor: pointer;
+    transition: width 0.2s ease, background 0.2s ease;
 }
 
 .rawnaq-cs-slider-dot.is-active {
@@ -690,14 +834,49 @@
     box-shadow: 0 4px 14px color-mix(in srgb, var(--cs-accent) 30%, transparent);
 }
 
-/* Responsive */
-@media (max-width: 900px) {
+/* ==========================================================================
+   Container-Aware Responsive Layouts (@container rawnaqcs)
+   ========================================================================== */
+@container rawnaqcs (min-width: 820px) {
     .rawnaq-cs-grid.is-bento {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        --cs-grid-cols: 4;
     }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-1 { grid-column: span 1; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-2 { grid-column: span 2; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-3 { grid-column: span 3; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-4 { grid-column: span 4; }
+
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-1 { grid-row: span 1; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-2 { grid-row: span 2; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-3 { grid-row: span 3; }
 
     .rawnaq-cs-grid.is-uniform {
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        grid-template-columns: repeat(var(--cs-cols, 3), minmax(0, 1fr));
+    }
+
+    .rawnaq-cs-grid.is-masonry {
+        columns: var(--cs-cols, 3);
+        column-gap: 20px;
+    }
+}
+
+@container rawnaqcs (min-width: 520px) and (max-width: 819.98px) {
+    .rawnaq-cs-grid.is-bento {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        --cs-grid-cols: 2;
+    }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-1 { grid-column: span 1; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-2 { grid-column: span 2; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-3 { grid-column: span 2; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-4 { grid-column: span 2; }
+
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-1 { grid-row: span 1; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-2 { grid-row: span 2; }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-3 { grid-row: span 3; }
+
+    .rawnaq-cs-grid.is-uniform {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     }
 
     .rawnaq-cs-grid.is-masonry {
@@ -708,20 +887,23 @@
     .rawnaq-cs-grid.is-masonry .rawnaq-cs-card {
         margin-bottom: 16px;
     }
-
-    .rawnaq-cs-modal-dialog {
-        grid-template-columns: 1fr;
-        max-height: 85vh;
-    }
-
-    .rawnaq-cs-modal-media {
-        min-height: 220px;
-    }
 }
 
-@media (max-width: 600px) {
+@container rawnaqcs (max-width: 519.98px) {
     .rawnaq-cs-grid.is-bento {
         grid-template-columns: 1fr;
+        --cs-grid-cols: 1;
+    }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-1,
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-2,
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-3,
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-4 {
+        grid-column: span 1;
+    }
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-1,
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-2,
+    .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-3 {
+        grid-row: span 1;
     }
 
     .rawnaq-cs-grid.is-uniform {
@@ -736,10 +918,124 @@
     .rawnaq-cs-grid.is-masonry .rawnaq-cs-card {
         margin-bottom: 16px;
     }
+}
 
-    .rawnaq-cs-card.is-featured,
-    .rawnaq-cs-grid.is-bento .rawnaq-cs-card[style*="span 2"] {
-        grid-column: span 1 !important;
-        grid-row: span 1 !important;
+/* ==========================================================================
+   Viewport Fallback for Browsers Without Container Queries
+   ========================================================================== */
+@supports not (container-type: inline-size) {
+    @media (min-width: 901px) {
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-1 { grid-column: span 1; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-2 { grid-column: span 2; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-3 { grid-column: span 3; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-4 { grid-column: span 4; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-1 { grid-row: span 1; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-2 { grid-row: span 2; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-3 { grid-row: span 3; }
+    }
+
+    @media (max-width: 900px) {
+        .rawnaq-cs-grid.is-bento {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-1 { grid-column: span 1; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-2,
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-3,
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-col-4 { grid-column: span 2; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-1 { grid-row: span 1; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-2 { grid-row: span 2; }
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card.is-row-3 { grid-row: span 3; }
+
+        .rawnaq-cs-grid.is-uniform {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .rawnaq-cs-grid.is-masonry {
+            columns: 2;
+            column-gap: 16px;
+        }
+
+        .rawnaq-cs-grid.is-masonry .rawnaq-cs-card {
+            margin-bottom: 16px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .rawnaq-cs-grid.is-bento {
+            grid-template-columns: 1fr;
+        }
+
+        .rawnaq-cs-grid.is-uniform {
+            grid-template-columns: 1fr;
+        }
+
+        .rawnaq-cs-grid.is-masonry {
+            columns: 1;
+            column-gap: 0;
+        }
+
+        .rawnaq-cs-grid.is-masonry .rawnaq-cs-card {
+            margin-bottom: 16px;
+        }
+
+        .rawnaq-cs-grid.is-bento .rawnaq-cs-card {
+            grid-column: span 1 !important;
+            grid-row: span 1 !important;
+        }
+    }
+}
+
+/* ==========================================================================
+   Viewport-Based Modal Responsive (Modal resides in <body>)
+   ========================================================================== */
+@media (max-width: 900px) {
+    .rawnaq-cs-modal-dialog {
+        grid-template-columns: 1fr;
+        max-height: min(85vh, 85dvh);
+    }
+
+    .rawnaq-cs-modal-media {
+        min-height: 220px;
+    }
+}
+
+/* ==========================================================================
+   Reduced Motion Accessibility
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .rawnaq-cs-card,
+    .rawnaq-cs-card:hover,
+    .rawnaq-cs-card:focus-visible,
+    .rawnaq-cs-img,
+    .rawnaq-cs-card:hover .rawnaq-cs-img,
+    .rawnaq-cs-arrow,
+    .rawnaq-cs-card:hover .rawnaq-cs-arrow,
+    .rawnaq-cs-fallback-icon,
+    .rawnaq-cs-card:hover .rawnaq-cs-fallback-icon,
+    .rawnaq-cs-chip,
+    .rawnaq-cs-discuss,
+    .rawnaq-cs-load-more,
+    .rawnaq-cs-slider-track {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .rawnaq-cs-card.is-fading {
+        opacity: 0;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .rawnaq-cs-modal-backdrop,
+    .rawnaq-cs-modal-close,
+    .rawnaq-cs-badge,
+    .rawnaq-cs-fallback-icon,
+    .rawnaq-case-study.is-theme-glass .rawnaq-cs-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .rawnaq-cs-modal-backdrop {
+        background: rgba(15, 23, 42, 0.92);
     }
 }
