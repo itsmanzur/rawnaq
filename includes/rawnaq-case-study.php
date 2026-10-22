@@ -1018,8 +1018,18 @@ function rawnaq_case_study_ajax_query() {
  * @param string $uid Unique instance id.
  */
 function rawnaq_case_study_markup( $cfg, $uid = '' ) {
-	$cfg      = is_array( $cfg ) ? $cfg : [];
-	$source   = sanitize_key( $cfg['source'] ?? 'manual' );
+	$cfg     = is_array( $cfg ) ? $cfg : [];
+	$source  = sanitize_key( $cfg['source'] ?? 'manual' );
+	// Server-side pagination is available for the CPT (query) source.
+	$cs_ajax = ( 'query' === $source );
+	if ( $cs_ajax ) {
+		// 'rand' cannot be paginated consistently across stateless AJAX requests (each query re-shuffles rows), so downgrade to 'date'.
+		$ctx_orderby = sanitize_key( $cfg['queryOrderby'] ?? 'date' );
+		if ( 'rand' === $ctx_orderby ) {
+			$ctx_orderby = 'date';
+		}
+		$cfg['queryOrderby'] = $ctx_orderby;
+	}
 	$projects = rawnaq_case_study_resolve_projects( $cfg );
 
 	$layout = sanitize_key( $cfg['layout'] ?? 'bento' );
@@ -1089,9 +1099,6 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 		'loadChunk'      => $load_chunk,
 	];
 
-	// Server-side pagination is available for the CPT (query) source.
-	$cs_ajax = ( 'query' === $source );
-
 	// JSON-LD (CreativeWork ItemList) for real CPT-backed portfolios.
 	if ( 'query' === $source && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_case_studies' ) ) {
 		rawnaq_schema_print( rawnaq_schema_case_studies( $projects ), 'case-study' );
@@ -1100,10 +1107,6 @@ function rawnaq_case_study_markup( $cfg, $uid = '' ) {
 	$cs_token   = '';
 	$cs_per_page = max( 1, absint( $cfg['queryNumber'] ?? 12 ) );
 	if ( $cs_ajax ) {
-		$ctx_orderby = sanitize_key( $cfg['queryOrderby'] ?? 'date' );
-		if ( 'rand' === $ctx_orderby ) {
-			$ctx_orderby = 'date';
-		}
 		$ctx = [
 			'v'           => 1,
 			'layout'      => $layout,

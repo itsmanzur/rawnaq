@@ -141,6 +141,8 @@ Source code: https://github.com/itsmanzur/rawnaq
 * Fixed: Eliminated duplicate dialog roles on modal wrappers and ensured full screen-reader compliance with dialog semantics on the inner dialog.
 * Fixed: Corrected random order pagination anomalies by enforcing deterministic date order fallback on paged queries.
 * Fixed: Restored modal scroll lock CSS with overflow hidden on html and body and dynamic scrollbar width compensation (`--rawnaq-cs-sbw`).
+* Fix: Random ordering is now treated as newest-first when Load more uses AJAX, so cards no longer repeat or go missing between pages.
+* Improved: Admin dashboard redesign.
 * Improved: Upgraded Case-Study Grid to modern container queries (`@container rawnaqcs`) with container-type isolated on a stage wrapper to prevent modal containment traps.
 * Improved: Enhanced keyboard and screen reader accessibility (WCAG 2.2 AA) by replacing clickable articles with real card trigger buttons or links inside headings.
 * Improved: Touch swipe gestures on modal gallery slider via pointer events (40px threshold) with polite live slide announcements and eager loading for initial images.
@@ -243,7 +245,7 @@ Source code: https://github.com/itsmanzur/rawnaq
 == Upgrade Notice ==
 
 = 1.5.0 =
-Major performance, security, and accessibility release for Case-Study Grid: stateless signed tokens, container-aware responsive layouts, WCAG 2.2 accessibility, and touch swipe galleries.
+Major performance, security, and accessibility release for Case-Study Grid: stateless signed tokens, container-aware responsive layouts, WCAG 2.2 accessibility, and touch swipe galleries. Please purge any page or object cache after updating so cached pages using legacy data-cs-nonce markup refresh to the new signed context token.
 
 = 1.4.0 =
 Features server-side rendered TOC (SSR) with zero layout shift, plus key fixes for TOC heading self-listing, resilient active-section scrollspy tracking, Unicode anchors, and WCAG accessibility.
