@@ -43,8 +43,8 @@ This document tracks all planned features and architectural enhancements for the
   - [ ] Remote Rawnaq API endpoint for template registry
   - [ ] 5-day transient cache for remote templates
   - [ ] Background sync without plugin updates
-- [ ] **Micro-Filters & Instant Search Engine**
-  - [ ] Real-time keyword search bar in popup
+- [x] **Micro-Filters & Instant Search Engine** ✅
+  - [x] Real-time keyword search bar in popup
   - [ ] Design style filters (Glassmorphism, Minimalist, Dark Glow, Neumorphic)
 - [ ] **User Presets & Export/Import Manager ("My Presets")**
   - [ ] "Save as Rawnaq Preset" action for custom sections

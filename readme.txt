@@ -1,5 +1,5 @@
 === Rawnaq – Elementor Widgets, Gutenberg Blocks & Divi Modules ===
-Contributors: itsmanzur
+Contributors: itsmanzur, readscope
 Tags: elementor addons, gutenberg blocks, divi modules, contact form, timeline
 Requires at least: 5.8
 Tested up to: 7.1
@@ -100,6 +100,10 @@ Yes. For standard WordPress post and page content, Rawnaq renders the complete t
 
 Yes. In Elementor, Gutenberg, or Divi Builder, configure the "Progress based on" setting to "Article/content area" or specify a "Custom CSS selector". The progress bar or circular ring will track reading progress strictly within that target boundary rather than the entire page.
 
+= Why does Case-Study Grid "Load more" or filtering stop working after an update, or on a cached page? =
+
+Case-Study Grid 1.5.0 replaced the old per-page security nonce with a signed, cache-safe token. If a page was cached before the update, it may still contain the old markup. Purge your page cache, CDN cache, and any object cache once after updating, and the Load more button and filters will work again. No settings need to change.
+
 == Privacy ==
 
 Rawnaq does not phone home. Any personal data stays in your WordPress site or goes only to services you explicitly configure.
@@ -137,12 +141,11 @@ Source code: https://github.com/itsmanzur/rawnaq
 * Security: Enforced server-side `querySector` constraints in AJAX queries to prevent unauthorized sector enumeration.
 * Security: Excluded password-protected case studies from queries and automatically redacted excerpts and details.
 * Security: Sanitized custom CSS color properties against invalid characters, delimiter breaking, and script injection.
-* Fixed: Bento grid layout overflow at narrow viewports resolved with explicit column and row span mapping per container breakpoint.
+* Fixed: Case-Study Grid layout overflow at narrow viewports resolved with explicit column and row span mapping per container breakpoint.
 * Fixed: Eliminated duplicate dialog roles on modal wrappers and ensured full screen-reader compliance with dialog semantics on the inner dialog.
-* Fixed: Corrected random order pagination anomalies by enforcing deterministic date order fallback on paged queries.
+* Fixed: Random ordering is now treated as newest-first when Load more uses AJAX, so cards no longer repeat or go missing between pages.
 * Fixed: Restored modal scroll lock CSS with overflow hidden on html and body and dynamic scrollbar width compensation (`--rawnaq-cs-sbw`).
-* Fix: Random ordering is now treated as newest-first when Load more uses AJAX, so cards no longer repeat or go missing between pages.
-* Improved: Admin dashboard redesign.
+* Improved: Redesigned the Rawnaq admin dashboard with a cleaner modules manager, system and docs tabs, Dock Stats table, live active-module counters, and a light/dark theme toggle.
 * Improved: Upgraded Case-Study Grid to modern container queries (`@container rawnaqcs`) with container-type isolated on a stage wrapper to prevent modal containment traps.
 * Improved: Enhanced keyboard and screen reader accessibility (WCAG 2.2 AA) by replacing clickable articles with real card trigger buttons or links inside headings.
 * Improved: Touch swipe gestures on modal gallery slider via pointer events (40px threshold) with polite live slide announcements and eager loading for initial images.
