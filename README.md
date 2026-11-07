@@ -1,6 +1,6 @@
 # Rawnaq 🚀
 
-Rawnaq — Lightweight, performance-first Elementor & Gutenberg widgets for WordPress.
+Rawnaq — Widgets and blocks for architects, interior designers and builders. Lightweight, performance-first, for Elementor, Gutenberg and Divi.
 
 ## 📦 Core Free Modules
 

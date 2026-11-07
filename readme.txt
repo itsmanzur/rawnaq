@@ -1,6 +1,6 @@
 === Rawnaq – Elementor Widgets, Gutenberg Blocks & Divi Modules ===
 Contributors: itsmanzur, readscope
-Tags: elementor addons, gutenberg blocks, divi modules, contact form, timeline
+Tags: elementor addons, gutenberg blocks, divi modules, architecture, interior design
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -8,11 +8,19 @@ Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Elementor widgets, Gutenberg blocks and Divi modules: smart lead form, timeline, diagrams, TOC, bento grid and more. Lightweight, no jQuery.
+Widgets and blocks for architects, interior designers and builders: smart quote form, project timeline, diagrams, case-study grid. Elementor, Gutenberg, Divi.
 
 == Description ==
 
-Rawnaq is a modular library of interactive widgets and blocks designed for clean performance and fast page loads. Built for site creators, agencies, and marketers, it gives you advanced layout and conversion tools across Elementor, Gutenberg, and Divi Builder without bloating your site.
+Rawnaq is a modular library of interactive widgets and blocks designed for clean performance and fast page loads. It is built for the websites of architects, interior designers, engineers and construction studios, and works just as well for agencies and marketers. It gives you lead-capture, project-showcase and storytelling tools across Elementor, Gutenberg, and Divi Builder without bloating your site.
+
+= Built for architecture, interior and construction sites =
+
+* **Win enquiries** – Smart Form collects project briefs in steps (project type, size, budget, files, signature) and sends them to email, WhatsApp or your CRM.
+* **Show projects** – Case-Study Grid filters your portfolio by type, with lightbox galleries. Scroll Story and 3D Tilt Card present a project in a few scrolls.
+* **Explain how you work** – Scroll Sync Timeline and Flow Chart show your design-to-handover process or a project programme. Hub Diagram shows how disciplines connect.
+* **Keep clients close** – Floating Dock puts call, WhatsApp and enquiry buttons on every page.
+* **Go further with Pro** – Rawnaq Pro adds quote and BOQ estimators, before/after spatial slider, 360° viewer, floor plan navigator, material restyler and a client milestone tracker.
 
 = Why Rawnaq? =
 

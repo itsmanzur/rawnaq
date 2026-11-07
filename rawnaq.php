@@ -2,7 +2,7 @@
 /**
  * Plugin Name:  Rawnaq – Elementor Widgets, Gutenberg Blocks & Divi Modules
  * Plugin URI:   https://github.com/itsmanzur/rawnaq
- * Description:  Elementor widgets, Gutenberg blocks and Divi modules: smart lead form, timeline, diagrams, TOC, bento grid and more. Lightweight, no jQuery.
+ * Description:  Widgets and blocks for architects, interior designers and builders: smart quote form, project timeline, diagrams, case-study grid. Elementor, Gutenberg, Divi. No jQuery.
  * Version:      1.5.0
  * Requires at least: 5.8
  * Requires PHP: 7.4
