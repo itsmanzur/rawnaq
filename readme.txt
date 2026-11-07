@@ -4,7 +4,7 @@ Tags: elementor addons, gutenberg blocks, divi modules, architecture, interior d
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -146,6 +146,10 @@ Source code: https://github.com/itsmanzur/rawnaq
 
 == Changelog ==
 
+= 1.6.0 =
+* New: Material Quantity Calculator module (Elementor widget, Gutenberg block, Divi module) for concrete, bricks and mortar, tiles, paint and steel bar quantities, in metric or feet and inches, with an optional quote button.
+* Changed: Plugin description and readme now describe Rawnaq as a toolkit for architects, interior designers and builders.
+
 = 1.5.0 =
 * Security: Replaced transient/nonce AJAX context with a stateless HMAC-SHA256 signed token (`data-cs-ctx`) using `wp_salt('auth')`, ensuring tamper-proof display filters and privacy controls without breaking full-page caching.
 * Security: Enforced server-side `querySector` constraints in AJAX queries to prevent unauthorized sector enumeration.
@@ -256,6 +260,9 @@ Source code: https://github.com/itsmanzur/rawnaq
 * On-demand assets, vanilla JS frontend, Elements Manager, WPML config, and documented optional third-party services (Fonts, reCAPTCHA, WhatsApp, webhooks).
 
 == Upgrade Notice ==
+
+= 1.6.0 =
+Adds the Material Quantity Calculator module. No settings are changed; the new module is on by default and can be switched off under Rawnaq → Elements.
 
 = 1.5.0 =
 Major performance, security, and accessibility release for Case-Study Grid: stateless signed tokens, container-aware responsive layouts, WCAG 2.2 accessibility, and touch swipe galleries. Please purge any page or object cache after updating so cached pages using legacy data-cs-nonce markup refresh to the new signed context token.
