@@ -333,11 +333,22 @@
 	}
 
 	// Elementor editor and live preview.
-	window.addEventListener('elementor/frontend/init', function () {
-		if (window.elementorFrontend && window.elementorFrontend.hooks) {
-			window.elementorFrontend.hooks.addAction('frontend/element_ready/rawnaq_material_calc.default', function ($el) {
-				initAll($el && $el[0] ? $el[0] : document);
-			});
+	function hookElementor() {
+		if (hookElementor._done) {
+			return;
 		}
-	});
+		if (!window.elementorFrontend || !window.elementorFrontend.hooks) {
+			return;
+		}
+		window.elementorFrontend.hooks.addAction('frontend/element_ready/rawnaq_material_calc.default', function ($el) {
+			initAll($el && $el[0] ? $el[0] : document);
+		});
+		hookElementor._done = true;
+	}
+
+	hookElementor();
+	window.addEventListener('elementor/frontend/init', hookElementor);
+	if (window.jQuery) {
+		window.jQuery(window).on('elementor/frontend/init', hookElementor);
+	}
 })();

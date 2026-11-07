@@ -2,6 +2,10 @@
 
 Rawnaq — Widgets and blocks for architects, interior designers and builders. Lightweight, performance-first, for Elementor, Gutenberg and Divi.
 
+👉 [Live demo](https://rawnaq.thereadscope.com/) · [Documentation](https://thereadscope.com/docs/#rawnaq) · [Pro features](https://thereadscope.com/docs/rawnaq-pro-overview/) · [Pricing](https://rawnaq.thereadscope.com/#pricing) · [Support](https://wordpress.org/support/plugin/rawnaq/)
+
+[Watch the intro video](https://youtu.be/RZJRvDHoh1s)
+
 ## 📦 Core Free Modules
 
 1. **Hub Diagram**: Interactive Hub & Spoke workflow diagram (PNG/SVG export).

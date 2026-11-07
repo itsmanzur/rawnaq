@@ -8,11 +8,15 @@ Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Widgets and blocks for architects, interior designers and builders: smart quote form, project timeline, diagrams, case-study grid. Elementor, Gutenberg, Divi.
+Widgets and blocks for architects, interior designers and builders: quote form, timelines, diagrams, case studies. Elementor, Gutenberg, Divi.
 
 == Description ==
 
 Rawnaq is a modular library of interactive widgets and blocks designed for clean performance and fast page loads. It is built for the websites of architects, interior designers, engineers and construction studios, and works just as well for agencies and marketers. It gives you lead-capture, project-showcase and storytelling tools across Elementor, Gutenberg, and Divi Builder without bloating your site.
+
+👉 [Live demo](https://rawnaq.thereadscope.com/) · [Documentation](https://thereadscope.com/docs/#rawnaq) · [Pro features](https://thereadscope.com/docs/rawnaq-pro-overview/) · [Pricing](https://rawnaq.thereadscope.com/#pricing) · [Support](https://wordpress.org/support/plugin/rawnaq/)
+
+https://youtu.be/RZJRvDHoh1s
 
 = Built for architecture, interior and construction sites =
 

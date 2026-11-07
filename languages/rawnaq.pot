@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Rawnaq plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Rawnaq 1.5.0\n"
+"Project-Id-Version: Rawnaq 1.6.0\n"
 "Report-Msgid-Bugs-To: https://github.com/itsmanzur/rawnaq/issues\n"
-"POT-Creation-Date: 2026-10-19 12:40+0000\n"
+"POT-Creation-Date: 2026-11-07 04:30+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -48,7 +48,7 @@ msgid "%d older form attachment(s) could not be moved into the protected folder 
 msgstr ""
 
 #: includes/elementor/widgets/class-bento-grid-widget.php:896
-#: includes/gutenberg/class-gutenberg-loader.php:1790
+#: includes/gutenberg/class-gutenberg-loader.php:1834
 msgid "%d out of 5 stars"
 msgstr ""
 
@@ -135,7 +135,7 @@ msgstr ""
 msgid "0 shows all cards with no \"Load more\" button."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:654
+#: includes/rawnaq-helpers.php:655
 msgid "01 · Challenge"
 msgstr ""
 
@@ -147,7 +147,7 @@ msgstr ""
 msgid "01 · Phase Name"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:659
+#: includes/rawnaq-helpers.php:660
 msgid "02 · Approach"
 msgstr ""
 
@@ -155,7 +155,7 @@ msgstr ""
 msgid "02 · System Architecture"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:664
+#: includes/rawnaq-helpers.php:665
 msgid "03 · Launch"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr ""
 msgid "03 · Measurable Impact"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:669
+#: includes/rawnaq-helpers.php:670
 msgid "04 · Results"
 msgstr ""
 
@@ -175,11 +175,11 @@ msgstr ""
 msgid "1 wide + stacked (3 cols)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:728
+#: includes/class-rawnaq-admin-dashboard.php:739
 msgid "1. Dynamic Post & External Button Triggers for Get Quote Modal"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:959
+#: includes/class-rawnaq-admin-dashboard.php:965
 msgid "1. Get Quote Enterprise Engine"
 msgstr ""
 
@@ -187,31 +187,31 @@ msgstr ""
 msgid "1. Submitted Fields"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1288
+#: includes/class-rawnaq-admin-dashboard.php:1294
 msgid "10. Global Project Map & Vector Geo-Locator"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1320
+#: includes/class-rawnaq-admin-dashboard.php:1326
 msgid "11. Interactive BOQ & Material Estimator Table"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1352
+#: includes/class-rawnaq-admin-dashboard.php:1358
 msgid "12. Team Skill Radar & Booking Drawer"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1384
+#: includes/class-rawnaq-admin-dashboard.php:1390
 msgid "13. Scope Matrix & Deliverables Comparison"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1416
+#: includes/class-rawnaq-admin-dashboard.php:1422
 msgid "14. Eco-Efficiency & Sustainability Audit Card"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1448
+#: includes/class-rawnaq-admin-dashboard.php:1454
 msgid "15. Client Audio-Visual Story & Waveform Showcase"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1480
+#: includes/class-rawnaq-admin-dashboard.php:1486
 msgid "16. Fast-Track vs Budget Trade-off Simulator"
 msgstr ""
 
@@ -219,15 +219,15 @@ msgstr ""
 msgid "16:10 Cinematic Landscape"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1513
+#: includes/class-rawnaq-admin-dashboard.php:1519
 msgid "17. 3D Sunlight & Shadow Path Simulator"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1544
+#: includes/class-rawnaq-admin-dashboard.php:1550
 msgid "18. High-Rise Stacking Plan & Cutaway Explorer"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1575
+#: includes/class-rawnaq-admin-dashboard.php:1581
 msgid "19. Live Material Finishes & Room Restyler"
 msgstr ""
 
@@ -235,7 +235,7 @@ msgstr ""
 msgid "1:1 Square Focus"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:757
+#: includes/class-rawnaq-admin-dashboard.php:768
 msgid "2. Dynamic Context Prefilling Attributes (For Posts, Portfolios & Services)"
 msgstr ""
 
@@ -243,43 +243,43 @@ msgstr ""
 msgid "2. Files & Signatures"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1001
+#: includes/class-rawnaq-admin-dashboard.php:1007
 msgid "2. Services & Interactive Pricing Calculator"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1606
+#: includes/class-rawnaq-admin-dashboard.php:1612
 msgid "20. Project Time-Lapse & Drone Progression Scrubber"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1637
+#: includes/class-rawnaq-admin-dashboard.php:1643
 msgid "21. LEED Net-Zero & Carbon Offset Scorecard"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1668
+#: includes/class-rawnaq-admin-dashboard.php:1674
 msgid "22. Room Acoustic & Sound Isolation Simulator"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1699
+#: includes/class-rawnaq-admin-dashboard.php:1705
 msgid "23. Smart Form & WhatsApp Delivery"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1724
+#: includes/class-rawnaq-admin-dashboard.php:1730
 msgid "24. Floating Dock Menu (WhatsApp Contact Mode)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1749
+#: includes/class-rawnaq-admin-dashboard.php:1755
 msgid "25. Scroll Sync Timeline"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1772
+#: includes/class-rawnaq-admin-dashboard.php:1778
 msgid "26. Flow Chart & Hub Diagram"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1795
+#: includes/class-rawnaq-admin-dashboard.php:1801
 msgid "27. Bento Grid, Scroll Story & Progress TOC"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1819
+#: includes/class-rawnaq-admin-dashboard.php:1825
 msgid "28. Case-Study Grid (Portfolio Engine)"
 msgstr ""
 
@@ -291,11 +291,11 @@ msgstr ""
 msgid "3. Delivery Log"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1042
+#: includes/class-rawnaq-admin-dashboard.php:1048
 msgid "3. Multi-Layer Spatial Spec Slider"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:806
+#: includes/class-rawnaq-admin-dashboard.php:817
 msgid "3. Ready-to-Use Shortcodes"
 msgstr ""
 
@@ -303,7 +303,7 @@ msgstr ""
 msgid "3D Smooth Lift & Shadow"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:241
+#: includes/class-rawnaq-admin-dashboard.php:242
 #: includes/elementor/widgets/class-tilt-card-widget.php:9
 msgid "3D Tilt Card"
 msgstr ""
@@ -312,7 +312,7 @@ msgstr ""
 msgid "4. Campaign & Lead Attribution (UTM)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1077
+#: includes/class-rawnaq-admin-dashboard.php:1083
 msgid "4. Dynamic Spatial Moodboard & Finishes Palette"
 msgstr ""
 
@@ -328,35 +328,35 @@ msgstr ""
 msgid "5. Consent & Privacy Record"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1112
+#: includes/class-rawnaq-admin-dashboard.php:1118
 msgid "5. Interactive Vector Map & Global Project Pinboard"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1261
+#: includes/class-rawnaq-admin-dashboard.php:1267
 msgid "6 Advanced Enterprise Maturity Features:"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1147
+#: includes/class-rawnaq-admin-dashboard.php:1153
 msgid "6. Interactive ROI & Cost-Savings Payback Visualizer"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1010
+#: includes/class-rawnaq-admin-dashboard.php:1016
 msgid "7 Ready-to-Use Industry Presets:"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1182
+#: includes/class-rawnaq-admin-dashboard.php:1188
 msgid "7. 360° Spatial Panorama & Lightweight GLTF 3D Viewer"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1217
+#: includes/class-rawnaq-admin-dashboard.php:1223
 msgid "8. Live Client Project Milestone Tracker"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1252
+#: includes/class-rawnaq-admin-dashboard.php:1258
 msgid "9. Architectural Floor Plan & Space Zoning Navigator"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1487
+#: includes/class-rawnaq-admin-dashboard.php:1493
 msgid "A dynamic financial and project management modeler allowing enterprise clients to simulate fast-tracking project delivery speeds against contractor shift costs."
 msgstr ""
 
@@ -364,15 +364,15 @@ msgstr ""
 msgid "A high-performance financial operational canvas unifying multi-currency settlement and real-time risk intelligence."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1224
+#: includes/class-rawnaq-admin-dashboard.php:1230
 msgid "A modern client-facing project tracker portal that builds trust and transparency for luxury residential and commercial architecture projects during active construction."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1189
+#: includes/class-rawnaq-admin-dashboard.php:1195
 msgid "A performance-optimized 3D spatial viewer featuring an in-house WebGL GLSL equirectangular fragment shader for 360° virtual tours and a seamless GLTF/GLB 3D model orbit viewer."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1391
+#: includes/class-rawnaq-admin-dashboard.php:1397
 msgid "A transparent contract matrix comparing Concept, Executive Construction, and Turnkey EPC packages across every project phase."
 msgstr ""
 
@@ -412,6 +412,10 @@ msgstr ""
 msgid "Accent Color Glow"
 msgstr ""
 
+#: includes/divi/modules/class-et-material-calc.php:100
+msgid "Accent Colour"
+msgstr ""
+
 #: includes/divi/modules/class-et-smart-form.php:352
 msgid "Accent Deep Color"
 msgstr ""
@@ -426,6 +430,10 @@ msgstr ""
 
 #: includes/rawnaq-smart-form.php:763
 msgid "Accent background color for submit button."
+msgstr ""
+
+#: includes/elementor/widgets/class-material-calc-widget.php:135
+msgid "Accent colour"
 msgstr ""
 
 #: includes/elementor/widgets/class-smart-form-widget.php:250
@@ -445,7 +453,7 @@ msgstr ""
 msgid "Acme Corp"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1675
+#: includes/class-rawnaq-admin-dashboard.php:1681
 msgid "Acoustic architecture engineering visualizer for private screening cinemas, executive glass boardrooms, and recording suites."
 msgstr ""
 
@@ -453,12 +461,12 @@ msgstr ""
 msgid "Action to perform after successful submission."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1874
+#: includes/class-rawnaq-admin-dashboard.php:1880
 msgid "Actions"
 msgstr ""
 
 #: includes/class-rawnaq-admin-dashboard.php:121
-#: includes/class-rawnaq-admin-dashboard.php:358
+#: includes/class-rawnaq-admin-dashboard.php:367
 msgid "Active"
 msgstr ""
 
@@ -518,7 +526,7 @@ msgstr ""
 msgid "Add the extra detail, specs, or a persuasive reason that lives on the reverse side."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:636
+#: includes/rawnaq-helpers.php:637
 msgid "Added Flow Chart and Scroll Progress + TOC for structure and reading UX."
 msgstr ""
 
@@ -526,7 +534,7 @@ msgstr ""
 msgid "Admin Email"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1802
+#: includes/class-rawnaq-admin-dashboard.php:1808
 msgid "Advanced layout and interactive storytelling components."
 msgstr ""
 
@@ -547,8 +555,12 @@ msgstr ""
 msgid "Agent / Department Name"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1898
+#: includes/class-rawnaq-admin-dashboard.php:1904
 msgid "Agent selected"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:912
+msgid "Aggregate"
 msgstr ""
 
 #: includes/rawnaq-case-study.php:29
@@ -559,7 +571,7 @@ msgstr ""
 msgid "All Categories"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:389
+#: includes/class-rawnaq-admin-dashboard.php:398
 msgid "All Elements"
 msgstr ""
 
@@ -567,7 +579,7 @@ msgstr ""
 msgid "All Forms"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:707
+#: includes/class-rawnaq-admin-dashboard.php:718
 msgid "All Guides"
 msgstr ""
 
@@ -587,15 +599,15 @@ msgstr ""
 msgid "All Statuses"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1176
+#: includes/rawnaq-case-study.php:1179
 msgid "All sectors"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1198
+#: includes/rawnaq-case-study.php:1201
 msgid "All services"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1189
+#: includes/rawnaq-case-study.php:1192
 msgid "All years"
 msgstr ""
 
@@ -629,11 +641,11 @@ msgstr ""
 msgid "An elite, speed-first modular library. Enable only the elements you need and keep your site running at lightning speeds."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1259
+#: includes/class-rawnaq-admin-dashboard.php:1265
 msgid "An enterprise spatial exploration engine built for architectural studios, interior fitout agencies, and luxury real estate developers. Allows visitors to navigate multi-story plans, switch between 2D CAD blueprints and 3D axonometric isometric views, toggle architectural layers, calculate live multi-room footprints, measure distances, teleport to 360° VR spaces, and export A4 specification schedules."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1084
+#: includes/class-rawnaq-admin-dashboard.php:1090
 msgid "An interactive material curation workspace for architects and interior designers. Clients can explore textures, finishes, eco-certifications, and price indices, assemble custom schemes, and download formal finish schedules."
 msgstr ""
 
@@ -658,7 +670,7 @@ msgstr ""
 msgid "Anything we could do better?"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:282
+#: includes/class-rawnaq-admin-dashboard.php:283
 msgid "Apple-style asymmetric CSS grid with presets, stats, image & featured cells."
 msgstr ""
 
@@ -688,6 +700,10 @@ msgstr ""
 msgid "Architected with global edge caching and WebGL product interactions, driving an 84% reduction in page load time and +320% global sales growth."
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:919
+msgid "Area to paint"
+msgstr ""
+
 #: includes/divi/modules/class-et-scroll-progress-toc.php:56
 msgid "Article / Content Area"
 msgstr ""
@@ -706,7 +722,7 @@ msgstr ""
 msgid "Attach Project Brief / RFP (optional)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:758
+#: includes/class-rawnaq-admin-dashboard.php:769
 msgid "Attach these data attributes to your trigger button or card to auto-select services, fill project names, and preset quantities inside the modal:"
 msgstr ""
 
@@ -718,15 +734,15 @@ msgstr ""
 msgid "Attachment"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:762
+#: includes/class-rawnaq-admin-dashboard.php:773
 msgid "Attribute"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1668
+#: includes/class-rawnaq-admin-dashboard.php:1674
 msgid "Audio · Pro"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1455
+#: includes/class-rawnaq-admin-dashboard.php:1461
 msgid "Authentic client voice note testimonial showcase with interactive waveform audio playback, client commission tags, and project outcome metrics."
 msgstr ""
 
@@ -738,7 +754,7 @@ msgstr ""
 msgid "Author Role / Company"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1352
+#: includes/class-rawnaq-admin-dashboard.php:1358
 msgid "Authority · Pro"
 msgstr ""
 
@@ -746,15 +762,15 @@ msgstr ""
 msgid "Auto (Smart Form → Dock WA)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1883
+#: includes/class-rawnaq-admin-dashboard.php:1889
 msgid "Auto (follow weekly schedule)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:577
+#: includes/class-rawnaq-admin-dashboard.php:588
 msgid "Auto-delete stored form submissions after N days (0 to keep indefinitely)."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:572
+#: includes/class-rawnaq-admin-dashboard.php:583
 msgid "Auto-delete uploaded files after N days (0 to keep indefinitely)."
 msgstr ""
 
@@ -914,6 +930,10 @@ msgstr ""
 msgid "Bar Thickness"
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:115
+msgid "Bar diameter (mm)"
+msgstr ""
+
 #: includes/divi/modules/class-et-bento-grid.php:108
 msgid "Base Row Height (px)"
 msgstr ""
@@ -930,7 +950,7 @@ msgstr ""
 msgid "Bento Column Span"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:281
+#: includes/class-rawnaq-admin-dashboard.php:282
 #: includes/elementor/widgets/class-bento-grid-widget.php:9
 msgid "Bento Grid"
 msgstr ""
@@ -959,7 +979,7 @@ msgstr ""
 msgid "BioHealth Labs"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:1322
+#: includes/rawnaq-helpers.php:1323
 msgid "Blog"
 msgstr ""
 
@@ -1012,6 +1032,10 @@ msgstr ""
 msgid "Bottom Row / Right Col Nodes JSON"
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:917
+msgid "Boxes"
+msgstr ""
+
 #: includes/divi/modules/class-et-smart-form.php:125
 #: includes/rawnaq-smart-form.php:540
 msgid "Branded HTML Email"
@@ -1019,6 +1043,30 @@ msgstr ""
 
 #: includes/elementor/widgets/class-smart-form-widget.php:307
 msgid "Branded HTML email"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:49
+msgid "Brick count for a wall, minus doors and windows, with the mortar it needs."
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:57
+msgid "Brick height"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:55
+msgid "Brick length"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:56
+msgid "Brick width"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:913
+msgid "Bricks"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:48
+msgid "Bricks & mortar"
 msgstr ""
 
 #: includes/rawnaq-smart-form.php:419
@@ -1029,7 +1077,7 @@ msgstr ""
 msgid "Briefly describe what you need..."
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:914
+#: includes/class-rawnaq-elements.php:950
 msgid "Budget"
 msgstr ""
 
@@ -1078,11 +1126,16 @@ msgstr ""
 msgid "Button Background Color"
 msgstr ""
 
+#: includes/divi/modules/class-et-material-calc.php:93
+msgid "Button Link"
+msgstr ""
+
 #: includes/elementor/widgets/class-bento-grid-widget.php:788
 #: includes/elementor/widgets/class-tilt-card-widget.php:388
 msgid "Button Radius"
 msgstr ""
 
+#: includes/divi/modules/class-et-material-calc.php:85
 #: includes/elementor/widgets/class-bento-grid-widget.php:779
 msgid "Button Text"
 msgstr ""
@@ -1097,11 +1150,16 @@ msgstr ""
 msgid "Button background"
 msgstr ""
 
+#: includes/elementor/widgets/class-material-calc-widget.php:116
+msgid "Button link"
+msgstr ""
+
+#: includes/elementor/widgets/class-material-calc-widget.php:106
 #: includes/elementor/widgets/class-smart-form-widget.php:529
 msgid "Button text"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:306
+#: includes/class-rawnaq-admin-dashboard.php:307
 msgid "CPT/manual portfolio with Discuss CTA (Form/Dock) and Story/Timeline highlight sync."
 msgstr ""
 
@@ -1130,11 +1188,11 @@ msgstr ""
 msgid "CRM Integration"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1796
+#: includes/class-rawnaq-admin-dashboard.php:1802
 msgid "CSS Grid bento cards, Scrollytelling chapters, and auto-reading progress TOC indicator."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:640
+#: includes/rawnaq-helpers.php:641
 msgid "CSS Scroll Timeline"
 msgstr ""
 
@@ -1176,8 +1234,20 @@ msgstr ""
 msgid "Calculate and display estimated total from selected options."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:594
-#: includes/class-rawnaq-admin-dashboard.php:614
+#: includes/elementor/widgets/class-material-calc-widget.php:40
+msgid "Calculator"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:253
+msgid "Calculator type"
+msgstr ""
+
+#: includes/elementor/widgets/class-material-calc-widget.php:53
+msgid "Calculators to show"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:605
+#: includes/class-rawnaq-admin-dashboard.php:625
 msgid "Cancel"
 msgstr ""
 
@@ -1292,7 +1362,7 @@ msgstr ""
 msgid "Case Study Details"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:651
+#: includes/rawnaq-helpers.php:652
 msgid "Case Study Journey"
 msgstr ""
 
@@ -1300,7 +1370,7 @@ msgstr ""
 msgid "Case Study posts (query)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:305
+#: includes/class-rawnaq-admin-dashboard.php:306
 #: includes/elementor/widgets/class-case-study-grid-widget.php:13
 msgid "Case-Study Grid"
 msgstr ""
@@ -1313,6 +1383,10 @@ msgstr ""
 #: includes/elementor/widgets/class-scroll-story-widget.php:159
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:107
 msgid "Case-Study project slug"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:92
+msgid "Ceiling height"
 msgstr ""
 
 #: includes/rawnaq-smart-form.php:608
@@ -1357,6 +1431,10 @@ msgstr ""
 
 #: includes/elementor/widgets/class-bento-grid-widget.php:147
 msgid "Cells"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:910
+msgid "Cement (50 kg bags)"
 msgstr ""
 
 #: includes/elementor/widgets/class-bento-grid-widget.php:191
@@ -1409,12 +1487,12 @@ msgstr ""
 msgid "Center Top"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:590
-#: includes/class-rawnaq-admin-dashboard.php:610
+#: includes/class-rawnaq-admin-dashboard.php:601
+#: includes/class-rawnaq-admin-dashboard.php:621
 msgid "Change"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:626
+#: includes/rawnaq-helpers.php:627
 msgid "Changelog"
 msgstr ""
 
@@ -1427,9 +1505,9 @@ msgid "Chapter %1$s: %2$s"
 msgstr ""
 
 #: includes/class-rawnaq-elements.php:799
-#: includes/rawnaq-helpers.php:113
-#: includes/rawnaq-helpers.php:130
-#: includes/rawnaq-helpers.php:167
+#: includes/rawnaq-helpers.php:114
+#: includes/rawnaq-helpers.php:131
+#: includes/rawnaq-helpers.php:168
 msgid "Chapter %s"
 msgstr ""
 
@@ -1441,7 +1519,7 @@ msgstr ""
 msgid "Chapters"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:721
+#: includes/class-rawnaq-admin-dashboard.php:732
 msgid "Cheat Sheet"
 msgstr ""
 
@@ -1495,7 +1573,7 @@ msgstr ""
 msgid "Civic"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:656
+#: includes/rawnaq-helpers.php:657
 msgid "Clarify the business goal, constraints, and what success looks like."
 msgstr ""
 
@@ -1507,7 +1585,7 @@ msgstr ""
 msgid "Classic Card (Modern Clean)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1914
+#: includes/class-rawnaq-admin-dashboard.php:1920
 msgid "Classic dock item"
 msgstr ""
 
@@ -1525,26 +1603,26 @@ msgstr ""
 msgid "Click Ring for Back to Top"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1576
+#: includes/class-rawnaq-admin-dashboard.php:1582
 msgid "Clickable surface hotspots on photoreal room perspectives to live-swap luxury marble, timber & millwork finishes."
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:915
+#: includes/class-rawnaq-elements.php:951
 #: includes/elementor/widgets/class-case-study-grid-widget.php:154
 #: includes/rawnaq-case-study.php:165
 msgid "Client"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1217
+#: includes/class-rawnaq-admin-dashboard.php:1223
 msgid "Client Portal"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1218
+#: includes/class-rawnaq-admin-dashboard.php:1224
 msgid "Client project portal, overall completion gauge, weekly on-site photo stream & PM direct connect."
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:921
-#: includes/rawnaq-case-study.php:1230
+#: includes/class-rawnaq-elements.php:957
+#: includes/rawnaq-case-study.php:1233
 msgid "Close"
 msgstr ""
 
@@ -1552,7 +1630,11 @@ msgstr ""
 msgid "Cloud Architecture, Web App, AI Models"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:734
+#: includes/rawnaq-material-calc.php:104
+msgid "Coats"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:745
 msgid "Code / Snippet (Click to Copy)"
 msgstr ""
 
@@ -1602,7 +1684,7 @@ msgstr ""
 msgid "Columns (Custom Preset)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1731
+#: includes/class-rawnaq-admin-dashboard.php:1737
 msgid "Combines a macOS-style icon magnification dock with WhatsApp Contact Mode for business websites."
 msgstr ""
 
@@ -1634,12 +1716,24 @@ msgstr ""
 msgid "Company Name"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:601
+#: includes/rawnaq-helpers.php:602
 msgid "Company Story"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1950
+#: includes/class-rawnaq-admin-dashboard.php:1956
 msgid "Compatible"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:27
+msgid "Concrete"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:909
+msgid "Concrete volume"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:315
+msgid "Concrete, bricks, tiles, paint and steel quantities in metric or feet and inches."
 msgstr ""
 
 #: includes/divi/modules/class-et-smart-form.php:323
@@ -1679,7 +1773,7 @@ msgstr ""
 msgid "Connecting Line Style"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2052
+#: includes/class-rawnaq-admin-dashboard.php:2058
 msgid "Connection failed: %s"
 msgstr ""
 
@@ -1741,6 +1835,10 @@ msgstr ""
 msgid "Consent timestamp: %s UTC"
 msgstr ""
 
+#: includes/class-rawnaq-admin-dashboard.php:312
+msgid "Construction"
+msgstr ""
+
 #: includes/elementor/widgets/class-tilt-card-widget.php:35
 msgid "Contain"
 msgstr ""
@@ -1779,19 +1877,19 @@ msgstr ""
 msgid "Controls the small pill label (e.g. HIGHLIGHT / SHOWCASE) on cells."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:295
+#: includes/class-rawnaq-admin-dashboard.php:296
 msgid "Conversion"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1147
+#: includes/class-rawnaq-admin-dashboard.php:1153
 msgid "Conversion Engine"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1154
+#: includes/class-rawnaq-admin-dashboard.php:1160
 msgid "Converts analytical enterprise clients by visually proving the long-term ROI of architectural upgrades, green building retrofits, solar installations, and high-spec turnkey fitouts."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:650
+#: includes/class-rawnaq-admin-dashboard.php:661
 msgid "Copy"
 msgstr ""
 
@@ -1799,20 +1897,20 @@ msgstr ""
 msgid "Copy page link"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1699
-#: includes/class-rawnaq-admin-dashboard.php:1724
-#: includes/class-rawnaq-admin-dashboard.php:1749
-#: includes/class-rawnaq-admin-dashboard.php:1772
-#: includes/class-rawnaq-admin-dashboard.php:1795
-#: includes/class-rawnaq-admin-dashboard.php:1819
+#: includes/class-rawnaq-admin-dashboard.php:1705
+#: includes/class-rawnaq-admin-dashboard.php:1730
+#: includes/class-rawnaq-admin-dashboard.php:1755
+#: includes/class-rawnaq-admin-dashboard.php:1778
+#: includes/class-rawnaq-admin-dashboard.php:1801
+#: includes/class-rawnaq-admin-dashboard.php:1825
 msgid "Core Feature"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:710
+#: includes/class-rawnaq-admin-dashboard.php:721
 msgid "Core Widgets"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:631
+#: includes/rawnaq-helpers.php:632
 msgid "Core modules, dual builder support, and modular asset loading."
 msgstr ""
 
@@ -1820,7 +1918,7 @@ msgstr ""
 msgid "Corner rounding for form inputs and cards."
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:919
+#: includes/class-rawnaq-elements.php:955
 msgid "Could not load projects. Please try again."
 msgstr ""
 
@@ -1850,6 +1948,10 @@ msgstr ""
 
 #: includes/elementor/widgets/class-case-study-grid-widget.php:100
 msgid "Cover image"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:105
+msgid "Coverage of the paint (one coat)"
 msgstr ""
 
 #: includes/divi/modules/class-et-case-study-grid.php:190
@@ -2031,15 +2133,23 @@ msgstr ""
 msgid "Default Prefilled Message"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:560
+#: includes/divi/modules/class-et-material-calc.php:49
+msgid "Default Units"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:571
 msgid "Default WhatsApp Number"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:575
+#: includes/elementor/widgets/class-material-calc-widget.php:65
+msgid "Default units"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:586
 msgid "Delete Form Entries After (Days)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:570
+#: includes/class-rawnaq-admin-dashboard.php:581
 msgid "Delete Uploaded Files After (Days)"
 msgstr ""
 
@@ -2074,7 +2184,7 @@ msgstr ""
 msgid "Describe what you want to achieve..."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:812
+#: includes/class-rawnaq-admin-dashboard.php:823
 #: includes/divi/modules/class-et-tilt-card.php:40
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:40
 #: includes/elementor/widgets/class-tilt-card-widget.php:83
@@ -2106,7 +2216,7 @@ msgstr ""
 msgid "Desktop Columns"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1906
+#: includes/class-rawnaq-admin-dashboard.php:1912
 msgid "Desktop chooser shown (QR + Web)"
 msgstr ""
 
@@ -2122,8 +2232,8 @@ msgstr ""
 msgid "Details & Download"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:231
-#: includes/class-rawnaq-admin-dashboard.php:263
+#: includes/class-rawnaq-admin-dashboard.php:232
+#: includes/class-rawnaq-admin-dashboard.php:264
 msgid "Diagram"
 msgstr ""
 
@@ -2161,7 +2271,7 @@ msgstr ""
 msgid "Disable"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:376
+#: includes/class-rawnaq-admin-dashboard.php:385
 msgid "Disable All"
 msgstr ""
 
@@ -2169,7 +2279,7 @@ msgstr ""
 msgid "Disable Discuss Button"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:375
+#: includes/class-rawnaq-admin-dashboard.php:384
 msgid "Disable all modules"
 msgstr ""
 
@@ -2177,16 +2287,16 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1413
+#: includes/rawnaq-case-study.php:1416
 msgid "Discuss project"
 msgstr ""
 
 #: includes/elementor/widgets/class-case-study-grid-widget.php:304
-#: includes/rawnaq-case-study.php:1251
+#: includes/rawnaq-case-study.php:1254
 msgid "Discuss this project"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:666
+#: includes/class-rawnaq-admin-dashboard.php:677
 msgid "Dispatches sample payload with unique delivery ID and HMAC signature."
 msgstr ""
 
@@ -2255,13 +2365,18 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:690
+#: includes/class-rawnaq-admin-dashboard.php:701
 msgid "Documentation & Usage Guide"
 msgstr ""
 
 #: includes/rawnaq-smart-form.php:385
 #: includes/rawnaq-smart-form.php:452
 msgid "Doe"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:54
+#: includes/rawnaq-material-calc.php:93
+msgid "Doors and windows (total area)"
 msgstr ""
 
 #: includes/divi/modules/class-et-hub-diagram.php:89
@@ -2289,7 +2404,7 @@ msgstr ""
 msgid "Dual-Color Gradient"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1021
+#: includes/class-rawnaq-admin-dashboard.php:1027
 msgid "Dynamic Calculation Features:"
 msgstr ""
 
@@ -2309,7 +2424,7 @@ msgstr ""
 msgid "E-Commerce & Brand"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1637
+#: includes/class-rawnaq-admin-dashboard.php:1643
 msgid "ESG · Pro"
 msgstr ""
 
@@ -2343,12 +2458,12 @@ msgstr ""
 msgid "Elbow (90°)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1941
+#: includes/class-rawnaq-admin-dashboard.php:1947
 msgid "Elementor Status:"
 msgstr ""
 
 #: includes/class-rawnaq-admin-dashboard.php:146
-#: includes/class-rawnaq-admin-dashboard.php:361
+#: includes/class-rawnaq-admin-dashboard.php:370
 msgid "Elements Manager"
 msgstr ""
 
@@ -2384,7 +2499,7 @@ msgstr ""
 msgid "Email delivery"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2102
+#: includes/class-rawnaq-admin-dashboard.php:2108
 msgid "Email delivery failed: %s"
 msgstr ""
 
@@ -2396,7 +2511,7 @@ msgstr ""
 msgid "Email to receive form submissions (leave blank for admin email)."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1327
+#: includes/class-rawnaq-admin-dashboard.php:1333
 msgid "Empower clients and contractors to customize construction line items, trade breakdown subtotals, safety contingencies, and statutory taxes with real-time preliminary budget updates."
 msgstr ""
 
@@ -2405,7 +2520,7 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:454
+#: includes/class-rawnaq-admin-dashboard.php:463
 msgid "Enable %s"
 msgstr ""
 
@@ -2417,7 +2532,7 @@ msgstr ""
 msgid "Enable 3D Glass Glare Effect"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:373
+#: includes/class-rawnaq-admin-dashboard.php:382
 msgid "Enable All"
 msgstr ""
 
@@ -2445,7 +2560,7 @@ msgstr ""
 msgid "Enable Pan & Zoom Controls"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:380
+#: includes/class-rawnaq-admin-dashboard.php:389
 msgid "Enable Pro"
 msgstr ""
 
@@ -2461,11 +2576,11 @@ msgstr ""
 msgid "Enable WhatsApp Mode"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:372
+#: includes/class-rawnaq-admin-dashboard.php:381
 msgid "Enable all available modules"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:379
+#: includes/class-rawnaq-admin-dashboard.php:388
 msgid "Enable only Pro modules"
 msgstr ""
 
@@ -2485,7 +2600,7 @@ msgstr ""
 msgid "Engineered with lightweight web components and streaming event-sinks. The modular dashboard dynamically coordinates multi-window widgets with zero state drift and effortless responsive adaptation."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:618
+#: includes/class-rawnaq-admin-dashboard.php:629
 msgid "Enter API key (e.g. xxxxxxxx-us21)"
 msgstr ""
 
@@ -2497,19 +2612,23 @@ msgstr ""
 msgid "Enter a Sector term slug to restrict query results. Leave blank for all."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:613
+#: includes/class-rawnaq-admin-dashboard.php:624
 msgid "Enter new API key (e.g. xxxxxxxx-us21)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:593
+#: includes/class-rawnaq-admin-dashboard.php:604
 msgid "Enter new secret key"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:598
+#: includes/class-rawnaq-admin-dashboard.php:609
 msgid "Enter secret key"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:977
+#: includes/class-rawnaq-elements.php:908
+msgid "Enter the sizes to see the quantities."
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:983
 msgid "Enterprise Integrations & Automations:"
 msgstr ""
 
@@ -2546,17 +2665,21 @@ msgstr ""
 #: includes/divi/modules/class-et-smart-form.php:438
 #: includes/elementor/widgets/class-smart-form-widget.php:446
 #: includes/elementor/widgets/class-smart-form-widget.php:672
-#: includes/gutenberg/class-gutenberg-loader.php:489
-#: includes/gutenberg/class-gutenberg-loader.php:2024
+#: includes/gutenberg/class-gutenberg-loader.php:513
+#: includes/gutenberg/class-gutenberg-loader.php:2068
 #: includes/rawnaq-smart-form.php:628
 msgid "Estimated total"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:393
+#: includes/rawnaq-material-calc.php:282
+msgid "Estimates only. Quantities depend on site conditions and the materials you use, so confirm with your engineer or supplier before ordering."
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:402
 msgid "Estimation & ROI"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1320
+#: includes/class-rawnaq-admin-dashboard.php:1326
 msgid "Estimation · Pro"
 msgstr ""
 
@@ -2570,7 +2693,7 @@ msgstr ""
 msgid "Everywhere except selected"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:763
+#: includes/class-rawnaq-admin-dashboard.php:774
 msgid "Example Code"
 msgstr ""
 
@@ -2582,11 +2705,11 @@ msgstr ""
 msgid "Exclude IDs"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:701
+#: includes/class-rawnaq-admin-dashboard.php:712
 msgid "Expand All"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:616
+#: includes/rawnaq-helpers.php:617
 msgid "Expanded the team, opened new markets, and built lasting partnerships."
 msgstr ""
 
@@ -2610,7 +2733,11 @@ msgstr ""
 msgid "Extra Bottom Offset (cookie / banners)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1894
+#: includes/rawnaq-material-calc.php:106
+msgid "Extra for touch-ups"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:1900
 msgid "FAB / main button"
 msgstr ""
 
@@ -2622,11 +2749,11 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:562
+#: includes/class-rawnaq-admin-dashboard.php:573
 msgid "Fallback agent phone in international format without + or hyphens."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:810
+#: includes/class-rawnaq-admin-dashboard.php:821
 msgid "Feature / Module"
 msgstr ""
 
@@ -2656,6 +2783,15 @@ msgstr ""
 
 #: includes/divi/modules/class-et-bento-grid.php:43
 msgid "Featured Hero Cell (4 Columns)"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:263
+msgid "Feet / inches"
+msgstr ""
+
+#: includes/divi/modules/class-et-material-calc.php:54
+#: includes/elementor/widgets/class-material-calc-widget.php:70
+msgid "Feet and inches"
 msgstr ""
 
 #: includes/class-rawnaq-smart-form-admin.php:409
@@ -2719,15 +2855,15 @@ msgstr ""
 msgid "Filter by Role"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1175
+#: includes/rawnaq-case-study.php:1178
 msgid "Filter by sector"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1197
+#: includes/rawnaq-case-study.php:1200
 msgid "Filter by service"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1188
+#: includes/rawnaq-case-study.php:1191
 msgid "Filter by year"
 msgstr ""
 
@@ -2748,7 +2884,7 @@ msgstr ""
 msgid "First Name"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:610
+#: includes/rawnaq-helpers.php:611
 msgid "First Product Launch"
 msgstr ""
 
@@ -2757,7 +2893,7 @@ msgstr ""
 msgid "Fixed progress bar and scroll ring are displayed once per page. If multiple widgets are added, the first instance takes precedence."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1756
+#: includes/class-rawnaq-admin-dashboard.php:1762
 msgid "Flagship motion module. Uses native CSS animation-timeline: view() for compositor-thread 60fps animations with lightweight vanilla JS fallback."
 msgstr ""
 
@@ -2772,17 +2908,17 @@ msgstr ""
 
 #: includes/divi/modules/class-et-tilt-card.php:274
 #: includes/elementor/widgets/class-tilt-card-widget.php:514
-#: includes/gutenberg/class-gutenberg-loader.php:813
+#: includes/gutenberg/class-gutenberg-loader.php:838
 msgid "Flip card"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:257
+#: includes/class-rawnaq-admin-dashboard.php:258
 #: includes/elementor/widgets/class-floating-dock-widget.php:9
 #: includes/elementor/widgets/class-floating-dock-widget.php:783
 msgid "Floating Dock Menu"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1852
+#: includes/class-rawnaq-admin-dashboard.php:1858
 msgid "Floating Dock Stats"
 msgstr ""
 
@@ -2796,7 +2932,7 @@ msgstr ""
 
 #: includes/divi/modules/class-et-floating-dock.php:225
 #: includes/elementor/widgets/class-floating-dock-widget.php:791
-#: includes/gutenberg/class-gutenberg-loader.php:1193
+#: includes/gutenberg/class-gutenberg-loader.php:1218
 msgid "Floating dock"
 msgstr ""
 
@@ -2804,11 +2940,23 @@ msgstr ""
 msgid "Floating panel"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:635
+#: includes/class-rawnaq-elements.php:916
+msgid "Floor area"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:77
+msgid "Floor length"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:78
+msgid "Floor width"
+msgstr ""
+
+#: includes/rawnaq-helpers.php:636
 msgid "Flow & TOC"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:265
+#: includes/class-rawnaq-admin-dashboard.php:266
 #: includes/elementor/widgets/class-flow-chart-widget.php:9
 msgid "Flow Chart"
 msgstr ""
@@ -2821,7 +2969,7 @@ msgstr ""
 msgid "Flow Direction"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:621
+#: includes/rawnaq-helpers.php:622
 msgid "Focused on performance-first tools agencies and brands rely on daily."
 msgstr ""
 
@@ -2833,15 +2981,15 @@ msgstr ""
 msgid "For testimonials, this is the quote text."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1885
+#: includes/class-rawnaq-admin-dashboard.php:1891
 msgid "Force Offline"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1884
+#: includes/class-rawnaq-admin-dashboard.php:1890
 msgid "Force Online"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1881
+#: includes/class-rawnaq-admin-dashboard.php:1887
 msgid "Force the WhatsApp dock online or offline site-wide without editing the widget's weekly schedule."
 msgstr ""
 
@@ -2891,7 +3039,7 @@ msgstr ""
 msgid "Forward submissions to an HTTPS endpoint or Slack incoming webhook."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:605
+#: includes/rawnaq-helpers.php:606
 msgid "Founded"
 msgstr ""
 
@@ -2899,7 +3047,7 @@ msgstr ""
 msgid "Fragmented workflows and legacy analytics were slowing strategic decisions. We designed a cohesive operational canvas that synthesizes complex multi-currency data into actionable intelligence in real time."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:391
+#: includes/class-rawnaq-admin-dashboard.php:400
 msgid "Free Core"
 msgstr ""
 
@@ -2919,7 +3067,7 @@ msgstr ""
 msgid "Freeform Y (%)"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:646
+#: includes/rawnaq-helpers.php:647
 msgid "Freeform charts, TOC dock attach, WPML readiness, and trust/parity fixes."
 msgstr ""
 
@@ -2973,8 +3121,14 @@ msgstr ""
 msgid "General Inquiry"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:487
+#: includes/class-rawnaq-admin-dashboard.php:498
 msgid "Get Quote Lead Engine"
+msgstr ""
+
+#: includes/divi/modules/class-et-material-calc.php:88
+#: includes/elementor/widgets/class-material-calc-widget.php:108
+#: includes/rawnaq-material-calc.php:167
+msgid "Get a quote for this project"
 msgstr ""
 
 #: includes/elementor/widgets/class-tilt-card-widget.php:181
@@ -3009,7 +3163,7 @@ msgstr ""
 msgid "Glassmorphism Blur"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:536
+#: includes/class-rawnaq-admin-dashboard.php:547
 msgid "Global Integrations & API Keys"
 msgstr ""
 
@@ -3017,11 +3171,11 @@ msgstr ""
 msgid "Glow & Active Pulse Color"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:665
+#: includes/rawnaq-helpers.php:666
 msgid "Go Live"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:153
+#: includes/rawnaq-helpers.php:154
 msgid "Go to chapter %d"
 msgstr ""
 
@@ -3029,15 +3183,15 @@ msgstr ""
 msgid "Go to project link"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1049
+#: includes/class-rawnaq-admin-dashboard.php:1055
 msgid "Goes far beyond ordinary 2-image before/after sliders. Allows stacking unlimited architectural layers (e.g., As-Built Site ➔ 3D Photoreal Render ➔ Structural CAD / Night Lighting Blueprint) with interactive hotspot pins and precision zoom."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:585
+#: includes/class-rawnaq-admin-dashboard.php:596
 msgid "Google reCAPTCHA v3 Secret Key"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:580
+#: includes/class-rawnaq-admin-dashboard.php:591
 msgid "Google reCAPTCHA v3 Site Key"
 msgstr ""
 
@@ -3065,7 +3219,7 @@ msgstr ""
 msgid "Gradient To"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1417
+#: includes/class-rawnaq-admin-dashboard.php:1423
 msgid "Green building energy calculator with LEED/BREEAM scoring, carbon offset & utility savings."
 msgstr ""
 
@@ -3089,7 +3243,11 @@ msgstr ""
 msgid "Group nodes into a labelled band. Nodes with the same lane name share a band."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1949
+#: includes/rawnaq-material-calc.php:81
+msgid "Grout gap"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:1955
 msgid "Gutenberg Status:"
 msgstr ""
 
@@ -3101,7 +3259,7 @@ msgstr ""
 msgid "HTML accept attribute, e.g. .pdf,image/*"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2062
+#: includes/class-rawnaq-admin-dashboard.php:2068
 msgid "HTTP %d response"
 msgstr ""
 
@@ -3134,7 +3292,7 @@ msgstr ""
 msgid "HealthTech & AI"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2083
+#: includes/class-rawnaq-admin-dashboard.php:2089
 msgid "Hello,\n\nThis is a test notification from %1$s Smart Form sent at %2$s.\n\nIf you received this message, your WordPress email delivery configuration is working correctly."
 msgstr ""
 
@@ -3188,7 +3346,7 @@ msgstr ""
 msgid "Hide the progress/TOC when the page is barely taller than the viewport."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1449
+#: includes/class-rawnaq-admin-dashboard.php:1455
 msgid "High-trust client voice notes with interactive 36-bar audio waveform player & commission metrics."
 msgstr ""
 
@@ -3229,7 +3387,7 @@ msgstr ""
 msgid "Hover Scale Factor"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:660
+#: includes/rawnaq-helpers.php:661
 msgid "How We Worked"
 msgstr ""
 
@@ -3241,11 +3399,11 @@ msgstr ""
 msgid "How can we help?"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:735
+#: includes/class-rawnaq-admin-dashboard.php:746
 msgid "How to Use"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:233
+#: includes/class-rawnaq-admin-dashboard.php:234
 #: includes/elementor/widgets/class-hub-diagram-widget.php:9
 msgid "Hub Diagram"
 msgstr ""
@@ -3260,7 +3418,7 @@ msgstr ""
 msgid "HubSpot Form GUID"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:631
+#: includes/class-rawnaq-admin-dashboard.php:642
 msgid "HubSpot Portal ID"
 msgstr ""
 
@@ -3278,7 +3436,7 @@ msgstr ""
 
 #: includes/class-rawnaq-elements.php:258
 #: includes/elementor/widgets/class-smart-form-widget.php:413
-#: includes/gutenberg/class-gutenberg-loader.php:476
+#: includes/gutenberg/class-gutenberg-loader.php:500
 #: includes/rawnaq-smart-form.php:593
 #: includes/rawnaq-smart-form.php:3569
 msgid "I agree to the processing of my data."
@@ -3331,7 +3489,7 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:916
+#: includes/class-rawnaq-elements.php:952
 msgid "Image %1$d of %2$d"
 msgstr ""
 
@@ -3376,7 +3534,7 @@ msgstr ""
 msgid "Include country code without + or spaces"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:630
+#: includes/rawnaq-helpers.php:631
 msgid "Initial Release"
 msgstr ""
 
@@ -3458,7 +3616,7 @@ msgstr ""
 msgid "Inquiry regarding %s"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:722
+#: includes/class-rawnaq-admin-dashboard.php:733
 msgid "Instant 1-click copy shortcodes, modal trigger anchors, and dynamic context prefill attributes."
 msgstr ""
 
@@ -3466,59 +3624,67 @@ msgstr ""
 msgid "Intelligent portfolio overview & predictive risk modelling."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:395
+#: includes/class-rawnaq-admin-dashboard.php:404
 msgid "Interactions & Leads"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1253
+#: includes/class-rawnaq-admin-dashboard.php:1259
 msgid "Interactive 2D/3D blueprint explorer, layer toggles, multi-room footprint calculator, VR teleport & A4 export."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1607
+#: includes/class-rawnaq-admin-dashboard.php:1613
 msgid "Interactive 365-day construction timeline scrubber with high-res drone shots and site telemetry logs."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1638
+#: includes/class-rawnaq-admin-dashboard.php:1644
 msgid "Interactive ESG green building scorecard with Solar BIPV, Geothermal, and live annual power savings."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1520
+#: includes/class-rawnaq-admin-dashboard.php:1526
 msgid "Interactive architectural solar path simulator calibrated to real-world solar azimuth angles, seasonal solstices, and dynamic shadow projections."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1545
+#: includes/class-rawnaq-admin-dashboard.php:1551
 msgid "Interactive building elevation cross-section stacker with unit inventory availability and live reservation."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1078
+#: includes/class-rawnaq-admin-dashboard.php:1084
 msgid "Interactive client material palette builder, finish specs, high-res spec sheet export & quote integration."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1613
+#: includes/class-rawnaq-admin-dashboard.php:1619
 msgid "Interactive construction progression portal showcasing site evolution from groundbreaking foundation to luxury turnkey handover."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1002
+#: includes/class-rawnaq-admin-dashboard.php:1008
 msgid "Interactive estimate builder with 7 industry presets, scope sliders, promo codes, currencies & quote bridge."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:234
+#: includes/class-rawnaq-admin-dashboard.php:235
 msgid "Interactive radial workflow chart with spokes and glow particle flow."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:691
+#: includes/class-rawnaq-admin-dashboard.php:702
 msgid "Interactive reference guides, ready-to-copy shortcodes, and dynamic triggers for all modules."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1669
+#: includes/class-rawnaq-admin-dashboard.php:1675
 msgid "Interactive room acoustic wave dampening simulation with RT60 reverberation decay & STC ratings."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1779
+#: includes/class-rawnaq-admin-dashboard.php:1785
 msgid "Interactive tree structures, organizational charts, and radial process diagrams."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2037
+#: includes/divi/modules/class-et-material-calc.php:67
+msgid "Intro Text"
+msgstr ""
+
+#: includes/elementor/widgets/class-material-calc-widget.php:87
+msgid "Intro text"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:2043
 msgid "Invalid Mailchimp API key format (missing datacenter suffix, e.g. -us21)."
 msgstr ""
 
@@ -3590,7 +3756,7 @@ msgstr ""
 msgid "Item Spacing"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1321
+#: includes/class-rawnaq-admin-dashboard.php:1327
 msgid "Itemized Bill of Quantities construction cost scheduler with safety contingencies & PDF export."
 msgstr ""
 
@@ -3648,18 +3814,18 @@ msgstr ""
 msgid "KB"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:968
+#: includes/class-rawnaq-admin-dashboard.php:974
 msgid "Key Capabilities & Modes:"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1051
-#: includes/class-rawnaq-admin-dashboard.php:1086
-#: includes/class-rawnaq-admin-dashboard.php:1121
-#: includes/class-rawnaq-admin-dashboard.php:1156
-#: includes/class-rawnaq-admin-dashboard.php:1191
-#: includes/class-rawnaq-admin-dashboard.php:1226
-#: includes/class-rawnaq-admin-dashboard.php:1296
-#: includes/class-rawnaq-admin-dashboard.php:1328
+#: includes/class-rawnaq-admin-dashboard.php:1057
+#: includes/class-rawnaq-admin-dashboard.php:1092
+#: includes/class-rawnaq-admin-dashboard.php:1127
+#: includes/class-rawnaq-admin-dashboard.php:1162
+#: includes/class-rawnaq-admin-dashboard.php:1197
+#: includes/class-rawnaq-admin-dashboard.php:1232
+#: includes/class-rawnaq-admin-dashboard.php:1302
+#: includes/class-rawnaq-admin-dashboard.php:1334
 msgid "Key Capabilities:"
 msgstr ""
 
@@ -3694,6 +3860,10 @@ msgstr ""
 msgid "Landscape (16:10)"
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:130
+msgid "Laps and cutting waste"
+msgstr ""
+
 #: includes/elementor/widgets/class-smart-form-widget.php:567
 #: includes/rawnaq-smart-form.php:755
 msgid "Large"
@@ -3712,7 +3882,7 @@ msgstr ""
 msgid "Last modified"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1864
+#: includes/class-rawnaq-admin-dashboard.php:1870
 msgid "Last update: %s"
 msgstr ""
 
@@ -3721,7 +3891,7 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:396
+#: includes/class-rawnaq-admin-dashboard.php:405
 #: includes/elementor/widgets/class-tilt-card-widget.php:198
 msgid "Layout & Motion"
 msgstr ""
@@ -3753,18 +3923,18 @@ msgstr ""
 msgid "Layout mode"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:247
-#: includes/class-rawnaq-admin-dashboard.php:271
-#: includes/class-rawnaq-admin-dashboard.php:279
-#: includes/class-rawnaq-admin-dashboard.php:287
+#: includes/class-rawnaq-admin-dashboard.php:248
+#: includes/class-rawnaq-admin-dashboard.php:272
+#: includes/class-rawnaq-admin-dashboard.php:280
+#: includes/class-rawnaq-admin-dashboard.php:288
 msgid "Layouts"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:298
+#: includes/class-rawnaq-admin-dashboard.php:299
 msgid "Lead form with email + WhatsApp redirect (Phase 1), honeypot spam guard, admin logs."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1353
+#: includes/class-rawnaq-admin-dashboard.php:1359
 msgid "Leadership showcase with interactive SVG hexagon skill radars, vCard download & booking drawer."
 msgstr ""
 
@@ -3829,6 +3999,14 @@ msgstr ""
 msgid "Legacy toggle for WhatsApp delivery."
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:30
+msgid "Length"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:129
+msgid "Length of each bar"
+msgstr ""
+
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:135
 msgid "Level"
 msgstr ""
@@ -3837,7 +4015,7 @@ msgstr ""
 msgid "Lift"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1700
+#: includes/class-rawnaq-admin-dashboard.php:1706
 msgid "Lightweight lead generation form with multi-step support, conditional logic, and WhatsApp template delivery."
 msgstr ""
 
@@ -3882,7 +4060,11 @@ msgstr ""
 msgid "List of input fields, types, labels, widths, steps and validation rules."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:510
+#: includes/rawnaq-material-calc.php:88
+msgid "Litres of paint for the walls of a room, with or without the ceiling."
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:521
 msgid "Live dynamic area slider, 3-tier comparative matrix, real-time scope allocation breakdown bars, and seamless Get Quote bridge."
 msgstr ""
 
@@ -3898,8 +4080,8 @@ msgstr ""
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:371
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:686
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:687
-#: includes/gutenberg/class-gutenberg-loader.php:938
-#: includes/gutenberg/class-gutenberg-loader.php:939
+#: includes/gutenberg/class-gutenberg-loader.php:963
+#: includes/gutenberg/class-gutenberg-loader.php:964
 msgid "Load more"
 msgstr ""
 
@@ -3907,7 +4089,7 @@ msgstr ""
 msgid "Load more chunk size"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1220
+#: includes/rawnaq-case-study.php:1223
 msgid "Load more projects"
 msgstr ""
 
@@ -3942,11 +4124,11 @@ msgstr ""
 msgid "Mailchimp"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:605
+#: includes/class-rawnaq-admin-dashboard.php:616
 msgid "Mailchimp API Key"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2031
+#: includes/class-rawnaq-admin-dashboard.php:2037
 msgid "Mailchimp API key is not configured."
 msgstr ""
 
@@ -3971,11 +4153,11 @@ msgstr ""
 msgid "Mailchimp audience ID or email missing."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2059
+#: includes/class-rawnaq-admin-dashboard.php:2065
 msgid "Mailchimp connected! (%s)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2063
+#: includes/class-rawnaq-admin-dashboard.php:2069
 msgid "Mailchimp error: %s"
 msgstr ""
 
@@ -4058,7 +4240,18 @@ msgstr ""
 msgid "Match Case-Study card id (e.g. post-123). Highlights related card on scroll."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1384
+#: includes/class-rawnaq-admin-dashboard.php:314
+#: includes/elementor/widgets/class-material-calc-widget.php:13
+msgid "Material Quantity Calculator"
+msgstr ""
+
+#: includes/divi/modules/class-et-material-calc.php:63
+#: includes/elementor/widgets/class-material-calc-widget.php:80
+#: includes/rawnaq-material-calc.php:164
+msgid "Material quantity calculator"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:1390
 msgid "Matrix · Pro"
 msgstr ""
 
@@ -4094,7 +4287,7 @@ msgstr ""
 msgid "Max value"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:567
+#: includes/class-rawnaq-admin-dashboard.php:578
 msgid "Maximum allowable file size per attachment (1 - 25 MB)."
 msgstr ""
 
@@ -4106,7 +4299,7 @@ msgstr ""
 msgid "Maximum phone digits"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:671
+#: includes/rawnaq-helpers.php:672
 msgid "Measurable impact — conversions, speed, or engagement — with room to iterate."
 msgstr ""
 
@@ -4157,7 +4350,7 @@ msgstr ""
 #: includes/class-rawnaq-elements.php:549
 #: includes/class-rawnaq-elements.php:867
 #: includes/elementor/widgets/class-smart-form-widget.php:396
-#: includes/gutenberg/class-gutenberg-loader.php:473
+#: includes/gutenberg/class-gutenberg-loader.php:497
 #: includes/rawnaq-smart-form.php:572
 #: includes/rawnaq-smart-form.php:3169
 msgid "Message sent successfully."
@@ -4169,6 +4362,15 @@ msgstr ""
 
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:489
 msgid "Meta Color"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:262
+msgid "Metric"
+msgstr ""
+
+#: includes/divi/modules/class-et-material-calc.php:53
+#: includes/elementor/widgets/class-material-calc-widget.php:69
+msgid "Metric (m, cm, mm)"
 msgstr ""
 
 #: includes/elementor/widgets/class-smart-form-widget.php:114
@@ -4223,6 +4425,10 @@ msgstr ""
 msgid "Missing query context token."
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:35
+msgid "Mix ratio (cement : sand : aggregate)"
+msgstr ""
+
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:212
 msgid "Mobile FAB for TOC"
 msgstr ""
@@ -4261,6 +4467,14 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:58
+msgid "Mortar joint"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:61
+msgid "Mortar ratio (cement : sand)"
+msgstr ""
+
 #: includes/divi/modules/class-et-smart-form.php:46
 msgid "Multi-Step Project Discovery"
 msgstr ""
@@ -4269,19 +4483,19 @@ msgstr ""
 msgid "Multi-Step Project Discovery Planner (3 Steps)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1043
+#: includes/class-rawnaq-admin-dashboard.php:1049
 msgid "Multi-layer Before/After/CAD compare slider, 2x inspection loupe lens, interactive hotspot pins & quote bridge."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:488
+#: includes/class-rawnaq-admin-dashboard.php:499
 msgid "Multi-step interactive cost estimator, room breakdown, quality tiers, magic link portal, digital signatures, and PDF contracts."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:960
+#: includes/class-rawnaq-admin-dashboard.php:966
 msgid "Multi-step quotation wizard, Google Sheets auto-sync, CRM webhooks, WhatsApp, proposals & PDF export."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1385
+#: includes/class-rawnaq-admin-dashboard.php:1391
 msgid "Multi-tier contract deliverable comparison table with milestone phases, tooltips & quote prefill."
 msgstr ""
 
@@ -4318,7 +4532,7 @@ msgstr ""
 msgid "Named timeline:"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1750
+#: includes/class-rawnaq-admin-dashboard.php:1756
 msgid "Native CSS animation-timeline 60fps compositor scroll animations, CPT queries & Bento sync."
 msgstr ""
 
@@ -4328,7 +4542,7 @@ msgstr ""
 msgid "Native CSS scroll animations — no motion JS in this browser."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:641
+#: includes/rawnaq-helpers.php:642
 msgid "Native animation-timeline path with JS fallback and horizontal layouts."
 msgstr ""
 
@@ -4336,7 +4550,7 @@ msgstr ""
 msgid "Navigate Directly to Project URL"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:255
+#: includes/class-rawnaq-admin-dashboard.php:256
 msgid "Navigation"
 msgstr ""
 
@@ -4360,7 +4574,7 @@ msgstr ""
 #: includes/divi/modules/class-et-smart-form.php:121
 #: includes/divi/modules/class-et-smart-form.php:421
 #: includes/elementor/widgets/class-smart-form-widget.php:302
-#: includes/gutenberg/class-gutenberg-loader.php:467
+#: includes/gutenberg/class-gutenberg-loader.php:491
 #: includes/rawnaq-smart-form.php:532
 #: includes/rawnaq-smart-form.php:1850
 #: includes/rawnaq-smart-form.php:2943
@@ -4375,7 +4589,7 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1235
+#: includes/rawnaq-case-study.php:1238
 msgid "Next image"
 msgstr ""
 
@@ -4394,7 +4608,7 @@ msgstr ""
 msgid "No (Classic Action Dock)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2077
+#: includes/class-rawnaq-admin-dashboard.php:2083
 msgid "No admin email address configured in WordPress."
 msgstr ""
 
@@ -4406,7 +4620,7 @@ msgstr ""
 msgid "No case studies found."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1868
+#: includes/class-rawnaq-admin-dashboard.php:1874
 msgid "No clicks recorded yet."
 msgstr ""
 
@@ -4414,15 +4628,15 @@ msgstr ""
 msgid "No files or signatures submitted."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1844
+#: includes/class-rawnaq-admin-dashboard.php:1850
 msgid "No matching documentation found"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:524
+#: includes/class-rawnaq-admin-dashboard.php:535
 msgid "No matching elements found"
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:918
+#: includes/class-rawnaq-elements.php:954
 msgid "No matching projects."
 msgstr ""
 
@@ -4500,6 +4714,10 @@ msgstr ""
 msgid "Number"
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:128
+msgid "Number of bars"
+msgstr ""
+
 #: includes/elementor/widgets/class-case-study-grid-widget.php:49
 msgid "Number of posts"
 msgstr ""
@@ -4528,7 +4746,7 @@ msgstr ""
 msgid "Offline Redirect URL / Contact link"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1918
+#: includes/class-rawnaq-admin-dashboard.php:1924
 msgid "Offline diverted (lead / redirect)"
 msgstr ""
 
@@ -4618,7 +4836,7 @@ msgstr ""
 
 #: includes/divi/modules/class-et-tilt-card.php:358
 #: includes/elementor/widgets/class-tilt-card-widget.php:557
-#: includes/gutenberg/class-gutenberg-loader.php:851
+#: includes/gutenberg/class-gutenberg-loader.php:876
 msgid "Open link"
 msgstr ""
 
@@ -4626,7 +4844,7 @@ msgstr ""
 msgid "Open modal (with link CTA)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:729
+#: includes/class-rawnaq-admin-dashboard.php:740
 msgid "Open the Get Quote modal from ANY button, menu item, or link on your site (including Elementor Loop Grids, Archive Cards, and Single Post templates):"
 msgstr ""
 
@@ -4723,7 +4941,7 @@ msgstr ""
 msgid "Org (vertical tree)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:266
+#: includes/class-rawnaq-admin-dashboard.php:267
 msgid "Org tree and process flow diagrams with animated connectors."
 msgstr ""
 
@@ -4745,7 +4963,7 @@ msgstr ""
 msgid "Orthogonal Elbows"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:670
+#: includes/rawnaq-helpers.php:671
 msgid "Outcomes"
 msgstr ""
 
@@ -4757,7 +4975,7 @@ msgstr ""
 msgid "Overwrites the current Fields repeater."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1937
+#: includes/class-rawnaq-admin-dashboard.php:1943
 msgid "PHP Version:"
 msgstr ""
 
@@ -4766,13 +4984,13 @@ msgstr ""
 msgid "PNG / SVG Export"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:486
-#: includes/class-rawnaq-admin-dashboard.php:508
+#: includes/class-rawnaq-admin-dashboard.php:497
+#: includes/class-rawnaq-admin-dashboard.php:519
 msgid "PRO EXTENSION"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:482
-#: includes/class-rawnaq-admin-dashboard.php:504
+#: includes/class-rawnaq-admin-dashboard.php:493
+#: includes/class-rawnaq-admin-dashboard.php:515
 msgid "PRO LOCKED"
 msgstr ""
 
@@ -4784,7 +5002,15 @@ msgstr ""
 msgid "Page Visibility"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1575
+#: includes/rawnaq-material-calc.php:87
+msgid "Paint"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:918
+msgid "Paint needed"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:1581
 msgid "Palette · Pro"
 msgstr ""
 
@@ -4813,7 +5039,7 @@ msgstr ""
 msgid "Per-Section Time Badges"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:355
+#: includes/class-rawnaq-admin-dashboard.php:364
 msgid "Performance & Modular Engine"
 msgstr ""
 
@@ -4825,7 +5051,7 @@ msgstr ""
 msgid "Performance analytics post-migration across 12 enterprise regions."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:242
+#: includes/class-rawnaq-admin-dashboard.php:243
 msgid "Perspective mouse-tilt cards with glare, overlay, and parallax depth."
 msgstr ""
 
@@ -4908,13 +5134,13 @@ msgstr ""
 msgid "Please enter a valid website URL."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2117
+#: includes/class-rawnaq-admin-dashboard.php:2123
 msgid "Please enter a webhook URL to test."
 msgstr ""
 
 #: includes/class-rawnaq-elements.php:855
 #: includes/elementor/widgets/class-smart-form-widget.php:401
-#: includes/gutenberg/class-gutenberg-loader.php:474
+#: includes/gutenberg/class-gutenberg-loader.php:498
 #: includes/rawnaq-smart-form.php:579
 #: includes/rawnaq-smart-form.php:3170
 msgid "Please fill in the required fields correctly."
@@ -4936,7 +5162,7 @@ msgstr ""
 msgid "Please wait a moment and try again."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:303
+#: includes/class-rawnaq-admin-dashboard.php:304
 msgid "Portfolio"
 msgstr ""
 
@@ -4944,7 +5170,7 @@ msgstr ""
 msgid "Portfolio / LinkedIn URL"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1820
+#: includes/class-rawnaq-admin-dashboard.php:1826
 msgid "Portfolio showcase with lightbox gallery, sector filters, NDA confidential masking & quote triggers."
 msgstr ""
 
@@ -4984,7 +5210,7 @@ msgstr ""
 msgid "Posts load on the frontend"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:764
+#: includes/class-rawnaq-admin-dashboard.php:775
 msgid "Prefill Action in Modal"
 msgstr ""
 
@@ -5024,7 +5250,7 @@ msgstr ""
 msgid "Preset applied — steps updated."
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1233
+#: includes/rawnaq-case-study.php:1236
 msgid "Previous image"
 msgstr ""
 
@@ -5046,17 +5272,17 @@ msgstr ""
 msgid "Private notes for internal team reference. Never shared with submitter."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:602
+#: includes/class-rawnaq-admin-dashboard.php:613
 msgid "Private server validation key."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:959
-#: includes/class-rawnaq-admin-dashboard.php:1001
+#: includes/class-rawnaq-admin-dashboard.php:965
+#: includes/class-rawnaq-admin-dashboard.php:1007
 msgid "Pro Enterprise"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:390
-#: includes/class-rawnaq-admin-dashboard.php:708
+#: includes/class-rawnaq-admin-dashboard.php:399
+#: includes/class-rawnaq-admin-dashboard.php:719
 msgid "Pro Solutions"
 msgstr ""
 
@@ -5076,7 +5302,7 @@ msgstr ""
 msgid "Process Roadmap"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1773
+#: includes/class-rawnaq-admin-dashboard.php:1779
 msgid "Process flows, Org Trees from WP Users, 360° radial workflows, and PNG/SVG export."
 msgstr ""
 
@@ -5110,7 +5336,7 @@ msgstr ""
 msgid "Progress based on"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1606
+#: includes/class-rawnaq-admin-dashboard.php:1612
 msgid "Progress · Pro"
 msgstr ""
 
@@ -5130,7 +5356,7 @@ msgstr ""
 msgid "Project link"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1481
+#: includes/class-rawnaq-admin-dashboard.php:1487
 msgid "Project schedule acceleration velocity against resource allocation and net economic value."
 msgstr ""
 
@@ -5159,7 +5385,7 @@ msgstr ""
 msgid "Protect the form using Google reCAPTCHA v3 invisible score verification."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:582
+#: includes/class-rawnaq-admin-dashboard.php:593
 msgid "Public site key for invisible spam verification score."
 msgstr ""
 
@@ -5183,11 +5409,11 @@ msgstr ""
 msgid "Query mode"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:709
+#: includes/class-rawnaq-admin-dashboard.php:720
 msgid "Quick Cheat Sheet"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:721
+#: includes/class-rawnaq-admin-dashboard.php:732
 msgid "Quick Cheat Sheet & Dynamic Triggers"
 msgstr ""
 
@@ -5205,6 +5431,12 @@ msgstr ""
 
 #: includes/class-rawnaq-admin-dashboard.php:175
 msgid "Quick Start"
+msgstr ""
+
+#: includes/divi/modules/class-et-material-calc.php:70
+#: includes/elementor/widgets/class-material-calc-widget.php:89
+#: includes/rawnaq-material-calc.php:165
+msgid "Quick estimates for concrete, bricks, tiles, paint and steel."
 msgstr ""
 
 #: includes/divi/modules/class-et-hub-diagram.php:53
@@ -5261,6 +5493,10 @@ msgstr ""
 msgid "Rawnaq Hub Diagram"
 msgstr ""
 
+#: includes/divi/modules/class-et-material-calc.php:18
+msgid "Rawnaq Material Calculator"
+msgstr ""
+
 #: includes/divi/modules/class-et-scroll-progress-toc.php:18
 msgid "Rawnaq Scroll Progress & TOC"
 msgstr ""
@@ -5300,8 +5536,8 @@ msgstr ""
 msgid "Read More CTA Text"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:1638
 #: includes/rawnaq-helpers.php:1639
+#: includes/rawnaq-helpers.php:1640
 msgid "Read more"
 msgstr ""
 
@@ -5309,7 +5545,7 @@ msgstr ""
 msgid "Read only"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:274
+#: includes/class-rawnaq-admin-dashboard.php:275
 msgid "Reading progress bar/ring with smart auto-highlighting table of contents."
 msgstr ""
 
@@ -5317,15 +5553,15 @@ msgstr ""
 msgid "Real-time Telemetry, Mobile App"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1148
+#: includes/class-rawnaq-admin-dashboard.php:1154
 msgid "Real-time financial payback curve, crossover break-even crossover points, inflation adjustment & quote bridge."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1582
+#: includes/class-rawnaq-admin-dashboard.php:1588
 msgid "Real-time interior room customizer enabling clients to test luxury material combinations before construction begins."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1514
+#: includes/class-rawnaq-admin-dashboard.php:1520
 msgid "Real-time solar trajectory, daylight penetration, golden hour ambient glow, and dynamic shadow casting."
 msgstr ""
 
@@ -5383,11 +5619,11 @@ msgstr ""
 msgid "Required"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:633
+#: includes/class-rawnaq-admin-dashboard.php:644
 msgid "Required when Smart Form CRM routing is set to HubSpot."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:628
+#: includes/class-rawnaq-admin-dashboard.php:639
 msgid "Required when Smart Form CRM routing is set to Mailchimp."
 msgstr ""
 
@@ -5395,19 +5631,19 @@ msgstr ""
 msgid "Requires site + secret keys in Rawnaq → Modules (Smart Form settings)."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:661
+#: includes/rawnaq-helpers.php:662
 msgid "Research, prototypes, and a phased plan aligned with stakeholders."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1876
+#: includes/class-rawnaq-admin-dashboard.php:1882
 msgid "Reset Counters"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1875
+#: includes/class-rawnaq-admin-dashboard.php:1881
 msgid "Reset clears all counters. This cannot be undone."
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:920
+#: includes/class-rawnaq-elements.php:956
 msgid "Retry"
 msgstr ""
 
@@ -5428,7 +5664,7 @@ msgstr ""
 msgid "Review Your Submission"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1928
+#: includes/class-rawnaq-admin-dashboard.php:1934
 msgid "Review your site's parameters and configuration settings below."
 msgstr ""
 
@@ -5470,6 +5706,14 @@ msgstr ""
 
 #: includes/elementor/widgets/class-floating-dock-widget.php:49
 msgid "Role Label"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:90
+msgid "Room length"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:91
+msgid "Room width"
 msgstr ""
 
 #: includes/elementor/widgets/class-flow-chart-widget.php:264
@@ -5537,11 +5781,15 @@ msgstr ""
 msgid "Same Window"
 msgstr ""
 
+#: includes/class-rawnaq-elements.php:911
+msgid "Sand"
+msgstr ""
+
 #: includes/elementor/widgets/class-floating-dock-widget.php:169
 msgid "Saturday"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:679
+#: includes/class-rawnaq-admin-dashboard.php:690
 msgid "Save Changes"
 msgstr ""
 
@@ -5553,15 +5801,15 @@ msgstr ""
 msgid "Save and preview the page to see live CPT / post results."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:674
+#: includes/class-rawnaq-admin-dashboard.php:685
 msgid "Save will instantly persist all active modules and integration keys."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:615
+#: includes/rawnaq-helpers.php:616
 msgid "Scale & Partners"
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:913
+#: includes/class-rawnaq-elements.php:949
 msgid "Scope"
 msgstr ""
 
@@ -5578,7 +5826,7 @@ msgstr ""
 msgid "Scroll Offset (px)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:273
+#: includes/class-rawnaq-admin-dashboard.php:274
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:9
 msgid "Scroll Progress + TOC"
 msgstr ""
@@ -5587,12 +5835,12 @@ msgstr ""
 msgid "Scroll Reveal"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:289
+#: includes/class-rawnaq-admin-dashboard.php:290
 #: includes/elementor/widgets/class-scroll-story-widget.php:13
 msgid "Scroll Story Chapters"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:249
+#: includes/class-rawnaq-admin-dashboard.php:250
 #: includes/elementor/widgets/class-scroll-timeline-widget.php:9
 msgid "Scroll Sync Timeline"
 msgstr ""
@@ -5601,7 +5849,7 @@ msgstr ""
 msgid "Scroll to top of page"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:290
+#: includes/class-rawnaq-admin-dashboard.php:291
 msgid "Scrollytelling: pinned media column that swaps as chapter text scrolls into view."
 msgstr ""
 
@@ -5617,11 +5865,11 @@ msgstr ""
 msgid "Search Sectors"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:368
+#: includes/class-rawnaq-admin-dashboard.php:377
 msgid "Search elements (3D, ROI, Form, Divi)..."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:696
+#: includes/class-rawnaq-admin-dashboard.php:707
 msgid "Search guides, shortcodes, attributes..."
 msgstr ""
 
@@ -5649,11 +5897,11 @@ msgstr ""
 msgid "Secondary Telegram User"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1910
+#: includes/class-rawnaq-admin-dashboard.php:1916
 msgid "Secondary channel"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:653
+#: includes/class-rawnaq-admin-dashboard.php:664
 msgid "Secret key sent in X-Rawnaq-Signature header on webhook requests."
 msgstr ""
 
@@ -5728,7 +5976,7 @@ msgstr ""
 msgid "Select a specific published post."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:1319
+#: includes/rawnaq-helpers.php:1320
 msgid "Select a valid post or check latest posts."
 msgstr ""
 
@@ -5761,7 +6009,7 @@ msgstr ""
 msgid "Send Confirmation Email"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:639
+#: includes/class-rawnaq-admin-dashboard.php:650
 msgid "Send Test Email"
 msgstr ""
 
@@ -5792,13 +6040,13 @@ msgstr ""
 #: includes/divi/modules/class-et-smart-form.php:83
 #: includes/divi/modules/class-et-smart-form.php:418
 #: includes/elementor/widgets/class-smart-form-widget.php:391
-#: includes/gutenberg/class-gutenberg-loader.php:472
+#: includes/gutenberg/class-gutenberg-loader.php:496
 #: includes/rawnaq-smart-form.php:565
 #: includes/rawnaq-smart-form.php:3168
 msgid "Send message"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:643
+#: includes/class-rawnaq-admin-dashboard.php:654
 msgid "Sends a test email to default recipient (%s)."
 msgstr ""
 
@@ -5822,7 +6070,7 @@ msgstr ""
 msgid "Service filter bar"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:509
+#: includes/class-rawnaq-admin-dashboard.php:520
 msgid "Services & Pricing Calculator"
 msgstr ""
 
@@ -5842,7 +6090,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2013
+#: includes/class-rawnaq-admin-dashboard.php:2019
 msgid "Settings saved successfully!"
 msgstr ""
 
@@ -5850,31 +6098,35 @@ msgstr ""
 msgid "Share what stood out to you..."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:666
+#: includes/rawnaq-helpers.php:667
 msgid "Ship, train the team, and monitor the first weeks of real traffic."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:611
+#: includes/rawnaq-helpers.php:612
 msgid "Shipped v1 to early customers and refined the roadmap from real usage."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1060
-#: includes/class-rawnaq-admin-dashboard.php:1095
-#: includes/class-rawnaq-admin-dashboard.php:1130
-#: includes/class-rawnaq-admin-dashboard.php:1165
-#: includes/class-rawnaq-admin-dashboard.php:1200
-#: includes/class-rawnaq-admin-dashboard.php:1235
-#: includes/class-rawnaq-admin-dashboard.php:1271
-#: includes/class-rawnaq-admin-dashboard.php:1302
+#: includes/class-rawnaq-admin-dashboard.php:1066
+#: includes/class-rawnaq-admin-dashboard.php:1101
+#: includes/class-rawnaq-admin-dashboard.php:1136
+#: includes/class-rawnaq-admin-dashboard.php:1171
+#: includes/class-rawnaq-admin-dashboard.php:1206
+#: includes/class-rawnaq-admin-dashboard.php:1241
+#: includes/class-rawnaq-admin-dashboard.php:1277
+#: includes/class-rawnaq-admin-dashboard.php:1308
 msgid "Shortcode & Builder Usage:"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:811
+#: includes/class-rawnaq-admin-dashboard.php:822
 msgid "Shortcode (Click to Copy)"
 msgstr ""
 
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:70
 msgid "Show % in Ring"
+msgstr ""
+
+#: includes/divi/modules/class-et-material-calc.php:33
+msgid "Show %s"
 msgstr ""
 
 #: includes/elementor/widgets/class-bento-grid-widget.php:446
@@ -5911,6 +6163,10 @@ msgstr ""
 
 #: includes/elementor/widgets/class-scroll-story-widget.php:71
 msgid "Show Progress Counter"
+msgstr ""
+
+#: includes/divi/modules/class-et-material-calc.php:74
+msgid "Show Quote Button"
 msgstr ""
 
 #: includes/divi/modules/class-et-scroll-progress-toc.php:146
@@ -5979,6 +6235,10 @@ msgstr ""
 msgid "Show options (Web + QR)"
 msgstr ""
 
+#: includes/elementor/widgets/class-material-calc-widget.php:96
+msgid "Show quote button"
+msgstr ""
+
 #: includes/elementor/widgets/class-smart-form-widget.php:361
 #: includes/rawnaq-smart-form.php:550
 msgid "Show thank-you message"
@@ -5992,27 +6252,27 @@ msgstr ""
 msgid "Show with Offline Badge"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:394
+#: includes/class-rawnaq-admin-dashboard.php:403
 msgid "Showcase & Authority"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1119
+#: includes/class-rawnaq-admin-dashboard.php:1125
 msgid "Showcase global architectural footprint without loading heavy Google Maps or Mapbox scripts. Pure vector SVG with smooth pan/zoom, sector filter pills, and pulse radar pins."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1359
+#: includes/class-rawnaq-admin-dashboard.php:1365
 msgid "Showcase principal architects, design directors, and structural consultants with interactive SVG radar polygons, credential metrics, and slide-out consultation drawers."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1295
+#: includes/class-rawnaq-admin-dashboard.php:1301
 msgid "Showcase your international architectural commissions and landmark projects across the globe with a high-performance vector SVG map without loading heavy external Google Maps or Mapbox scripts."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1288
+#: includes/class-rawnaq-admin-dashboard.php:1294
 msgid "Showcase · Pro"
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:917
+#: includes/class-rawnaq-elements.php:953
 msgid "Showing %d projects"
 msgstr ""
 
@@ -6064,23 +6324,23 @@ msgstr ""
 msgid "Signature processing unavailable."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1853
+#: includes/class-rawnaq-admin-dashboard.php:1859
 msgid "Simple site-wide click counters for Floating Dock / WhatsApp Contact Mode. Enable tracking per widget."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1644
+#: includes/class-rawnaq-admin-dashboard.php:1650
 msgid "Simulate green building technologies to project ESG compliance, annual energy savings, and LEED certification ratings."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1423
+#: includes/class-rawnaq-admin-dashboard.php:1429
 msgid "Simulate thermal envelope upgrades, solar PV generation, and projected LEED certification ROI in real-time."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1480
+#: includes/class-rawnaq-admin-dashboard.php:1486
 msgid "Simulation · Pro"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:537
+#: includes/class-rawnaq-admin-dashboard.php:548
 msgid "Site-wide WhatsApp, reCAPTCHA v3, Mailchimp & HubSpot settings used by Smart Form and Floating Dock."
 msgstr ""
 
@@ -6092,12 +6352,16 @@ msgstr ""
 msgid "Size / scope"
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:28
+msgid "Slab, footing or column volume, with cement, sand and aggregate for the mix."
+msgstr ""
+
 #: includes/elementor/widgets/class-smart-form-widget.php:565
 #: includes/rawnaq-smart-form.php:753
 msgid "Small"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:297
+#: includes/class-rawnaq-admin-dashboard.php:298
 #: includes/elementor/widgets/class-smart-form-widget.php:13
 #: includes/rawnaq-smart-form.php:3606
 msgid "Smart Form"
@@ -6107,7 +6371,7 @@ msgstr ""
 msgid "Smart Form Fallback Leads:"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:565
+#: includes/class-rawnaq-admin-dashboard.php:576
 msgid "Smart Form Max Upload (MB)"
 msgstr ""
 
@@ -6115,7 +6379,7 @@ msgstr ""
 msgid "Smart Form Warning:"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1706
+#: includes/class-rawnaq-admin-dashboard.php:1712
 msgid "Smart Form is Rawnaq’s lightweight lead capture form for agency and SMB sites. Submissions are delivered via email (wp_mail) and/or open WhatsApp with a prefilled message template."
 msgstr ""
 
@@ -6127,7 +6391,7 @@ msgstr ""
 msgid "Smart Form submission"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2121
+#: includes/class-rawnaq-admin-dashboard.php:2127
 msgid "Smart Form webhook handler not found."
 msgstr ""
 
@@ -6139,7 +6403,7 @@ msgstr ""
 msgid "Smooth Scroll"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1513
+#: includes/class-rawnaq-admin-dashboard.php:1519
 msgid "Solar · Pro"
 msgstr ""
 
@@ -6175,15 +6439,15 @@ msgstr ""
 msgid "Spam check failed. Please try again."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:392
+#: includes/class-rawnaq-admin-dashboard.php:401
 msgid "Spatial & 3D"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1042
-#: includes/class-rawnaq-admin-dashboard.php:1077
-#: includes/class-rawnaq-admin-dashboard.php:1112
-#: includes/class-rawnaq-admin-dashboard.php:1182
-#: includes/class-rawnaq-admin-dashboard.php:1252
+#: includes/class-rawnaq-admin-dashboard.php:1048
+#: includes/class-rawnaq-admin-dashboard.php:1083
+#: includes/class-rawnaq-admin-dashboard.php:1118
+#: includes/class-rawnaq-admin-dashboard.php:1188
+#: includes/class-rawnaq-admin-dashboard.php:1258
 msgid "Spatial Innovation"
 msgstr ""
 
@@ -6228,7 +6492,7 @@ msgstr ""
 msgid "Star Rating"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:606
+#: includes/rawnaq-helpers.php:607
 msgid "Started with a small team and a clear product vision."
 msgstr ""
 
@@ -6274,6 +6538,22 @@ msgstr ""
 
 #: includes/class-rawnaq-smart-form-admin.php:378
 msgid "Status:"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:110
+msgid "Steel bars (rebar)"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:920
+msgid "Steel weight"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:921
+msgid "Steel weight (lb)"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:922
+msgid "Steel weight (tonnes)"
 msgstr ""
 
 #: includes/elementor/widgets/class-smart-form-widget.php:126
@@ -6329,7 +6609,7 @@ msgstr ""
 msgid "Story Chapters (JSON)"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:95
+#: includes/rawnaq-helpers.php:96
 msgid "Story Progress Counter"
 msgstr ""
 
@@ -6337,11 +6617,11 @@ msgstr ""
 msgid "Story Text Left, Media Right"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:148
+#: includes/rawnaq-helpers.php:149
 msgid "Story navigation"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1448
+#: includes/class-rawnaq-admin-dashboard.php:1454
 msgid "Story · Pro"
 msgstr ""
 
@@ -6357,12 +6637,13 @@ msgstr ""
 msgid "Stripe & Apex Financial"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1826
+#: includes/class-rawnaq-admin-dashboard.php:1832
 msgid "Structured portfolio showcase for AEC firms, agencies, and studios. Source projects from the built-in Case Studies CPT or manual repeaters."
 msgstr ""
 
 #: includes/elementor/widgets/class-case-study-grid-widget.php:335
 #: includes/elementor/widgets/class-flow-chart-widget.php:252
+#: includes/elementor/widgets/class-material-calc-widget.php:127
 #: includes/elementor/widgets/class-scroll-progress-toc-widget.php:255
 #: includes/elementor/widgets/class-smart-form-widget.php:518
 msgid "Style"
@@ -6467,7 +6748,7 @@ msgstr ""
 msgid "Suggestions for Improvement"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:645
+#: includes/rawnaq-helpers.php:646
 msgid "Suite Polish"
 msgstr ""
 
@@ -6483,7 +6764,11 @@ msgstr ""
 msgid "Surface"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1416
+#: includes/rawnaq-material-calc.php:96
+msgid "Surfaces to paint"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:1422
 msgid "Sustainability · Pro"
 msgstr ""
 
@@ -6509,7 +6794,7 @@ msgstr ""
 msgid "System Info"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1927
+#: includes/class-rawnaq-admin-dashboard.php:1933
 msgid "System Information"
 msgstr ""
 
@@ -6577,7 +6862,7 @@ msgstr ""
 msgid "Taxonomy"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:273
+#: includes/rawnaq-helpers.php:274
 msgid "Team"
 msgstr ""
 
@@ -6609,23 +6894,23 @@ msgstr ""
 msgid "Term Slugs"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:624
+#: includes/class-rawnaq-admin-dashboard.php:635
 msgid "Test Connection"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:636
+#: includes/class-rawnaq-admin-dashboard.php:647
 msgid "Test Email Delivery"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:660
+#: includes/class-rawnaq-admin-dashboard.php:671
 msgid "Test Webhook"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:656
+#: includes/class-rawnaq-admin-dashboard.php:667
 msgid "Test Webhook Endpoint"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2099
+#: includes/class-rawnaq-admin-dashboard.php:2105
 msgid "Test email sent successfully to %s!"
 msgstr ""
 
@@ -6663,19 +6948,19 @@ msgstr ""
 msgid "The GUID of a HubSpot form in the same portal."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:966
+#: includes/class-rawnaq-admin-dashboard.php:972
 msgid "The Get Quote Enterprise Engine is a high-converting, multi-step quotation system designed for agencies, studios, and high-ticket service businesses. It supports custom dynamic steps, real-time validations, Google Sheet auto-sync, CRM webhooks, WhatsApp routing, digital interactive proposals, and instant PDF invoice downloads."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:655
+#: includes/rawnaq-helpers.php:656
 msgid "The Problem"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1008
+#: includes/class-rawnaq-admin-dashboard.php:1014
 msgid "The Services & Pricing Calculator allows your clients to build custom project estimates in real time, choose service tiers, toggle add-on options, apply promo codes, switch currencies, and seamlessly bridge their calculation into the Get Quote system."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1551
+#: includes/class-rawnaq-admin-dashboard.php:1557
 msgid "The essential presale and leasing tool for high-rise residential towers, commercial headquarters, and mixed-use developments."
 msgstr ""
 
@@ -6688,6 +6973,10 @@ msgstr ""
 #: includes/elementor/widgets/class-scroll-story-widget.php:39
 #: includes/elementor/widgets/class-smart-form-widget.php:39
 msgid "Theme Preset"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:32
+msgid "Thickness / depth"
 msgstr ""
 
 #: includes/class-rawnaq-elements.php:856
@@ -6704,6 +6993,30 @@ msgstr ""
 
 #: includes/elementor/widgets/class-floating-dock-widget.php:167
 msgid "Thursday"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:80
+msgid "Tile length"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:79
+msgid "Tile width"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:915
+msgid "Tiles"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:74
+msgid "Tiles & flooring"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:75
+msgid "Tiles or planks for a floor, with grout gap, wastage and boxes."
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:82
+msgid "Tiles per box (0 if sold singly)"
 msgstr ""
 
 #: includes/elementor/widgets/class-tilt-card-widget.php:299
@@ -6732,13 +7045,13 @@ msgid "Tint"
 msgstr ""
 
 #: includes/divi/modules/class-et-case-study-grid.php:55
+#: includes/divi/modules/class-et-material-calc.php:60
 #: includes/elementor/widgets/class-case-study-grid-widget.php:63
 #: includes/elementor/widgets/class-case-study-grid-widget.php:118
 #: includes/elementor/widgets/class-flow-chart-widget.php:146
 #: includes/elementor/widgets/class-hub-diagram-widget.php:23
+#: includes/elementor/widgets/class-material-calc-widget.php:78
 #: includes/elementor/widgets/class-scroll-story-widget.php:98
-#: includes/elementor/widgets/class-scroll-timeline-widget.php:213
-#: includes/elementor/widgets/class-tilt-card-widget.php:76
 msgid "Title"
 msgstr ""
 
@@ -6773,7 +7086,7 @@ msgstr ""
 msgid "Toggle Table of Contents"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:362
+#: includes/class-rawnaq-admin-dashboard.php:371
 msgid "Toggle elements on or off. Disabled modules never enqueue frontend assets to guarantee ultimate site performance."
 msgstr ""
 
@@ -6817,15 +7130,19 @@ msgstr ""
 msgid "Top to bottom"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1857
+#: includes/class-rawnaq-admin-dashboard.php:1863
 msgid "Total clicks"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:923
+msgid "Total length"
 msgstr ""
 
 #: includes/elementor/widgets/class-floating-dock-widget.php:488
 msgid "Totals appear under Rawnaq → Dock Stats in wp-admin."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1544
+#: includes/class-rawnaq-admin-dashboard.php:1550
 msgid "Tower · Pro"
 msgstr ""
 
@@ -6837,7 +7154,7 @@ msgstr ""
 msgid "Trigger Delay (sec)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:733
+#: includes/class-rawnaq-admin-dashboard.php:744
 msgid "Trigger Method"
 msgstr ""
 
@@ -6845,11 +7162,11 @@ msgstr ""
 msgid "Trigger Scroll (%)"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:525
+#: includes/class-rawnaq-admin-dashboard.php:536
 msgid "Try searching for a different keyword or select another category filter above."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1845
+#: includes/class-rawnaq-admin-dashboard.php:1851
 msgid "Try searching with different keywords like \"calculator\", \"quote\", \"shortcode\", or clear your filter."
 msgstr ""
 
@@ -6887,10 +7204,10 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1965
-#: includes/class-rawnaq-admin-dashboard.php:2022
-#: includes/class-rawnaq-admin-dashboard.php:2072
-#: includes/class-rawnaq-admin-dashboard.php:2112
+#: includes/class-rawnaq-admin-dashboard.php:1971
+#: includes/class-rawnaq-admin-dashboard.php:2028
+#: includes/class-rawnaq-admin-dashboard.php:2078
+#: includes/class-rawnaq-admin-dashboard.php:2118
 msgid "Unauthorized user request."
 msgstr ""
 
@@ -6917,8 +7234,12 @@ msgstr ""
 msgid "Unique key used as parent reference."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:491
-#: includes/class-rawnaq-admin-dashboard.php:513
+#: includes/rawnaq-material-calc.php:261
+msgid "Units"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:502
+#: includes/class-rawnaq-admin-dashboard.php:524
 msgid "Unlock with Rawnaq Pro →"
 msgstr ""
 
@@ -7016,7 +7337,7 @@ msgstr ""
 msgid "Vertical alignment of cell content."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:250
+#: includes/class-rawnaq-admin-dashboard.php:251
 msgid "Vertical milestone timeline with a scroll-driven progress line."
 msgstr ""
 
@@ -7041,15 +7362,15 @@ msgstr ""
 msgid "View Discovery Notes"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1408
+#: includes/rawnaq-case-study.php:1411
 msgid "View case study"
 msgstr ""
 
-#: includes/rawnaq-case-study.php:1246
+#: includes/rawnaq-case-study.php:1249
 msgid "View full page"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:1250
+#: includes/rawnaq-helpers.php:1251
 msgid "Vimeo video"
 msgstr ""
 
@@ -7057,8 +7378,41 @@ msgstr ""
 msgid "Visual styling preset for the form container and controls."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:239
+#: includes/class-rawnaq-admin-dashboard.php:240
 msgid "Visuals"
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:914
+msgid "Wall area (net)"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:52
+msgid "Wall height"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:51
+msgid "Wall length"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:53
+msgid "Wall thickness"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:101
+msgid "Walls and ceiling"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:100
+msgid "Walls only"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:44
+#: includes/rawnaq-material-calc.php:70
+msgid "Wastage"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:83
+msgid "Wastage (cuts and breakage)"
 msgstr ""
 
 #: includes/class-rawnaq-elements.php:287
@@ -7071,7 +7425,7 @@ msgstr ""
 
 #: includes/divi/modules/class-et-smart-form.php:150
 #: includes/elementor/widgets/class-smart-form-widget.php:325
-#: includes/gutenberg/class-gutenberg-loader.php:502
+#: includes/gutenberg/class-gutenberg-loader.php:526
 #: includes/rawnaq-smart-form.php:700
 #: includes/rawnaq-smart-form.php:3633
 msgid "We received your message"
@@ -7094,7 +7448,7 @@ msgstr ""
 msgid "Webhook HTTPS URL"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:646
+#: includes/class-rawnaq-admin-dashboard.php:657
 msgid "Webhook Secret (HMAC-SHA256)"
 msgstr ""
 
@@ -7103,7 +7457,7 @@ msgstr ""
 msgid "Webhook URL"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2143
+#: includes/class-rawnaq-admin-dashboard.php:2149
 msgid "Webhook delivered successfully! (HTTP 200)"
 msgstr ""
 
@@ -7111,7 +7465,7 @@ msgstr ""
 msgid "Webhook endpoint responded with HTTP %d."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2141
+#: includes/class-rawnaq-admin-dashboard.php:2147
 msgid "Webhook test failed: %s"
 msgstr ""
 
@@ -7119,11 +7473,19 @@ msgstr ""
 msgid "Wednesday"
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:111
+msgid "Weight of reinforcement bars from diameter, number and length."
+msgstr ""
+
+#: includes/class-rawnaq-elements.php:924
+msgid "Weight per metre"
+msgstr ""
+
 #: includes/class-rawnaq-admin-dashboard.php:169
 msgid "Welcome to Rawnaq!"
 msgstr ""
 
-#: includes/rawnaq-helpers.php:620
+#: includes/rawnaq-helpers.php:621
 msgid "What We Build Now"
 msgstr ""
 
@@ -7135,7 +7497,7 @@ msgstr ""
 msgid "What type of project is this?"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1707
+#: includes/class-rawnaq-admin-dashboard.php:1713
 msgid "What you can configure:"
 msgstr ""
 
@@ -7190,7 +7552,7 @@ msgstr ""
 msgid "WhatsApp Redirect"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1880
+#: includes/class-rawnaq-admin-dashboard.php:1886
 msgid "WhatsApp Status Override"
 msgstr ""
 
@@ -7202,7 +7564,7 @@ msgstr ""
 msgid "WhatsApp number"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1902
+#: includes/class-rawnaq-admin-dashboard.php:1908
 msgid "WhatsApp opened (Web / mobile)"
 msgstr ""
 
@@ -7230,8 +7592,12 @@ msgstr ""
 msgid "Wide Showcase (3 Columns)"
 msgstr ""
 
+#: includes/rawnaq-material-calc.php:31
+msgid "Width"
+msgstr ""
+
 #: includes/elementor/widgets/class-bento-grid-widget.php:164
-#: includes/rawnaq-helpers.php:1318
+#: includes/rawnaq-helpers.php:1319
 msgid "WordPress Post"
 msgstr ""
 
@@ -7239,7 +7605,7 @@ msgstr ""
 msgid "WordPress Post Options"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1933
+#: includes/class-rawnaq-admin-dashboard.php:1939
 msgid "WordPress Version:"
 msgstr ""
 
@@ -7251,7 +7617,7 @@ msgstr ""
 msgid "Work Email"
 msgstr ""
 
-#: includes/class-rawnaq-elements.php:912
+#: includes/class-rawnaq-elements.php:948
 msgid "Year"
 msgstr ""
 
@@ -7290,7 +7656,7 @@ msgstr ""
 msgid "You will receive a confirmation email upon submission."
 msgstr ""
 
-#: includes/rawnaq-helpers.php:1249
+#: includes/rawnaq-helpers.php:1250
 msgid "YouTube video"
 msgstr ""
 
@@ -7315,15 +7681,15 @@ msgstr ""
 msgid "Your session expired. Please reload the page and try again."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1113
+#: includes/class-rawnaq-admin-dashboard.php:1119
 msgid "Zero-API vector SVG global maps (World, GCC, Europe, USA, BD, Dubai), pulse radar pins & project popups."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1289
+#: includes/class-rawnaq-admin-dashboard.php:1295
 msgid "Zero-API vector SVG world map with pulse beacons, sector filters & floating Bento preview cards."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1183
+#: includes/class-rawnaq-admin-dashboard.php:1189
 msgid "Zero-dependency WebGL equirectangular VR viewer, 3D GLTF model orbit, gyro mobile support & spherical hotspots."
 msgstr ""
 
@@ -7335,11 +7701,11 @@ msgstr ""
 msgid "Zoom media"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2080
+#: includes/class-rawnaq-admin-dashboard.php:2086
 msgid "[%s] Smart Form Test Email"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2125
+#: includes/class-rawnaq-admin-dashboard.php:2131
 msgid "[Test] Rawnaq Smart Form Webhook Test"
 msgstr ""
 
@@ -7349,6 +7715,10 @@ msgstr ""
 
 #: includes/elementor/widgets/class-flow-chart-widget.php:162
 msgid "e.g. Yes / No / Approved"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:40
+msgid "general"
 msgstr ""
 
 #: includes/rawnaq-smart-form.php:441
@@ -7368,17 +7738,25 @@ msgstr ""
 msgid "jane@example.com"
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:1725
+#: includes/rawnaq-material-calc.php:41
+msgid "lean"
+msgstr ""
+
+#: includes/class-rawnaq-admin-dashboard.php:1731
 msgid "macOS-style dock menu, multi-agent WhatsApp routing, business hours, and click counters."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:258
+#: includes/class-rawnaq-admin-dashboard.php:259
 msgid "macOS-style floating dock with proximity magnification and badges."
 msgstr ""
 
 #: includes/elementor/widgets/class-smart-form-widget.php:457
 #: includes/rawnaq-smart-form.php:643
 msgid "reCAPTCHA v3"
+msgstr ""
+
+#: includes/rawnaq-material-calc.php:39
+msgid "strong"
 msgstr ""
 
 #: includes/rawnaq-smart-form.php:3602
@@ -7394,7 +7772,7 @@ msgstr ""
 msgid "wp_mail returned false."
 msgstr ""
 
-#: includes/class-rawnaq-admin-dashboard.php:2101
+#: includes/class-rawnaq-admin-dashboard.php:2107
 msgid "wp_mail returned false. Please check your mail server configuration."
 msgstr ""
 

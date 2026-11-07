@@ -98,7 +98,7 @@ class Rawnaq_ET_Material_Calc extends ET_Builder_Module {
 				],
 				'accent'   => [
 					'label'           => esc_html__( 'Accent Colour', 'rawnaq' ),
-					'type'            => 'color-alpha',
+					'type'            => 'color',
 					'option_category' => 'basic_option',
 					'default'         => '#fbbf24',
 					'toggle_slug'     => 'main_content',
