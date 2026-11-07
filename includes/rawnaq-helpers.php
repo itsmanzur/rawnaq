@@ -42,6 +42,7 @@ function rawnaq_default_modules() {
 		'scroll-story'        => '1',
 		'smart-form'          => '1',
 		'case-study-grid'     => '1',
+		'material-calc'       => '1',
 	];
 
 	/**
@@ -1828,5 +1829,9 @@ require_once RAWNAQ_PATH . 'includes/rawnaq-schema.php';
 
 if ( rawnaq_is_module_enabled( 'scroll-progress-toc' ) ) {
 	require_once RAWNAQ_PATH . 'includes/rawnaq-scroll-progress-toc.php';
+}
+
+if ( rawnaq_is_module_enabled( 'material-calc' ) ) {
+	require_once RAWNAQ_PATH . 'includes/rawnaq-material-calc.php';
 }
 

@@ -199,6 +199,7 @@ class Rawnaq_Admin_Dashboard {
                             'scroll-story'               => 'layout',
                             'smart-form'                 => 'interactions',
                             'case-study-grid'            => 'showcase',
+                            'material-calc'              => 'estimation',
 
                             // Pro Extensions
                             'widget-actions'             => 'interactions',
@@ -305,6 +306,14 @@ class Rawnaq_Admin_Dashboard {
                                 'title'       => __( 'Case-Study Grid', 'rawnaq' ),
                                 'desc'        => __( 'CPT/manual portfolio with Discuss CTA (Form/Dock) and Story/Timeline highlight sync.', 'rawnaq' ),
                                 'icon'        => 'cases',
+                            ],
+                            [
+                                'key'         => 'material-calc',
+                                'badge'       => __( 'Construction', 'rawnaq' ),
+                                'tone'        => 'tone-nav',
+                                'title'       => __( 'Material Quantity Calculator', 'rawnaq' ),
+                                'desc'        => __( 'Concrete, bricks, tiles, paint and steel quantities in metric or feet and inches.', 'rawnaq' ),
+                                'icon'        => 'calculators',
                             ],
                         ];
 
@@ -1976,7 +1985,7 @@ class Rawnaq_Admin_Dashboard {
             : [];
         $allowed = function_exists( 'rawnaq_default_modules' )
             ? array_keys( rawnaq_default_modules() )
-            : [ 'hub-diagram', 'tilt-card', 'scroll-timeline', 'floating-dock', 'flow-chart', 'scroll-progress-toc', 'bento-grid', 'scroll-story', 'smart-form', 'case-study-grid' ];
+            : [ 'hub-diagram', 'tilt-card', 'scroll-timeline', 'floating-dock', 'flow-chart', 'scroll-progress-toc', 'bento-grid', 'scroll-story', 'smart-form', 'case-study-grid', 'material-calc' ];
 
         $sanitized_modules = [];
         foreach ( $allowed as $slug ) {

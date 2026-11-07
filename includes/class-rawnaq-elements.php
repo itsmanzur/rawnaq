@@ -889,6 +889,42 @@ class Rawnaq_Elements {
             ],
         ] );
 
+        // 11. Material Quantity Calculator
+        wp_register_style(
+            'rawnaq-material-calc',
+            rawnaq_asset_url( 'css/material-calc.css' ),
+            [],
+            RAWNAQ_VERSION
+        );
+        wp_register_script(
+            'rawnaq-material-calc',
+            rawnaq_asset_url( 'js/material-calc.js' ),
+            [],
+            RAWNAQ_VERSION,
+            true
+        );
+        wp_localize_script( 'rawnaq-material-calc', 'rawnaqMC', [
+            'i18n' => [
+                'enterValues'    => __( 'Enter the sizes to see the quantities.', 'rawnaq' ),
+                'concreteVolume' => __( 'Concrete volume', 'rawnaq' ),
+                'cementBags'     => __( 'Cement (50 kg bags)', 'rawnaq' ),
+                'sand'           => __( 'Sand', 'rawnaq' ),
+                'aggregate'      => __( 'Aggregate', 'rawnaq' ),
+                'bricks'         => __( 'Bricks', 'rawnaq' ),
+                'wallArea'       => __( 'Wall area (net)', 'rawnaq' ),
+                'tiles'          => __( 'Tiles', 'rawnaq' ),
+                'floorArea'      => __( 'Floor area', 'rawnaq' ),
+                'boxes'          => __( 'Boxes', 'rawnaq' ),
+                'paintNeeded'    => __( 'Paint needed', 'rawnaq' ),
+                'paintedArea'    => __( 'Area to paint', 'rawnaq' ),
+                'steelWeight'    => __( 'Steel weight', 'rawnaq' ),
+                'steelWeightLb'  => __( 'Steel weight (lb)', 'rawnaq' ),
+                'steelTonnes'    => __( 'Steel weight (tonnes)', 'rawnaq' ),
+                'totalLength'    => __( 'Total length', 'rawnaq' ),
+                'weightPerMetre' => __( 'Weight per metre', 'rawnaq' ),
+            ],
+        ] );
+
         // 10. Case-Study Grid
         wp_register_style(
             'rawnaq-case-study-grid',

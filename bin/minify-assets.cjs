@@ -56,7 +56,8 @@ const modules = [
     'flow-chart',
     'hub-diagram',
     'case-study-grid',
-    'scroll-progress-toc'
+    'scroll-progress-toc',
+    'material-calc'
 ];
 
 const cssDir = path.join(__dirname, '..', 'assets', 'css');

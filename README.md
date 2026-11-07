@@ -14,10 +14,12 @@ Rawnaq — Widgets and blocks for architects, interior designers and builders. L
 8. **Scroll Story Chapters**: Cinematic scrollytelling with pinned media and video sync.
 9. **Smart Form**: Multi-step lead form with email receipts, WhatsApp redirect, and Mailchimp/HubSpot CRM delivery.
 10. **Case-Study Grid**: Dynamic portfolio grid with multi-filter chips, modal gallery lightbox, and AJAX pagination.
+11. **Material Quantity Calculator**: Concrete, bricks and mortar, tiles, paint and rebar quantities in metric or feet/inches.
 
 ## 📚 Documentation & Roadmaps
 
 - [Future Modules Roadmap](docs/rawnaq-future-modules-roadmap.md)
+- [Free construction widgets plan](docs/rawnaq-free-widget.md)
 - [Bento Grid Roadmap](docs/rawnaq-bento-grid-roadmap.md)
 - [Scroll Timeline Benchmark](docs/scroll-timeline-benchmark.md)
 

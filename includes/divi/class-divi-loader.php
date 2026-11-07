@@ -84,6 +84,12 @@ class Rawnaq_Divi_Loader {
 			new Rawnaq_ET_Case_Study_Grid();
 		}
 
+		// 11. Material Quantity Calculator
+		if ( rawnaq_is_module_enabled( 'material-calc' ) && file_exists( $module_dir . 'class-et-material-calc.php' ) ) {
+			require_once $module_dir . 'class-et-material-calc.php';
+			new Rawnaq_ET_Material_Calc();
+		}
+
 		// 10. Floating Dock
 		if ( rawnaq_is_module_enabled( 'floating-dock' ) && file_exists( $module_dir . 'class-et-floating-dock.php' ) ) {
 			require_once $module_dir . 'class-et-floating-dock.php';

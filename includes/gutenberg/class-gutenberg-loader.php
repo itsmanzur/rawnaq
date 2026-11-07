@@ -307,6 +307,30 @@ class Rawnaq_Gutenberg_Loader {
             ] );
         }
 
+        // 11. Material Quantity Calculator Block
+        if ( rawnaq_is_module_enabled( 'material-calc' ) ) {
+            register_block_type( 'rawnaq/material-calc', [
+                'editor_script'   => 'rawnaq-gutenberg-editor',
+                'editor_style'    => 'rawnaq-material-calc',
+                'style'           => 'rawnaq-material-calc',
+                'render_callback' => [ $this, 'render_material_calc_block' ],
+                'supports'        => [
+                    'align'  => [ 'wide', 'full' ],
+                    'anchor' => true,
+                ],
+                'attributes'      => [
+                    'calculators' => [ 'type' => 'string', 'default' => 'concrete,bricks,tiles,paint,rebar' ],
+                    'unit'        => [ 'type' => 'string', 'default' => 'metric' ],
+                    'title'       => [ 'type' => 'string', 'default' => 'Material quantity calculator' ],
+                    'intro'       => [ 'type' => 'string', 'default' => 'Quick estimates for concrete, bricks, tiles, paint and steel.' ],
+                    'showCta'     => [ 'type' => 'boolean', 'default' => false ],
+                    'ctaText'     => [ 'type' => 'string', 'default' => 'Get a quote for this project' ],
+                    'ctaUrl'      => [ 'type' => 'string', 'default' => '' ],
+                    'accent'      => [ 'type' => 'string', 'default' => '' ],
+                ],
+            ] );
+        }
+
         // 6. Scroll Progress + TOC Block
         if ( rawnaq_is_module_enabled( 'scroll-progress-toc' ) ) {
             register_block_type( 'rawnaq/scroll-progress-toc', [
@@ -611,6 +635,7 @@ class Rawnaq_Gutenberg_Loader {
         wp_enqueue_style( 'rawnaq-scroll-story' );
         wp_enqueue_style( 'rawnaq-smart-form' );
         wp_enqueue_style( 'rawnaq-case-study-grid' );
+        wp_enqueue_style( 'rawnaq-material-calc' );
         wp_enqueue_script( 'rawnaq-hub-diagram' );
         wp_enqueue_script( 'rawnaq-flow-chart' );
         wp_enqueue_script( 'rawnaq-bento-grid' );
@@ -1416,6 +1441,25 @@ class Rawnaq_Gutenberg_Loader {
         </div>
         <?php
         return ob_get_clean();
+    }
+
+    public function render_material_calc_block( $attributes ) {
+        wp_enqueue_style( 'rawnaq-material-calc' );
+        wp_enqueue_script( 'rawnaq-material-calc' );
+
+        $wrapper_attrs = [];
+        if ( function_exists( 'get_block_wrapper_attributes' ) ) {
+            $w_str = get_block_wrapper_attributes();
+            if ( preg_match( '/\bclass=[\'"]([^\'"]+)[\'"]/', $w_str, $cm ) ) {
+                $wrapper_attrs['class'] = $cm[1];
+            }
+        }
+
+        if ( function_exists( 'rawnaq_mc_cfg_sanitize' ) && function_exists( 'rawnaq_mc_markup' ) ) {
+            return rawnaq_mc_markup( rawnaq_mc_cfg_sanitize( (array) $attributes ), [], $wrapper_attrs );
+        }
+
+        return '';
     }
 
     public function render_scroll_progress_toc_block( $attributes ) {

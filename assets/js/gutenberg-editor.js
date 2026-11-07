@@ -4524,6 +4524,91 @@
         }
     });
 
+    /* ---------------------------------------------------------------- Material Quantity Calculator */
+    var MC_CALCS = {
+        concrete: 'Concrete',
+        bricks: 'Bricks & mortar',
+        tiles: 'Tiles & flooring',
+        paint: 'Paint',
+        rebar: 'Steel bars (rebar)'
+    };
+
+    registerBlockType('rawnaq/material-calc', {
+        title: 'Material Quantity Calculator (Rawnaq)',
+        icon: 'calculator',
+        category: 'design',
+        attributes: {
+            calculators: { type: 'string', default: 'concrete,bricks,tiles,paint,rebar' },
+            unit: { type: 'string', default: 'metric' },
+            title: { type: 'string', default: 'Material quantity calculator' },
+            intro: { type: 'string', default: 'Quick estimates for concrete, bricks, tiles, paint and steel.' },
+            showCta: { type: 'boolean', default: false },
+            ctaText: { type: 'string', default: 'Get a quote for this project' },
+            ctaUrl: { type: 'string', default: '' },
+            accent: { type: 'string', default: '' }
+        },
+        edit: function(props) {
+            var a = props.attributes;
+            var set = props.setAttributes;
+            var chosen = (a.calculators || '').split(',').filter(Boolean);
+
+            function toggle(key, on) {
+                var next = chosen.filter(function(k) { return k !== key; });
+                if (on) { next.push(key); }
+                if (!next.length) { next = [key]; }
+                var ordered = Object.keys(MC_CALCS).filter(function(k) { return next.indexOf(k) !== -1; });
+                set({ calculators: ordered.join(',') });
+            }
+
+            var toggles = Object.keys(MC_CALCS).map(function(key) {
+                return el(ToggleControl, {
+                    key: key,
+                    label: MC_CALCS[key],
+                    checked: chosen.indexOf(key) !== -1,
+                    onChange: function(v) { toggle(key, v); }
+                });
+            });
+
+            return el(Fragment, null,
+                el(InspectorControls, null,
+                    el(PanelBody, { title: 'Calculators', initialOpen: true }, toggles),
+                    el(PanelBody, { title: 'Content', initialOpen: false },
+                        el(SelectControl, {
+                            label: 'Default units',
+                            value: a.unit,
+                            options: [ { label: 'Metric (m, cm, mm)', value: 'metric' }, { label: 'Feet and inches', value: 'imperial' } ],
+                            onChange: function(v) { set({ unit: v }); }
+                        }),
+                        el(TextControl, { label: 'Title', value: a.title, onChange: function(v) { set({ title: v }); } }),
+                        el(TextareaControl, { label: 'Intro text', value: a.intro, onChange: function(v) { set({ intro: v }); } }),
+                        el(ToggleControl, { label: 'Show quote button', checked: !!a.showCta, onChange: function(v) { set({ showCta: v }); } }),
+                        a.showCta ? el(TextControl, { label: 'Button text', value: a.ctaText, onChange: function(v) { set({ ctaText: v }); } }) : null,
+                        a.showCta ? el(TextControl, { label: 'Button link', value: a.ctaUrl, onChange: function(v) { set({ ctaUrl: v }); } }) : null
+                    ),
+                    el(PanelBody, { title: 'Style', initialOpen: false },
+                        el('p', { style: { margin: '0 0 8px' } }, 'Accent colour'),
+                        el(ColorPalette, { value: a.accent, onChange: function(v) { set({ accent: v || '' }); } })
+                    )
+                ),
+                el('div', { className: 'rawnaq-mc', style: a.accent ? { '--mc-accent': a.accent } : {} },
+                    el('div', { className: 'rawnaq-mc-head' },
+                        el('h3', { className: 'rawnaq-mc-title' }, a.title),
+                        el('p', { className: 'rawnaq-mc-intro' }, a.intro)
+                    ),
+                    el('div', { className: 'rawnaq-mc-tabs' },
+                        chosen.map(function(key, i) {
+                            return el('span', { key: key, className: 'rawnaq-mc-tab', 'aria-selected': i === 0 ? 'true' : 'false' }, MC_CALCS[key]);
+                        })
+                    ),
+                    el('p', { className: 'rawnaq-mc-note' }, 'The calculator is interactive on the live page.')
+                )
+            );
+        },
+        save: function() {
+            return null;
+        }
+    });
+
 })(
     window.wp.blocks,
     window.wp.blockEditor || window.wp.editor,

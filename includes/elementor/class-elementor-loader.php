@@ -184,6 +184,12 @@ class Rawnaq_Elementor_Loader {
             require_once RAWNAQ_PATH . 'includes/elementor/widgets/class-case-study-grid-widget.php';
             $widgets_manager->register( new Rawnaq_Case_Study_Grid_Widget() );
         }
+
+        // 11. Material Quantity Calculator
+        if ( rawnaq_is_module_enabled( 'material-calc' ) ) {
+            require_once RAWNAQ_PATH . 'includes/elementor/widgets/class-material-calc-widget.php';
+            $widgets_manager->register( new Rawnaq_Material_Calc_Widget() );
+        }
     }
 }
 

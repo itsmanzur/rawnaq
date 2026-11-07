@@ -19,6 +19,7 @@ Rawnaq is a modular library of interactive widgets and blocks designed for clean
 * **Win enquiries** – Smart Form collects project briefs in steps (project type, size, budget, files, signature) and sends them to email, WhatsApp or your CRM.
 * **Show projects** – Case-Study Grid filters your portfolio by type, with lightbox galleries. Scroll Story and 3D Tilt Card present a project in a few scrolls.
 * **Explain how you work** – Scroll Sync Timeline and Flow Chart show your design-to-handover process or a project programme. Hub Diagram shows how disciplines connect.
+* **Plan materials** – Material Quantity Calculator gives visitors quick estimates of concrete, bricks, tiles, paint and rebar, then sends them to your quote form.
 * **Keep clients close** – Floating Dock puts call, WhatsApp and enquiry buttons on every page.
 * **Go further with Pro** – Rawnaq Pro adds quote and BOQ estimators, before/after spatial slider, 360° viewer, floor plan navigator, material restyler and a client milestone tracker.
 
@@ -29,7 +30,7 @@ Rawnaq is a modular library of interactive widgets and blocks designed for clean
 * **One module across three builders** — Every feature works identically in Elementor, Gutenberg, and Divi Builder without switching tools.
 * **Privacy and GDPR friendly** — Form submissions stay privately in your database with full support for WordPress personal data export and erase tools.
 
-= 10 modules, one plugin =
+= 11 modules, one plugin =
 
 1. **Smart Form** – Multi-step lead forms with file upload, signature, WhatsApp redirect, live price estimation, and CRM/webhook delivery.
 2. **Hub Diagram** – Interactive radial workflow diagrams that illustrate core processes with one-click PNG and SVG export.
@@ -41,6 +42,7 @@ Rawnaq is a modular library of interactive widgets and blocks designed for clean
 8. **Scroll Story** – Immersive scrollytelling presentations with sticky media viewports and narrative text chapters.
 9. **Scroll Progress & TOC** – Live reading progress bar and auto-generated table of contents that improve long-form content navigation.
 10. **Case-Study Grid** – Filterable portfolio and project showcases with responsive categories, lightbox galleries, and link-outs.
+11. **Material Quantity Calculator** – Concrete, bricks and mortar, tiles, paint and steel bar quantities in metric or feet and inches, with an optional quote button.
 
 = Works with =
 
@@ -90,7 +92,7 @@ No. Modules work seamlessly with Elementor, Gutenberg, and Divi Builder. Enable 
 
 = Does Rawnaq support Divi Builder? =
 
-Yes! All 10 free modules and extensions include dedicated Divi Visual Builder modules with real-time controls.
+Yes! All 11 free modules and extensions include dedicated Divi Visual Builder modules with real-time controls.
 
 = Does Smart Form send data to Rawnaq servers? =
 
