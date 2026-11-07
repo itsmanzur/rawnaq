@@ -464,7 +464,9 @@ class Rawnaq_Admin_Dashboard {
                                                 <span title="Elementor Widget">Elementor</span>
                                                 <span title="Gutenberg Block">Gutenberg</span>
                                                 <span title="Divi Module">Divi</span>
-                                                <span title="WordPress Shortcode">[shortcode]</span>
+                                                <?php if ( $is_pro ) : ?>
+                                                    <span title="WordPress Shortcode">[shortcode]</span>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -839,18 +841,13 @@ class Rawnaq_Admin_Dashboard {
                                             <td>Embeds Get Quote wizard or trigger button anywhere.</td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Smart Form</strong></td>
-                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_smart_form]">[rawnaq_smart_form] <span class="dashicons dashicons-admin-page"></span></span></td>
-                                            <td>Embeds lightweight Smart Form lead capture.</td>
-                                        </tr>
-                                        <tr>
                                             <td><strong>Spatial Spec Slider (Sprint 1)</strong></td>
                                             <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_spatial_slider]">[rawnaq_spatial_slider] <span class="dashicons dashicons-admin-page"></span></span></td>
                                             <td>Multi-layer before/after CAD & spec slider with 2x zoom loupe.</td>
                                         </tr>
                                         <tr>
                                             <td><strong>Moodboard & Finishes Builder (Sprint 2)</strong></td>
-                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_moodboard_builder]">[rawnaq_moodboard_builder] <span class="dashicons dashicons-admin-page"></span></span></td>
+                                            <td><span class="rawnaq-copy-badge" data-copy="[rawnaq_moodboard]">[rawnaq_moodboard] <span class="dashicons dashicons-admin-page"></span></span></td>
                                             <td>Interactive materials & finishes palette with PDF/PNG spec export.</td>
                                         </tr>
                                         <tr>
@@ -1096,7 +1093,7 @@ class Rawnaq_Admin_Dashboard {
                                 <ul>
                                     <li><strong>Elementor:</strong> Add <em>Spatial Moodboard & Palette (Pro)</em> widget to showcase design collections.</li>
                                     <li><strong>Gutenberg Block:</strong> Add <em>Spatial Moodboard & Palette</em> block with customizable swatches and live canvas.</li>
-                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_moodboard_builder]">[rawnaq_moodboard_builder]</span></li>
+                                    <li><strong>Shortcode:</strong> <span class="rawnaq-copy-badge" data-copy="[rawnaq_moodboard]">[rawnaq_moodboard]</span></li>
                                 </ul>
                             </div>
                         </div>
