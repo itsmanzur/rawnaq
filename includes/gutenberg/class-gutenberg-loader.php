@@ -440,6 +440,7 @@ class Rawnaq_Gutenberg_Loader {
                     'featuredTo'  => [ 'type' => 'string', 'default' => '#134e4a' ],
                     'ctaBg'       => [ 'type' => 'string', 'default' => '#fbbf24' ],
                     'ctaColor'    => [ 'type' => 'string', 'default' => '#92400e' ],
+                    'titleTag'    => [ 'type' => 'string', 'default' => 'div' ],
                     'cellsJson'   => [
                         'type'    => 'string',
                         'default' => '[{"type":"featured","col":2,"row":2,"tag":"Spatial Intelligence","title":"Autonomous Spatial Design & AI Architecture","subtitle":"End-to-end cognitive spatial modeling and real-time biometric telemetry delivering 99.8% operational precision.","icon":"dashicons-networking","image":"","video":"","stat":"","suffix":"","prefix":"","link":""},{"type":"image","col":2,"row":1,"tag":"Global Landmark","title":"Turnkey Penthouse & Commercial Flagships","subtitle":"Award-winning sustainable luxury landmarks delivered across 18 countries.","icon":"","image":"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900","video":"","stat":"","suffix":"","prefix":"","link":""},{"type":"stat","col":1,"row":1,"tag":"Growth Index","title":"","subtitle":"Average Client ROI","icon":"","image":"","video":"","stat":"240","suffix":"%","prefix":"+","link":""},{"type":"text","col":1,"row":1,"tag":"Core Tech","title":"Sub-50ms Telemetry","subtitle":"Streaming WebSocket events","icon":"dashicons-performance","image":"","video":"","stat":"","suffix":"","prefix":"","link":""}]',
@@ -1517,7 +1518,13 @@ class Rawnaq_Gutenberg_Loader {
             'ctaBg'       => '#fbbf24',
             'ctaColor'    => '#92400e',
             'cellsJson'   => '[]',
+            'titleTag'    => 'div',
         ] );
+
+        // Every colour ends up inside a style attribute: allow colour syntax only.
+        $color = static function ( $key, $fallback ) use ( $a ) {
+            return rawnaq_sanitize_css_color( $a[ $key ] ?? '', $fallback );
+        };
 
         $preset = sanitize_key( $a['preset'] );
         if ( 'wide' === $preset ) {
@@ -1556,20 +1563,20 @@ class Rawnaq_Gutenberg_Loader {
             $col_gap,
             $row_gap,
             absint( $a['radius'] ),
-            esc_attr( $a['tagBg'] ),
-            esc_attr( $a['tagColor'] ),
-            esc_attr( $a['titleColor'] ),
-            esc_attr( $a['subColor'] ),
-            esc_attr( $a['iconColor'] ),
-            esc_attr( $a['statColor'] ),
-            esc_attr( $a['cellBg'] ),
-            esc_attr( $a['cellBorder'] ),
-            esc_attr( $a['featuredFrom'] ),
-            esc_attr( $a['featuredTo'] ),
-            esc_attr( $a['iconColor'] ?: '#0f766e' ),
-            esc_attr( (string) $overlay_opacity ),
-            esc_attr( $a['ctaBg'] ),
-            esc_attr( $a['ctaColor'] )
+            $color( 'tagBg', '#fef3c7' ),
+            $color( 'tagColor', '#92400e' ),
+            $color( 'titleColor', '#13231c' ),
+            $color( 'subColor', '#5c6f66' ),
+            $color( 'iconColor', '#0f766e' ),
+            $color( 'statColor', '#0f766e' ),
+            $color( 'cellBg', '#ffffff' ),
+            $color( 'cellBorder', '#d7e2dc' ),
+            $color( 'featuredFrom', '#0f766e' ),
+            $color( 'featuredTo', '#134e4a' ),
+            $color( 'iconColor', '#0f766e' ),
+            (string) floatval( $overlay_opacity ),
+            $color( 'ctaBg', '#fbbf24' ),
+            $color( 'ctaColor', '#92400e' )
         );
 
         // InnerBlocks path (saved cell markup).
@@ -1577,6 +1584,7 @@ class Rawnaq_Gutenberg_Loader {
             $classes[] = 'is-innerblocks';
             ob_start();
             ?>
+            <div class="rawnaq-bento-stage">
             <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
                  style="<?php echo esc_attr( $style ); ?>"
                  data-cols="<?php echo esc_attr( (string) $cols ); ?>"
@@ -1586,363 +1594,30 @@ class Rawnaq_Gutenberg_Loader {
                  role="list">
                 <?php echo wp_kses_post( $content ); ?>
             </div>
+            </div>
             <?php
             return ob_get_clean();
         }
 
-        $cells_raw = json_decode( $a['cellsJson'], true );
+        $cells_raw = json_decode( (string) $a['cellsJson'], true );
         if ( ! is_array( $cells_raw ) ) {
             $cells_raw = [];
         }
 
-        $testimonials = [];
-
-        ob_start();
-        ?>
-        <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
-             style="<?php echo esc_attr( $style ); ?>"
-             data-cols="<?php echo esc_attr( (string) $cols ); ?>"
-             data-reveal="<?php echo ! empty( $a['reveal'] ) ? '1' : '0'; ?>"
-             data-hover="<?php echo esc_attr( $hover ); ?>"
-             role="list">
-            <?php foreach ( $cells_raw as $cell ) :
-                $type     = sanitize_key( $cell['type'] ?? 'text' );
-                $tag      = sanitize_text_field( $cell['tag'] ?? '' );
-                $title    = sanitize_text_field( $cell['title'] ?? '' );
-                $subtitle = sanitize_text_field( $cell['subtitle'] ?? '' );
-                $icon     = sanitize_html_class( $cell['icon'] ?? '' );
-                $image    = ! empty( $cell['image'] ) ? esc_url( $cell['image'] ) : '';
-                $video    = ! empty( $cell['video'] ) ? esc_url( $cell['video'] ) : '';
-                $link     = ! empty( $cell['link'] ) ? esc_url( $cell['link'] ) : '';
-                $stat     = sanitize_text_field( $cell['stat'] ?? '' );
-                $suffix   = sanitize_text_field( $cell['suffix'] ?? '' );
-                $prefix   = sanitize_text_field( $cell['prefix'] ?? '' );
-                $num      = floatval( preg_replace( '/[^\d.]/', '', $stat ) );
-                $cta_text = sanitize_text_field( $cell['ctaText'] ?? '' );
-                $cta_link = ! empty( $cell['ctaLink'] ) ? esc_url( $cell['ctaLink'] ) : '';
-                $post_data = [];
-                if ( 'post' === $type ) {
-                    $post_data = function_exists( 'rawnaq_bento_get_post_data' )
-                        ? rawnaq_bento_get_post_data( [
-                            'post_source'         => $cell['postSource'] ?? $cell['post_source'] ?? 'latest',
-                            'post_id'             => $cell['postId'] ?? $cell['post_id'] ?? 0,
-                            'post_offset'         => $cell['postOffset'] ?? $cell['post_offset'] ?? 0,
-                            'post_category'       => $cell['postCategory'] ?? $cell['post_category'] ?? '',
-                            'post_display_mode'   => $cell['postDisplayMode'] ?? $cell['post_display_mode'] ?? 'cover',
-                            'post_show_image'     => $cell['postShowImage'] ?? $cell['post_show_image'] ?? 'yes',
-                            'post_show_badge'     => $cell['postShowBadge'] ?? $cell['post_show_badge'] ?? 'yes',
-                            'post_show_date'      => $cell['postShowDate'] ?? $cell['post_show_date'] ?? 'yes',
-                            'post_show_author'    => $cell['postShowAuthor'] ?? $cell['post_show_author'] ?? 'no',
-                            'post_excerpt_length' => $cell['postExcerptLength'] ?? $cell['post_excerpt_length'] ?? 14,
-                            'post_read_more'      => $cell['postReadMore'] ?? $cell['post_read_more'] ?? $cta_text,
-                            'title'               => $title,
-                            'subtitle'            => $subtitle,
-                            'tag'                 => $tag,
-                        ] )
-                        : [];
-
-                    if ( ! empty( $post_data ) ) {
-                        if ( empty( $link ) && ! empty( $post_data['link'] ) ) {
-                            $link = $post_data['link'];
-                        }
-                        if ( ! empty( $post_data['read_more'] ) ) {
-                            $cta_text = $post_data['read_more'];
-                        }
-                    }
-                }
-                if ( $cta_text && ! $cta_link && $link ) {
-                    $cta_link = $link;
-                }
-                $has_cta = '' !== $cta_text;
-                $tag_attrs = function_exists( 'rawnaq_bento_tag_attrs' )
-                    ? rawnaq_bento_tag_attrs( $cell['tagBg'] ?? '', $cell['tagColor'] ?? '' )
-                    : [ 'class' => 'rawnaq-bento-tag', 'style' => '' ];
-                $role   = sanitize_text_field( $cell['role'] ?? '' );
-                $avatar = ! empty( $cell['avatar'] ) ? esc_url( $cell['avatar'] ) : '';
-                $rating = max( 0, min( 5, absint( $cell['rating'] ?? 0 ) ) );
-                if ( 'testimonial' === $type && '' !== $subtitle ) {
-                    $testimonials[] = [
-                        'body'   => $subtitle,
-                        'author' => $title,
-                        'rating' => $rating,
-                    ];
-                }
-
-                $layout = function_exists( 'rawnaq_bento_cell_layout' )
-                    ? rawnaq_bento_cell_layout( [
-                        'col'      => $cell['col'] ?? 1,
-                        'row'      => $cell['row'] ?? 1,
-                        'order'    => $cell['order'] ?? 0,
-                        'col_md'   => $cell['colMd'] ?? 0,
-                        'row_md'   => $cell['rowMd'] ?? 0,
-                        'order_md' => $cell['orderMd'] ?? 0,
-                        'col_sm'   => $cell['colSm'] ?? 0,
-                        'row_sm'   => $cell['rowSm'] ?? 0,
-                        'order_sm' => $cell['orderSm'] ?? 0,
-                    ] )
-                    : [
-                        'style'   => sprintf(
-                            'grid-column:span %d;grid-row:span %d;',
-                            max( 1, absint( $cell['col'] ?? 1 ) ),
-                            max( 1, absint( $cell['row'] ?? 1 ) )
-                        ),
-                        'classes' => [],
-                    ];
-
-                $cell_classes = array_merge( [ 'rawnaq-bento-cell' ], $layout['classes'] );
-                $align_class  = function_exists( 'rawnaq_bento_align_class' )
-                    ? rawnaq_bento_align_class( $cell['align'] ?? '' )
-                    : '';
-                if ( $align_class ) {
-                    $cell_classes[] = $align_class;
-                }
-                if ( 'featured' === $type ) {
-                    $cell_classes[] = 'is-featured';
-                } elseif ( 'image' === $type ) {
-                    $cell_classes[] = 'is-image';
-                } elseif ( 'stat' === $type ) {
-                    $cell_classes[] = 'is-stat';
-                } elseif ( 'video' === $type ) {
-                    $cell_classes[] = 'is-video';
-                    $vid_parsed     = function_exists( 'rawnaq_bento_parse_video' ) ? rawnaq_bento_parse_video( $video ) : null;
-                    if ( $vid_parsed && in_array( $vid_parsed['kind'], [ 'youtube', 'vimeo' ], true ) ) {
-                        $cell_classes[] = 'is-embed';
-                    }
-                } elseif ( 'testimonial' === $type ) {
-                    $cell_classes[] = 'is-testimonial';
-                } elseif ( 'post' === $type ) {
-                    $cell_classes[] = 'is-post';
-                    if ( ! empty( $post_data['display_mode'] ) && 'card' === $post_data['display_mode'] ) {
-                        $cell_classes[] = 'is-card';
-                    } else {
-                        $cell_classes[] = 'is-cover';
-                    }
-                }
-
-                $sync_raw  = trim( (string) ( $cell['timelineSync'] ?? $cell['sync_timeline'] ?? '' ) );
-                $sync_name = $sync_raw ? ( function_exists( 'rawnaq_timeline_sanitize_tl_name' )
-                    ? rawnaq_timeline_sanitize_tl_name( $sync_raw, $sync_raw )
-                    : preg_replace( '/[^a-zA-Z0-9_-]/', '', $sync_raw ) ) : '';
-                if ( $sync_name ) {
-                    $cell_classes[] = 'tl-sync';
-                }
-
-                $cell_style = $layout['style'];
-                if ( $sync_name ) {
-                    $cell_style .= 'animation-timeline:--' . $sync_name . ';';
-                }
-                $tag_name = ( $link && ! $has_cta ) ? 'a' : 'div';
-                if ( ! in_array( $tag_name, [ 'a', 'div' ], true ) ) {
-                    $tag_name = 'div';
-                }
-                ?>
-                <<?php echo tag_escape( $tag_name ); ?>
-                    class="<?php echo esc_attr( implode( ' ', $cell_classes ) ); ?>"
-                    style="<?php echo esc_attr( $cell_style ); ?>"
-                    <?php if ( $sync_name ) : ?>data-tl-sync="<?php echo esc_attr( $sync_name ); ?>"<?php endif; ?>
-                    <?php if ( $link && ! $has_cta ) : ?>href="<?php echo esc_url( $link ); ?>"<?php endif; ?>
-                    role="listitem">
-                    <?php if ( 'post' === $type ) : ?>
-                        <?php
-                        $p_mode    = $post_data['display_mode'] ?? 'cover';
-                        $p_title   = ( $title && 'Cell title' !== $title ) ? $title : ( $post_data['title'] ?? '' );
-                        $p_sub     = $subtitle ? $subtitle : ( $post_data['excerpt'] ?? '' );
-                        $p_tag     = $tag ? $tag : ( $post_data['tag'] ?? '' );
-                        $p_image   = $image ? $image : ( $post_data['image'] ?? '' );
-                        $p_cta     = $cta_text ? $cta_text : ( $post_data['read_more'] ?? '' );
-                        $p_cta_url = $cta_link ? $cta_link : ( $post_data['link'] ?? $link );
-                        ?>
-                        <?php if ( 'card' === $p_mode ) : ?>
-                            <?php if ( $p_image ) : ?>
-                                <div class="rawnaq-bento-post-thumb">
-                                    <img src="<?php echo esc_url( $p_image ); ?>" alt="<?php echo esc_attr( $p_title ); ?>" loading="lazy" decoding="async" />
-                                    <?php if ( $p_tag && ( $post_data['show_badge'] ?? true ) ) : ?>
-                                        <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $p_tag ); ?></div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-                            <div class="rawnaq-bento-post-content">
-                                <?php if ( ! $p_image && $p_tag && ( $post_data['show_badge'] ?? true ) ) : ?>
-                                    <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $p_tag ); ?></div>
-                                <?php endif; ?>
-                                <?php if ( ! empty( $post_data['date'] ) || ! empty( $post_data['author'] ) ) : ?>
-                                    <div class="rawnaq-bento-post-meta">
-                                        <?php if ( ! empty( $post_data['author'] ) ) : ?>
-                                            <?php if ( ! empty( $post_data['author_avatar'] ) ) : ?>
-                                                <img class="rawnaq-bento-post-author-img" src="<?php echo esc_url( $post_data['author_avatar'] ); ?>" alt="" loading="lazy" />
-                                            <?php endif; ?>
-                                            <span class="rawnaq-bento-post-author"><?php echo esc_html( $post_data['author'] ); ?></span>
-                                        <?php endif; ?>
-                                        <?php if ( ! empty( $post_data['date'] ) ) : ?>
-                                            <span class="rawnaq-bento-post-date"><?php echo esc_html( $post_data['date'] ); ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ( $p_title ) : ?><h4 class="rawnaq-bento-title"><?php echo esc_html( $p_title ); ?></h4><?php endif; ?>
-                                <?php if ( $p_sub ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $p_sub ); ?></div><?php endif; ?>
-                                <?php if ( $p_cta ) : ?>
-                                    <?php if ( $p_cta_url ) : ?>
-                                        <a class="rawnaq-bento-cta" href="<?php echo esc_url( $p_cta_url ); ?>"><?php echo esc_html( $p_cta ); ?></a>
-                                    <?php else : ?>
-                                        <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $p_cta ); ?></span>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            </div>
-                        <?php else : ?>
-                            <?php if ( $p_image ) : ?>
-                                <img class="rawnaq-bento-media" src="<?php echo esc_url( $p_image ); ?>" alt="<?php echo esc_attr( $p_title ); ?>" loading="lazy" decoding="async" />
-                            <?php else : ?>
-                                <div class="rawnaq-bento-media" style="background:linear-gradient(135deg,#0f766e,#134e4a);" aria-hidden="true"></div>
-                            <?php endif; ?>
-                            <div class="rawnaq-bento-overlay" aria-hidden="true"></div>
-                            <div class="rawnaq-bento-body">
-                                <?php if ( $p_tag && ( $post_data['show_badge'] ?? true ) ) : ?>
-                                    <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $p_tag ); ?></div>
-                                <?php endif; ?>
-                                <?php if ( ! empty( $post_data['date'] ) || ! empty( $post_data['author'] ) ) : ?>
-                                    <div class="rawnaq-bento-post-meta">
-                                        <?php if ( ! empty( $post_data['author'] ) ) : ?>
-                                            <?php if ( ! empty( $post_data['author_avatar'] ) ) : ?>
-                                                <img class="rawnaq-bento-post-author-img" src="<?php echo esc_url( $post_data['author_avatar'] ); ?>" alt="" loading="lazy" />
-                                            <?php endif; ?>
-                                            <span class="rawnaq-bento-post-author"><?php echo esc_html( $post_data['author'] ); ?></span>
-                                        <?php endif; ?>
-                                        <?php if ( ! empty( $post_data['date'] ) ) : ?>
-                                            <span class="rawnaq-bento-post-date"><?php echo esc_html( $post_data['date'] ); ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ( $p_title ) : ?><h4 class="rawnaq-bento-title"><?php echo esc_html( $p_title ); ?></h4><?php endif; ?>
-                                <?php if ( $p_sub ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $p_sub ); ?></div><?php endif; ?>
-                                <?php if ( $p_cta ) : ?>
-                                    <?php if ( $p_cta_url ) : ?>
-                                        <a class="rawnaq-bento-cta" href="<?php echo esc_url( $p_cta_url ); ?>"><?php echo esc_html( $p_cta ); ?></a>
-                                    <?php else : ?>
-                                        <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $p_cta ); ?></span>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-                    <?php elseif ( 'testimonial' === $type ) : ?>
-                        <?php if ( $tag ) : ?>
-                            <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
-                        <?php endif; ?>
-                        <?php if ( $subtitle ) : ?>
-                            <blockquote class="rawnaq-bento-quote"><?php echo esc_html( $subtitle ); ?></blockquote>
-                        <?php endif; ?>
-                        <?php if ( $rating > 0 ) : ?>
-                            <div class="rawnaq-bento-stars" aria-label="<?php echo esc_attr( sprintf( /* translators: %d: star count */ __( '%d out of 5 stars', 'rawnaq' ), $rating ) ); ?>"><?php echo esc_html( str_repeat( '★', $rating ) ); ?></div>
-                        <?php endif; ?>
-                        <?php if ( $title || $role || $avatar ) : ?>
-                            <div class="rawnaq-bento-author">
-                                <?php if ( $avatar ) : ?>
-                                    <img class="rawnaq-bento-avatar" src="<?php echo esc_url( $avatar ); ?>" alt="" loading="lazy" decoding="async" />
-                                <?php elseif ( $title ) : ?>
-                                    <div class="rawnaq-bento-avatar is-placeholder" aria-hidden="true"><?php echo esc_html( strtoupper( function_exists( 'mb_substr' ) ? mb_substr( $title, 0, 1 ) : substr( $title, 0, 1 ) ) ); ?></div>
-                                <?php endif; ?>
-                                <?php if ( $title || $role ) : ?>
-                                    <div class="rawnaq-bento-author-meta">
-                                        <?php if ( $title ) : ?><div class="rawnaq-bento-author-name"><?php echo esc_html( $title ); ?></div><?php endif; ?>
-                                        <?php if ( $role ) : ?><div class="rawnaq-bento-author-role"><?php echo esc_html( $role ); ?></div><?php endif; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-                        <?php if ( $has_cta ) : ?>
-                            <?php if ( $cta_link ) : ?>
-                                <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
-                            <?php else : ?>
-                                <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                    <?php elseif ( 'image' === $type ) : ?>
-                        <?php if ( $image ) : ?>
-                            <img class="rawnaq-bento-media" src="<?php echo esc_url( $image ); ?>" alt="" loading="lazy" decoding="async" />
-                        <?php else : ?>
-                            <div class="rawnaq-bento-media" style="background:linear-gradient(135deg,#0f766e,#134e4a);" aria-hidden="true"></div>
-                        <?php endif; ?>
-                        <div class="rawnaq-bento-overlay" aria-hidden="true"></div>
-                        <div class="rawnaq-bento-body">
-                            <?php if ( $tag ) : ?>
-                                <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
-                            <?php endif; ?>
-                            <?php if ( $title ) : ?><div class="rawnaq-bento-title"><?php echo esc_html( $title ); ?></div><?php endif; ?>
-                            <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
-                            <?php if ( $has_cta ) : ?>
-                                <?php if ( $cta_link ) : ?>
-                                    <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
-                                <?php else : ?>
-                                    <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </div>
-                    <?php elseif ( 'video' === $type ) : ?>
-                        <?php if ( function_exists( 'rawnaq_bento_video_markup' ) ) : ?>
-                            <?php
-                            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup helper escapes.
-                            echo rawnaq_bento_video_markup( $video );
-                            ?>
-                        <?php elseif ( $video ) : ?>
-                            <video class="rawnaq-bento-video" muted playsinline loop preload="metadata" src="<?php echo esc_url( $video ); ?>"></video>
-                        <?php else : ?>
-                            <div class="rawnaq-bento-media" style="background:#1e1b2e;" aria-hidden="true"></div>
-                        <?php endif; ?>
-                        <div class="rawnaq-bento-overlay" aria-hidden="true"></div>
-                        <div class="rawnaq-bento-body">
-                            <?php if ( $tag ) : ?>
-                                <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
-                            <?php endif; ?>
-                            <?php if ( $title ) : ?><div class="rawnaq-bento-title"><?php echo esc_html( $title ); ?></div><?php endif; ?>
-                            <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
-                            <?php if ( $has_cta ) : ?>
-                                <?php if ( $cta_link ) : ?>
-                                    <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
-                                <?php else : ?>
-                                    <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </div>
-                    <?php elseif ( 'stat' === $type ) : ?>
-                        <?php if ( $tag ) : ?>
-                            <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
-                        <?php endif; ?>
-                        <div class="rawnaq-bento-num"
-                             data-count="<?php echo esc_attr( (string) $num ); ?>"
-                             data-suffix="<?php echo esc_attr( $suffix ); ?>"
-                             data-prefix="<?php echo esc_attr( $prefix ); ?>"><?php echo esc_html( $prefix . $stat . $suffix ); ?></div>
-                        <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
-                        <?php if ( $has_cta ) : ?>
-                            <?php if ( $cta_link ) : ?>
-                                <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
-                            <?php else : ?>
-                                <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                    <?php else : ?>
-                        <?php if ( $tag ) : ?>
-                            <div class="<?php echo esc_attr( $tag_attrs['class'] ); ?>"<?php echo $tag_attrs['style'] ? ' style="' . esc_attr( $tag_attrs['style'] ) . '"' : ''; ?>><?php echo esc_html( $tag ); ?></div>
-                        <?php endif; ?>
-                        <?php if ( $icon ) : ?>
-                            <div class="rawnaq-bento-icon" aria-hidden="true"><span class="dashicons <?php echo esc_attr( $icon ); ?>"></span></div>
-                        <?php endif; ?>
-                        <?php if ( $title ) : ?><div class="rawnaq-bento-title"><?php echo esc_html( $title ); ?></div><?php endif; ?>
-                        <?php if ( $subtitle ) : ?><div class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
-                        <?php if ( $has_cta ) : ?>
-                            <?php if ( $cta_link ) : ?>
-                                <a class="rawnaq-bento-cta" href="<?php echo esc_url( $cta_link ); ?>"><?php echo esc_html( $cta_text ); ?></a>
-                            <?php else : ?>
-                                <span class="rawnaq-bento-cta is-static"><?php echo esc_html( $cta_text ); ?></span>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </<?php echo tag_escape( $tag_name ); ?>>
-            <?php endforeach; ?>
-        </div>
-        <?php
-        if ( $testimonials && function_exists( 'rawnaq_schema_print' ) && function_exists( 'rawnaq_schema_reviews' ) ) {
-            rawnaq_schema_print( rawnaq_schema_reviews( $testimonials ), 'review' );
-        }
-        return ob_get_clean();
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside rawnaq_bento_markup().
+        return rawnaq_bento_markup(
+            [
+                'source'    => 'gutenberg',
+                'cols'      => $cols,
+                'theme'     => $theme,
+                'reveal'    => ! empty( $a['reveal'] ),
+                'hover'     => $hover,
+                'classes'   => array_diff( $classes, [ 'rawnaq-bento-grid', 'is-theme-' . $theme ] ),
+                'style'     => $style,
+                'title_tag' => $a['titleTag'],
+            ],
+            $cells_raw
+        );
     }
 
     public function render_scroll_story_block( $attributes ) {

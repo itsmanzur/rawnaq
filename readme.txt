@@ -4,7 +4,7 @@ Tags: elementor addons, gutenberg blocks, divi modules, architecture, interior d
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,8 @@ Rawnaq may call the following third-party services when you enable related featu
 * **WhatsApp (wa.me)** — Optional. Opens a WhatsApp chat URL with a prefilled message when Floating Dock or Smart Form WhatsApp delivery is enabled. [WhatsApp](https://www.whatsapp.com/) · [Terms](https://www.whatsapp.com/legal/terms-of-service) · [Privacy Policy](https://www.whatsapp.com/legal/privacy-policy)
 * **Mailchimp** — Optional. When Smart Form's CRM delivery is set to Mailchimp, the submitted email address (and any mapped merge fields) is sent to Mailchimp's API to subscribe the contact to the audience/list you configure. Requires your own Mailchimp API key. [Mailchimp](https://mailchimp.com/) · [Terms](https://mailchimp.com/legal/terms/) · [Privacy Policy](https://mailchimp.com/legal/privacy/)
 * **HubSpot** — Optional. When Smart Form's CRM delivery is set to HubSpot, the submitted form field values are sent to HubSpot's Forms API using the portal ID and form GUID you configure. [HubSpot](https://www.hubspot.com/) · [Terms](https://legal.hubspot.com/terms-of-service) · [Privacy Policy](https://legal.hubspot.com/privacy-policy)
+* **YouTube (youtube-nocookie.com)** — Optional. When a Bento Grid video cell uses a YouTube link, the visitor's browser loads the video in an iframe from the privacy-enhanced youtube-nocookie.com domain. [YouTube](https://www.youtube.com/) · [Terms](https://www.youtube.com/t/terms) · [Privacy Policy](https://policies.google.com/privacy)
+* **Vimeo (player.vimeo.com)** — Optional. When a Bento Grid video cell uses a Vimeo link, the visitor's browser loads the video in an iframe from player.vimeo.com. [Vimeo](https://vimeo.com/) · [Terms](https://vimeo.com/terms) · [Privacy Policy](https://vimeo.com/privacy)
 * **Custom webhook / Slack incoming URL** — Optional. Smart Form can POST submission JSON to a URL you provide (e.g. Slack Incoming Webhooks). Only the endpoint you configure is contacted.
 
 = Third-party libraries =
@@ -149,6 +151,17 @@ Source code: https://github.com/itsmanzur/rawnaq
 10. Case-Study Grid – Portfolio showcase grid with category filters and interactive modal lightbox.
 
 == Changelog ==
+
+= 1.7.0 =
+* Security: Bento Grid cells showing a specific post no longer expose draft, private, scheduled or password-protected posts to visitors who cannot read them.
+* Security: Colour values in Bento Grid (Gutenberg and Divi) are now sanitized before being written into inline styles.
+* Fixed: Tablet and mobile column/row spans now apply and can no longer overflow the grid.
+* Fixed: Bento Grid content stays visible when JavaScript is off or slow to load (reveal animation is progressive enhancement).
+* Fixed: Stat counters handle Bengali digits, values like "24/7", thousands separators and decimals.
+* Improved: Container-aware Bento Grid layout, so it adapts to the column it sits in, not just the screen width.
+* Improved: One shared renderer for Elementor, Gutenberg and Divi, so markup is identical everywhere. Divi gains video, testimonial and post cells and responsive spans.
+* Improved: Accessible card links, image alt text, video pause button, reduced-motion support and a lighter spotlight effect.
+* New: "Title tag" option (div, H2 to H6) for Bento Grid cell titles in Elementor, Gutenberg and Divi.
 
 = 1.6.0 =
 * New: Material Quantity Calculator module (Elementor widget, Gutenberg block, Divi module) for concrete, bricks and mortar, tiles, paint and steel bar quantities, in metric or feet and inches, with an optional quote button.
@@ -264,6 +277,9 @@ Source code: https://github.com/itsmanzur/rawnaq
 * On-demand assets, vanilla JS frontend, Elements Manager, WPML config, and documented optional third-party services (Fonts, reCAPTCHA, WhatsApp, webhooks).
 
 == Upgrade Notice ==
+
+= 1.7.0 =
+Bento Grid security, accessibility and responsive fixes. Specific-post cells now respect post visibility. Please purge any page, CDN and object cache after updating so cached pages pick up the new Bento Grid markup and styles.
 
 = 1.6.0 =
 Adds the Material Quantity Calculator module. No settings are changed; the new module is on by default and can be switched off under Rawnaq → Elements.

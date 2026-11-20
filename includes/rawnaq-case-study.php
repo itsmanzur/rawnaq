@@ -882,48 +882,7 @@ function rawnaq_case_study_base64url_decode( $data ) {
  * @return string Valid CSS color string or $default.
  */
 function rawnaq_cs_sanitize_css_color( $value, $default = '' ) {
-	if ( ! is_string( $value ) ) {
-		return $default;
-	}
-	$value = trim( $value );
-	if ( '' === $value ) {
-		return $default;
-	}
-
-	// Reject dangerous characters or directives.
-	if ( preg_match( '/[;{}<>"\'\\\\]/i', $value ) ) {
-		return $default;
-	}
-	if ( preg_match( '/(?:url|expression|@import)\s*\(/i', $value ) ) {
-		return $default;
-	}
-
-	// 1. Keywords: transparent, currentColor
-	if ( preg_match( '/^(?:transparent|currentcolor)$/i', $value ) ) {
-		return $value;
-	}
-
-	// 2. Hex colors (3, 4, 6, 8 hex digits)
-	if ( preg_match( '/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/', $value ) ) {
-		return $value;
-	}
-
-	// 3. rgb() and rgba()
-	if ( preg_match( '/^rgba?\(\s*[\d.]+%?(?:[\s,]+[\d.]+%?){2}(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i', $value ) ) {
-		return $value;
-	}
-
-	// 4. hsl() and hsla()
-	if ( preg_match( '/^hsla?\(\s*[\d.]+(?:deg|turn|rad)?(?:[\s,]+[\d.]+%?){2}(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i', $value ) ) {
-		return $value;
-	}
-
-	// 5. CSS custom properties var(--custom-name)
-	if ( preg_match( '/^var\(\s*--[a-zA-Z0-9_-]+\s*\)$/', $value ) ) {
-		return $value;
-	}
-
-	return $default;
+	return rawnaq_sanitize_css_color( $value, $default );
 }
 
 /**

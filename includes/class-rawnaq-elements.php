@@ -817,6 +817,14 @@ class Rawnaq_Elements {
             RAWNAQ_VERSION,
             true
         );
+        wp_localize_script( 'rawnaq-bento-grid', 'rawnaqBento', [
+            'i18n' => [
+                'resizeCell'  => __( 'Resize cell', 'rawnaq' ),
+                'dragToResize' => __( 'Drag to resize', 'rawnaq' ),
+                'pauseVideo'  => __( 'Pause video', 'rawnaq' ),
+                'playVideo'   => __( 'Play video', 'rawnaq' ),
+            ],
+        ] );
 
         // 8. Scroll Story / Scrollytelling
         wp_register_style(

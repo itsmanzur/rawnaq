@@ -1074,6 +1074,58 @@ function rawnaq_bento_preset_for_gutenberg( $preset ) {
 }
 
 /**
+ * Sanitize a CSS colour value that will be printed inside a style attribute.
+ *
+ * Accepts #hex (3/4/6/8 digits), rgb()/rgba(), hsl()/hsla(), transparent,
+ * currentColor and var(--name). Everything else (including anything that could
+ * smuggle another declaration such as "red;position:fixed") is rejected.
+ *
+ * @param mixed  $value   Input colour.
+ * @param string $default Returned when the value is not a safe colour.
+ * @return string
+ */
+function rawnaq_sanitize_css_color( $value, $default = '' ) {
+	if ( ! is_string( $value ) ) {
+		return $default;
+	}
+	$value = trim( $value );
+	if ( '' === $value ) {
+		return $default;
+	}
+
+	// Reject dangerous characters or directives.
+	if ( preg_match( '/[;{}<>"\'\\\\]/', $value ) ) {
+		return $default;
+	}
+	if ( preg_match( '/(?:url|expression|@import)\s*\(/i', $value ) ) {
+		return $default;
+	}
+
+	// Keywords.
+	if ( preg_match( '/^(?:transparent|currentcolor)$/i', $value ) ) {
+		return $value;
+	}
+	// Hex (3, 4, 6, 8 digits).
+	if ( preg_match( '/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/', $value ) ) {
+		return $value;
+	}
+	// rgb() / rgba().
+	if ( preg_match( '/^rgba?\(\s*[\d.]+%?(?:[\s,]+[\d.]+%?){2}(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i', $value ) ) {
+		return $value;
+	}
+	// hsl() / hsla().
+	if ( preg_match( '/^hsla?\(\s*[\d.]+(?:deg|turn|rad)?(?:[\s,]+[\d.]+%?){2}(?:\s*(?:,|\/)\s*[\d.]+%?)?\s*\)$/i', $value ) ) {
+		return $value;
+	}
+	// var(--custom-name).
+	if ( preg_match( '/^var\(\s*--[a-zA-Z0-9_-]+\s*\)$/', $value ) ) {
+		return $value;
+	}
+
+	return $default;
+}
+
+/**
  * Build inline layout CSS for a bento cell (desktop + optional tablet/mobile overrides).
  *
  * Override values of 0 mean "inherit / auto" (var not emitted).
@@ -1093,28 +1145,28 @@ function rawnaq_bento_preset_for_gutenberg( $preset ) {
  * @return array{style:string,classes:string[]}
  */
 function rawnaq_bento_cell_layout( array $layout ) {
-	$col = max( 1, absint( $layout['col'] ?? 1 ) );
-	$row = max( 1, absint( $layout['row'] ?? 1 ) );
+	$col = max( 1, min( 6, absint( $layout['col'] ?? 1 ) ) );
+	$row = max( 1, min( 6, absint( $layout['row'] ?? 1 ) ) );
 
+	// Spans are expressed as classes (is-col-N …) so the container-query CSS can clamp
+	// them per breakpoint. Inline grid-column/grid-row would beat any stylesheet rule.
+	// The custom properties stay inline: the editor drag handle reads/writes them.
 	$parts = [
-		sprintf( 'grid-column:span %d', $col ),
-		sprintf( 'grid-row:span %d', $row ),
 		sprintf( '--bento-span-col:%d', $col ),
 		sprintf( '--bento-span-row:%d', $row ),
 	];
 
-	$order = isset( $layout['order'] ) ? intval( $layout['order'] ) : 0;
-	if ( $order !== 0 ) {
-		$parts[] = sprintf( 'order:%d', $order );
+	$order = isset( $layout['order'] ) ? max( -20, min( 20, intval( $layout['order'] ) ) ) : 0;
+	if ( 0 !== $order ) {
 		$parts[] = sprintf( '--bento-order:%d', $order );
 	}
 
-	$col_md = absint( $layout['col_md'] ?? 0 );
-	$row_md = absint( $layout['row_md'] ?? 0 );
-	$order_md = isset( $layout['order_md'] ) ? intval( $layout['order_md'] ) : 0;
-	$col_sm = absint( $layout['col_sm'] ?? 0 );
-	$row_sm = absint( $layout['row_sm'] ?? 0 );
-	$order_sm = isset( $layout['order_sm'] ) ? intval( $layout['order_sm'] ) : 0;
+	$col_md   = max( 0, min( 6, absint( $layout['col_md'] ?? 0 ) ) );
+	$row_md   = max( 0, min( 6, absint( $layout['row_md'] ?? 0 ) ) );
+	$order_md = isset( $layout['order_md'] ) ? max( -20, min( 20, intval( $layout['order_md'] ) ) ) : 0;
+	$col_sm   = max( 0, min( 6, absint( $layout['col_sm'] ?? 0 ) ) );
+	$row_sm   = max( 0, min( 6, absint( $layout['row_sm'] ?? 0 ) ) );
+	$order_sm = isset( $layout['order_sm'] ) ? max( -20, min( 20, intval( $layout['order_sm'] ) ) ) : 0;
 
 	if ( $col_md > 0 ) {
 		$parts[] = sprintf( '--bento-span-col-md:%d', $col_md );
@@ -1122,7 +1174,7 @@ function rawnaq_bento_cell_layout( array $layout ) {
 	if ( $row_md > 0 ) {
 		$parts[] = sprintf( '--bento-span-row-md:%d', $row_md );
 	}
-	if ( $order_md !== 0 ) {
+	if ( 0 !== $order_md ) {
 		$parts[] = sprintf( '--bento-order-md:%d', $order_md );
 	}
 	if ( $col_sm > 0 ) {
@@ -1131,12 +1183,27 @@ function rawnaq_bento_cell_layout( array $layout ) {
 	if ( $row_sm > 0 ) {
 		$parts[] = sprintf( '--bento-span-row-sm:%d', $row_sm );
 	}
-	if ( $order_sm !== 0 ) {
+	if ( 0 !== $order_sm ) {
 		$parts[] = sprintf( '--bento-order-sm:%d', $order_sm );
 	}
 
-	$classes = [];
+	$classes = [
+		'is-col-' . $col,
+		'is-row-' . $row,
+	];
+	if ( $col_md > 0 ) {
+		$classes[] = 'is-col-md-' . $col_md;
+	}
+	if ( $row_md > 0 ) {
+		$classes[] = 'is-row-md-' . $row_md;
+	}
 	if ( $col_sm > 0 ) {
+		$classes[] = 'is-col-sm-' . $col_sm;
+	}
+	if ( $row_sm > 0 ) {
+		$classes[] = 'is-row-sm-' . $row_sm;
+	}
+	if ( $col_sm > 0 || $row_sm > 0 ) {
 		$classes[] = 'has-sm-span';
 	}
 
@@ -1154,8 +1221,8 @@ function rawnaq_bento_cell_layout( array $layout ) {
  * @return array{class:string,style:string}
  */
 function rawnaq_bento_tag_attrs( $bg = '', $color = '' ) {
-	$bg    = is_string( $bg ) ? sanitize_hex_color( $bg ) : '';
-	$color = is_string( $color ) ? sanitize_hex_color( $color ) : '';
+	$bg    = rawnaq_sanitize_css_color( $bg );
+	$color = rawnaq_sanitize_css_color( $color );
 
 	$class = 'rawnaq-bento-tag';
 	$parts = [];
@@ -1205,7 +1272,8 @@ function rawnaq_bento_parse_video( $url ) {
 	}
 
 	// YouTube: watch, youtu.be, embed, shorts.
-	if ( preg_match( '#(?:youtube\.com/(?:watch\?(?:[^#]*&)?v=|embed/|shorts/)|youtu\.be/)([A-Za-z0-9_-]{6,})#i', $url, $m ) ) {
+	// "~" delimiter: the pattern itself contains "#" in [^#].
+	if ( preg_match( '~(?:youtube\.com/(?:watch\?(?:[^#]*&)?v=|embed/|shorts/)|youtu\.be/)([A-Za-z0-9_-]{6,})~i', $url, $m ) ) {
 		$id = sanitize_text_field( $m[1] );
 		return [
 			'kind'  => 'youtube',
@@ -1236,11 +1304,13 @@ function rawnaq_bento_parse_video( $url ) {
 /**
  * HTML markup for a bento video/media layer (file, YouTube, or Vimeo).
  *
- * @param string $url Video URL.
+ * @param string $url   Video URL.
+ * @param string $label Accessible name (usually the cell title). Optional.
  * @return string Safe HTML.
  */
-function rawnaq_bento_video_markup( $url ) {
+function rawnaq_bento_video_markup( $url, $label = '' ) {
 	$parsed = rawnaq_bento_parse_video( $url );
+	$label  = trim( (string) $label );
 	if ( ! $parsed ) {
 		return '<div class="rawnaq-bento-media" style="background:#1e1b2e;" aria-hidden="true"></div>';
 	}
@@ -1249,6 +1319,9 @@ function rawnaq_bento_video_markup( $url ) {
 		$title = 'youtube' === $parsed['kind']
 			? __( 'YouTube video', 'rawnaq' )
 			: __( 'Vimeo video', 'rawnaq' );
+		if ( '' !== $label ) {
+			$title = $label;
+		}
 
 		return sprintf(
 			'<iframe class="rawnaq-bento-embed" src="%1$s" title="%2$s" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
@@ -1262,7 +1335,8 @@ function rawnaq_bento_video_markup( $url ) {
 	}
 
 	return sprintf(
-		'<video class="rawnaq-bento-video" muted playsinline loop preload="metadata" src="%s"></video>',
+		'<video class="rawnaq-bento-video" muted playsinline loop preload="metadata" aria-label="%1$s" src="%2$s"></video>',
+		esc_attr( '' !== $label ? $label : __( 'Video', 'rawnaq' ) ),
 		esc_url( $parsed['src'] )
 	);
 }
@@ -1287,8 +1361,18 @@ function rawnaq_bento_get_post_data( array $cell ) {
 	$read_more      = sanitize_text_field( $cell['post_read_more'] ?? $cell['postReadMore'] ?? $cell['cta_text'] ?? $cell['ctaText'] ?? '' );
 
 	$post = null;
-	if ( 'specific' === $source && $post_id > 0 ) {
-		$post = get_post( $post_id );
+	if ( 'specific' === $source ) {
+		// A specific ID is attacker-influenceable builder data: never expose a draft, private,
+		// scheduled, trashed, password-protected or non-public post.
+		$candidate = $post_id > 0 ? get_post( $post_id ) : null;
+		if (
+			$candidate instanceof WP_Post
+			&& 'publish' === $candidate->post_status
+			&& is_post_type_viewable( $candidate->post_type )
+			&& ! post_password_required( $candidate )
+		) {
+			$post = $candidate;
+		}
 	} else {
 		$args = [
 			'post_type'        => 'post',
@@ -1338,8 +1422,10 @@ function rawnaq_bento_get_post_data( array $cell ) {
 	$link   = get_permalink( $post );
 	$image  = $show_image && has_post_thumbnail( $pid ) ? (string) get_the_post_thumbnail_url( $pid, 'large' ) : '';
 
-	// Excerpt
-	if ( has_excerpt( $post ) ) {
+	// Excerpt: never derived from a password-protected post's body (or its hand-written excerpt).
+	if ( post_password_required( $post ) ) {
+		$raw_excerpt = '';
+	} elseif ( has_excerpt( $post ) ) {
 		$raw_excerpt = get_the_excerpt( $post );
 	} else {
 		$raw_excerpt = wp_strip_all_tags( strip_shortcodes( $post->post_content ) );
@@ -1826,6 +1912,10 @@ function rawnaq_timeline_render_items_html( $steps, $layout = 'alternating', $sh
 require_once RAWNAQ_PATH . 'includes/rawnaq-smart-form.php';
 require_once RAWNAQ_PATH . 'includes/rawnaq-case-study.php';
 require_once RAWNAQ_PATH . 'includes/rawnaq-schema.php';
+
+if ( rawnaq_is_module_enabled( 'bento-grid' ) ) {
+	require_once RAWNAQ_PATH . 'includes/rawnaq-bento.php';
+}
 
 if ( rawnaq_is_module_enabled( 'scroll-progress-toc' ) ) {
 	require_once RAWNAQ_PATH . 'includes/rawnaq-scroll-progress-toc.php';

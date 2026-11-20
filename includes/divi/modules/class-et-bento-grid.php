@@ -30,9 +30,26 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 					'elevated'  => esc_html__( 'Modern Elevated (Default)', 'rawnaq' ),
 					'glass'     => esc_html__( 'Minimal Glassmorphism', 'rawnaq' ),
 					'obsidian'  => esc_html__( 'Dark Obsidian / Cyber', 'rawnaq' ),
+					'dark'      => esc_html__( 'Dark', 'rawnaq' ),
 					'spotlight' => esc_html__( 'Editorial Spotlight', 'rawnaq' ),
 				],
 				'default'         => 'elevated',
+				'toggle_slug'     => 'layout',
+			],
+			'title_tag' => [
+				'label'           => esc_html__( 'Title Tag', 'rawnaq' ),
+				'type'            => 'select',
+				'option_category' => 'layout',
+				'options'         => [
+					'div' => 'div',
+					'h2'  => 'H2',
+					'h3'  => 'H3',
+					'h4'  => 'H4',
+					'h5'  => 'H5',
+					'h6'  => 'H6',
+				],
+				'default'         => 'div',
+				'description'     => esc_html__( 'HTML tag used for every cell title.', 'rawnaq' ),
 				'toggle_slug'     => 'layout',
 			],
 			'grid_preset' => [
@@ -100,7 +117,7 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 				'label'           => esc_html__( 'Bento Cells Configuration (JSON)', 'rawnaq' ),
 				'type'            => 'textarea',
 				'option_category' => 'basic_option',
-				'description'     => esc_html__( 'JSON array of cells [{type, tag, title, subtitle, icon, image, stat, suffix, col, row, link, ctaText}]', 'rawnaq' ),
+				'description'     => esc_html__( 'JSON array of cells [{type: text|featured|image|stat|video|testimonial|post, tag, title, subtitle, icon, image, alt, video, stat, prefix, suffix, role, avatar, rating, col, row, colMd, rowMd, colSm, rowSm, order, orderMd, orderSm, link, ctaText, ctaLink, bg, color, postSource, postId}]', 'rawnaq' ),
 				'default'         => '[{"type":"featured","tag":"Spatial Intelligence","title":"Autonomous Spatial Design & AI Architecture","subtitle":"End-to-end cognitive spatial modeling and real-time biometric telemetry delivering 99.8% operational precision.","col":2,"row":2,"ctaText":"Explore Architecture","ctaLink":"#portfolio"},{"type":"stat","tag":"Growth Index","stat":"240","suffix":"%","title":"","subtitle":"Average Client ROI","col":1,"row":1},{"type":"icon","icon":"dashicons-networking","tag":"Core Tech","title":"Sub-50ms Telemetry","subtitle":"Streaming WebSocket events","col":1,"row":1},{"type":"media","image":"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900","tag":"Global Landmark","title":"Turnkey Penthouse & Flagships","subtitle":"Award-winning sustainable luxury landmarks.","col":2,"row":1}]',
 				'toggle_slug'     => 'cells',
 			],
@@ -202,136 +219,49 @@ class Rawnaq_ET_Bento_Grid extends ET_Builder_Module {
 		wp_enqueue_style( 'dashicons' );
 		wp_enqueue_script( 'rawnaq-bento-grid' );
 
-		$theme        = sanitize_key( $this->props['bento_theme'] ?? 'elevated' );
-		if ( ! in_array( $theme, [ 'elevated', 'glass', 'obsidian', 'dark', 'spotlight' ], true ) ) {
-			$theme = 'elevated';
-		}
-		$preset       = sanitize_key( $this->props['grid_preset'] ?? 'featured' );
-		$cols         = ( 'wide' === $preset ) ? 3 : ( ( 'custom' === $preset ) ? max( 2, min( 6, intval( $this->props['grid_columns'] ?? 4 ) ) ) : 4 );
-		$hover        = sanitize_key( $this->props['hover_effect'] ?? 'lift' );
-		$reveal       = ( $this->props['enable_reveal'] ?? 'on' ) === 'on';
-		$hairline     = ( $this->props['hairline'] ?? 'off' ) === 'on';
-		$row_height   = intval( $this->props['row_height'] ?? 190 );
-		$col_gap      = intval( $this->props['col_gap'] ?? 16 );
-		$row_gap      = intval( $this->props['row_gap'] ?? 16 );
-		$radius       = intval( $this->props['border_radius'] ?? 16 );
-		$cell_bg      = $this->props['cell_bg'] ?? '#ffffff';
-		$cell_border  = $this->props['cell_border'] ?? '#e2e8f0';
-		$tag_bg       = $this->props['tag_bg'] ?? '#f1f5f9';
-		$tag_color    = $this->props['tag_color'] ?? '#0f766e';
-		$feat_from    = $this->props['featured_from'] ?? '#0f766e';
-		$feat_to      = $this->props['featured_to'] ?? '#115e59';
+		$preset = sanitize_key( $this->props['grid_preset'] ?? 'featured' );
+		$cols   = ( 'wide' === $preset ) ? 3 : ( ( 'custom' === $preset ) ? max( 2, min( 6, intval( $this->props['grid_columns'] ?? 4 ) ) ) : 4 );
 
-		$classes = [ 'rawnaq-bento-grid', 'is-theme-' . $theme ];
-		if ( $hairline ) {
+		$color = function ( $key, $fallback ) {
+			return rawnaq_sanitize_css_color( $this->props[ $key ] ?? '', $fallback );
+		};
+
+		$classes = [];
+		if ( ( $this->props['hairline'] ?? 'off' ) === 'on' ) {
 			$classes[] = 'rawnaq-bento-hairline';
 		}
 
 		$style_parts = [
-			'--bento-row: ' . esc_attr( (string) $row_height ) . 'px',
-			'--bento-gap-col: ' . esc_attr( (string) $col_gap ) . 'px',
-			'--bento-gap-row: ' . esc_attr( (string) $row_gap ) . 'px',
-			'--bento-radius: ' . esc_attr( (string) $radius ) . 'px',
-			'--bento-panel: ' . esc_attr( $cell_bg ),
-			'--bento-line: ' . esc_attr( $cell_border ),
-			'--bento-tag-bg: ' . esc_attr( $tag_bg ),
-			'--bento-tag-color: ' . esc_attr( $tag_color ),
-			'--bento-featured-from: ' . esc_attr( $feat_from ),
-			'--bento-featured-to: ' . esc_attr( $feat_to ),
+			'--bento-row:' . intval( $this->props['row_height'] ?? 190 ) . 'px',
+			'--bento-gap-col:' . intval( $this->props['col_gap'] ?? 16 ) . 'px',
+			'--bento-gap-row:' . intval( $this->props['row_gap'] ?? 16 ) . 'px',
+			'--bento-radius:' . intval( $this->props['border_radius'] ?? 16 ) . 'px',
+			'--bento-panel:' . $color( 'cell_bg', '#ffffff' ),
+			'--bento-line:' . $color( 'cell_border', '#e2e8f0' ),
+			'--bento-tag-bg:' . $color( 'tag_bg', '#f1f5f9' ),
+			'--bento-tag-color:' . $color( 'tag_color', '#0f766e' ),
+			'--bento-featured-from:' . $color( 'featured_from', '#0f766e' ),
+			'--bento-featured-to:' . $color( 'featured_to', '#115e59' ),
 		];
-		$style = implode( ';', $style_parts ) . ';';
 
-		$raw_cells = json_decode( $this->props['cells_json'] ?? '[]', true ) ?: [];
+		$raw_cells = json_decode( (string) ( $this->props['cells_json'] ?? '[]' ), true );
+		if ( ! is_array( $raw_cells ) ) {
+			$raw_cells = [];
+		}
 
-		ob_start();
-		?>
-		<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>"
-			 style="<?php echo esc_attr( $style ); ?>"
-			 data-cols="<?php echo esc_attr( (string) $cols ); ?>"
-			 data-theme="<?php echo esc_attr( $theme ); ?>"
-			 data-reveal="<?php echo $reveal ? '1' : '0'; ?>"
-			 data-hover="<?php echo esc_attr( $hover ); ?>"
-			 role="list">
-			<?php foreach ( $raw_cells as $cell ) :
-				$type     = sanitize_key( $cell['type'] ?? 'text' );
-				$tag      = sanitize_text_field( $cell['tag'] ?? ( $cell['badge'] ?? '' ) );
-				$title    = sanitize_text_field( $cell['title'] ?? '' );
-				$subtitle = sanitize_text_field( $cell['subtitle'] ?? ( $cell['desc'] ?? '' ) );
-				$icon     = sanitize_html_class( $cell['icon'] ?? '' );
-				$image    = ! empty( $cell['image'] ) ? esc_url( $cell['image'] ) : '';
-				$link     = ! empty( $cell['link'] ) ? esc_url( $cell['link'] ) : '';
-				$stat     = sanitize_text_field( $cell['stat'] ?? '' );
-				$suffix   = sanitize_text_field( $cell['suffix'] ?? '' );
-				$prefix   = sanitize_text_field( $cell['prefix'] ?? '' );
-				$num      = floatval( preg_replace( '/[^\d.]/', '', $stat ) );
-				$cta_text = sanitize_text_field( $cell['ctaText'] ?? ( $cell['cta_text'] ?? '' ) );
-				$cta_link = ! empty( $cell['ctaLink'] ) ? esc_url( $cell['ctaLink'] ) : ( ! empty( $cell['cta_link'] ) ? esc_url( $cell['cta_link'] ) : $link );
-
-				$col_span = max( 1, min( 6, intval( $cell['col'] ?? ( $cell['span'] === 'span-2' ? 2 : 1 ) ) ) );
-				$row_span = max( 1, min( 4, intval( $cell['row'] ?? 1 ) ) );
-
-				$cell_classes = [ 'rawnaq-bento-cell', 'type-' . $type, 'is-' . $type, 'span-' . $col_span ];
-				if ( $col_span > 1 ) {
-					$cell_classes[] = 'col-span-' . $col_span;
-				}
-				if ( $row_span > 1 ) {
-					$cell_classes[] = 'row-span-' . $row_span;
-				}
-
-				$cell_style = sprintf( 'grid-column: span %d; grid-row: span %d;', $col_span, $row_span );
-				if ( ! empty( $cell['bg'] ) ) {
-					$cell_style .= ' background-color: ' . esc_attr( $cell['bg'] ) . ';';
-				}
-				if ( ! empty( $cell['color'] ) ) {
-					$cell_style .= ' color: ' . esc_attr( $cell['color'] ) . ';';
-				}
-				?>
-				<div class="<?php echo esc_attr( implode( ' ', $cell_classes ) ); ?>"
-					 style="<?php echo esc_attr( $cell_style ); ?>"
-					 role="listitem">
-					<?php if ( $image ) : ?>
-						<img class="rawnaq-bento-media" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" decoding="async" />
-						<div class="rawnaq-bento-overlay" aria-hidden="true"></div>
-					<?php endif; ?>
-					<div class="rawnaq-bento-body">
-						<?php if ( $tag ) : ?>
-							<span class="rawnaq-bento-tag"><?php echo esc_html( $tag ); ?></span>
-						<?php endif; ?>
-						<?php if ( $icon ) : ?>
-							<div class="rawnaq-bento-icon"><span class="dashicons <?php echo esc_attr( $icon ); ?>"></span></div>
-						<?php endif; ?>
-						<?php if ( 'stat' === $type && $stat !== '' ) : ?>
-							<div class="rawnaq-bento-stat">
-								<span class="rawnaq-bento-num" data-count="<?php echo esc_attr( (string) $num ); ?>" data-suffix="<?php echo esc_attr( $suffix ); ?>" data-prefix="<?php echo esc_attr( $prefix ); ?>">
-									<?php echo esc_html( $prefix . $stat . $suffix ); ?>
-								</span>
-							</div>
-						<?php endif; ?>
-						<?php if ( $title ) : ?>
-							<h3 class="rawnaq-bento-title">
-								<?php if ( $link && empty( $cta_text ) ) : ?>
-									<a href="<?php echo esc_url( $link ); ?>"><?php echo esc_html( $title ); ?></a>
-								<?php else : ?>
-									<?php echo esc_html( $title ); ?>
-								<?php endif; ?>
-							</h3>
-						<?php endif; ?>
-						<?php if ( $subtitle ) : ?>
-							<p class="rawnaq-bento-sub"><?php echo esc_html( $subtitle ); ?></p>
-						<?php endif; ?>
-						<?php if ( $cta_text ) : ?>
-							<div class="rawnaq-bento-cta">
-								<a class="rawnaq-bento-btn" href="<?php echo esc_url( $cta_link ?: '#' ); ?>"><?php echo esc_html( $cta_text ); ?></a>
-							</div>
-						<?php endif; ?>
-					</div>
-					<?php if ( $link && empty( $cta_text ) ) : ?>
-						<a class="rawnaq-bento-stretch-link" href="<?php echo esc_url( $link ); ?>" aria-label="<?php echo esc_attr( $title ); ?>"></a>
-					<?php endif; ?>
-				</div>
-			<?php endforeach; ?>
-		</div>
-		<?php
-		return ob_get_clean();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside rawnaq_bento_markup().
+		return rawnaq_bento_markup(
+			[
+				'source'    => 'divi',
+				'cols'      => $cols,
+				'theme'     => $this->props['bento_theme'] ?? 'elevated',
+				'reveal'    => ( $this->props['enable_reveal'] ?? 'on' ) === 'on',
+				'hover'     => $this->props['hover_effect'] ?? 'lift',
+				'classes'   => $classes,
+				'style'     => implode( ';', $style_parts ) . ';',
+				'title_tag' => $this->props['title_tag'] ?? 'div',
+			],
+			$raw_cells
+		);
 	}
 }

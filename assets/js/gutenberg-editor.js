@@ -2608,7 +2608,7 @@
         cell = cell || {};
         var inners = [];
         if (cell.image && (cell.type === 'image' || cell.type === 'featured')) {
-            inners.push([ 'core/image', { url: cell.image } ]);
+            inners.push([ 'core/image', { url: cell.image, alt: cell.alt || cell.imageAlt || '' } ]);
         }
         if (cell.tag) {
             inners.push([ 'core/paragraph', { content: cell.tag, className: 'rawnaq-bento-tag-p' } ]);
@@ -2911,6 +2911,7 @@
             featuredTo: { type: 'string', default: '#134e4a' },
             ctaBg: { type: 'string', default: '#fbbf24' },
             ctaColor: { type: 'string', default: '#92400e' },
+            titleTag: { type: 'string', default: 'div' },
             cellsJson: { type: 'string', default: defaultBentoCells }
         },
         edit: function(props) {
@@ -3032,6 +3033,20 @@
                                 { label: 'None', value: 'none' }
                             ],
                             onChange: function(v) { setAttributes({ hoverEffect: v }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Title tag',
+                            value: attributes.titleTag || 'div',
+                            help: 'HTML tag for cell titles (cells rendered from the cell list). Pick a heading level that fits your page outline.',
+                            options: [
+                                { label: 'div', value: 'div' },
+                                { label: 'H2', value: 'h2' },
+                                { label: 'H3', value: 'h3' },
+                                { label: 'H4', value: 'h4' },
+                                { label: 'H5', value: 'h5' },
+                                { label: 'H6', value: 'h6' }
+                            ],
+                            onChange: function(v) { setAttributes({ titleTag: v }); }
                         }),
                         el(ToggleControl, {
                             label: 'Hairline borders',

@@ -2,6 +2,17 @@
  * Rawnaq Bento Grid
  * Brand tokens: forest-teal accent + amber highlight (admin / Hub glow language)
  */
+
+/* Stage: the size container. Layout follows the width of the column the grid
+   sits in (page-builder columns, sidebars), not the viewport. container-type
+   lives on this wrapper, never on the grid itself. */
+.rawnaq-bento-stage {
+    container-type: inline-size;
+    container-name: rawnaqbento;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .rawnaq-bento-grid {
     --bento-gap: 16px;
     --bento-gap-col: var(--bento-gap);
@@ -130,34 +141,46 @@
     z-index: 2;
 }
 
-.rawnaq-bento-cell:hover::before {
-    opacity: 1;
+/* Pointer-only effects: a touch tap must not leave a sticky hover state. */
+@media (hover: hover) and (pointer: fine) {
+    .rawnaq-bento-cell:hover::before {
+        opacity: 1;
+    }
+
+    .rawnaq-bento-grid[data-hover="lift"] .rawnaq-bento-cell:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: var(--bento-shadow);
+        border-color: var(--bento-accent);
+    }
+
+    .rawnaq-bento-grid[data-hover="zoom"] .rawnaq-bento-cell:hover .rawnaq-bento-media {
+        transform: scale(1.06);
+    }
+
+    .rawnaq-bento-grid[data-hover="tint"] .rawnaq-bento-cell:hover {
+        border-color: var(--bento-accent);
+        box-shadow: inset 0 0 0 999px rgba(15, 118, 110, 0.05);
+    }
 }
 
-.rawnaq-bento-grid[data-reveal="1"] .rawnaq-bento-cell {
+/* Reveal: the hidden start state only exists once the script has bound the grid
+   (it adds .bento-bound). Without JavaScript every cell stays visible. */
+.rawnaq-bento-grid.bento-bound[data-reveal="1"] .rawnaq-bento-cell:not(.is-in) {
     opacity: 0;
     transform: translateY(14px) scale(0.97);
 }
 
-.rawnaq-bento-grid[data-reveal="1"] .rawnaq-bento-cell.is-in {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-
-.rawnaq-bento-grid[data-hover="lift"] .rawnaq-bento-cell:hover,
+/* Keyboard focus (hover-independent). */
 .rawnaq-bento-grid[data-hover="lift"] .rawnaq-bento-cell:focus-visible {
     transform: translateY(-4px) scale(1.01);
     box-shadow: var(--bento-shadow);
     border-color: var(--bento-accent);
-    outline: none;
 }
 
-.rawnaq-bento-grid[data-hover="zoom"] .rawnaq-bento-cell:hover .rawnaq-bento-media,
 .rawnaq-bento-grid[data-hover="zoom"] .rawnaq-bento-cell:focus-visible .rawnaq-bento-media {
     transform: scale(1.06);
 }
 
-.rawnaq-bento-grid[data-hover="tint"] .rawnaq-bento-cell:hover,
 .rawnaq-bento-grid[data-hover="tint"] .rawnaq-bento-cell:focus-visible {
     border-color: var(--bento-accent);
     box-shadow: inset 0 0 0 999px rgba(15, 118, 110, 0.05);
@@ -173,8 +196,10 @@
     border: 1px solid var(--bento-line, #d7e2dc);
     box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
 }
-.rawnaq-bento-grid.is-theme-elevated .rawnaq-bento-cell:hover {
-    box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px color-mix(in srgb, var(--bento-accent) 30%, transparent);
+@media (hover: hover) and (pointer: fine) {
+    .rawnaq-bento-grid.is-theme-elevated .rawnaq-bento-cell:hover {
+        box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px color-mix(in srgb, var(--bento-accent) 30%, transparent);
+    }
 }
 
 /* Theme 2: Minimal Glassmorphism */
@@ -189,10 +214,12 @@
     border: 1.5px solid var(--bento-line);
     box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.06);
 }
-.rawnaq-bento-grid.is-theme-glass .rawnaq-bento-cell:hover {
-    background: rgba(255, 255, 255, 0.88);
-    border-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .rawnaq-bento-grid.is-theme-glass .rawnaq-bento-cell:hover {
+        background: rgba(255, 255, 255, 0.88);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1);
+    }
 }
 
 /* Theme 3: Dark Obsidian / Cyber */
@@ -216,10 +243,12 @@
     border: 1px solid var(--bento-line);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
-.rawnaq-bento-grid.is-theme-obsidian .rawnaq-bento-cell:hover,
-.rawnaq-bento-grid.is-theme-dark .rawnaq-bento-cell:hover {
-    border-color: color-mix(in srgb, var(--bento-accent) 60%, rgba(255, 255, 255, 0.3));
-    box-shadow: 0 20px 50px -10px color-mix(in srgb, var(--bento-accent) 30%, transparent);
+@media (hover: hover) and (pointer: fine) {
+    .rawnaq-bento-grid.is-theme-obsidian .rawnaq-bento-cell:hover,
+    .rawnaq-bento-grid.is-theme-dark .rawnaq-bento-cell:hover {
+        border-color: color-mix(in srgb, var(--bento-accent) 60%, rgba(255, 255, 255, 0.3));
+        box-shadow: 0 20px 50px -10px color-mix(in srgb, var(--bento-accent) 30%, transparent);
+    }
 }
 
 /* Theme 4: Editorial Spotlight */
@@ -227,9 +256,11 @@
     background: var(--bento-panel, #ffffff);
     border: 1px solid var(--bento-line, #d7e2dc);
 }
-.rawnaq-bento-grid.is-theme-spotlight .rawnaq-bento-cell:hover {
-    border-color: var(--bento-accent);
-    box-shadow: 0 24px 50px -10px color-mix(in srgb, var(--bento-accent) 25%, transparent), 0 0 0 1.5px var(--bento-accent);
+@media (hover: hover) and (pointer: fine) {
+    .rawnaq-bento-grid.is-theme-spotlight .rawnaq-bento-cell:hover {
+        border-color: var(--bento-accent);
+        box-shadow: 0 24px 50px -10px color-mix(in srgb, var(--bento-accent) 25%, transparent), 0 0 0 1.5px var(--bento-accent);
+    }
 }
 
 /* Ambient Glowing Mesh Fallback */
@@ -396,14 +427,16 @@
     display: block;
 }
 
-.rawnaq-bento-cell.is-card:hover .rawnaq-bento-post-thumb img {
-    transform: scale(1.06);
+@media (hover: hover) and (pointer: fine) {
+    .rawnaq-bento-cell.is-card:hover .rawnaq-bento-post-thumb img {
+        transform: scale(1.06);
+    }
 }
 
 .rawnaq-bento-post-thumb .rawnaq-bento-tag {
     position: absolute;
     top: 10px;
-    left: 10px;
+    inset-inline-start: 10px;
     z-index: 2;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
@@ -417,7 +450,7 @@
     gap: 4px;
 }
 
-.rawnaq-bento-post-content .rawnaq-bento-title {
+.rawnaq-bento-grid .rawnaq-bento-post-content .rawnaq-bento-title {
     margin: 2px 0 0;
     font-size: var(--bento-title-size);
     font-weight: 700;
@@ -651,11 +684,19 @@
     fill: currentColor;
 }
 
-.rawnaq-bento-title {
+/* A title may be a div or h2-h6: reset everything a theme heading style could add,
+   so every tag looks identical to the original div. */
+.rawnaq-bento-grid .rawnaq-bento-title {
+    font-family: inherit;
     font-size: var(--bento-title-size);
+    font-style: normal;
     font-weight: 600;
     line-height: 1.35;
+    letter-spacing: normal;
+    text-transform: none;
+    text-align: start;
     margin: 8px 0 0;
+    padding: 0;
     color: var(--bento-title-color);
 }
 
@@ -724,41 +765,311 @@
     border-width: 1px;
 }
 
-@media (max-width: 900px) {
-    .rawnaq-bento-grid {
-        --bento-cols: 2;
-        --bento-row: 130px;
+/* ==========================================================================
+   Whole-cell link (no CTA): a real <a> inside the title. Its ::after stretches
+   over the cell so the whole card is clickable while the link keeps its name.
+   ========================================================================== */
+.rawnaq-bento-stretch-link {
+    position: static;
+    color: inherit;
+    text-decoration: none;
+}
+
+.rawnaq-bento-stretch-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+}
+
+/* The cell is the positioning box, even when the link sits inside a positioned
+   body: lift media/overlay below the content instead of lifting the body above them. */
+.rawnaq-bento-cell:has(.rawnaq-bento-stretch-link) {
+    isolation: isolate;
+}
+
+.rawnaq-bento-cell:has(.rawnaq-bento-stretch-link) .rawnaq-bento-media,
+.rawnaq-bento-cell:has(.rawnaq-bento-stretch-link) .rawnaq-bento-video,
+.rawnaq-bento-cell:has(.rawnaq-bento-stretch-link) .rawnaq-bento-embed {
+    z-index: -2;
+}
+
+.rawnaq-bento-cell:has(.rawnaq-bento-stretch-link) .rawnaq-bento-overlay {
+    z-index: -1;
+}
+
+.rawnaq-bento-cell:has(.rawnaq-bento-stretch-link) .rawnaq-bento-body,
+.rawnaq-bento-cell:has(.rawnaq-bento-stretch-link) .rawnaq-bento-post-content {
+    position: static;
+}
+
+/* Embeds keep their own player controls reachable. */
+.rawnaq-bento-cell.is-embed .rawnaq-bento-stretch-link::after {
+    display: none;
+}
+
+/* Keyboard focus: a clear ring on the whole cell (two tones, so it reads on light and dark). */
+@supports selector(:has(*)) {
+    .rawnaq-bento-stretch-link:focus-visible {
+        outline: none;
     }
 
-    .rawnaq-bento-grid .rawnaq-bento-cell {
-        grid-column: span var(--bento-span-col-md, var(--bento-span-col, 1));
-        grid-row: span var(--bento-span-row-md, var(--bento-span-row, 1));
-        order: var(--bento-order-md, var(--bento-order, 0));
+    .rawnaq-bento-cell:has(.rawnaq-bento-stretch-link:focus-visible) {
+        outline: 3px solid #1a56db;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 3px #ffffff;
+    }
+
+    .rawnaq-bento-grid.is-theme-obsidian .rawnaq-bento-cell:has(.rawnaq-bento-stretch-link:focus-visible),
+    .rawnaq-bento-grid.is-theme-dark .rawnaq-bento-cell:has(.rawnaq-bento-stretch-link:focus-visible) {
+        outline-color: #fbbf24;
+        box-shadow: 0 0 0 3px #0b1120;
     }
 }
 
-@media (max-width: 640px) {
-    .rawnaq-bento-grid {
-        --bento-cols: 2;
-        grid-auto-rows: auto;
+@supports not selector(:has(*)) {
+    .rawnaq-bento-cell:focus-within {
+        outline: 3px solid #1a56db;
+        outline-offset: 3px;
     }
 
-    .rawnaq-bento-grid .rawnaq-bento-cell {
-        /* Default: full-bleed stack. Set --bento-span-col-sm + .has-sm-span to override. */
+    .rawnaq-bento-grid.is-theme-obsidian .rawnaq-bento-cell:focus-within,
+    .rawnaq-bento-grid.is-theme-dark .rawnaq-bento-cell:focus-within {
+        outline-color: #fbbf24;
+    }
+}
+
+/* ==========================================================================
+   Video pause / play (the script injects the button; WCAG 2.2.2)
+   ========================================================================== */
+.rawnaq-bento-video-toggle {
+    position: absolute;
+    inset-inline-end: 10px;
+    inset-block-end: 10px;
+    z-index: 5;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: rgba(11, 17, 32, 0.85);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.rawnaq-bento-video-toggle[hidden] {
+    display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .rawnaq-bento-video-toggle:hover {
+        background: rgba(11, 17, 32, 1);
+        transform: scale(1.06);
+    }
+}
+
+.rawnaq-bento-video-toggle:focus-visible {
+    outline: 3px solid #fbbf24;
+    outline-offset: 2px;
+}
+
+/* Pause icon (video playing); aria-pressed="true" = paused, shows the play icon. */
+.rawnaq-bento-video-toggle::before {
+    content: "";
+    box-sizing: border-box;
+    width: 14px;
+    height: 16px;
+    border-inline: 4px solid currentColor;
+}
+
+.rawnaq-bento-video-toggle[aria-pressed="true"]::before {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 9px 0 9px 15px;
+    border-color: transparent transparent transparent currentColor;
+}
+
+/* Keep the text clear of the button. */
+.rawnaq-bento-cell.is-video:has(.rawnaq-bento-video-toggle) .rawnaq-bento-body {
+    padding-inline-end: calc(var(--bento-pad) + 48px);
+}
+
+/* ==========================================================================
+   Cell spans
+   Spans are classes (is-col-N, is-row-N, is-col-md-N ...) written by PHP, never
+   inline grid-column/grid-row: an inline value could not be overridden by the
+   responsive rules below, so tablet/mobile spans never applied and a "span 4" cell
+   on a 2-column grid created implicit columns and overflowed.
+   Integer literals only (grid-column: span N); spans above the available columns
+   are clamped.
+   ========================================================================== */
+
+/* Wide (also the default when there is no stage wrapper, e.g. the editors). */
+.rawnaq-bento-grid .rawnaq-bento-cell.is-col-1 { grid-column: span 1; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-col-2 { grid-column: span 2; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-col-3 { grid-column: span 3; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-col-4 { grid-column: span 4; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-col-5 { grid-column: span 5; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-col-6 { grid-column: span 6; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-row-1 { grid-row: span 1; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-row-2 { grid-row: span 2; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-row-3 { grid-row: span 3; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-row-4 { grid-row: span 4; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-row-5 { grid-row: span 5; }
+.rawnaq-bento-grid .rawnaq-bento-cell.is-row-6 { grid-row: span 6; }
+
+/* Clamp to the column count (data-cols = 2..5; 6 needs none). :where() keeps the
+   specificity equal to the plain span rules so the responsive rules below can override. */
+.rawnaq-bento-grid:where([data-cols="2"]) .rawnaq-bento-cell.is-col-3,
+.rawnaq-bento-grid:where([data-cols="2"]) .rawnaq-bento-cell.is-col-4,
+.rawnaq-bento-grid:where([data-cols="2"]) .rawnaq-bento-cell.is-col-5,
+.rawnaq-bento-grid:where([data-cols="2"]) .rawnaq-bento-cell.is-col-6 { grid-column: span 2; }
+.rawnaq-bento-grid:where([data-cols="3"]) .rawnaq-bento-cell.is-col-4,
+.rawnaq-bento-grid:where([data-cols="3"]) .rawnaq-bento-cell.is-col-5,
+.rawnaq-bento-grid:where([data-cols="3"]) .rawnaq-bento-cell.is-col-6 { grid-column: span 3; }
+.rawnaq-bento-grid:where([data-cols="4"]) .rawnaq-bento-cell.is-col-5,
+.rawnaq-bento-grid:where([data-cols="4"]) .rawnaq-bento-cell.is-col-6 { grid-column: span 4; }
+.rawnaq-bento-grid:where([data-cols="5"]) .rawnaq-bento-cell.is-col-6 { grid-column: span 5; }
+
+/* ==========================================================================
+   Container-aware responsive layout (@container rawnaqbento)
+   ========================================================================== */
+@container rawnaqbento (min-width: 520px) and (max-width: 819.98px) {
+    .rawnaq-bento-grid[data-cols] { --bento-cols: 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell { order: var(--bento-order-md, var(--bento-order, 0)); }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-1 { grid-column: span 1; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-2 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-3 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-4 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-5 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-6 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-1 { grid-column: span 1; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-2 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-3 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-4 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-5 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-6 { grid-column: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-1 { grid-row: span 1; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-2 { grid-row: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-3 { grid-row: span 3; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-4 { grid-row: span 4; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-5 { grid-row: span 4; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-6 { grid-row: span 4; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-1 { grid-row: span 1; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-2 { grid-row: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-3 { grid-row: span 3; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-4 { grid-row: span 4; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-5 { grid-row: span 4; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-6 { grid-row: span 4; }
+
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 3"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 3"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 4"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 4"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 5"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 5"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 6"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 6"] { grid-column: span 2 !important; }
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row:span 5"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row: span 5"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row:span 6"],
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row: span 6"] { grid-row: span 4 !important; }
+}
+
+@container rawnaqbento (max-width: 519.98px) {
+    .rawnaq-bento-grid[data-cols] { --bento-cols: 1; grid-auto-rows: auto; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell {
         grid-column: 1 / -1;
-        grid-row: span var(--bento-span-row-sm, 1);
+        grid-row: auto;
         order: var(--bento-order-sm, var(--bento-order-md, var(--bento-order, 0)));
         min-height: 140px;
     }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-featured,
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-image,
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-video {
+        min-height: 220px;
+    }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-1 { grid-row: span 1; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-2 { grid-row: span 2; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-3 { grid-row: span 3; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-4 { grid-row: span 4; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-5 { grid-row: span 5; }
+    .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-6 { grid-row: span 6; }
 
-    .rawnaq-bento-grid .rawnaq-bento-cell.has-sm-span {
-        grid-column: span var(--bento-span-col-sm, 1);
+    .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell { grid-column: 1 / -1 !important; grid-row: auto !important; }
+}
+
+/* Browsers without container queries: same clamping from the viewport width. */
+@supports not (container-type: inline-size) {
+    @media (min-width: 641px) and (max-width: 900px) {
+        .rawnaq-bento-grid[data-cols] { --bento-cols: 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell { order: var(--bento-order-md, var(--bento-order, 0)); }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-1 { grid-column: span 1; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-2 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-3 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-4 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-5 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-6 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-1 { grid-column: span 1; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-2 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-3 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-4 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-5 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-col-md-6 { grid-column: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-1 { grid-row: span 1; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-2 { grid-row: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-3 { grid-row: span 3; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-4 { grid-row: span 4; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-5 { grid-row: span 4; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-6 { grid-row: span 4; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-1 { grid-row: span 1; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-2 { grid-row: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-3 { grid-row: span 3; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-4 { grid-row: span 4; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-5 { grid-row: span 4; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-row-md-6 { grid-row: span 4; }
+
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 3"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 3"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 4"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 4"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 5"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 5"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column:span 6"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-column: span 6"] { grid-column: span 2 !important; }
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row:span 5"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row: span 5"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row:span 6"],
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell[style*="grid-row: span 6"] { grid-row: span 4 !important; }
     }
 
-    .rawnaq-bento-grid .rawnaq-bento-cell.is-featured,
-    .rawnaq-bento-grid .rawnaq-bento-cell.is-image,
-    .rawnaq-bento-grid .rawnaq-bento-cell.is-video {
-        min-height: 220px;
+    @media (max-width: 640px) {
+        .rawnaq-bento-grid[data-cols] { --bento-cols: 1; grid-auto-rows: auto; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell {
+            grid-column: 1 / -1;
+            grid-row: auto;
+            order: var(--bento-order-sm, var(--bento-order-md, var(--bento-order, 0)));
+            min-height: 140px;
+        }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-featured,
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-image,
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.is-video {
+            min-height: 220px;
+        }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-1 { grid-row: span 1; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-2 { grid-row: span 2; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-3 { grid-row: span 3; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-4 { grid-row: span 4; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-5 { grid-row: span 5; }
+        .rawnaq-bento-grid[data-cols] .rawnaq-bento-cell.has-sm-span.is-row-sm-6 { grid-row: span 6; }
+
+        .rawnaq-bento-grid.is-innerblocks .rawnaq-bento-cell { grid-column: 1 / -1 !important; grid-row: auto !important; }
     }
 }
 
@@ -807,8 +1118,8 @@
 
 .rawnaq-bento-resize-handle {
     position: absolute;
-    right: 6px;
-    bottom: 6px;
+    inset-inline-end: 6px;
+    inset-block-end: 6px;
     width: 16px;
     height: 16px;
     border: none;
